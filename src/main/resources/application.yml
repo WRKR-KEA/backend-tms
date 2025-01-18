@@ -1,0 +1,37 @@
+spring.profiles.active: local
+
+spring:
+  config:
+    import:
+      - mysql.yml
+      - swagger.yml
+
+server:
+  port: ${APPLICATION_PORT:8080}
+  tomcat:
+    max-connections: 10000
+    threads:
+      max: 200
+      min-spare: 20
+
+---
+spring.config.activate.on-profile: local
+
+spring:
+  config:
+    import:
+      - optional:classpath:env.properties
+
+logging:
+  level:
+    root: INFO
+
+---
+spring.config.activate.on-profile: dev
+
+logging:
+  level:
+    root: INFO
+
+---
+spring.config.activate.on-profile: prod
