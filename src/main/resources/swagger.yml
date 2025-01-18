@@ -1,0 +1,26 @@
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    persist-authorization: true
+    path: /api/tickety-tms/swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+    display-request-duration: true
+    disable-swagger-default-url: true
+  show-actuator: true
+  api-docs:
+    path: /api/tickety-tms/v3/api-docs
+
+---
+spring.config.activate.on-profile: "local"
+
+swagger.server.url: http://localhost:8080
+
+---
+spring.config.activate.on-profile: "dev"
+
+swagger.server.url: ${SWAGGER_SERVER_URL}
+
+---
+spring.config.activate.on-profile: prod
