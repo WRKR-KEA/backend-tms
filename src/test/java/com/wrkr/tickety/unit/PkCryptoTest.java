@@ -25,8 +25,14 @@ public class PkCryptoTest {
              System.out.println("디코딩 값: " + decryptedValue);
 
              // Then
-                assertNotNull(encryptedValue, "암호화된 값은 null이 아니어야 합니다.");
-                assertEquals(originalValue, decryptedValue, "복호화된 값은 원래 값과 일치해야 합니다.");
-
+             assertNotNull(
+                     encryptedValue,
+                     "암호화 된 값은 null이 아니어야 합니다."
+             );
+             assertEquals(
+                     originalValue,
+                     decryptedValue,
+                     "복호화 된 값은 원래 값과 일치 해야 합니다."
+             );
          }
 }
