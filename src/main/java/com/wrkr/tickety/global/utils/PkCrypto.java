@@ -38,7 +38,7 @@ public class PkCrypto {
 
     public static PkCrypto getInstance() {
         if (instance == null) {
-            throw new IllegalStateException("PKCrypto is not initialized");
+            throw new IllegalStateException("PkCrypto가 초기화되지 않았습니다");
         }
         return instance;
     }
@@ -51,7 +51,7 @@ public class PkCrypto {
             byte[] encrypted = cipher.doFinal(valueBytes);
             return Base64.getUrlEncoder().withoutPadding().encodeToString(encrypted);
         } catch (Exception e) {
-            throw new IllegalStateException("Encryption failed", e);
+            throw new IllegalStateException("암호화 실패", e);
         }
     }
 
@@ -63,7 +63,7 @@ public class PkCrypto {
             byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
             return ByteBuffer.wrap(decryptedBytes).getLong();
         } catch (Exception e) {
-            throw new IllegalStateException("Decryption failed", e);
+            throw new IllegalStateException("복호화 실패", e);
         }
     }
 
