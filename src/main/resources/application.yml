@@ -5,6 +5,7 @@ spring:
     import:
       - mysql.yml
       - swagger.yml
+      - crypto.yml
 
 server:
   port: ${APPLICATION_PORT:8080}
