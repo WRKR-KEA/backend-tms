@@ -38,3 +38,6 @@ out/
 
 ### Config ###
 src/main/resources/env.properties
+
+### Libraries ###
+node_modules/
