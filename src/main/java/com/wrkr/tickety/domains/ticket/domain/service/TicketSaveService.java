@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TicketSaveService {
 
     private final TicketRepository ticketRepository;
 
-    @Transactional
     public Ticket save(Ticket ticket) {
         return ticketRepository.save(ticket);
     }
