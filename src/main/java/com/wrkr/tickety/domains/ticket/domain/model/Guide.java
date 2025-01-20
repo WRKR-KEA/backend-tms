@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.model;
 
+import com.wrkr.tickety.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @Table(name = "guide")
-public class Guide {
+public class Guide extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +29,10 @@ public class Guide {
     @Builder
     public Guide(Category category, String content) {
         this.category = category;
+        this.content = content;
+    }
+
+    public void updateContent(String content) {
         this.content = content;
     }
 }
