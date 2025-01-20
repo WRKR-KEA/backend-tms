@@ -54,12 +54,4 @@ public class Category extends BaseTimeEntity {
         this.code = code;
         this.seq = seq;
     }
-
-
-    /**
-     * 테스트용 생성자 비즈니스 로직에서는 사용 안함
-     * */
-    public Category(Long categoryId) {
-        this.categoryId = categoryId;
-    }
 }

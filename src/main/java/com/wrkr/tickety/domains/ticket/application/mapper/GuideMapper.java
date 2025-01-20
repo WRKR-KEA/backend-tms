@@ -1,29 +1,32 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
+import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
-import com.wrkr.tickety.domains.ticket.domain.model.Category;
-import com.wrkr.tickety.domains.ticket.domain.model.Guide;
+import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
+import com.wrkr.tickety.global.utils.PkCrypto;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GuideMapper {
-    /**
-     * 도움말 조회 요청시 ENTITY DTO 변환
-     */
-    public GuideResponse toGuideResponse(Guide guideEntity) {
-        if (guideEntity == null) {
+    @Schema(description = "도움말 도메인 -> 응답 변환")
+    public GuideResponse guideToGuideResponse(GuideDomain guideDomain) {
+        if (guideDomain == null) {
             return null;
         }
         return GuideResponse.builder()
-                .content(guideEntity.getContent())
-                .guideId(guideEntity.getGuideId())
+                .content(guideDomain.getContent())
+                .guideId(PkCrypto.encrypt(guideDomain.getGuideId()))
                 .build();
     }
 
-    public Guide toGuideEntity(String content, Category category) {
-        return Guide.builder()
-                .category(category)
-                .content(content)
+    @Schema(description = "도움말 생성 요청 -> 도메인 변환")
+    public static GuideDomain GuideCreateRequestToDomain(GuideCreateRequest guideCreateRequest) {
+        if (guideCreateRequest == null) {
+            return null;
+        }
+        return GuideDomain.builder()
+                .content(guideCreateRequest.getContent())
                 .build();
     }
 }

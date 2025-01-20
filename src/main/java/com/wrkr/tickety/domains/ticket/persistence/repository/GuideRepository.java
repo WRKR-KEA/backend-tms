@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface GuideRepository extends JpaRepository<Guide, Long> {
-    Guide findByCategory_CategoryId(Long category_id);
+    Optional<Guide> findByCategory_CategoryId(Long category_id);
 
     Optional<Guide> findByCategory(Category category);
 }

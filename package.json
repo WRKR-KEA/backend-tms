@@ -5,7 +5,7 @@
   },
   "scripts": {
     "commit": "cz",
-    "postinstall": "node -e \"require('fs').copyFileSync('custom-build-commit.js', 'node_modules/cz-customizable/lib/build-commit.js')\""
+    "postinstall": "cp custom-build-commit.js node_modules/cz-customizable/lib/build-commit.js"
   },
   "config": {
     "commitizen": {

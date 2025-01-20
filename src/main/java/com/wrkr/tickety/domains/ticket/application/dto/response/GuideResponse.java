@@ -14,7 +14,7 @@ public class GuideResponse {
     @Schema(description = "도움말 내용", example = "vm 생성 도움말")
     private String content;
     @Schema(description = "도움말 카테고리 ID", example = "1")
-    private Long categoryId;
-    @Schema(description = "도움말 ID", example = "1")
-    private Long guideId;
+    private String categoryId;
+    @Schema(description = "암호화된 도움말 ID", example = "Gbdsnz3dU0kwFxKpavlkog==")
+    private String guideId;
 }
