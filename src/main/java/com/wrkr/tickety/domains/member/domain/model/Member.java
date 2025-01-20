@@ -62,6 +62,10 @@ public class Member extends BaseTimeEntity {
     @ColumnDefault("0")
     private Boolean isDeleted;
 
+    @Column(nullable = false)
+    @ColumnDefault("1")
+    private Boolean isTempPassword;
+
     @Builder
     public Member(
             String nickname, String password, String name, String phone, String email, String position, String profileImage, Role role, String agitUrl
