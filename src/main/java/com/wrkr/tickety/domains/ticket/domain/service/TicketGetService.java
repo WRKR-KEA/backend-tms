@@ -22,4 +22,7 @@ public class TicketGetService {
         return ticketRepository.findAllByUserId(userId, pageable);
     }
 
+    public Optional<Ticket> getTicketByTicketId(Long ticketId) {
+        return ticketRepository.findById(ticketId);
+    }
 }

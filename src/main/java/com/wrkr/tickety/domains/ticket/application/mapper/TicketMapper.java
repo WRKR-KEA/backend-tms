@@ -48,4 +48,19 @@ public class TicketMapper {
                 ticket.getUpdatedAt()
         );
     }
+
+    public static TicketDetailGetResponse toTicketDetailGetResponse(Ticket ticket, LocalDateTime firstManagerChangeDate) {
+
+        return new TicketDetailGetResponse(
+                PkCrypto.encrypt(ticket.getTicketId()),
+                ticket.getTitle(),
+                ticket.getContent(),
+                ticket.getStatus().name(),
+                ticket.getUser().getName(),
+                ticket.getManager() != null ? ticket.getManager().getName() : null,
+                ticket.getCreatedAt(),
+                ticket.getUpdatedAt(),
+                firstManagerChangeDate
+        );
+    }
 }
