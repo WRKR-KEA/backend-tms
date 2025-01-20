@@ -10,11 +10,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryGetService {
 
     private final CategoryRepository categoryRepository;
 
-    @Transactional(readOnly = true)
     public Optional<Category> getCategory(Long categoryId) {
         return categoryRepository.findById(categoryId);
     }
