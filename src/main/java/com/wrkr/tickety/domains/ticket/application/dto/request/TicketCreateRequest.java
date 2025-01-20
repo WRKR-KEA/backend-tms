@@ -14,9 +14,9 @@ public record TicketCreateRequest(
         @NotBlank(message = "티켓 내용은 필수 항목입니다.")
         String content,
 
-        @Schema(description = "2차 카테고리", example = "1")
+        @Schema(description = "2차 카테고리", example = "카테고리 ID")
         @NotNull(message = "2차 카테고리는 필수 항목입니다.")
-        Long categoryId
+        String categoryId
 
 ) {
 }
