@@ -32,4 +32,20 @@ public class TicketMapper {
                 .category(category)
                 .build();
     }
+
+    public static TicketAllGetResponse toTicketAllGetResponse(Ticket ticket, TicketHistoryGetService ticketHistoryGetService) {
+
+        LocalDateTime firstManagerChangeDate = ticketHistoryGetService.getFirstManagerChangeDate(ticket.getTicketId());
+
+        return new TicketAllGetResponse(
+                PkCrypto.encrypt(ticket.getTicketId()),
+                ticket.getManager() != null ? ticket.getManager().getNickname() : null,
+                ticket.getSerialNumber(),
+                ticket.getTitle(),
+                ticket.getStatus().getDescription(),
+                ticket.getCreatedAt(),
+                firstManagerChangeDate,
+                ticket.getUpdatedAt()
+        );
+    }
 }
