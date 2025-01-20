@@ -27,7 +27,7 @@ public class TicketHistory extends BaseTimeEntity {
     private Ticket ticket;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = false)
+    @JoinColumn(name = "manager_id")
     private Member manager;
 
     @Enumerated(EnumType.STRING)
