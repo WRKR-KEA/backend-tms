@@ -31,6 +31,9 @@ public class Category extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, length = 50)
+    private String code;
+
     @Column(nullable = false)
     private Integer seq;
 
@@ -45,9 +48,10 @@ public class Category extends BaseTimeEntity {
     private List<Category> children = new ArrayList<>();
 
     @Builder
-    public Category(Category parent, String name, Integer seq) {
+    public Category(Category parent, String name, String code, Integer seq) {
         this.parent = parent;
         this.name = name;
+        this.code = code;
         this.seq = seq;
     }
 }

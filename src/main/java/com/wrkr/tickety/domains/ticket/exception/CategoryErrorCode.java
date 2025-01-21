@@ -15,4 +15,5 @@ public enum CategoryErrorCode implements BaseErrorCode {
     private final HttpStatus httpStatus;
     private final String customCode;
     private final String message;
+
 }
