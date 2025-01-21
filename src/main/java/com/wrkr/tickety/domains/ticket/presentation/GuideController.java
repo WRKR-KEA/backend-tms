@@ -8,7 +8,6 @@ import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideCreateUseC
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideDeleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideUpdateUseCase;
-import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
