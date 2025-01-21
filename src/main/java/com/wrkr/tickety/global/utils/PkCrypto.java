@@ -26,7 +26,7 @@ public class PkCrypto {
         this.secret = secret;
     }
     @PostConstruct
-    private void init() {
+    public void init() {
         this.secretKey = generateKey();
         instance = this;
     }
