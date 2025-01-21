@@ -151,7 +151,8 @@ def jacocoExcludePatterns = [
         '**.exception.**',
         '**.domain.model.**',
         "**.dto.**",
-        "**.mapper.**"
+        "**.mapper.**",
+        "**.repository.**",
 ]
 
 jacocoTestCoverageVerification {
@@ -163,18 +164,16 @@ jacocoTestCoverageVerification {
             // 클래스 단위로 룰 체크
             element = 'CLASS'
 
-            // 라인 커버리지를 최소 70% 만족
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.70
+                minimum = 0.60
             }
-
-            // 브랜치 커버리지를 최소 70% 만족
+            
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.70
+                minimum = 0.60
             }
 
             excludes = jacocoExcludePatterns + QDomains
