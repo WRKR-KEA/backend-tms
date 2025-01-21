@@ -37,10 +37,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Inject secret into env.properties
-        if: secrets.ENV_PROPERTIES != null
         run: |
           touch ./src/main/resources/env.properties
-          echo "ENCRYPT_KEY=${{ secrets.ENV_PROPERTIES }}" > ./src/main/resources/env.properties
+          echo "ENV_PROPERTIES=${{ secrets.ENV_PROPERTIES }}" > ./src/main/resources/env.properties
           cat ./src/main/resources/env.properties
 
       - name: Run Tests and Generate Coverage
