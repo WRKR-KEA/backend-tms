@@ -13,7 +13,7 @@ public class TicketGetService {
 
 	private final TicketRepository ticketRepository;
 
-	public Ticket getTicketById(Long ticketId) {
+	public Ticket byId(Long ticketId) {
 
 		return ticketRepository.findById(ticketId)
 				.orElseThrow(() -> ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND));

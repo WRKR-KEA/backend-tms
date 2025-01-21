@@ -11,8 +11,10 @@ import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
+@Transactional
 @RequiredArgsConstructor
 public class CommentCreateUseCase {
 
@@ -21,7 +23,7 @@ public class CommentCreateUseCase {
 
 	public CommentIdResponse createComment(Member member, Long ticketId, CommentRequest request) {
 
-		Ticket ticket = ticketGetService.getTicketById(ticketId);
+		Ticket ticket = ticketGetService.byId(ticketId);
 
 		if (!ticket.isRelatedWith(member) || !ticket.isCommentable()) {
 			throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
