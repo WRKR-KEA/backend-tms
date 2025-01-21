@@ -1,8 +1,5 @@
 package com.wrkr.tickety.domains.ticket.domain.service.Guide;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
-import com.wrkr.tickety.domains.ticket.application.mapper.GuideMapper;
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
@@ -12,23 +9,18 @@ import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @AllArgsConstructor
 public class GuideCreateService {
     private final GuideRepository guideRepository;
-    private final GuideMapper guideMapper;
 
-    public GuideResponse createGuide(GuideCreateRequest guideCreateRequest, Category categoryEntity) {
-        Optional<Guide> existingGuide = guideRepository.findByCategory(categoryEntity);
+    public GuideDomain createGuide(GuideDomain guideDomain, Category category) {
 
-        if (existingGuide.isPresent()) throw ApplicationException.from(GuideErrorCode.GuideAlreadyExist);
+        boolean isGuideExists = guideRepository.existsByCategory_CategoryId(guideDomain.getCategoryId());
+        if (isGuideExists) throw ApplicationException.from(GuideErrorCode.GUIDE_ALREADY_EXIST);
 
-        GuideDomain guideDomain = GuideMapper.GuideCreateRequestToDomain(guideCreateRequest);
-        Guide guide = Guide.toEntity(guideDomain, categoryEntity);
-
-        guideRepository.save(guide);
-        return guideMapper.guideToGuideResponse(guideDomain);
+        Guide guide = Guide.toEntity(guideDomain, category);
+        Guide savedGuide = guideRepository.save(guide);
+        return GuideDomain.toDomain(savedGuide);
     }
 }

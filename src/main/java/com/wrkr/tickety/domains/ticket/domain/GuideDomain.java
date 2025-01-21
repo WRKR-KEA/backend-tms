@@ -5,9 +5,10 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 @Builder
-@Data
+@Getter
 public class GuideDomain {
     private Long guideId;
     private String content;

@@ -4,7 +4,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryGetAllRe
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.service.CategoryGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.GuideGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.TemplateGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import lombok.RequiredArgsConstructor;

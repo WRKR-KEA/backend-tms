@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.Guide;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.GuideMapper;
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
@@ -17,18 +16,19 @@ import org.springframework.stereotype.Service;
 public class GuideUpdateService {
     private final PkCrypto pkCrypto;
     private final GuideRepository guideRepository;
-    private final GuideMapper guideMapper;
 
-    public GuideResponse modifyGuide(String cryptoGuideId, GuideUpdateRequest guideUpdateRequest) {
+    public GuideDomain updateGuide(String cryptoGuideId, GuideUpdateRequest guideUpdateRequest) {
 
         long guideId = pkCrypto.decryptValue(cryptoGuideId);
         Guide guide = guideRepository.findById(guideId)
-                .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GuideNotExist));
+                .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
+
         GuideDomain guideDomain = GuideDomain.toDomain(guide);
-        guideDomain.updateContent(guideUpdateRequest.getContent());
+        guideDomain.updateContent(guideUpdateRequest.content());
+
         guide.updateContent(guideDomain.getContent());
         guideRepository.save(guide);
 
-        return guideMapper.guideToGuideResponse(guideDomain);
+        return guideDomain;
     }
 }
