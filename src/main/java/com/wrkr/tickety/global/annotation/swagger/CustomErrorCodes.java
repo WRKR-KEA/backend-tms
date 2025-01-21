@@ -1,5 +1,6 @@
 package com.wrkr.tickety.global.annotation.swagger;
 
+import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
 
