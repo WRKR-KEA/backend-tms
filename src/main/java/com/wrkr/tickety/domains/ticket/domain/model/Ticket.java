@@ -71,9 +71,6 @@ public class Ticket extends BaseTimeEntity {
     }
 
     public boolean isCommentable() {
-		return switch (status) {
-			case REQUEST, CANCEL, COMPLETE -> false;
-			case IN_PROGRESS, REJECT -> true;
-		};
-    }
+		return status.equals(TicketStatus.IN_PROGRESS);
+	}
 }
