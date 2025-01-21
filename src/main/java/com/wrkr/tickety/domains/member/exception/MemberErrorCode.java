@@ -1,4 +1,5 @@
-package com.wrkr.tickety.domains.ticket.exception;
+package com.wrkr.tickety.domains.member.exception;
+
 
 import com.wrkr.tickety.global.response.code.BaseErrorCode;
 import lombok.AllArgsConstructor;
@@ -7,10 +8,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum CategoryErrorCode implements BaseErrorCode {
-
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY_001", "카테고리를 찾을 수 없습니다."),
-    ;
+public enum MemberErrorCode implements BaseErrorCode {
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_001", "회원을 찾을 수 없습니다."),;
 
     private final HttpStatus httpStatus;
     private final String customCode;

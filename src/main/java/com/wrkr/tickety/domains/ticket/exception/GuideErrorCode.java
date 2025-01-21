@@ -7,10 +7,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum CategoryErrorCode implements BaseErrorCode {
-
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY_001", "카테고리를 찾을 수 없습니다."),
-    ;
+public enum GuideErrorCode implements BaseErrorCode {
+    GuideNotExist(HttpStatus.NOT_FOUND, "Guide_001", "도움말이 존재하지 않습니다."),
+    GuideAlreadyExist(HttpStatus.BAD_REQUEST, "Guide_002", "도움말이 이미 존재합니다.");
 
     private final HttpStatus httpStatus;
     private final String customCode;
