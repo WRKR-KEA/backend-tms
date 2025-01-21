@@ -1,6 +1,5 @@
 package com.wrkr.tickety.domains.ticket.domain.service.Guide;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
