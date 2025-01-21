@@ -27,10 +27,10 @@ public class Ticket extends BaseTimeEntity {
     private Member user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = false)
+    @JoinColumn(name = "manager_id")
     private Member manager;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
@@ -59,6 +59,10 @@ public class Ticket extends BaseTimeEntity {
         this.serialNumber = serialNumber;
         this.title = title;
         this.content = content;
+        this.status = status;
+    }
+
+    public void updateStatus(TicketStatus status) {
         this.status = status;
     }
 }
