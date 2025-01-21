@@ -33,12 +33,6 @@ public class Guide extends BaseTimeEntity {
         this.content = content;
     }
 
-    public static Guide toEntity(GuideDomain guideDomain) {
-        return Guide.builder()
-                .content(guideDomain.getContent())
-                .build();
-    }
-
     public static Guide toEntity(GuideDomain guideDomain, Category category) {
         return Guide.builder()
                 .content(guideDomain.getContent())
