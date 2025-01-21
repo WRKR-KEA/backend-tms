@@ -1,0 +1,29 @@
+name: Jacoco Test Coverage Report
+
+on:
+  pull_request:
+    branches: [ "develop" ]
+    types: [opened, synchronize, reopened]
+
+permissions: write-all
+
+jobs:
+  coverage:
+    name: Analyze Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v3
+        with:
+          name: jacoco-report
+
+      - name: Test Coverage Report
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          title: Test Coverage Report
+          paths: jacoco-report
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 30
+          min-coverage-changed-files: 50
