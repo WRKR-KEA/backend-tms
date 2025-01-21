@@ -1,7 +1,5 @@
 package com.wrkr.tickety.domains.ticket.domain.service.Guide;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
-import com.wrkr.tickety.domains.ticket.application.mapper.GuideMapper;
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
@@ -18,14 +16,17 @@ import org.springframework.stereotype.Service;
 public class GuideGetService {
 
     private final GuideRepository guideRepository;
-    private final GuideMapper guideMapper;
 
-    public GuideResponse getGuideContentByCategory(String encryptedCategoryId) {
-        long categoryId = PkCrypto.decrypt(encryptedCategoryId);
+    public GuideDomain getGuideContentByCategory(String cryptoCategoryId) {
+        long categoryId = PkCrypto.decrypt(cryptoCategoryId);
         Guide guideEntity = guideRepository.findByCategory_CategoryId(categoryId)
-                .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GuideNotExist));
-        GuideDomain guideDomain = GuideDomain.toDomain(guideEntity);
+                .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
 
-        return guideMapper.guideToGuideResponse(guideDomain);
+        return GuideDomain.toDomain(guideEntity);
     }
+
+    public Boolean existsByCategoryId(Long categoryId) {
+        return guideRepository.existsByCategory_CategoryId(categoryId);
+    }
+
 }
