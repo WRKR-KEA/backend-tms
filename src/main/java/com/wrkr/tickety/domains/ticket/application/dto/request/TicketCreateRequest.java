@@ -3,7 +3,9 @@ package com.wrkr.tickety.domains.ticket.application.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
+@Builder
 public record TicketCreateRequest(
 
         @Schema(description = "티켓 제목", example = "티켓 제목")

@@ -1,9 +1,11 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record TicketAllGetResponse(
         @Schema(description = "티켓 id", example = "ouqJF8uKst63ZPA2T70jda")
         String id,
