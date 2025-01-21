@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.model;
 
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
@@ -60,5 +61,19 @@ public class Ticket extends BaseTimeEntity {
         this.title = title;
         this.content = content;
         this.status = status;
+    }
+
+    public boolean isRelatedWith(Member member) {
+        if (member.getRole().equals(Role.MANAGER))
+            return this.manager.equals(member);
+        else
+            return this.user.equals(member);
+    }
+
+    public boolean isCommentable() {
+		return switch (status) {
+			case REQUEST, CANCEL, COMPLETE -> false;
+			case IN_PROGRESS, REJECT -> true;
+		};
     }
 }
