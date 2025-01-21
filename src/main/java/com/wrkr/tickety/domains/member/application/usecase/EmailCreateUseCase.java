@@ -1,40 +1,38 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
-import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateReqDTO;
+import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.exception.ApplicationException;
+import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-@Slf4j
 @UseCase
 @RequiredArgsConstructor
 public class EmailCreateUseCase {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
-    public String sendMail(EmailCreateReqDTO emailCreateReqDTO, String code, String type) {
+    // TODO: 이메일 전송 비동기로 구현 필요
+    public String sendMail(EmailCreateRequest emailCreateRequest, String code, String type) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo(emailCreateReqDTO.to()); // 메일 수신자
-            mimeMessageHelper.setSubject(emailCreateReqDTO.subject()); // 메일 제목
+            mimeMessageHelper.setTo(emailCreateRequest.to()); // 메일 수신자
+            mimeMessageHelper.setSubject(emailCreateRequest.subject()); // 메일 제목
             mimeMessageHelper.setText(setContext(code, type), true); // 메일 본문 내용, HTML 여부
             javaMailSender.send(mimeMessage);
 
-            log.info("이메일 전송 성공");
-
             return code;
 
-        } catch (MessagingException e) {
-            log.info("이메일 전송 실패");
-            throw new RuntimeException(e);
+        } catch (MessagingException e) { // TODO: 존재하지 않은 이메일인 경우도 고려해야함
+            throw new ApplicationException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 

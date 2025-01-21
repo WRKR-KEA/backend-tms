@@ -1,16 +1,16 @@
 package com.wrkr.tickety.domains.member.application.mapper;
 
-import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateReqDTO;
+import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EmailMapper {
     
-    public static EmailCreateReqDTO toEmailCreateReqDTO(
+    public static EmailCreateRequest toEmailCreateReqDTO(
             String to, String subject, String message
             )
     {
-        return EmailCreateReqDTO.builder()
+        return EmailCreateRequest.builder()
                 .to(to)
                 .subject(subject)
                 .message(message)

@@ -1,15 +1,16 @@
 package com.wrkr.tickety.domains.member.application.mapper;
 
-import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateReqDTO;
-import com.wrkr.tickety.domains.member.application.dto.response.MemberCreateResDTO;
-import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResDTO;
+import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.global.utils.PkCrypto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MemberMapper {
 
-    public static Member toMember(MemberCreateReqDTO reqDTO, String encryptedPassword) {
+    public static Member toMember(MemberCreateRequest reqDTO, String encryptedPassword) {
         return Member.builder()
                 .email(reqDTO.email())
                 .password(encryptedPassword)
@@ -18,18 +19,19 @@ public class MemberMapper {
                 .position(reqDTO.position())
                 .phone(reqDTO.phone())
                 .role(reqDTO.role())
-                .profileImage(reqDTO.profileImageUrl())
+                .profileImage(reqDTO.profileImage())
                 .build();
     }
 
-    public static MemberCreateResDTO toMemberCreateResDTO(String memberId) {
-        return MemberCreateResDTO.builder()
+    public static MemberPkResponse toMemberPkResponse(String memberId) {
+        return MemberPkResponse.builder()
                 .memberId(memberId)
                 .build();
     }
 
-    public static MemberInfoResDTO toMemberInfoResDTO(Member member) {
-        return MemberInfoResDTO.builder()
+    public static MemberInfoResponse toMemberInfoResponse(Member member) {
+        return MemberInfoResponse.builder()
+                .memberId(PkCrypto.encrypt(member.getMemberId()))
                 .email(member.getEmail())
                 .name(member.getName())
                 .nickname(member.getNickname())

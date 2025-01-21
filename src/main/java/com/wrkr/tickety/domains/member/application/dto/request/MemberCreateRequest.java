@@ -3,11 +3,14 @@ package com.wrkr.tickety.domains.member.application.dto.request;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.presentation.util.EmailFormat;
 import com.wrkr.tickety.domains.member.presentation.util.PhoneNumberFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 @Builder
-public record MemberCreateReqDTO(
+public record MemberCreateRequest(
+
+        @Schema(description = "이메일", example = "wrkr@gachon.ac.kr")
         @NotBlank(message = "이메일은 공백일 수 없습니다.")
         @EmailFormat
         String email,
@@ -28,6 +31,6 @@ public record MemberCreateReqDTO(
         Role role,
 
         @NotBlank(message = "프로필 이미지는 공백일 수 없습니다.")
-        String profileImageUrl
+        String profileImage
 ) {
 }
