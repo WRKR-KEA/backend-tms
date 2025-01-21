@@ -45,4 +45,13 @@ public class ApplicationResponse<T> {
                 result
         );
     }
+
+    public static <T> ApplicationResponse<T> onFailure(String code, String message) {
+        return new ApplicationResponse<>(
+                false,
+                code,
+                message,
+                null
+        );
+    }
 }
