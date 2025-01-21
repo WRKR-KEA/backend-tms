@@ -3,10 +3,12 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideDeleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideUpdateUseCase;
+import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
@@ -28,67 +30,54 @@ public class GuideController {
     private final GuideGetUseCase guideGetUseCase;
     private final GuideDeleteUseCase guideDeleteUseCase;
 
-
-    /**
-     * @see com.wrkr.tickety.global.utils.PkCrypto
-     * */
     @Operation(summary = "도움말 조회")
     @Parameter(name = "cryptoCategoryId",
             description = "암호화된 카테고리 키",
             example = "Gbdsnz3dU0kwFxKpavlkog==",
             required = true,
             in = ParameterIn.PATH)
-    @CustomErrorCodes({GuideErrorCode.GuideNotExist})
-    @GetMapping("/{cryptoCategoryId}")
+    @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
+    @GetMapping("/api/user/guide/{cryptoCategoryId}")
     public ResponseEntity<ApplicationResponse<GuideResponse>> getGuideContent(@PathVariable String cryptoCategoryId) {
-        return guideGetUseCase.getGuide(cryptoCategoryId);
+        GuideResponse guideResponse = guideGetUseCase.getGuide(cryptoCategoryId);
+        return ResponseEntity.ok(ApplicationResponse.onSuccess(guideResponse));
     }
 
-    /**
-     * @see com.wrkr.tickety.global.utils.PkCrypto
-     * */
     @Operation(summary = "도움말 생성")
     @Parameter(name = "cryptoCategoryId",
             description = "암호화된 카테고리 키",
             example = "Gbdsnz3dU0kwFxKpavlkog==",
             required = true,
             in = ParameterIn.PATH)
-    @PostMapping("/{cryptoCategoryId}")
-    public ResponseEntity<ApplicationResponse<GuideResponse>> createGuide(@RequestBody GuideCreateRequest guideCreateRequest, @PathVariable String cryptoCategoryId) {
-        return guideCreateUseCase.createGuide(guideCreateRequest, cryptoCategoryId);
+    @PostMapping("/api/admin/guide/{cryptoCategoryId}")
+    public ResponseEntity<ApplicationResponse<PkResponse>> createGuide(@RequestBody GuideCreateRequest guideCreateRequest, @PathVariable String cryptoCategoryId) {
+        PkResponse pkResponse = guideCreateUseCase.createGuide(guideCreateRequest, cryptoCategoryId);
+        return ResponseEntity.ok(ApplicationResponse.onSuccess(pkResponse));
     }
 
-    /**
-     * @see com.wrkr.tickety.global.utils.PkCrypto
-     * */
     @Operation(summary = "도움말 수정")
     @Parameter(name = "cryptoCategoryId",
             description = "암호화된 도움말 키",
             example = "Gbdsnz3dU0kwFxKpavlkog==",
             required = true,
             in = ParameterIn.PATH)
-    @CustomErrorCodes({GuideErrorCode.GuideNotExist})
-    @PatchMapping("/{cryptoGuideId}")
-    public ResponseEntity<ApplicationResponse<GuideResponse>> updateGuide(@PathVariable String cryptoGuideId, @RequestBody GuideUpdateRequest guideUpdateRequest) {
-
-        return guideUpdateUseCase.modifyGuide(cryptoGuideId, guideUpdateRequest);
+    @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
+    @PatchMapping("/api/admin/guide/{cryptoGuideId}")
+    public ResponseEntity<ApplicationResponse<PkResponse>> updateGuide(@PathVariable String cryptoGuideId, @RequestBody GuideUpdateRequest guideUpdateRequest) {
+        PkResponse pkResponse = guideUpdateUseCase.modifyGuide(cryptoGuideId, guideUpdateRequest);
+        return ResponseEntity.ok(ApplicationResponse.onSuccess(pkResponse));
     }
 
-    /**
-     * @see com.wrkr.tickety.global.utils.PkCrypto
-     * */
     @Operation(summary = "도움말 삭제")
     @Parameter(name = "cryptoCategoryId",
             description = "암호화된 도움말 키",
             example = "Gbdsnz3dU0kwFxKpavlkog==",
             required = true,
             in = ParameterIn.PATH)
-    @CustomErrorCodes({GuideErrorCode.GuideNotExist})
-    @DeleteMapping("/{cryptoGuideId}")
-    public ResponseEntity<ApplicationResponse<Void>> deleteGuide(@PathVariable String cryptoGuideId) {
-
-
-        return guideDeleteUseCase.deleteGuide(cryptoGuideId);
+    @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
+    @DeleteMapping("/api/admin/guide/{cryptoGuideId}")
+    public ResponseEntity<ApplicationResponse<PkResponse>> deleteGuide(@PathVariable String cryptoGuideId) {
+        return ResponseEntity.ok(ApplicationResponse.onSuccess(guideDeleteUseCase.deleteGuide(cryptoGuideId)));
     }
 
 
