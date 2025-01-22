@@ -11,6 +11,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideGetUseCase
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideUpdateUseCase;
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
+import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideCreateService;
 import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideDeleteService;
@@ -106,26 +107,29 @@ public class GuideUseCaseTest {
     @Test
     @DisplayName("도움말을 생성한다.")
     void createGuideTest() {
-        //given
-        long categoryId = 1L;
+        // given
+        long parentId = 1L;
+        long categoryId = 2L;
         String cryptoCategoryId = pkCrypto.encryptValue(categoryId);
-        Category category = new Category(null, "test", 1);
-        GuideDomain guideDomain = GuideDomain.builder()
+        Category parent = new Category(parentId, null, "카테고리 1", 1, false, null, null);
+        Category category = new Category(categoryId, parent, "카테고리 2", 2, false, null, null);
+        Guide guide = Guide.builder()
                 .content("test")
-                .categoryId(categoryId)
+                .category(category)
                 .build();
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
                 .content("test")
+                .categoryId(categoryId)
                 .build();
 
-        given(categoryGetService.getCategory(guideDomain.getCategoryId())).willReturn(Optional.of(category));
-        given(guideCreateService.createGuide(any(GuideDomain.class), eq(category)))
-                .willReturn(guideDomain);
-        given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(new PkResponse(cryptoCategoryId));
-        //when
+        given(categoryGetService.getCategory(categoryId)).willReturn(Optional.of(category));
+        given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
+        given(guideMapper.guideIdToPkResponse(guide)).willReturn(new PkResponse(cryptoCategoryId));
+
+        // when
         PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, cryptoCategoryId);
 
-        //then
+        // then
         assertEquals(cryptoCategoryId, response.id());
     }
 
@@ -135,7 +139,7 @@ public class GuideUseCaseTest {
         // given
         long guideId = 1L;
         String cryptoGuideId = pkCrypto.encryptValue(guideId);
-        GuideDomain guideDomain = GuideDomain.builder()
+        Guide guideDomain = Guide.builder()
                 .guideId(1L)
                 .content("수정된 도움말")
                 .build();
@@ -145,6 +149,7 @@ public class GuideUseCaseTest {
                 .build();
         given(guideUpdateService.updateGuide(cryptoGuideId, guideUpdateRequest)).willReturn(guideDomain);
         given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(new PkResponse(cryptoGuideId));
+
         // when
         PkResponse response = guideUpdateUseCase.modifyGuide(cryptoGuideId, guideUpdateRequest);
 
