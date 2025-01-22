@@ -6,6 +6,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
+@Schema(description = "티켓 전체 조회 응답 DTO", name = "티켓 전체 조회 응답")
 public record TicketAllGetResponse(
         @Schema(description = "티켓 id", example = "ouqJF8uKst63ZPA2T70jda")
         String id,

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Builder
+@Schema(description = "티켓 페이징 응답 DTO", name = "티켓 페이징 응답")
 public record TicketAllGetPagingResponse(
         @Schema(description = "티켓 정보 목록")
         List<TicketAllGetResponse> tickets,

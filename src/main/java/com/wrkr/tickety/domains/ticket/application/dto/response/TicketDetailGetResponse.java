@@ -6,6 +6,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
+@Schema(description = "티켓 상세 조회 응답 DTO", name = "티켓 상세 조회 응답")
 public record TicketDetailGetResponse(
         @Schema(description = "티켓 id", example = "Bqs3C822lkMNdWlmE-szUw")
         String id,
@@ -16,7 +17,7 @@ public record TicketDetailGetResponse(
         @Schema(description = "티켓 내용", example = "티켓 내용")
         String content,
 
-        @Schema(description = "티켓 상태", example = "OPEN")
+        @Schema(description = "티켓 상태", example = "요청")
         String status,
 
         @Schema(description = "요청자", example = "라이언")

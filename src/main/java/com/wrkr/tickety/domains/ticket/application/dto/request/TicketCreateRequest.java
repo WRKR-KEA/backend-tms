@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
+@Schema(description = "티켓 생성 요청 DTO", name = "티켓 생성 요청")
 public record TicketCreateRequest(
 
         @Schema(description = "티켓 제목", example = "티켓 제목")
