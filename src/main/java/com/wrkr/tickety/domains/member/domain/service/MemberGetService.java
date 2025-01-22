@@ -1,19 +1,22 @@
 package com.wrkr.tickety.domains.member.domain.service;
 
-import com.wrkr.tickety.domains.member.persistence.entity.Member;
-import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
-import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
-import com.wrkr.tickety.global.exception.ApplicationException;
+import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberGetService {
-    private final MemberRepository memberRepository;
 
-    public Member byMemberId(Long memberId) {
-        return memberRepository.findById(memberId)
+    private final MemberPersistenceAdapter memberPersistenceAdapter;
+
+    public Optional<Member> getUserById(Long userId) {
+        return memberPersistenceAdapter.findById(userId)
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }

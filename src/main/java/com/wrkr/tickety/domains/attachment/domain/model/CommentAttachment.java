@@ -2,43 +2,38 @@ package com.wrkr.tickety.domains.attachment.domain.model;
 
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
+import com.wrkr.tickety.global.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 
-@Entity
 @Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
-@Table(name = "comment_attachment")
-public class CommentAttachment extends BaseTimeEntity {
+public class CommentAttachment extends BaseTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attachmentId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
-
-    @Column(nullable = false)
     private String fileUrl;
-
-    @Column(nullable = false)
     private String fileName;
-
-    @Column(nullable = false)
     private Long fileSize;
 
     @Builder
-    public CommentAttachment(Comment comment, String fileUrl, String fileName, Long fileSize) {
+    public CommentAttachment(
+            Long attachmentId,
+            Comment comment,
+            String fileUrl,
+            String fileName,
+            Long fileSize
+    ) {
+        this.attachmentId = attachmentId;
         this.comment = comment;
         this.fileUrl = fileUrl;
         this.fileName = fileName;
         this.fileSize = fileSize;
     }
 }
-
