@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryGetAllResponseDTO;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.TemplateGetService;
 
 import java.util.List;

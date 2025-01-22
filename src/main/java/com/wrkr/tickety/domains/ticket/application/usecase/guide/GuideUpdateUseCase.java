@@ -4,7 +4,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateReques
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.GuideMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideUpdateService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import lombok.RequiredArgsConstructor;
 

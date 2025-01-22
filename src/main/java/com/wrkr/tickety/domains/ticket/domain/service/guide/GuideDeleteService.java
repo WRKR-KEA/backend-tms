@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.domain.service.Guide;
+package com.wrkr.tickety.domains.ticket.domain.service.guide;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;

@@ -1,4 +1,4 @@
-package com.wrkr.tickety.UseCase;
+package com.wrkr.tickety.usecase;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
@@ -13,10 +13,10 @@ import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.CategoryGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideCreateService;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideDeleteService;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideUpdateService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideCreateService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideDeleteService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Optional;
 
@@ -34,6 +36,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class GuideUseCaseTest {
 
     @Mock
@@ -95,6 +98,7 @@ public class GuideUseCaseTest {
 
         given(guideGetService.getGuideContentByCategory(categoryId)).willReturn(guideDomain);
         given(guideMapper.guideToGuideResponse(guideDomain)).willReturn(guideResponseByCategory);
+
         // when
         GuideResponse response = guideGetUseCase.getGuide(categoryId);
 

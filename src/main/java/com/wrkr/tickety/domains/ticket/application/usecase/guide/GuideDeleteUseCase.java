@@ -1,13 +1,10 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.guide;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideDeleteService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideDeleteService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 
 @UseCase
 @RequiredArgsConstructor

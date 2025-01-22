@@ -1,4 +1,4 @@
-package com.wrkr.tickety.Service;
+package com.wrkr.tickety.service;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
