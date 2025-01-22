@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.ticket.domain.service;
 
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
-import com.wrkr.tickety.domains.ticket.persistence.repository.CategoryRepository;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.CategoryPersistenceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +12,14 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class CategoryGetService {
-    private final CategoryRepository categoryRepository;
+
+    private final CategoryPersistenceAdapter categoryPersistenceAdapter;
 
     public List<Category> byIsDeleted() {
-        return categoryRepository.findByIsDeletedFalse();
+        return categoryPersistenceAdapter.findByIsDeletedFalse();
     }
+
     public Optional<Category> getCategory(Long categoryId) {
-        return categoryRepository.findById(categoryId);
+        return categoryPersistenceAdapter.findById(categoryId);
     }
 }
