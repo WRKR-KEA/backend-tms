@@ -1,6 +1,6 @@
-package com.wrkr.tickety.domains.ticket.application.dto.response;
+package com.wrkr.tickety.domains.ticket.application.dto.response.category;
 
-public record CategoryGetAllResponseDTO(
+public record CategoryGetAllResponse(
         Long categoryId,
         String name,
         Integer seq,

@@ -1,6 +1,6 @@
-package com.wrkr.tickety.domains.ticket.application.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryGetAllResponseDTO;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
@@ -19,7 +19,7 @@ public class CategoryGetAllUseCase {
     private final GuideGetService guideGetService;
     private final TemplateGetService templateGetService;
 
-    public List<CategoryGetAllResponseDTO> getAllCategories() {
+    public List<CategoryGetAllResponse> getAllCategories() {
         List<Category> categoryList = categoryGetService.byIsDeleted();
         return CategoryMapper.mapToCategoryGetAllResponseDTO(categoryList, guideGetService, templateGetService);
     }
