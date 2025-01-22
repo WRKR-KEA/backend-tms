@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.TicketSaveService;
-import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,14 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TicketServiceTest {
 
     @Mock
-    private TicketRepository ticketRepository;
+    private TicketPersistenceAdapter ticketPersistenceAdapter;
 
     @InjectMocks
     private TicketSaveService ticketSaveService;
@@ -61,7 +61,6 @@ public class TicketServiceTest {
         // given
         Category category = Category.builder()
                 .name("VM")
-                .code("VM-001")
                 .seq(1)
                 .build();
 
@@ -75,7 +74,7 @@ public class TicketServiceTest {
                 .content("티켓 내용")
                 .build();
 
-        when(ticketRepository.save(ticket)).thenReturn(ticket);
+        when(ticketPersistenceAdapter.save(ticket)).thenReturn(ticket);
 
         // when
         Ticket savedTicket = ticketSaveService.save(ticket);
@@ -84,6 +83,6 @@ public class TicketServiceTest {
         assertThat(savedTicket).isNotNull();
         assertThat(savedTicket.getSerialNumber()).isEqualTo("12345678");
         assertThat(savedTicket.getTitle()).isEqualTo("티켓 제목");
-        verify(ticketRepository, times(1)).save(ticket);
+        verify(ticketPersistenceAdapter, times(1)).save(ticket);
     }
 }
