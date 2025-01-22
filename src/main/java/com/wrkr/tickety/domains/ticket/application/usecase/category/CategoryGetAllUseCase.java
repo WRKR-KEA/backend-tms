@@ -15,14 +15,25 @@ import java.util.List;
 @UseCase
 @RequiredArgsConstructor
 public class CategoryGetAllUseCase {
+
     private final CategoryGetService categoryGetService;
     private final GuideGetService guideGetService;
     private final TemplateGetService templateGetService;
 
     public List<CategoryGetAllResponse> getAllCategories() {
+
         List<Category> categoryList = categoryGetService.byIsDeleted();
-        return CategoryMapper.mapToCategoryGetAllResponseDTO(categoryList, guideGetService, templateGetService);
+        List<CategoryGetAllResponse> categoryGetAllResponseList = CategoryMapper.mapToCategoryGetAllResponseDTO(categoryList);
+
+        return categoryGetAllResponseList.stream()
+                .map(category -> CategoryGetAllResponse.builder()
+                            .categoryId(category.categoryId())
+                            .name(category.name())
+                            .seq(category.seq())
+                            .isExistsGuide(guideGetService.existsByCategoryId(category.categoryId()))
+                            .isExistsTemplate(templateGetService.existsByCategoryId(category.categoryId()))
+                            .build())
+                .toList();
+
     }
-
-
 }

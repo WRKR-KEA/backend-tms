@@ -1,5 +1,8 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response.category;
 
+import lombok.Builder;
+
+@Builder
 public record CategoryGetAllResponse(
         Long categoryId,
         String name,
@@ -7,4 +10,5 @@ public record CategoryGetAllResponse(
         Boolean isExistsGuide,
         Boolean isExistsTemplate
 ) {
+
 }
