@@ -1,9 +1,8 @@
-package com.wrkr.tickety.domains.ticket.domain.model;
+package com.wrkr.tickety.domains.ticket.persistence.entity;
 
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
-import com.wrkr.tickety.domains.ticket.persistence.entity.CategoryEntity;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
-import com.wrkr.tickety.global.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,27 +11,34 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 
+@Entity
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Guide extends BaseTime {
+@DynamicInsert
+@Table(name = "guide")
+public class GuideEntity extends BaseTimeEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long guideId;
-    private Category category;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity category;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Builder
-    public Guide(
+    public GuideEntity(
             Long guideId,
-            Category category,
+            CategoryEntity category,
             String content
     ) {
         this.guideId = guideId;
         this.category = category;
         this.content = content;
     }
-
-    public void updateContent(String content) {
-        this.content = content;
-    }
 }
+

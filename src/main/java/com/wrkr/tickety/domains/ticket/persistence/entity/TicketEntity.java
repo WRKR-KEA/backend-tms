@@ -1,9 +1,10 @@
-package com.wrkr.tickety.domains.ticket.domain.model;
+package com.wrkr.tickety.domains.ticket.persistence.entity;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
-import com.wrkr.tickety.global.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,27 +14,53 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
+@Entity
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ticket extends BaseTime {
+@DynamicInsert
+@Table(name = "ticket")
+public class TicketEntity extends BaseTimeEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ticketId;
-    private Member user;
-    private Member manager;
-    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private MemberEntity user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private MemberEntity manager;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity category;
+
+    @Column(nullable = false, unique = true)
     private String serialNumber;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TicketStatus status;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
     private Boolean isPinned;
 
     @Builder
-    public Ticket(
+    public TicketEntity(
             Long ticketId,
-            Member user,
-            Member manager,
-            Category category,
+            MemberEntity user,
+            MemberEntity manager,
+            CategoryEntity category,
             String serialNumber,
             String title,
             String content,
@@ -51,7 +78,5 @@ public class Ticket extends BaseTime {
         this.isPinned = isPinned;
     }
 
-    public void updateStatus(TicketStatus status) {
-        this.status = status;
-    }
 }
+

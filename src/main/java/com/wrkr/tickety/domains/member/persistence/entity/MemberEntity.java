@@ -1,35 +1,74 @@
-package com.wrkr.tickety.domains.member.domain.model;
+package com.wrkr.tickety.domains.member.persistence.entity;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
-import com.wrkr.tickety.global.model.BaseTime;
+import com.wrkr.tickety.global.entity.BaseTimeEntity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
+@Entity
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTime {
+@DynamicInsert
+@Table(name = "member")
+public class MemberEntity extends BaseTimeEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
+
+    @Column(nullable = false, length = 50)
     private String nickname;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, length = 50)
     private String name;
+
+    @Column(nullable = false, length = 50)
     private String phone;
+
+    @Column(nullable = false, length = 50)
     private String email;
+
+    @Column(nullable = false, length = 50)
     private String position;
+
+    @Column(nullable = false)
     private String profileImage;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column
     private String agitUrl;
+
+    @Column(nullable = false)
+    @ColumnDefault("1")
     private Boolean agitNotification;
+
+    @Column(nullable = false)
+    @ColumnDefault("1")
     private Boolean emailNotification;
+
+    @Column(nullable = false)
+    @ColumnDefault("1")
     private Boolean serviceNotification;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
     private Boolean isDeleted;
 
     @Builder
-    public Member(
+    public MemberEntity(
             Long memberId,
             String nickname,
             String password,
