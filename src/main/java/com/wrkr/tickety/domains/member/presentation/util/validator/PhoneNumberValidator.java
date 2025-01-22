@@ -1,6 +1,7 @@
-package com.wrkr.tickety.domains.member.presentation.util;
+package com.wrkr.tickety.domains.member.presentation.util.validator;
 
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
+import com.wrkr.tickety.domains.member.presentation.util.annotation.PhoneNumberFormat;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

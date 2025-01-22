@@ -1,5 +1,6 @@
-package com.wrkr.tickety.domains.member.presentation.util;
+package com.wrkr.tickety.domains.member.presentation.util.annotation;
 
+import com.wrkr.tickety.domains.member.presentation.util.validator.EmailValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
