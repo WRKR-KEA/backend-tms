@@ -1,13 +1,13 @@
 package com.wrkr.tickety.domains.member.presentation.util.annotation;
 
-import com.wrkr.tickety.domains.member.presentation.util.validator.PhoneNumberValidator;
+import com.wrkr.tickety.domains.member.presentation.util.validator.PhoneFormatValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = PhoneNumberValidator.class)
+@Constraint(validatedBy = PhoneFormatValidator.class)
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PhoneNumberFormat {

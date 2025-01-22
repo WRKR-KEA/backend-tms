@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.regex.Pattern;
 
-public class PhoneNumberValidator implements ConstraintValidator<PhoneNumberFormat, String> {
+public class PhoneFormatValidator implements ConstraintValidator<PhoneNumberFormat, String> {
     private static final String PHONE_NUMBER_REGEX = "^010-\\d{4}-\\d{4}$";
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(PHONE_NUMBER_REGEX);
 

@@ -1,13 +1,13 @@
 package com.wrkr.tickety.domains.member.presentation.util.annotation;
 
-import com.wrkr.tickety.domains.member.presentation.util.validator.EmailValidator;
+import com.wrkr.tickety.domains.member.presentation.util.validator.EmailFormatValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = EmailValidator.class)
+@Constraint(validatedBy = EmailFormatValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EmailFormat {
