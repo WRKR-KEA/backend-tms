@@ -1,8 +1,10 @@
 package com.wrkr.tickety.domains.member.application.dto.request;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
-import com.wrkr.tickety.domains.member.presentation.util.EmailFormat;
-import com.wrkr.tickety.domains.member.presentation.util.PhoneNumberFormat;
+import com.wrkr.tickety.domains.member.presentation.util.annotation.EmailFormat;
+import com.wrkr.tickety.domains.member.presentation.util.annotation.ExistEmail;
+import com.wrkr.tickety.domains.member.presentation.util.annotation.ExistNickname;
+import com.wrkr.tickety.domains.member.presentation.util.annotation.PhoneNumberFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -14,6 +16,7 @@ public record MemberCreateRequest(
         @Schema(description = "이메일", example = "wrkr@gachon.ac.kr")
         @NotBlank(message = "이메일은 공백일 수 없습니다.")
         @EmailFormat
+        @ExistEmail
         String email,
 
         @Schema(description = "이름", example = "김가천")
@@ -22,6 +25,7 @@ public record MemberCreateRequest(
 
         @Schema(description = "닉네임", example = "gachon.km")
         @NotBlank(message = "닉네임은 공백일 수 없습니다.")
+        @ExistNickname
         String nickname,
 
         @Schema(description = "부서", example = "백엔드 개발팀")
