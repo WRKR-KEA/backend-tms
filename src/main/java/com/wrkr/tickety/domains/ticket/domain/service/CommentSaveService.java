@@ -22,6 +22,8 @@ public class CommentSaveService {
 		return commentRepository.save(newComment).getCommentId();
 	}
 
+	//TODO: 담당자 변경 시 호출
+	// Ticket 엔티티 변경 후 isSystem 필드에 대한 정의 추가 필요
 	public Long saveSystemComment(Ticket ticket, String content) {
 		Comment newComment = Comment.builder()
 				.ticket(ticket)

@@ -25,13 +25,19 @@ public class CommentController {
 	@Operation(summary = "코멘트 작성", description = "티켓에 대해 코멘트를 작성합니다.")
 	public ApplicationResponse<CommentIdResponse> createComment(@PathVariable String ticketId, @RequestBody CommentRequest request) {
 
-		return ApplicationResponse.onSuccess(commentCreateUseCase.createComment(Member.builder().build(), PkCrypto.decrypt(ticketId), request));
+		//TODO: 헤더에서 회원 정보 추출
+		Member member = Member.builder().build();
+
+		return ApplicationResponse.onSuccess(commentCreateUseCase.createComment(member, PkCrypto.decrypt(ticketId), request));
 	}
 
 	@GetMapping("/api/user/tickets/{ticketId}/comments")
 	@Operation(summary = "코멘트 내역 조회", description = "티켓에 대해 코멘트 내역을 조회합니다.")
 	public ApplicationResponse<CommentResponse> getComment(@PathVariable String ticketId) {
 
-		return ApplicationResponse.onSuccess(commentGetUseCase.getComment(Member.builder().build(), PkCrypto.decrypt(ticketId)));
+		//TODO: 헤더에서 회원 정보 추출
+		Member member = Member.builder().build();
+
+		return ApplicationResponse.onSuccess(commentGetUseCase.getComment(member, PkCrypto.decrypt(ticketId)));
 	}
 }
