@@ -1,8 +1,8 @@
 package com.wrkr.tickety.domains.member.application.dto.request;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
-import com.wrkr.tickety.domains.member.presentation.util.EmailFormat;
-import com.wrkr.tickety.domains.member.presentation.util.PhoneNumberFormat;
+import com.wrkr.tickety.domains.member.presentation.util.annotation.EmailFormat;
+import com.wrkr.tickety.domains.member.presentation.util.annotation.PhoneNumberFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

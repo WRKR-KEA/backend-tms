@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.member.application.mapper;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
-import com.wrkr.tickety.domains.member.persistence.entity.Member;
+import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.springframework.stereotype.Component;
 
