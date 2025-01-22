@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.domain.constant.EmailConstants;
-import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.persistence.entity.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberCreateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;

@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.model;
 
-import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.persistence.entity.Member;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
