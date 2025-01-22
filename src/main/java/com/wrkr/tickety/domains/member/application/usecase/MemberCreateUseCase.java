@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.domain.constant.EmailConstants;
-import com.wrkr.tickety.domains.member.persistence.entity.Member;
+import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberCreateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
@@ -21,10 +21,10 @@ public class MemberCreateUseCase {
     private final MemberCreateService memberCreateService;
     private final EmailCreateUseCase emailCreateUseCase; // TODO: UseCase간 서로 참조하도록 해도 되는지 고민 필요
 
-    public MemberPkResponse createMember(MemberCreateRequest reqDTO) {
+    public MemberPkResponse createMember(MemberCreateRequest memberCreateRequest) {
         String tempPassword = UUIDGenerator.generateUUID().substring(0, 12);
         String encryptedPassword = PkCrypto.encrypt(tempPassword);
-        Member createdMember = memberCreateService.createMember(MemberMapper.toMember(reqDTO, encryptedPassword));
+        Member createdMember = memberCreateService.createMember(MemberMapper.toMember(memberCreateRequest, encryptedPassword));
 
         EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateReqDTO(createdMember.getEmail(), EmailConstants.TEMP_PASSWORD_SUBJECT, null);
         emailCreateUseCase.sendMail(emailCreateRequest, tempPassword, EmailConstants.TYPE_PASSWORD);
