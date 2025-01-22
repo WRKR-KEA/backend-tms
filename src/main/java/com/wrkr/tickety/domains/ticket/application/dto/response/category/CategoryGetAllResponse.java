@@ -1,13 +1,20 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response.category;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
+@Schema(description = "카테고리 전체 조회 응답 DTO", name = "CategoryGetAllResponse")
 public record CategoryGetAllResponse(
+        @Schema(description = "카테고리 ID", example = "Bqs3C822lkMNdWlmE-szUw")
         Long categoryId,
+        @Schema(description = "카테고리 이름", example = "vm")
         String name,
+        @Schema(description = "카테고리 순서", example = "1")
         Integer seq,
+        @Schema(description = "해당 카테고리 가이드 존재 여부", example = "true")
         Boolean isExistsGuide,
+        @Schema(description = "해당 카테고리 템플릿 존재 여부", example = "false")
         Boolean isExistsTemplate
 ) {
 
