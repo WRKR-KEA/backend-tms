@@ -19,7 +19,7 @@ public class ExcelFile<T> {
 
   private SXSSFWorkbook wb;
   private Sheet sheet;
-  private ExcelMetaData<T> excelMetaData; 
+  private ExcelMetaData<T> excelMetaData;
 
   public ExcelFile(List<T> data, Class<T> type) {
     validateMaxRow(data);
@@ -54,16 +54,16 @@ public class ExcelFile<T> {
   private void renderHeaders(Sheet sheet, int rowIndex, int columnStartIndex) {
     Row row = sheet.createRow(rowIndex);
     int columnIndex = columnStartIndex;
-    for (String dataFieldName : excelMetaData.getDataFieldNames()) { // excelMetaData 사용
+    for (String dataFieldName : excelMetaData.getDataFieldNames()) {
       Cell cell = row.createCell(columnIndex++);
-      cell.setCellValue(excelMetaData.getExcelHeaderName(dataFieldName)); // excelMetaData 사용
+      cell.setCellValue(excelMetaData.getExcelHeaderName(dataFieldName));
     }
   }
 
   private void renderBody(T data, int rowIndex, int columnStartIndex) {
     Row row = sheet.createRow(rowIndex);
     int columnIndex = columnStartIndex;
-    for (String dataFieldName : excelMetaData.getDataFieldNames()) { // excelMetaData 사용
+    for (String dataFieldName : excelMetaData.getDataFieldNames()) {
       Cell cell = row.createCell(columnIndex++);
       try {
         Field field = getField(data.getClass(), dataFieldName);
@@ -76,7 +76,7 @@ public class ExcelFile<T> {
   }
 
   private void renderCellValue(Cell cell, Object cellValue) {
-    if (cellValue instanceof Number) { // (4)
+    if (cellValue instanceof Number) {
       Number numberValue = (Number) cellValue;
       cell.setCellValue(numberValue.doubleValue());
       return;
@@ -100,7 +100,7 @@ public class ExcelFile<T> {
       try {
         return clazz.getDeclaredField(fieldName);
       } catch (NoSuchFieldException e) {
-        clazz = clazz.getSuperclass(); // 상위 클래스로 이동
+        clazz = clazz.getSuperclass();
       }
     }
     throw new NoSuchFieldException("Field " + fieldName + " not found in class " + clazz);
