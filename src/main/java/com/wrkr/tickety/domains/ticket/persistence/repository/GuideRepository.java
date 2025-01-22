@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface GuideRepository extends JpaRepository<GuideEntity, Long> {
-    Optional<Guide> findByCategory_CategoryId(Long category_id);
 
+    Optional<GuideEntity> findByCategory_CategoryId(Long category_id);
     Boolean existsByCategory_CategoryId(Long categoryId);
 }

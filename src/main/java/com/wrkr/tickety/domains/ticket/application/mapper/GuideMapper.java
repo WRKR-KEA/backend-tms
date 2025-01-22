@@ -3,6 +3,7 @@ package com.wrkr.tickety.domains.ticket.application.mapper;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
+import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ public class GuideMapper {
                 .build();
     }
 
-    public PkResponse guideIdToPkResponse(GuideDomain guideDomain) {
-        return new PkResponse(PkCrypto.encrypt(guideDomain.getGuideId()));
+    public PkResponse guideIdToPkResponse(Guide guide) {
+        return new PkResponse(PkCrypto.encrypt(guide.getGuideId()));
     }
 }
