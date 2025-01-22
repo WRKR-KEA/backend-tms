@@ -9,11 +9,13 @@ import com.wrkr.tickety.domains.ticket.domain.service.template.TemplateGetServic
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 
 @UseCase
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CategoryGetAllUseCase {
 
