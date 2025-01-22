@@ -39,7 +39,7 @@ public class TicketCreateUseCase {
 
     public PkResponse createTicket(TicketCreateRequest request, Long userId) {
         Category category = categoryGetService.getCategory(decrypt(request.categoryId()))
-            .orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+            .orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST));
 
         Member member = UserGetService.getUserById(userId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
