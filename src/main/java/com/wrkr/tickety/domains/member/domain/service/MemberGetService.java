@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.member.domain.service;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
+import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +13,9 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class MemberGetService {
 
-    private final MemberRepository memberRepository;
+    private final MemberPersistenceAdapter memberPersistenceAdapter;
 
     public Optional<Member> getUserById(Long userId) {
-        return memberRepository.findById(userId);
+        return memberPersistenceAdapter.findById(userId);
     }
 }
