@@ -21,12 +21,14 @@ public class CategoryPersistenceAdapter {
 
     public Optional<Category> findById(final Long categoryId) {
         final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findById(categoryId);
+        if(categoryEntity.isEmpty()) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST);
+        }
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
     }
 
     public List<Category> findByIsDeletedFalse() {
-        final List<CategoryEntity> categoryEntities = categoryRepository.findByIsDeletedFalse()
-                .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+        final List<CategoryEntity> categoryEntities = categoryRepository.findByIsDeletedFalse();
         return categoryEntities.stream()
                 .map(this.categoryPersistenceMapper::toDomain)
                 .toList();
