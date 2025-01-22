@@ -29,7 +29,7 @@ public class MemberController {
     // TODO: 해당 컨트롤러 모든 API에 헤더 토큰으로 요청한 회원 PK 추출 및 권한이 관리자인지 검증 필요
     // TODO: Image 처리 방식 논의 필요(Multipart or ImageUrl DTO로 바로 받기)
     @Operation(summary = "관리자 - 회원 등록", description = "회원을 등록 시 이메일로 임시 비밀번호를 발급합니다.")
-    @CustomErrorCodes({MemberErrorCode.INVALID_EMAIL_FORMAT, MemberErrorCode.INVALID_PHONE_FORMAT, MemberErrorCode.INVALID_ROLE})
+    @CustomErrorCodes({MemberErrorCode.INVALID_EMAIL_FORMAT, MemberErrorCode.ALREADY_EXIST_EMAIL, MemberErrorCode.INVALID_PHONE_FORMAT, MemberErrorCode.INVALID_ROLE})
     @PostMapping("/admin/members")
     public ApplicationResponse<MemberPkResponse> createMember(@RequestBody @Valid MemberCreateRequest memberCreateRequest) {
         MemberPkResponse memberIdDTO = memberCreateUseCase.createMember(memberCreateRequest);
