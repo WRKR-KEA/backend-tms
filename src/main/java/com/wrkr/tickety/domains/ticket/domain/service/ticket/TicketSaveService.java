@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.domain.service;
+package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;

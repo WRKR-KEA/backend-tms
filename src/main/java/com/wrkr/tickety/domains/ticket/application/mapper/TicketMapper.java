@@ -7,7 +7,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetR
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
-import com.wrkr.tickety.domains.ticket.domain.service.TicketHistoryGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 
 import java.time.LocalDateTime;

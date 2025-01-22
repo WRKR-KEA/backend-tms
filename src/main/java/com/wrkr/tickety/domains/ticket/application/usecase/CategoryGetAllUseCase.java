@@ -3,9 +3,9 @@ package com.wrkr.tickety.domains.ticket.application.usecase;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryGetAllResponseDTO;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
-import com.wrkr.tickety.domains.ticket.domain.service.CategoryGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.TemplateGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.template.TemplateGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import lombok.RequiredArgsConstructor;
 
