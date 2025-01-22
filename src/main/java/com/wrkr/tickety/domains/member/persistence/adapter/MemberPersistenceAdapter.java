@@ -16,8 +16,22 @@ public class MemberPersistenceAdapter {
     private final MemberRepository memberRepository;
     private final MemberPersistenceMapper memberPersistenceMapper;
 
-    public Optional<Member> findById(final Long userId) {
-        final Optional<MemberEntity> memberEntity = this.memberRepository.findById(userId);
+    public Member save(final Member member) {
+        MemberEntity memberEntity = this.memberPersistenceMapper.toEntity(member);
+        MemberEntity savedEntity = this.memberRepository.save(memberEntity);
+        return this.memberPersistenceMapper.toDomain(savedEntity);
+    }
+
+    public Optional<Member> findById(final Long memberId) {
+        final Optional<MemberEntity> memberEntity = this.memberRepository.findById(memberId);
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
+    }
+
+    public Boolean existsByEmail(final String email) {
+        return this.memberRepository.existsByEmail(email);
+    }
+
+    public Boolean existsByNickname(final String nickname) {
+        return this.memberRepository.existsByNickname(nickname);
     }
 }
