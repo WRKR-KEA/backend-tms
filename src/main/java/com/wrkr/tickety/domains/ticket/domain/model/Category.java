@@ -1,53 +1,46 @@
 package com.wrkr.tickety.domains.ticket.domain.model;
 
-import com.wrkr.tickety.global.entity.BaseTimeEntity;
+import com.wrkr.tickety.domains.ticket.persistence.entity.CategoryEntity;
+import com.wrkr.tickety.global.model.BaseTime;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
+@SuperBuilder
 @Table(name = "category")
-public class Category extends BaseTimeEntity {
+public class Category extends BaseTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
     private Category parent;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
     private Integer seq;
-
-    @Column(nullable = false)
-    @ColumnDefault("0")
     private Boolean isDeleted;
-
-    @Column
     private LocalDateTime deletedAt;
-
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Category> children = new ArrayList<>();
+    private List<Category> children;
 
     @Builder
-    public Category(Category parent, String name, Integer seq) {
+    public Category(
+            Long categoryId,
+            Category parent,
+            String name,
+            Integer seq,
+            Boolean isDeleted,
+            LocalDateTime deletedAt,
+            List<Category> children
+    ) {
+        this.categoryId = categoryId;
         this.parent = parent;
         this.name = name;
         this.seq = seq;
+        this.isDeleted = isDeleted;
+        this.deletedAt = deletedAt;
+        this.children = children != null ? children : new ArrayList<>();
     }
 }

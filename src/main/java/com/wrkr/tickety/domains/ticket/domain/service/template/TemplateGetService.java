@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.domain.service;
+package com.wrkr.tickety.domains.ticket.domain.service.template;
 
 import com.wrkr.tickety.domains.ticket.persistence.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;

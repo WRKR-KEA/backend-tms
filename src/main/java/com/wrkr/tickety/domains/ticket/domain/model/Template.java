@@ -1,33 +1,32 @@
 package com.wrkr.tickety.domains.ticket.domain.model;
 
+import com.wrkr.tickety.domains.ticket.persistence.entity.CategoryEntity;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
+import com.wrkr.tickety.global.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 
-@Entity
 @Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
-@Table(name = "template")
-public class Template extends BaseTimeEntity {
+public class Template extends BaseTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long templateId;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Builder
-    public Template(Category category, String content) {
+    public Template(
+            Long templateId,
+            Category category,
+            String content
+    ) {
+        this.templateId = templateId;
         this.category = category;
         this.content = content;
     }

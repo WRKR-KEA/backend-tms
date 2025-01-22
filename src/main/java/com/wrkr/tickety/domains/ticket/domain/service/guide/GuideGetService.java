@@ -1,9 +1,9 @@
-package com.wrkr.tickety.domains.ticket.domain.service.Guide;
+package com.wrkr.tickety.domains.ticket.domain.service.guide;
 
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
-import com.wrkr.tickety.domains.ticket.persistence.repository.GuideRepository;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.GuidePersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.AllArgsConstructor;
@@ -15,18 +15,18 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class GuideGetService {
 
-    private final GuideRepository guideRepository;
+    private final GuidePersistenceAdapter guidePersistenceAdapter;
 
     public GuideDomain getGuideContentByCategory(String cryptoCategoryId) {
         long categoryId = PkCrypto.decrypt(cryptoCategoryId);
-        Guide guideEntity = guideRepository.findByCategory_CategoryId(categoryId)
+        Guide guideEntity = guidePersistenceAdapter.findByCategoryId(categoryId)
                 .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
 
         return GuideDomain.toDomain(guideEntity);
     }
 
     public Boolean existsByCategoryId(Long categoryId) {
-        return guideRepository.existsByCategory_CategoryId(categoryId);
+        return guidePersistenceAdapter.existsByCategoryId(categoryId);
     }
 
 }

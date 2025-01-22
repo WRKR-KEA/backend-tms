@@ -1,7 +1,7 @@
-package com.wrkr.tickety.domains.ticket.domain.service;
+package com.wrkr.tickety.domains.ticket.domain.service.tickethistory;
 
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
-import com.wrkr.tickety.domains.ticket.persistence.repository.TicketHistoryRepository;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketHistoryPersistenceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TicketHistorySaveService {
 
-    private final TicketHistoryRepository ticketHistoryRepository;
+    private final TicketHistoryPersistenceAdapter ticketHistoryPersistenceAdapter;
 
     public void save(TicketHistory ticketHistory) {
-        ticketHistoryRepository.save(ticketHistory);
+        ticketHistoryPersistenceAdapter.save(ticketHistory);
     }
 }

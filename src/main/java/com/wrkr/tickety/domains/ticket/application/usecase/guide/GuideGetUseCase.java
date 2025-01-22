@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.ticket.application.usecase.guide;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.GuideMapper;
 import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
-import com.wrkr.tickety.domains.ticket.domain.service.Guide.GuideGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import lombok.RequiredArgsConstructor;
 
