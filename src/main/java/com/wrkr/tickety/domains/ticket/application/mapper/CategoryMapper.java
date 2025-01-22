@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
+import com.wrkr.tickety.global.utils.PkCrypto;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class CategoryMapper {
 
         return categoryList.stream()
                 .map(category -> CategoryGetAllResponse.builder()
-                        .categoryId(category.getCategoryId())
+                        .categoryId(PkCrypto.encrypt(category.getCategoryId()))
                         .name(category.getName())
                         .seq(category.getSeq())
                         .isExistsGuide(null)

@@ -7,7 +7,7 @@ import lombok.Builder;
 @Schema(description = "카테고리 전체 조회 응답 DTO", name = "CategoryGetAllResponse")
 public record CategoryGetAllResponse(
         @Schema(description = "카테고리 ID", example = "Bqs3C822lkMNdWlmE-szUw")
-        Long categoryId,
+        String categoryId,
         @Schema(description = "카테고리 이름", example = "vm")
         String name,
         @Schema(description = "카테고리 순서", example = "1")

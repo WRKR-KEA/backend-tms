@@ -7,6 +7,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetServic
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.template.TemplateGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -30,8 +31,8 @@ public class CategoryGetAllUseCase {
                             .categoryId(category.categoryId())
                             .name(category.name())
                             .seq(category.seq())
-                            .isExistsGuide(guideGetService.existsByCategoryId(category.categoryId()))
-                            .isExistsTemplate(templateGetService.existsByCategoryId(category.categoryId()))
+                            .isExistsGuide(guideGetService.existsByCategoryId(PkCrypto.decrypt(category.categoryId())))
+                            .isExistsTemplate(templateGetService.existsByCategoryId(PkCrypto.decrypt(category.categoryId())))
                             .build())
                 .toList();
 
