@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketPersistenceMapper;
@@ -7,6 +8,7 @@ import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -32,4 +34,9 @@ public class TicketPersistenceAdapter {
         final Optional<TicketEntity> ticketEntity = this.ticketRepository.findById(ticketId);
         return ticketEntity.map(this.ticketPersistenceMapper::toDomain);
     }
+
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status, final boolean isPinned) {
+        return ticketRepository.findByManagerFilters(managerId, status, isPinned, pageable).map(this.ticketPersistenceMapper::toDomain);
+    }
+
 }
