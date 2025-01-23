@@ -107,6 +107,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    jvmArgs '-Xshare:off'
 }
 
 // doFrist를 통한 Header 설정
