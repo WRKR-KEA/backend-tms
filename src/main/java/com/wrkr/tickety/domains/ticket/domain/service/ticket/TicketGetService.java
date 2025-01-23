@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,15 @@ public class TicketGetService {
 
     public Optional<Ticket> getTicketByTicketId(Long ticketId) {
         return ticketPersistenceAdapter.findById(ticketId);
+    }
+
+    public Page<Ticket>getTicketsByManagerFilter(Long managerId, Pageable pageable, String status, boolean isPinned) {
+        //todo: status로 필터링 하지 않을 때 어떤 값으로 요청할지 정의 필요
+        if (status == null) {
+            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, isPinned);
+        }
+        TicketStatus ticketStatus = TicketStatus.valueOf(status);
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, ticketStatus, isPinned);
+
     }
 }
