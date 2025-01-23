@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.application.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;

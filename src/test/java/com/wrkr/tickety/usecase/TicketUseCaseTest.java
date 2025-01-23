@@ -13,10 +13,10 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateReque
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
-import com.wrkr.tickety.domains.ticket.application.usecase.TicketAllGetUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.TicketCancelUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.TicketCreateUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.TicketDetailGetUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;

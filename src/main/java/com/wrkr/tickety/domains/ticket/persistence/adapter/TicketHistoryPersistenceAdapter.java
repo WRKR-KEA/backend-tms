@@ -24,7 +24,6 @@ public class TicketHistoryPersistenceAdapter {
         return this.ticketHistoryPersistenceMapper.toDomain(savedEntity);
     }
 
-
     public Optional<TicketHistory> findFirstByTicketIdAndModifiedOrderByCreatedAtAsc(Long ticketId, ModifiedType modifiedType) {
         TicketHistoryEntity ticketHistoryEntity = ticketHistoryRepository.findFirstByTicket_TicketIdAndModifiedOrderByCreatedAtAsc(
                 ticketId,
