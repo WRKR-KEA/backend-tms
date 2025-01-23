@@ -1,5 +1,12 @@
 package com.wrkr.tickety.usecase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
@@ -28,12 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -86,15 +87,14 @@ public class GuideUseCaseTest {
         String categoryId = "1";
 
         GuideDomain guideDomain = GuideDomain.builder()
-                .guideId(1L)
-                .content("테스트 도움말")
-                .build();
+            .guideId(1L)
+            .content("테스트 도움말")
+            .build();
 
         GuideResponse guideResponseByCategory = GuideResponse.builder()
-                .content("테스트 도움말")
-                .guideId("W1NMMfAHGTnNGLdRL3lvcw==")
-                .build();
-
+            .content("테스트 도움말")
+            .guideId("W1NMMfAHGTnNGLdRL3lvcw==")
+            .build();
 
         given(guideGetService.getGuideContentByCategory(categoryId)).willReturn(guideDomain);
         given(guideMapper.guideToGuideResponse(guideDomain)).willReturn(guideResponseByCategory);
@@ -118,17 +118,18 @@ public class GuideUseCaseTest {
         Category parent = new Category(parentId, null, "카테고리 1", 1, false, null, null);
         Category category = new Category(categoryId, parent, "카테고리 2", 2, false, null, null);
         Guide guide = Guide.builder()
-                .content("test")
-                .category(category)
-                .build();
+            .content("test")
+            .category(category)
+            .build();
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
-                .content("test")
-                .categoryId(categoryId)
-                .build();
+            .content("test")
+            .categoryId(categoryId)
+            .build();
 
-        given(categoryGetService.getCategory(categoryId)).willReturn(Optional.of(category));
+        given(categoryGetService.getCategory(categoryId)).willReturn(category);
         given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
-        given(guideMapper.guideIdToPkResponse(guide)).willReturn(new PkResponse(cryptoCategoryId));
+        given(guideMapper.guideIdToPkResponse(guide)).willReturn(
+            PkResponse.builder().id(cryptoCategoryId).build());
 
         // when
         PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, cryptoCategoryId);
@@ -144,15 +145,17 @@ public class GuideUseCaseTest {
         long guideId = 1L;
         String cryptoGuideId = pkCrypto.encryptValue(guideId);
         Guide guideDomain = Guide.builder()
-                .guideId(1L)
-                .content("수정된 도움말")
-                .build();
+            .guideId(1L)
+            .content("수정된 도움말")
+            .build();
 
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
-                .content("수정된 도움말")
-                .build();
-        given(guideUpdateService.updateGuide(cryptoGuideId, guideUpdateRequest)).willReturn(guideDomain);
-        given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(new PkResponse(cryptoGuideId));
+            .content("수정된 도움말")
+            .build();
+        given(guideUpdateService.updateGuide(cryptoGuideId, guideUpdateRequest)).willReturn(
+            guideDomain);
+        given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(
+            new PkResponse(cryptoGuideId));
 
         // when
         PkResponse response = guideUpdateUseCase.modifyGuide(cryptoGuideId, guideUpdateRequest);

@@ -80,6 +80,14 @@ public class TicketUseCaseTest {
 
     private Member user;
     private Category category;
+    private Ticket ticket;
+
+    private static final Long USER_ID = 1L;
+    private static final Long TICKET_ID = 1L;
+    private static final Long TICKET_CATEGORY_ID = 1L;
+    private static final String TICKET_SERIAL = "#12345678";
+    private static final String TICKET_TITLE = "티켓 제목";
+    private static final String TICKET_CONTENT = "티켓 내용";
 
     @BeforeAll
     static void init() {
@@ -90,7 +98,7 @@ public class TicketUseCaseTest {
     @BeforeEach
     void setUp() {
         user = Member.builder()
-            .memberId(1L)
+            .memberId(USER_ID)
             .password("password")
             .nickname("사용자")
             .email("email@naver.com")
@@ -100,32 +108,30 @@ public class TicketUseCaseTest {
             .build();
 
         category = Category.builder()
-            .categoryId(1L)
+            .categoryId(TICKET_CATEGORY_ID)
             .name("카테고리")
             .seq(1)
             .build();
 
+        ticket = Ticket.builder()
+            .ticketId(TICKET_ID)
+            .user(user)
+            .title(TICKET_TITLE)
+            .content(TICKET_CONTENT)
+            .serialNumber(TICKET_SERIAL)
+            .status(TicketStatus.REQUEST)
+            .category(category)
+            .build();
     }
 
     @Test
     @DisplayName("사용자가 요청한 티켓이 저장되면 저장된 티켓 정보를 검증한다")
     void createTicket() {
         // given
-        Long userId = 1L;
         TicketCreateRequest ticketCreateRequest = TicketCreateRequest.builder()
             .title("티켓 제목")
             .content("티켓 내용")
-            .categoryId(PkCrypto.encrypt(1L))
-            .build();
-
-        Ticket ticket = Ticket.builder()
-            .ticketId(1L)
-            .user(user)
-            .title(ticketCreateRequest.title())
-            .content(ticketCreateRequest.content())
-            .serialNumber("#12345678")
-            .status(TicketStatus.REQUEST)
-            .category(category)
+            .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
         given(categoryGetService.getCategory(anyLong())).willReturn(category);
@@ -133,7 +139,7 @@ public class TicketUseCaseTest {
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
         // when
-        PkResponse pkResponse = ticketCreateUseCase.createTicket(ticketCreateRequest, userId);
+        PkResponse pkResponse = ticketCreateUseCase.createTicket(ticketCreateRequest, USER_ID);
         // then
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.id()).isEqualTo(PkCrypto.encrypt(1L));
@@ -147,18 +153,7 @@ public class TicketUseCaseTest {
     @DisplayName("사용자가 요청했던 티켓들에 페이지네이션을 적용해서 전체 조회한다")
     void getTickets() {
         // given
-        Long userId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
-
-        Ticket ticket = Ticket.builder()
-            .ticketId(1L)
-            .user(user)
-            .title("티켓 제목")
-            .content("티켓 내용")
-            .serialNumber("#12345678")
-            .status(TicketStatus.REQUEST)
-            .category(category)
-            .build();
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
         given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(
@@ -169,7 +164,7 @@ public class TicketUseCaseTest {
 
         //when
         TicketAllGetPagingResponse ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(
-            userId, pageable);
+            USER_ID, pageable);
 
         //then
         assertThat(ticketAllGetPagingResponse).isNotNull();
@@ -186,25 +181,12 @@ public class TicketUseCaseTest {
     @DisplayName("사용자가 요청한 특정 티켓을 조회한다")
     void getTicket() {
         // given
-        Long userId = 1L;
-        Long ticketId = 1L;
-
-        Ticket ticket = Ticket.builder()
-            .ticketId(ticketId)
-            .category(category)
-            .content("티켓 내용")
-            .serialNumber("#12345678")
-            .title("티켓 제목")
-            .status(TicketStatus.REQUEST)
-            .user(user)
-            .build();
-
         given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(
             LocalDateTime.now());
 
         // when
-        TicketDetailGetResponse response = ticketDetailGetUseCase.getTicket(userId, ticketId);
+        TicketDetailGetResponse response = ticketDetailGetUseCase.getTicket(USER_ID, TICKET_ID);
 
         // then
         assertThat(response).isNotNull();
@@ -220,21 +202,8 @@ public class TicketUseCaseTest {
     @DisplayName("사용자가 요청했던 특정 티켓을 취소한다")
     void cancelTicket() {
         // given
-        Long userId = 1L;
-        Long ticketId = 1L;
-
-        Ticket ticket = Ticket.builder()
-            .ticketId(ticketId)
-            .category(category)
-            .content("티켓 내용")
-            .serialNumber("#12345678")
-            .title("티켓 제목")
-            .status(TicketStatus.REQUEST)
-            .user(user)
-            .build();
-
         Ticket updatedTicket = Ticket.builder()
-            .ticketId(ticketId)
+            .ticketId(TICKET_ID)
             .category(category)
             .content("티켓 내용")
             .serialNumber("#12345678")
@@ -249,7 +218,7 @@ public class TicketUseCaseTest {
             updatedTicket);
 
         // when
-        PkResponse pkResponse = ticketCancelUseCase.cancelTicket(userId, ticketId);
+        PkResponse pkResponse = ticketCancelUseCase.cancelTicket(USER_ID, TICKET_ID);
 
         // then
         assertThat(pkResponse).isNotNull();
