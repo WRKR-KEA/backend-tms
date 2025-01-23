@@ -1,9 +1,11 @@
 package com.wrkr.tickety.domains.member.persistence.adapter;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.member.persistence.mapper.MemberPersistenceMapper;
 import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +25,8 @@ public class MemberPersistenceAdapter {
     }
 
     public Optional<Member> findById(final Long memberId) {
-        final Optional<MemberEntity> memberEntity = this.memberRepository.findById(memberId);
+        final Optional<MemberEntity> memberEntity = Optional.ofNullable(this.memberRepository.findById(memberId)
+                .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
     }
 
