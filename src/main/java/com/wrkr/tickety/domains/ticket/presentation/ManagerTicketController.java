@@ -26,11 +26,12 @@ public class ManagerTicketController {
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) boolean isPinned) {
+            @RequestParam(required = false) String search
+            ) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        TicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, status, isPinned);
+        TicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, status,search);
 
         return ResponseEntity.ok(ApplicationResponse.onSuccess(ticketAllGetPagingResponse));
     }

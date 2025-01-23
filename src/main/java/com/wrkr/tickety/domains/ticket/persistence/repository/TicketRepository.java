@@ -18,12 +18,13 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
                 FROM TicketEntity t
                 WHERE t.manager.memberId = :managerId
                   AND (:status IS NULL OR t.status = :status)
-                ORDER BY CASE WHEN :isPinned = TRUE THEN t.isPinned END DESC, t.ticketId ASC
+                  AND (:search IS NULL OR t.serialNumber LIKE %:search% OR t.content LIKE %:search%)
+                ORDER BY  t.isPinned
             """)
     Page<TicketEntity> findByManagerFilters(
             @Param("managerId") Long managerId,
             @Param("status") TicketStatus status,
-            @Param("isPinned") Boolean isPinned,
-            Pageable pageable
+            Pageable pageable,
+            @Param("search") String search
     );
 }

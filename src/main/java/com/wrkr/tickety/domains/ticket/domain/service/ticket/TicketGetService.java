@@ -26,13 +26,12 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 
-    public Page<Ticket>getTicketsByManagerFilter(Long managerId, Pageable pageable, String status, boolean isPinned) {
-        //todo: status로 필터링 하지 않을 때 어떤 값으로 요청할지 정의 필요
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, String status, String search) {
         if (status == null) {
-            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, isPinned);
+            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, search);
         }
         TicketStatus ticketStatus = TicketStatus.valueOf(status);
-        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, ticketStatus, isPinned);
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, ticketStatus, search);
 
     }
 }

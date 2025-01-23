@@ -8,6 +8,7 @@ import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,15 @@ public class ManagerTicketAllGetUseCaseTest {
     @Mock
     private TicketGetService ticketGetService;
 
+    @Mock
+    private PkCrypto pkCrypto; // Mock 객체 생성
+
+    @BeforeEach
+    void setUp() {
+        PkCrypto.setInstance(pkCrypto);
+    }
+
+
     @Test
     @DisplayName("담당자의 티켓 목록을 조회한다.")
     void getManagerTickets() {
@@ -50,6 +60,7 @@ public class ManagerTicketAllGetUseCaseTest {
         Long managerId = 1L;
         int page = 0;
         int size = 10;
+        String search = "search";
         Pageable pageable = PageRequest.of(page, size);
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         List<Ticket> tickets = List.of(
@@ -58,13 +69,12 @@ public class ManagerTicketAllGetUseCaseTest {
                 Ticket.builder().ticketId(3L).status(TicketStatus.IN_PROGRESS).user(requestMember).build()
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
-        boolean isPinned = false;
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest, 3);
         when(memberGetService.getUserById(managerId)).thenReturn(Optional.of(member));
-        when(PkCrypto.decrypt(cryptoManagerId)).thenReturn(managerId);
-        given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, isPinned)).willReturn(ticketsPage);
+        when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
+        given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
         // when
-        TicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(cryptoManagerId, pageable, null, isPinned);
+        TicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(cryptoManagerId, pageable, null, search);
         // then
         assertEquals(3, ticketAllGetPagingResponse.tickets().size());
     }

@@ -22,14 +22,14 @@ public class ManagerTicketAllGetUseCase {
     private final MemberGetService memberGetService;
     private final TicketGetService ticketGetService;
 
-    public TicketAllGetPagingResponse getManagerTicketList(String cryptoManagerId, Pageable pageable, String status, boolean isPinned) {
+    public TicketAllGetPagingResponse getManagerTicketList(String cryptoManagerId, Pageable pageable, String status,String search) {
 
         Long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
         memberGetService.getUserById(managerId)
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable,status,isPinned);
+        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable,status,search);
 
         Page<ManagerTicketAllGetResponse> mappedPage = ticketsPage.map(TicketMapper::toManagerTicketAllGetResponse);
 

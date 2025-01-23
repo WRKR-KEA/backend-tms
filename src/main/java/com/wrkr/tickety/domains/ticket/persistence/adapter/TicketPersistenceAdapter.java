@@ -8,7 +8,6 @@ import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -35,8 +34,8 @@ public class TicketPersistenceAdapter {
         return ticketEntity.map(this.ticketPersistenceMapper::toDomain);
     }
 
-    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status, final boolean isPinned) {
-        return ticketRepository.findByManagerFilters(managerId, status, isPinned, pageable).map(this.ticketPersistenceMapper::toDomain);
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status,final String search) {
+        return ticketRepository.findByManagerFilters(managerId, status, pageable, search).map(this.ticketPersistenceMapper::toDomain);
     }
 
 }
