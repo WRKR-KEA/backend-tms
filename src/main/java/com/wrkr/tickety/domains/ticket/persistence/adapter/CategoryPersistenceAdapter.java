@@ -33,4 +33,10 @@ public class CategoryPersistenceAdapter {
                 .map(this.categoryPersistenceMapper::toDomain)
                 .toList();
     }
+
+    public Category save(final Category category) {
+        final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(category);
+        final CategoryEntity savedCategoryEntity = this.categoryRepository.save(categoryEntity);
+        return this.categoryPersistenceMapper.toDomain(savedCategoryEntity);
+    }
 }
