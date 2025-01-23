@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.application.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
@@ -26,12 +26,12 @@ public class TicketAllGetUseCase {
 
     public TicketAllGetPagingResponse getAllTickets(Long userId, Pageable pageable) {
         memberGetService.getUserById(userId)
-                .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Page<Ticket> ticketsPage = ticketGetService.getTicketsByUserId(userId, pageable);
 
         Page<TicketAllGetResponse> mappedPage = ticketsPage.map(ticket ->
-                TicketMapper.toTicketAllGetResponse(ticket, ticketHistoryGetService)
+            TicketMapper.toTicketAllGetResponse(ticket, ticketHistoryGetService)
         );
 
         return TicketAllGetPagingResponse.from(mappedPage);
