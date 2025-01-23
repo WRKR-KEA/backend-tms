@@ -7,7 +7,7 @@ import java.util.List;
 
 public record TicketAllGetPagingResponse(
         @Schema(description = "티켓 정보 목록")
-        List<TicketAllGetResponse> tickets,
+        List<? extends TicketListResponse> tickets,
 
         @Schema(description = "현재 페이지", example = "1")
         int currentPage,
@@ -21,7 +21,7 @@ public record TicketAllGetPagingResponse(
         @Schema(description = "페이지 크기", example = "10")
         int size
 ) {
-    public static TicketAllGetPagingResponse from(Page<TicketAllGetResponse> page) {
+    public static TicketAllGetPagingResponse from(Page<? extends TicketListResponse> page) {
         return new TicketAllGetPagingResponse(
                 page.getContent(),
                 page.getNumber() + 1,
