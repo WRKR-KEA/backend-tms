@@ -26,7 +26,7 @@ public class MemberCreateUseCase {
         String encryptedPassword = PkCrypto.encrypt(tempPassword);
         Member createdMember = memberCreateService.createMember(MemberMapper.toMember(memberCreateRequest, encryptedPassword));
 
-        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateReqDTO(createdMember.getEmail(), EmailConstants.TEMP_PASSWORD_SUBJECT, null);
+        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(createdMember.getEmail(), EmailConstants.TEMP_PASSWORD_SUBJECT, null);
         emailCreateUseCase.sendMail(emailCreateRequest, tempPassword, EmailConstants.TYPE_PASSWORD);
 
         return MemberMapper.toMemberPkResponse(PkCrypto.encrypt(createdMember.getMemberId()));

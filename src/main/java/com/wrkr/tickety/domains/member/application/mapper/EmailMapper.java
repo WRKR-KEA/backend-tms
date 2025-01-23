@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailMapper {
     
-    public static EmailCreateRequest toEmailCreateReqDTO(
+    public static EmailCreateRequest toEmailCreateRequest(
             String to, String subject, String message
             )
     {
