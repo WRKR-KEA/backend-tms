@@ -15,6 +15,7 @@ public enum TicketErrorCode implements BaseErrorCode {
     TICKET_NOT_REQUEST_STATUS(HttpStatus.BAD_REQUEST, "TICKET_004", "요청 상태가 아닌 티켓은 취소할 수 없습니다."),
     TICKET_MANAGER_NOT_MATCH(HttpStatus.BAD_REQUEST, "TICKET_005", "해당 티켓의 담당자가 아닙니다."),
     TICKET_MANAGER_NOT_FOUND(HttpStatus.BAD_REQUEST, "TICKET_006", "해당 티켓의 담당자를 찾을 수 없습니다."),
+    TICKET_STATUS_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "TICKET_007", "진행 중인 티켓이 아닙니다."),
     ;
 
     private final HttpStatus httpStatus;
