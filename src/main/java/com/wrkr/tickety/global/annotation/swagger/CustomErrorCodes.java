@@ -16,6 +16,6 @@ public @interface CustomErrorCodes {
 
     CommonErrorCode[] commonErrorCodes() default {};
 
-    MemberErrorCode[] value();
+//    MemberErrorCode[] value();
     GuideErrorCode[] value();
 }
