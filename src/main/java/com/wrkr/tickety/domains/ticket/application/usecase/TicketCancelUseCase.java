@@ -26,8 +26,7 @@ public class TicketCancelUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
 
     public PkResponse cancelTicket(Long userId, Long ticketId) {
-        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId)
-                .orElseThrow(() -> new ApplicationException(TicketErrorCode.TICKET_NOT_FOUND));
+        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (!ticket.getUser().getMemberId().equals(userId)) {
             throw new ApplicationException(TicketErrorCode.TICKET_NOT_BELONG_TO_USER);
@@ -38,7 +37,8 @@ public class TicketCancelUseCase {
 
         Ticket updatedTicket = TicketUpdateService.updateStatus(ticket, TicketStatus.CANCEL);
 
-        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(updatedTicket, ModifiedType.STATUS);
+        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(updatedTicket,
+            ModifiedType.STATUS);
         ticketHistorySaveService.save(ticketHistory);
 
         return new PkResponse(PkCrypto.encrypt(updatedTicket.getTicketId()));

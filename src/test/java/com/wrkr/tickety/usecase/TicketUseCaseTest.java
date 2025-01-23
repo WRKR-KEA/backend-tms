@@ -128,8 +128,7 @@ public class TicketUseCaseTest {
             .category(category)
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(
-            java.util.Optional.of(category));
+        given(categoryGetService.getCategory(anyLong())).willReturn(category);
         given(memberGetService.getUserById(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
@@ -200,8 +199,7 @@ public class TicketUseCaseTest {
             .user(user)
             .build();
 
-        given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(
-            java.util.Optional.of(ticket));
+        given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(
             LocalDateTime.now());
 
@@ -245,8 +243,7 @@ public class TicketUseCaseTest {
             .user(user)
             .build();
 
-        given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(
-            java.util.Optional.of(ticket));
+        given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
         given(ticketUpdateService.updateStatus(any(Ticket.class),
             any(TicketStatus.class))).willReturn(
             updatedTicket);

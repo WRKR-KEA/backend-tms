@@ -1,5 +1,9 @@
 package com.wrkr.tickety.domains.ticket.application.usecase;
 
+import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.mapToTicket;
+import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
+import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
+
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
@@ -12,20 +16,13 @@ import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
-import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
+import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-
-
-import java.util.UUID;
-
-import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.mapToTicket;
-import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
-import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 
 @UseCase
 @RequiredArgsConstructor
@@ -38,8 +35,7 @@ public class TicketCreateUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
 
     public PkResponse createTicket(TicketCreateRequest request, Long userId) {
-        Category category = categoryGetService.getCategory(decrypt(request.categoryId()))
-            .orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Category category = categoryGetService.getCategory(decrypt(request.categoryId()));
 
         Member member = UserGetService.getUserById(userId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -51,7 +47,8 @@ public class TicketCreateUseCase {
         Ticket savedTicket = ticketSaveService.save(ticket);
 
         ModifiedType modifiedType = ModifiedType.STATUS;
-        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket, modifiedType);
+        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket,
+            modifiedType);
         ticketHistorySaveService.save(ticketHistory);
 
         return new PkResponse(encrypt(savedTicket.getTicketId()));
