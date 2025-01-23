@@ -67,6 +67,13 @@ dependencies {
     // Devtools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+    //Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //thymeleaf(for email service)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
 

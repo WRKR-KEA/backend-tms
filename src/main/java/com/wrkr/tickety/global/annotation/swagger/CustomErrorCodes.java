@@ -1,5 +1,6 @@
 package com.wrkr.tickety.global.annotation.swagger;
 
+import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
@@ -15,5 +16,6 @@ public @interface CustomErrorCodes {
 
     CommonErrorCode[] commonErrorCodes() default {};
 
+//    MemberErrorCode[] value();
     GuideErrorCode[] value();
 }
