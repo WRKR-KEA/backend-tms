@@ -7,9 +7,11 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
+@Transactional
 public class GuideUpdateUseCase {
 
     private final GuideUpdateService guideService;

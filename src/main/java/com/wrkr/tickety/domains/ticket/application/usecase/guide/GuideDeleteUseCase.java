@@ -5,9 +5,11 @@ import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideDeleteService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
+@Transactional
 public class GuideDeleteUseCase {
 
     private final GuideDeleteService guideDeleteService;

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Guide Controller")
-@RequestMapping("/guide")
 public class GuideController {
     private final GuideCreateUseCase guideCreateUseCase;
     private final GuideUpdateUseCase guideUpdateUseCase;

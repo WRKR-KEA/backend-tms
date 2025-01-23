@@ -1,6 +1,5 @@
 package com.wrkr.tickety.domains.ticket.domain.service.guide;
 
-import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.GuidePersistenceAdapter;
@@ -17,12 +16,14 @@ public class GuideGetService {
 
     private final GuidePersistenceAdapter guidePersistenceAdapter;
 
-    public GuideDomain getGuideContentByCategory(String cryptoCategoryId) {
-        long categoryId = PkCrypto.decrypt(cryptoCategoryId);
-        Guide guideEntity = guidePersistenceAdapter.findByCategoryId(categoryId)
-                .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
+    public Guide getGuideContentByCategory(String cryptoCategoryId) {
 
-        return GuideDomain.toDomain(guideEntity);
+        long categoryId = PkCrypto.decrypt(cryptoCategoryId);
+
+        Guide guide = guidePersistenceAdapter.findByCategoryId(categoryId)
+            .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
+
+        return guide;
     }
 
     public Boolean existsByCategoryId(Long categoryId) {
