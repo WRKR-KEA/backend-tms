@@ -8,10 +8,9 @@ import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistor
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @UseCase
 @RequiredArgsConstructor
@@ -23,14 +22,14 @@ public class TicketDetailGetUseCase {
 
 
     public TicketDetailGetResponse getTicket(Long userId, Long ticketId) {
-        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId)
-                .orElseThrow(() -> new ApplicationException(TicketErrorCode.TICKET_NOT_FOUND));
+        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (!ticket.getUser().getMemberId().equals(userId)) {
             throw new ApplicationException(TicketErrorCode.UNAUTHORIZED_ACCESS);
         }
 
-        LocalDateTime firstManagerChangeDate = ticketHistoryGetService.getFirstManagerChangeDate(ticket.getTicketId());
+        LocalDateTime firstManagerChangeDate = ticketHistoryGetService.getFirstManagerChangeDate(
+            ticket.getTicketId());
 
         return TicketMapper.toTicketDetailGetResponse(ticket, firstManagerChangeDate);
     }
