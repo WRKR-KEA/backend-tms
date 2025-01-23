@@ -2,16 +2,12 @@ package com.wrkr.tickety.domains.ticket.domain.model;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
-import com.wrkr.tickety.global.entity.BaseTimeEntity;
 import com.wrkr.tickety.global.model.BaseTime;
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @SuperBuilder
@@ -30,15 +26,15 @@ public class Ticket extends BaseTime {
 
     @Builder
     public Ticket(
-            Long ticketId,
-            Member user,
-            Member manager,
-            Category category,
-            String serialNumber,
-            String title,
-            String content,
-            TicketStatus status,
-            Boolean isPinned
+        Long ticketId,
+        Member user,
+        Member manager,
+        Category category,
+        String serialNumber,
+        String title,
+        String content,
+        TicketStatus status,
+        Boolean isPinned
     ) {
         this.ticketId = ticketId;
         this.user = user;
@@ -53,5 +49,9 @@ public class Ticket extends BaseTime {
 
     public void updateStatus(TicketStatus status) {
         this.status = status;
+    }
+
+    public void updateManager(Member manager) {
+        this.manager = manager;
     }
 }
