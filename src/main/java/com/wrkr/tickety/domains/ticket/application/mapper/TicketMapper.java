@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -61,6 +62,18 @@ public class TicketMapper {
                 ticket.getCreatedAt(),
                 ticket.getUpdatedAt(),
                 firstManagerChangeDate
+        );
+    }
+
+    public static ManagerTicketAllGetResponse toManagerTicketAllGetResponse(Ticket ticket) {
+        return new ManagerTicketAllGetResponse(
+                PkCrypto.encrypt(ticket.getTicketId()),
+                ticket.getSerialNumber(),
+                ticket.getTitle(),
+                ticket.getStatus().getDescription(),
+                ticket.getUser().getName(),
+                ticket.getCreatedAt(),
+                ticket.getUpdatedAt()
         );
     }
 }
