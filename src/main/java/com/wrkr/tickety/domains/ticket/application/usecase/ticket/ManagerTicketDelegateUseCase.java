@@ -17,8 +17,6 @@ import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ManagerTicketDelegateUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(ManagerTicketDelegateUseCase.class);
     private final TicketGetService ticketGetService;
     private final TicketUpdateService ticketUpdateService;
     private final TicketHistorySaveService ticketHistorySaveService;
@@ -42,6 +39,10 @@ public class ManagerTicketDelegateUseCase {
             .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
+
+        if (ticket.getManager() == null) {
+            throw ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_FOUND);
+        }
 
         if (!ticket.getManager().getMemberId().equals(currentManagerId)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_MATCH);
