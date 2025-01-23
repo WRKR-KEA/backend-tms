@@ -25,7 +25,7 @@ public class TicketDetailGetUseCase {
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (!ticket.getUser().getMemberId().equals(userId)) {
-            throw new ApplicationException(TicketErrorCode.UNAUTHORIZED_ACCESS);
+            throw ApplicationException.from(TicketErrorCode.UNAUTHORIZED_ACCESS);
         }
 
         LocalDateTime firstManagerChangeDate = ticketHistoryGetService.getFirstManagerChangeDate(

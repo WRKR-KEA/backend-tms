@@ -31,7 +31,7 @@ public class TicketPersistenceAdapter {
 
     public Ticket findById(final Long ticketId) {
         final TicketEntity ticketEntity = this.ticketRepository.findById(ticketId)
-            .orElseThrow(() -> new ApplicationException(TicketErrorCode.TICKET_NOT_FOUND));
+            .orElseThrow(() -> ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND));
         return this.ticketPersistenceMapper.toDomain(ticketEntity);
     }
 }

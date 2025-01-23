@@ -19,7 +19,7 @@ public class CategoryPersistenceAdapter {
 
     public Category findById(final Long categoryId) {
         final CategoryEntity categoryEntity = this.categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_FOUND));
         return this.categoryPersistenceMapper.toDomain(categoryEntity);
     }
 

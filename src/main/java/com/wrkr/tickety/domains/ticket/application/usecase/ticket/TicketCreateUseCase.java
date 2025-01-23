@@ -38,7 +38,7 @@ public class TicketCreateUseCase {
         Category category = categoryGetService.getCategory(decrypt(request.categoryId()));
 
         Member member = UserGetService.getUserById(userId)
-            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
 
         String serialNumber = generateSerialNumber();
         TicketStatus status = TicketStatus.REQUEST;

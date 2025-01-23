@@ -29,10 +29,10 @@ public class TicketCancelUseCase {
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (!ticket.getUser().getMemberId().equals(userId)) {
-            throw new ApplicationException(TicketErrorCode.TICKET_NOT_BELONG_TO_USER);
+            throw ApplicationException.from(TicketErrorCode.TICKET_NOT_BELONG_TO_USER);
         }
         if (!ticket.getStatus().equals(TicketStatus.REQUEST)) {
-            throw new ApplicationException(TicketErrorCode.TICKET_NOT_REQUEST_STATUS);
+            throw ApplicationException.from(TicketErrorCode.TICKET_NOT_REQUEST_STATUS);
         }
 
         Ticket updatedTicket = TicketUpdateService.updateStatus(ticket, TicketStatus.CANCEL);
