@@ -9,11 +9,13 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @UseCase
 @RequiredArgsConstructor
+@Transactional
 public class EmailCreateUseCase {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
@@ -38,7 +40,7 @@ public class EmailCreateUseCase {
 
     /**
      *
-     * @param code: 타임리프안의 변수
+     * @param code: 타임리프 내부에 매핑할 변수
      * @param type: html 파일 이름
      * @return
      */
