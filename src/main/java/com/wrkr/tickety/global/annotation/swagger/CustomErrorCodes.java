@@ -15,7 +15,6 @@ import java.lang.annotation.Target;
 public @interface CustomErrorCodes {
 
     CommonErrorCode[] commonErrorCodes() default {};
-
-//    MemberErrorCode[] value();
-    GuideErrorCode[] value();
+    MemberErrorCode[] memberErrorCodes() default {};
+    GuideErrorCode[] value() default {};
 }
