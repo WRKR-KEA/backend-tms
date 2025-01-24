@@ -14,11 +14,17 @@ public class CategoryGetService {
 
     private final CategoryPersistenceAdapter categoryPersistenceAdapter;
 
+    /**
+     * isDeleted 값이 false인 카테고리 목록을 조회한다.
+     */
     public List<Category> byIsDeleted() {
+
         return categoryPersistenceAdapter.findByIsDeletedFalse();
     }
 
     public Category getCategory(Long categoryId) {
+
         return categoryPersistenceAdapter.findById(categoryId);
     }
+
 }
