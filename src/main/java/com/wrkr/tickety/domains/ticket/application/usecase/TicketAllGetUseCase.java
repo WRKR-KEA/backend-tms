@@ -25,7 +25,7 @@ public class TicketAllGetUseCase {
     private final MemberGetService memberGetService;
 
     public TicketAllGetPagingResponse getAllTickets(Long userId, Pageable pageable) {
-        memberGetService.ByMemberId(userId)
+        memberGetService.byMemberId(userId)
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Page<Ticket> ticketsPage = ticketGetService.getTicketsByUserId(userId, pageable);

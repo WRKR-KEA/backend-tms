@@ -22,7 +22,7 @@ public class MemberUpdateUseCase {
     private final MemberGetService memberGetService;
 
     public MemberPkResponse modifyMemberInfo(String memberId, MemberUpdateRequest memberUpdateRequest) {
-        Optional<Member> findMember = memberGetService.ByMemberId(PkCrypto.decrypt(memberId));
+        Optional<Member> findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
         findMember.get().modifyMemberInfo(memberUpdateRequest);
         Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember.orElse(null));
@@ -32,7 +32,7 @@ public class MemberUpdateUseCase {
 
     public void softDeleteMember(List<String> memberIdList) {
         memberIdList.forEach(memberId -> {
-            Optional<Member> findMember = memberGetService.ByMemberId(PkCrypto.decrypt(memberId));
+            Optional<Member> findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
             findMember.get().modifyIsDeleted(true);
             Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember.orElse(null));

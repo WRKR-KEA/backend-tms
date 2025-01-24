@@ -15,7 +15,7 @@ public class MemberGetService {
 
     private final MemberPersistenceAdapter memberPersistenceAdapter;
 
-    public Optional<Member> ByMemberId(Long memberId) {
+    public Optional<Member> byMemberId(Long memberId) {
         return memberPersistenceAdapter.findById(memberId);
     }
 
