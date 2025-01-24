@@ -64,11 +64,11 @@ public class StatisticsByCategoryUseCase {
 
     private List<TicketCount> mappingTicketCount(List<Category> categoryList, StatisticsType type, LocalDate requestDate) {
 
-        List<Long> ticketCountBySecondCategory = getTicketCountByCategoryList(categoryList, type, requestDate);
+        List<Long> ticketCountByCategory = getTicketCountByCategoryList(categoryList, type, requestDate);
 
         return IntStream.range(0, categoryList.size())
             .mapToObj(index -> TicketCount.builder()
-                .count(ticketCountBySecondCategory.get(index))
+                .count(ticketCountByCategory.get(index))
                 .categoryId(pkCrypto.encryptValue(categoryList.get(index).getCategoryId()))
                 .categoryName(categoryList.get(index).getName()).build())
             .toList();
