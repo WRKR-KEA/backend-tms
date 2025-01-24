@@ -99,7 +99,7 @@ public class ManagerTicketUseCaseTest {
             .title(TICKET_TITLE)
             .content(TICKET_CONTENT)
             .serialNumber(TICKET_SERIAL)
-            .status(TicketStatus.REQUEST)
+            .status(TicketStatus.IN_PROGRESS)
             .category(category)
             .build();
     }
@@ -132,7 +132,7 @@ public class ManagerTicketUseCaseTest {
             .title(TICKET_TITLE)
             .content(TICKET_CONTENT)
             .serialNumber(TICKET_SERIAL)
-            .status(TicketStatus.REQUEST)
+            .status(TicketStatus.IN_PROGRESS)
             .category(category)
             .build();
 
