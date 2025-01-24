@@ -2,8 +2,6 @@ package com.wrkr.tickety.domains.member.domain.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
-import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +20,10 @@ public enum Role {
 
     @JsonCreator // Json -> Object, 역직렬화 수행하는 메서드
     public static Role from(String param) {
+        String upperParam = param.toUpperCase();
+
         for (Role role : Role.values()) {
-            if (role.getDescription().equals(param)) {
+            if (role.name().equals(upperParam)) {
                 return role;
             }
         }
