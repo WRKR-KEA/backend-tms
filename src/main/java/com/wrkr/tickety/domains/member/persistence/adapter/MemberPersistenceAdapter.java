@@ -32,8 +32,21 @@ public class MemberPersistenceAdapter {
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
     }
 
-    public Page<Member> pagingByRole(final Pageable pageable, final Role role) {
-        Page<MemberEntity> memberEntityPage = memberRepository.pagingByRole(pageable, role);
+    public Page<Member> searchMember(
+        final Pageable pageable,
+        final Role role,
+        final String email,
+        final String name,
+        final String department) {
+
+        Page<MemberEntity> memberEntityPage = memberRepository.searchMember(
+            pageable,
+            role,
+            email,
+            name,
+            department
+        );
+
         return memberEntityPage.map(this.memberPersistenceMapper::toDomain);
     }
 

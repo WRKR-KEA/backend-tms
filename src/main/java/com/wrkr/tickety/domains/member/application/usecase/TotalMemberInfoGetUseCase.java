@@ -21,10 +21,23 @@ public class TotalMemberInfoGetUseCase {
 
     private final MemberGetService memberGetService;
 
-    public MemberInfoPagingResponse getTotalMemberInfo(int page, int size, String role) {
+    public MemberInfoPagingResponse searchMemberInfo(
+        int page,
+        int size,
+        String role,
+        String email,
+        String name,
+        String department
+    ) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Member> memberPage = memberGetService.pagingByRole(pageable, Role.from(role));
+        Page<Member> memberPage = memberGetService.searchMember(
+            pageable,
+            Role.from(role),
+            email,
+            name,
+            department
+        );
         List<MemberInfoResponse> memberInfoResponseList = MemberMapper.toMemberInfoResponseList(memberPage.getContent());
 
         return MemberMapper.toMemberInfoPagingResponse(
