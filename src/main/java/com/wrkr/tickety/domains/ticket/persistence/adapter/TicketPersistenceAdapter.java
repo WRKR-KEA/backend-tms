@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +40,9 @@ public class TicketPersistenceAdapter {
     }
 
 
-    public Long getTicketCountByCategoryAndDateRange(final Long categoryId, final LocalDate start, final LocalDate end) {
+    public Long getTicketCountByCategoryAndDateRange(final Long categoryId,
+        final LocalDateTime start,
+        final LocalDateTime end) {
 
         return ticketRepository.getTicketCountByCategoryAndDateRange(categoryId, start, end);
     }

@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.ticket.persistence.repository;
 
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +14,6 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     Page<TicketEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT COUNT(t) FROM TicketEntity t WHERE t.category.categoryId = :categoryId AND t.createdAt >= :date AND t.createdAt < :end")
-    Long getTicketCountByCategoryAndDateRange(Long categoryId, LocalDate date, LocalDate end);
+    Long getTicketCountByCategoryAndDateRange(Long categoryId, LocalDateTime date, LocalDateTime end);
 
 }

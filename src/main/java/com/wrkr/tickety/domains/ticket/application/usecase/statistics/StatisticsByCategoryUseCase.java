@@ -7,11 +7,10 @@ import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.staticstics.StatisticsService;
-import com.wrkr.tickety.domains.ticket.exception.DateErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +27,9 @@ public class StatisticsByCategoryUseCase {
     private final CategoryGetService categoryGetService;
     private final PkCrypto pkCrypto;
 
-    public StatisticsByCategoryResponse getStatisticsByCategory(StatisticsType type, String date) {
+    public StatisticsByCategoryResponse getStatisticsByCategory(StatisticsType type, LocalDate requestDate) {
 
-        LocalDate requestDate;
-        try {
-            requestDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
-        } catch (Exception e) {
-            throw ApplicationException.from(DateErrorCode.INVALID_DATE_FORMAT);
-        }
+        LocalDateTime date = requestDate.atStartOfDay();
         List<Category> firstCategoryList = new ArrayList<>();
 
         List<Category> secondCategoryList = new ArrayList<>();
@@ -48,21 +42,21 @@ public class StatisticsByCategoryUseCase {
             }
         });
 
-        List<TicketCount> firstCategoryTicketCountList = mappingTicketCount(firstCategoryList, type, requestDate);
+        List<TicketCount> firstCategoryTicketCountList = mappingTicketCount(firstCategoryList, type, date);
 
-        List<TicketCount> secondCategoryTicketCountList = mappingTicketCount(secondCategoryList, type, requestDate);
+        List<TicketCount> secondCategoryTicketCountList = mappingTicketCount(secondCategoryList, type, date);
 
         StatisticData statisticData = StatisticData.builder()
             .FirstCategoryTicketCount(firstCategoryTicketCountList)
             .SecondCategoryTicketCount(secondCategoryTicketCountList).build();
 
         return StatisticsByCategoryResponse.builder()
-            .date(date)
+            .date(date.format(DateTimeFormatter.ISO_DATE))
             .statisticData(statisticData)
             .build();
     }
 
-    private List<TicketCount> mappingTicketCount(List<Category> categoryList, StatisticsType type, LocalDate requestDate) {
+    private List<TicketCount> mappingTicketCount(List<Category> categoryList, StatisticsType type, LocalDateTime requestDate) {
 
         List<Long> ticketCountByCategory = getTicketCountByCategoryList(categoryList, type, requestDate);
 
@@ -78,26 +72,31 @@ public class StatisticsByCategoryUseCase {
     /**
      * type에 따라 일별, 월별, 연별 티켓 수를 가져온다.
      */
-    private List<Long> getTicketCountByCategoryList(List<Category> categoryList, StatisticsType type, LocalDate requestDate) {
+    private List<Long> getTicketCountByCategoryList(List<Category> categoryList, StatisticsType type, LocalDateTime requestDateTime) {
 
         return categoryList.stream()
             .map(category -> switch (type) {
 
-                case StatisticsType.DAILY:
-                    LocalDate startOfNextDay = requestDate.plusDays(1);
-                    yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), requestDate, startOfNextDay);
+                case DAILY -> {
+                    LocalDateTime startOfDay = requestDateTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
+                    LocalDateTime startOfNextDay = startOfDay.plusDays(1);
+                    yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfDay, startOfNextDay);
+                }
 
-                case StatisticsType.MONTHLY:
-                    LocalDate startOfMonth = requestDate.withDayOfMonth(1);
-                    LocalDate startOfNextMonth = startOfMonth.plusMonths(1);
+                case MONTHLY -> {
+                    LocalDateTime startOfMonth = requestDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+                    LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfMonth, startOfNextMonth);
+                }
 
-                case StatisticsType.YEARLY:
-                    LocalDate startOfYear = requestDate.withDayOfYear(1);
-                    LocalDate startOfNextYear = startOfYear.plusYears(1);
+                case YEARLY -> {
+                    LocalDateTime startOfYear = requestDateTime.withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+                    LocalDateTime startOfNextYear = startOfYear.plusYears(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfYear, startOfNextYear);
+                }
 
             })
             .toList();
     }
+
 }
