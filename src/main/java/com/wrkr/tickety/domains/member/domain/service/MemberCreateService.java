@@ -6,24 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class MemberGetService {
-
+public class MemberCreateService {
     private final MemberPersistenceAdapter memberPersistenceAdapter;
 
-    public Optional<Member> byMemberId(Long memberId) {
-        return memberPersistenceAdapter.findById(memberId);
-    }
-
-    public Boolean existsByEmail(String email) {
-        return memberPersistenceAdapter.existsByEmail(email);
-    }
-
-    public Boolean existsByNickname(String nickname) {
-        return memberPersistenceAdapter.existsByNickname(nickname);
+    @Transactional
+    public Member createMember(Member member) {
+        return memberPersistenceAdapter.save(member);
     }
 }
