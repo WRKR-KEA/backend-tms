@@ -77,19 +77,19 @@ public class StatisticsByCategoryUseCase {
         return categoryList.stream()
             .map(category -> switch (type) {
 
-                case DAILY -> {
+                case daily -> {
                     LocalDateTime startOfDay = requestDateTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
                     LocalDateTime startOfNextDay = startOfDay.plusDays(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfDay, startOfNextDay);
                 }
 
-                case MONTHLY -> {
+                case monthly -> {
                     LocalDateTime startOfMonth = requestDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
                     LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfMonth, startOfNextMonth);
                 }
 
-                case YEARLY -> {
+                case yearly -> {
                     LocalDateTime startOfYear = requestDateTime.withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
                     LocalDateTime startOfNextYear = startOfYear.plusYears(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfYear, startOfNextYear);
