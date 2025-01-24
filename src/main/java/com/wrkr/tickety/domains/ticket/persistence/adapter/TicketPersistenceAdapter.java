@@ -40,10 +40,10 @@ public class TicketPersistenceAdapter {
     }
 
 
-    public Long getTicketCountByCategoryAndDateRange(final Long categoryId,
+    public Long findTicketCountByCategoryAndDateRange(final Long categoryId,
         final LocalDateTime start,
         final LocalDateTime end) {
 
-        return ticketRepository.getTicketCountByCategoryAndDateRange(categoryId, start, end);
+        return ticketRepository.findTicketCountByCategoryAndDateRange(categoryId, start, end);
     }
 }

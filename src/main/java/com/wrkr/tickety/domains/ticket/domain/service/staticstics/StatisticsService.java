@@ -13,7 +13,7 @@ public class StatisticsService {
 
     public Long getStatisticsByCategoryAndDateRange(Long categoryId, LocalDateTime startOfMonth, LocalDateTime startOfNextMonth) {
 
-        return ticketPersistenceAdapter.getTicketCountByCategoryAndDateRange(categoryId, startOfMonth, startOfNextMonth);
+        return ticketPersistenceAdapter.findTicketCountByCategoryAndDateRange(categoryId, startOfMonth, startOfNextMonth);
     }
 
 }
