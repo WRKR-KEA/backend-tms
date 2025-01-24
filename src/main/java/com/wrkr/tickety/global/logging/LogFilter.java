@@ -54,9 +54,7 @@ public class LogFilter extends OncePerRequestFilter {
         long end = System.currentTimeMillis();
         long ms = end - start;
 
-        ApplicationResponse<Object> applicationResponse = objectMapper.readValue(
-            responseWrapper.getContentInputStream(), new TypeReference<>() {
-            });
+        ApplicationResponse<Object> applicationResponse = objectMapper.readValue(responseWrapper.getContentInputStream(), new TypeReference<>() {});
         responseWrapper.copyBodyToResponse();
 
         String uri = URLDecoder.decode(requestWrapper.getRequestURI(), StandardCharsets.UTF_8);
@@ -105,9 +103,7 @@ public class LogFilter extends OncePerRequestFilter {
         for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
             String key = entry.getKey();
             String[] rawValue = entry.getValue();
-            String value = rawValue.length == 1
-                ? Arrays.asList(rawValue).getFirst()
-                : Arrays.toString(rawValue);
+            String value = rawValue.length == 1 ? Arrays.asList(rawValue).getFirst() : Arrays.toString(rawValue);
 
             map.put(key, value);
         }
