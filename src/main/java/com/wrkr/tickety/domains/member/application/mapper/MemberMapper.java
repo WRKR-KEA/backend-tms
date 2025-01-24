@@ -4,6 +4,7 @@ import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateReque
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPagingResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class MemberMapper {
                 .department(memberCreateRequest.department())
                 .position(memberCreateRequest.position())
                 .phone(memberCreateRequest.phone())
-                .role(memberCreateRequest.role())
+                .role(Role.from(memberCreateRequest.role()))
                 .profileImage(memberCreateRequest.profileImage())
                 .build();
     }

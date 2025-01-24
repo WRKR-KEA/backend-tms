@@ -28,6 +28,6 @@ public enum Role {
             }
         }
         log.error("Role.from() exception occur param: {}", param);
-        throw new ApplicationException(MemberErrorCode.INVALID_ROLE);
+        return null;
     }
 }
