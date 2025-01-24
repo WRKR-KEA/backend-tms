@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.ticket.application.mapper.CommentMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.CommentGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.TicketGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
@@ -24,7 +24,7 @@ public class CommentGetUseCase {
 
     public CommentResponse getComment(Member member, Long ticketId) {
 
-        Ticket ticket = ticketGetService.byId(ticketId);
+        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (ticket.isAccessibleBy(member)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);

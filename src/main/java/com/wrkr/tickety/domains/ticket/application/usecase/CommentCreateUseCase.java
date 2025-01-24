@@ -5,7 +5,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.CommentRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentIdResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.CommentSaveService;
-import com.wrkr.tickety.domains.ticket.domain.service.TicketGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.exception.CommentErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
@@ -24,7 +24,7 @@ public class CommentCreateUseCase {
 
     public CommentIdResponse createComment(Member member, Long ticketId, CommentRequest request) {
 
-        Ticket ticket = ticketGetService.byId(ticketId);
+        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (!ticket.isRelatedWith(member)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
