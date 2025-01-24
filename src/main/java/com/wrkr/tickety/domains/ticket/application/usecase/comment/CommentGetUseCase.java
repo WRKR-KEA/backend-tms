@@ -1,11 +1,11 @@
-package com.wrkr.tickety.domains.ticket.application.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.comment;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CommentMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
-import com.wrkr.tickety.domains.ticket.domain.service.CommentGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
@@ -30,7 +30,7 @@ public class CommentGetUseCase {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
         }
 
-        List<Comment> comments = commentGetService.byTicket(ticket);
+        List<Comment> comments = commentGetService.getCommentsByTicket(ticket);
 
         return CommentMapper.toCommentResponse(ticketId, comments);
     }

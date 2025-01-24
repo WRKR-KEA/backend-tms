@@ -1,10 +1,11 @@
-package com.wrkr.tickety.domains.ticket.application.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.comment;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.CommentRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentIdResponse;
+import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
-import com.wrkr.tickety.domains.ticket.domain.service.CommentSaveService;
+import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.exception.CommentErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
@@ -33,10 +34,16 @@ public class CommentCreateUseCase {
             throw ApplicationException.from(CommentErrorCode.TICKET_STATUS_INVALID_FOR_COMMENT);
         }
 
-        Long commentId = commentSaveService.saveComment(ticket, member, request.content());
+        Comment comment = Comment.builder()
+            .ticket(ticket)
+            .member(member)
+            .content(request.content())
+            .build();
+
+        Comment savedComment = commentSaveService.saveComment(comment);
 
         return CommentIdResponse.builder()
-            .commentId(PkCrypto.encrypt(commentId))
+            .commentId(PkCrypto.encrypt(savedComment.getCommentId()))
             .build();
     }
 }
