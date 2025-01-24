@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.domain.service;
+package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TicketGetService {
+public class TicketDeleteService {
 
 	private final TicketRepository ticketRepository;
 

@@ -1,38 +1,44 @@
 package com.wrkr.tickety.unit;
 
-import com.wrkr.tickety.global.utils.PkCrypto;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
+import com.wrkr.tickety.global.utils.PkCrypto;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 public class PkCryptoTest {
 
-         @DisplayName("PK 암호화 및 복호화 테스트")
-         @Test
-         void EncryptionAndDecryptionTest() {
-             // Given
-             Long originalValue = 3L;
+    @BeforeAll
+    static void init() {
+        PkCrypto pkCrypto = new PkCrypto("AES", "1234567890123456");
+        pkCrypto.init();
+    }
 
-             // When
-             String encryptedValue = PkCrypto.encrypt(originalValue);
-             Long decryptedValue = PkCrypto.decrypt(encryptedValue);
+    @DisplayName("PK 암호화 및 복호화 테스트")
+    @Test
+    void EncryptionAndDecryptionTest() {
+        // Given
+        Long originalValue = 3L;
 
-             System.out.println("인코딩 값: " + encryptedValue);
-             System.out.println("디코딩 값: " + decryptedValue);
+        // When
+        String encryptedValue = PkCrypto.encrypt(originalValue);
+        Long decryptedValue = PkCrypto.decrypt(encryptedValue);
 
-             // Then
-             assertNotNull(
-                     encryptedValue,
-                     "암호화 된 값은 null이 아니어야 합니다."
-             );
-             assertEquals(
-                     originalValue,
-                     decryptedValue,
-                     "복호화 된 값은 원래 값과 일치 해야 합니다."
-             );
-         }
+        System.out.println("인코딩 값: " + encryptedValue);
+        System.out.println("디코딩 값: " + decryptedValue);
+
+        // Then
+        assertNotNull(
+            encryptedValue,
+            "암호화 된 값은 null이 아니어야 합니다."
+        );
+        assertEquals(
+            originalValue,
+            decryptedValue,
+            "복호화 된 값은 원래 값과 일치 해야 합니다."
+        );
+
+    }
 }
