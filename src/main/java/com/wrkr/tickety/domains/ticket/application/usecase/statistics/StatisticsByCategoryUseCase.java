@@ -84,7 +84,8 @@ public class StatisticsByCategoryUseCase {
             .map(category -> switch (type) {
 
                 case StatisticsType.DAILY:
-                    yield statisticsService.getDailyStatisticsByCategory(category.getCategoryId(), requestDate);
+                    LocalDate startOfNextDay = requestDate.plusDays(1);
+                    yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), requestDate, startOfNextDay);
 
                 case StatisticsType.MONTHLY:
                     LocalDate startOfMonth = requestDate.withDayOfMonth(1);
