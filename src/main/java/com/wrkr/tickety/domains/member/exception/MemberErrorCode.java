@@ -15,7 +15,7 @@ public enum MemberErrorCode implements BaseErrorCode {
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "MEMBER_002", "이미 사용중인 이메일입니다."),
     INVALID_PHONE_FORMAT(HttpStatus.BAD_REQUEST, "MEMBER_003", "유효하지 않은 전화번호 형식입니다."),
     INVALID_ROLE(HttpStatus.BAD_REQUEST, "MEMBER_004", "유효하지 않은 역할입니다."),
-    ALREADY_EXIST_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_002", "이미 사용중인 닉네임입니다."),
+    ALREADY_EXIST_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_005", "이미 사용중인 닉네임입니다."),
 
     ;
 
