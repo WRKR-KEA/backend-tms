@@ -33,6 +33,11 @@ spring.config.activate.on-profile: dev
 logging:
   level:
     root: INFO
+  structured:
+    format:
+      file: ecs
+  file:
+    path: ${LOG_FILE_PATH:./logs}
 
 ---
 spring.config.activate.on-profile: prod
