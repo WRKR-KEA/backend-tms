@@ -1,10 +1,13 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+@Builder
+@Schema(description = "티켓 페이징 응답 DTO", name = "티켓 페이징 응답")
 public record TicketAllGetPagingResponse(
         @Schema(description = "티켓 정보 목록")
         List<TicketAllGetResponse> tickets,
@@ -22,12 +25,12 @@ public record TicketAllGetPagingResponse(
         int size
 ) {
     public static TicketAllGetPagingResponse from(Page<TicketAllGetResponse> page) {
-        return new TicketAllGetPagingResponse(
-                page.getContent(),
-                page.getNumber() + 1,
-                page.getTotalPages(),
-                page.getTotalElements(),
-                page.getSize()
-        );
+        return TicketAllGetPagingResponse.builder()
+                .tickets(page.getContent())
+                .currentPage(page.getNumber() + 1)
+                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
+                .size(page.getSize())
+                .build();
     }
 }

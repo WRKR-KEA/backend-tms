@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.application.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryGetAllResponseDTO;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;

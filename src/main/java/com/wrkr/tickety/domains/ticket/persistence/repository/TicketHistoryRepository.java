@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface TicketHistoryRepository extends JpaRepository<TicketHistoryEntity, Long> {
 
-    Optional<TicketHistory> findFirstByTicket_TicketIdAndModifiedOrderByCreatedAtAsc(
+    TicketHistoryEntity findFirstByTicket_TicketIdAndModifiedOrderByCreatedAtAsc(
             Long ticketId,
             ModifiedType modifiedType
     );
