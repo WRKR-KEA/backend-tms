@@ -3,17 +3,22 @@ package com.wrkr.tickety.domains.ticket.application.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
 
+@Builder
+@Schema(description = "코멘트 내역 조회 응답 DTO")
 public record CommentResponse(
 
     @Schema(description = "티켓 ID", example = "ouqJF8uKst63ZPA2T70jda")
     String ticketId,
 
     @Schema(description = "코멘트 목록")
-    List<CommentDTO> comments
+    List<CommentDto> comments
 ) {
 
-    public record CommentDTO(
+    @Builder
+    @Schema(description = "개별 코멘트 DTO")
+    public record CommentDto(
 
         @Schema(description = "코멘트를 전송한 주체", examples = {"USER", "MANAGER", "SYSTEM"})
         String type,

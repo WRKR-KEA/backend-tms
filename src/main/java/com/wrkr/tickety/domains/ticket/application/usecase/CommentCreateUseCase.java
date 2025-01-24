@@ -19,22 +19,24 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentCreateUseCase {
 
-	private final TicketGetService ticketGetService;
-	private final CommentSaveService commentSaveService;
+    private final TicketGetService ticketGetService;
+    private final CommentSaveService commentSaveService;
 
-	public CommentIdResponse createComment(Member member, Long ticketId, CommentRequest request) {
+    public CommentIdResponse createComment(Member member, Long ticketId, CommentRequest request) {
 
-		Ticket ticket = ticketGetService.byId(ticketId);
+        Ticket ticket = ticketGetService.byId(ticketId);
 
-		if (!ticket.isRelatedWith(member)) {
-			throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
-		}
-		if (!ticket.isCommentable()) {
-			throw ApplicationException.from(CommentErrorCode.TICKET_STATUS_INVALID_FOR_COMMENT);
-		}
+        if (!ticket.isRelatedWith(member)) {
+            throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
+        }
+        if (!ticket.isCommentable()) {
+            throw ApplicationException.from(CommentErrorCode.TICKET_STATUS_INVALID_FOR_COMMENT);
+        }
 
-		Long commentId = commentSaveService.saveComment(ticket, member, request.content());
+        Long commentId = commentSaveService.saveComment(ticket, member, request.content());
 
-		return new CommentIdResponse(PkCrypto.encrypt(commentId));
-	}
+        return CommentIdResponse.builder()
+            .commentId(PkCrypto.encrypt(commentId))
+            .build();
+    }
 }

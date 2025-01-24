@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse;
-import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse.CommentDTO;
+import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse.CommentDto;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.ArrayList;
@@ -14,18 +14,21 @@ public class CommentMapper {
     }
 
     public static CommentResponse toCommentResponse(Long ticketId, List<Comment> comments) {
-        List<CommentDTO> commentDTOList = new ArrayList<>();
+        List<CommentDto> commentDTOList = new ArrayList<>();
         for (Comment comment : comments) {
-            commentDTOList.add(new CommentDTO(
-                comment.getMember() == null ? "SYSTEM" : comment.getMember().getRole().toString(),
-                PkCrypto.encrypt(comment.getCommentId()),
-                comment.getCreatedAt(),
-                PkCrypto.encrypt(comment.getMember().getMemberId()),
-                comment.getMember().getName(),
-                comment.getContent()
-            ));
+            commentDTOList.add(CommentDto.builder()
+                .memberId(comment.getMember() == null ? "SYSTEM" : comment.getMember().getRole().toString())
+                .commentId(PkCrypto.encrypt(comment.getCommentId()))
+                .createdAt(comment.getCreatedAt())
+                .memberId(PkCrypto.encrypt(comment.getMember().getMemberId()))
+                .name(comment.getMember().getName())
+                .content(comment.getContent())
+                .build());
         }
 
-        return new CommentResponse(PkCrypto.encrypt(ticketId), commentDTOList);
+        return CommentResponse.builder()
+            .ticketId(PkCrypto.encrypt(ticketId))
+            .comments(commentDTOList)
+            .build();
     }
 }
