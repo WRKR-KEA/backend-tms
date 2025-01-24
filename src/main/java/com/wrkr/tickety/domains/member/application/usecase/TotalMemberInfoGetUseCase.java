@@ -7,14 +7,12 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @UseCase
 @RequiredArgsConstructor
@@ -30,11 +28,11 @@ public class TotalMemberInfoGetUseCase {
         List<MemberInfoResponse> memberInfoResponseList = MemberMapper.toMemberInfoResponseList(memberPage.getContent());
 
         return MemberMapper.toMemberInfoPagingResponse(
-                memberInfoResponseList,
-                memberPage.getNumber() + 1,
-                memberPage.getTotalPages(),
-                memberPage.getTotalElements(),
-                memberPage.getSize()
+            memberInfoResponseList,
+            memberPage.getNumber() + 1,
+            memberPage.getTotalPages(),
+            memberPage.getTotalElements(),
+            memberPage.getSize()
         );
     }
 }

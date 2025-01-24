@@ -7,13 +7,11 @@ import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.member.persistence.mapper.MemberPersistenceMapper;
 import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,7 +28,7 @@ public class MemberPersistenceAdapter {
 
     public Optional<Member> findById(final Long memberId) {
         final Optional<MemberEntity> memberEntity = Optional.ofNullable(this.memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
+            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
     }
 
