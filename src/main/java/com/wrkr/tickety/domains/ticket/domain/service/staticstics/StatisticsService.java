@@ -11,14 +11,9 @@ public class StatisticsService {
 
     private final TicketPersistenceAdapter ticketPersistenceAdapter;
 
-    public Long getDailyStatisticsByCategory(Long categoryId, LocalDate date) {
-
-        return ticketPersistenceAdapter.getDailyTicketCountByCategory(categoryId, date);
-    }
-
     public Long getStatisticsByCategoryAndDateRange(Long categoryId, LocalDate startOfMonth, LocalDate startOfNextMonth) {
 
-        return ticketPersistenceAdapter.getMonthlyTicketCountByCategory(categoryId, startOfMonth, startOfNextMonth);
+        return ticketPersistenceAdapter.getTicketCountByCategoryAndDateRange(categoryId, startOfMonth, startOfNextMonth);
     }
 
 }
