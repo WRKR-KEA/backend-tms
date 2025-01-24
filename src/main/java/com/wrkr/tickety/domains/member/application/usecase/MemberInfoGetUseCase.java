@@ -14,12 +14,13 @@ import java.util.Optional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberGetUseCase {
+public class MemberInfoGetUseCase {
+
     private final MemberGetService memberGetService;
 
     public MemberInfoResponse getMemberInfo(String memberId) {
         // TODO: 프로젝션 사용도 고려
-        Optional<Member> findMember = memberGetService.ByMemberId(PkCrypto.decrypt(memberId));
+        Optional<Member> findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
         return MemberMapper.toMemberInfoResponse(findMember.orElse(null));
     }
