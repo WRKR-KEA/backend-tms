@@ -1,6 +1,5 @@
 package com.wrkr.tickety.domains.ticket.application.usecase;
 
-import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CommentMapper;
@@ -27,7 +26,7 @@ public class CommentGetUseCase {
 
         Ticket ticket = ticketGetService.byId(ticketId);
 
-        if (member.getRole().equals(Role.USER) && !ticket.isRelatedWith(member)) {
+        if (ticket.isAccessibleBy(member)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
         }
 

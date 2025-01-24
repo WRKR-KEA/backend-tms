@@ -4,7 +4,18 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,13 +75,22 @@ public class Ticket extends BaseTimeEntity {
     }
 
     public boolean isRelatedWith(Member member) {
-        if (member.getRole().equals(Role.MANAGER))
+        if (member.getRole().equals(Role.MANAGER)) {
             return this.manager.equals(member);
-        else
+        } else {
             return this.user.equals(member);
+        }
+    }
+
+    public boolean isAccessibleBy(Member member) {
+        if (member.getRole().equals(Role.USER)) {
+            return this.user.equals(member);
+        } else {
+            return true;
+        }
     }
 
     public boolean isCommentable() {
-		return status.equals(TicketStatus.IN_PROGRESS);
-	}
+        return status.equals(TicketStatus.IN_PROGRESS);
+    }
 }
