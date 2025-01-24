@@ -41,3 +41,6 @@ src/main/resources/env.properties
 
 ### Libraries ###
 node_modules/
+
+### Q File ###
+build/generated
