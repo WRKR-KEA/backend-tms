@@ -16,22 +16,25 @@ import java.time.LocalDateTime;
 public class TicketMapper {
 
     private TicketMapper() {
+
         throw new IllegalArgumentException();
     }
 
     public static Ticket mapToTicket(TicketCreateRequest ticketCreateRequest,
-                                     Category category,
-                                     String serialNumber,
-                                     TicketStatus status,
-                                     Member member) {
+        Category category,
+        String serialNumber,
+        TicketStatus status,
+        Member member
+    ) {
+
         return Ticket.builder()
-                .user(member)
-                .title(ticketCreateRequest.title())
-                .content(ticketCreateRequest.content())
-                .serialNumber(serialNumber)
-                .status(status)
-                .category(category)
-                .build();
+            .user(member)
+            .title(ticketCreateRequest.title())
+            .content(ticketCreateRequest.content())
+            .serialNumber(serialNumber)
+            .status(status)
+            .category(category)
+            .build();
     }
 
     public static TicketAllGetResponse toTicketAllGetResponse(Ticket ticket, TicketHistoryGetService ticketHistoryGetService) {
@@ -39,41 +42,42 @@ public class TicketMapper {
         LocalDateTime firstManagerChangeDate = ticketHistoryGetService.getFirstManagerChangeDate(ticket.getTicketId());
 
         return new TicketAllGetResponse(
-                PkCrypto.encrypt(ticket.getTicketId()),
-                ticket.getManager() != null ? ticket.getManager().getNickname() : null,
-                ticket.getSerialNumber(),
-                ticket.getTitle(),
-                ticket.getStatus().getDescription(),
-                ticket.getCreatedAt(),
-                firstManagerChangeDate,
-                ticket.getUpdatedAt()
+            PkCrypto.encrypt(ticket.getTicketId()),
+            ticket.getManager() != null ? ticket.getManager().getNickname() : null,
+            ticket.getSerialNumber(),
+            ticket.getTitle(),
+            ticket.getStatus().getDescription(),
+            ticket.getCreatedAt(),
+            firstManagerChangeDate,
+            ticket.getUpdatedAt()
         );
     }
 
     public static TicketDetailGetResponse toTicketDetailGetResponse(Ticket ticket, LocalDateTime firstManagerChangeDate) {
 
         return new TicketDetailGetResponse(
-                PkCrypto.encrypt(ticket.getTicketId()),
-                ticket.getTitle(),
-                ticket.getContent(),
-                ticket.getStatus().name(),
-                ticket.getUser().getName(),
-                ticket.getManager() != null ? ticket.getManager().getName() : null,
-                ticket.getCreatedAt(),
-                ticket.getUpdatedAt(),
-                firstManagerChangeDate
+            PkCrypto.encrypt(ticket.getTicketId()),
+            ticket.getTitle(),
+            ticket.getContent(),
+            ticket.getStatus().name(),
+            ticket.getUser().getName(),
+            ticket.getManager() != null ? ticket.getManager().getName() : null,
+            ticket.getCreatedAt(),
+            ticket.getUpdatedAt(),
+            firstManagerChangeDate
         );
     }
 
     public static ManagerTicketAllGetResponse toManagerTicketAllGetResponse(Ticket ticket) {
-        return new ManagerTicketAllGetResponse(
-                PkCrypto.encrypt(ticket.getTicketId()),
-                ticket.getSerialNumber(),
-                ticket.getTitle(),
-                ticket.getStatus().getDescription(),
-                ticket.getUser().getName(),
-                ticket.getCreatedAt(),
-                ticket.getUpdatedAt()
-        );
+
+        return ManagerTicketAllGetResponse.builder()
+            .id(PkCrypto.encrypt(ticket.getTicketId()))
+            .serialNumber(ticket.getSerialNumber())
+            .title(ticket.getTitle())
+            .status(ticket.getStatus().getDescription())
+            .requesterName(ticket.getUser().getName())
+            .createdAt(ticket.getCreatedAt())
+            .updatedAt(ticket.getUpdatedAt())
+            .build();
     }
 }
