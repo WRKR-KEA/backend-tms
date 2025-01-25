@@ -2,8 +2,8 @@ package com.wrkr.tickety.domains.ticket.presentation;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.CommentRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.CommentIdResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.comment.CommentCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.comment.CommentGetUseCase;
 import com.wrkr.tickety.domains.ticket.exception.CommentErrorCode;
@@ -32,7 +32,7 @@ public class CommentController {
     @CustomErrorCodes(ticketErrorCodes = {TicketErrorCode.TICKET_NOT_FOUND, TicketErrorCode.UNAUTHORIZED_ACCESS},
         commentErrorCodes = {CommentErrorCode.COMMENT_CONFLICT})
     @Operation(summary = "코멘트 작성", description = "티켓에 대해 코멘트를 작성합니다.")
-    public ApplicationResponse<CommentIdResponse> createComment(@PathVariable String ticketId, @RequestBody CommentRequest request) {
+    public ApplicationResponse<PkResponse> createComment(@PathVariable String ticketId, @RequestBody CommentRequest request) {
 
         //TODO: 헤더에서 회원 정보 추출
         Member member = Member.builder().build();

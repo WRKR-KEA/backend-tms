@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.usecase.comment;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.CommentRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.CommentIdResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
@@ -23,7 +23,7 @@ public class CommentCreateUseCase {
     private final TicketGetService ticketGetService;
     private final CommentSaveService commentSaveService;
 
-    public CommentIdResponse createComment(Member member, Long ticketId, CommentRequest request) {
+    public PkResponse createComment(Member member, Long ticketId, CommentRequest request) {
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
@@ -42,8 +42,8 @@ public class CommentCreateUseCase {
 
         Comment savedComment = commentSaveService.saveComment(comment);
 
-        return CommentIdResponse.builder()
-            .commentId(PkCrypto.encrypt(savedComment.getCommentId()))
+        return PkResponse.builder()
+            .id(PkCrypto.encrypt(savedComment.getCommentId()))
             .build();
     }
 }
