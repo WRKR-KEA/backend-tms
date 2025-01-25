@@ -19,6 +19,7 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    // TODO: like 쿼리 사용하지 않도록 개선
     @Override
     public Page<MemberEntity> searchMember(Pageable pageable, Role role, String email, String name, String department) {
 
@@ -26,25 +27,27 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
         long totalCount = jpaQueryFactory
             .select(memberEntity.count())
             .from(memberEntity)
-            .where(roleEq(role)
-                .and(containsEmailIgnoreCase(email))
-                .and(containsNameIgnoreCase(name))
-                .and(containsDepartmentIgnoreCase(department))
-            )
-            .fetchOne();
+            .where(
+                roleEq(role),
+                containsEmailIgnoreCase(email),
+                containsNameIgnoreCase(name),
+                containsDepartmentIgnoreCase(department)
+            ).fetchOne();
 
-        List<MemberEntity> members = jpaQueryFactory
+        List<MemberEntity> memberEntityList = jpaQueryFactory
             .selectFrom(memberEntity)
-            .where(roleEq(role)
-                .and(containsEmailIgnoreCase(email))
-                .and(containsNameIgnoreCase(name))
-                .and(containsDepartmentIgnoreCase(department))
+            .where(
+                roleEq(role),
+                containsEmailIgnoreCase(email),
+                containsNameIgnoreCase(name),
+                containsDepartmentIgnoreCase(department)
             )
+            .orderBy(memberEntity.memberId.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
 
-        return new PageImpl<>(members, pageable, totalCount);
+        return new PageImpl<>(memberEntityList, pageable, totalCount);
     }
 
     private BooleanExpression roleEq(Role role) {
@@ -52,14 +55,14 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
     }
 
     private BooleanExpression containsEmailIgnoreCase(String email) {
-        return email == null ? null : memberEntity.email.containsIgnoreCase(email);
+        return email == null || email.isEmpty() ? null : memberEntity.email.containsIgnoreCase(email);
     }
 
     private BooleanExpression containsNameIgnoreCase(String name) {
-        return name == null ? null : memberEntity.name.containsIgnoreCase(name);
+        return name == null || name.isEmpty() ? null : memberEntity.name.containsIgnoreCase(name);
     }
 
     private BooleanExpression containsDepartmentIgnoreCase(String department) {
-        return department == null ? null : memberEntity.department.containsIgnoreCase(department);
+        return department == null || department.isEmpty() ? null : memberEntity.department.containsIgnoreCase(department);
     }
 }
