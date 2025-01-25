@@ -3,6 +3,8 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
+import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
+import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +28,8 @@ public class ManagerTicketController {
 
     @Operation(summary = "해당 티켓 담당자 변경", description = "해당 티켓의 담당자를 변경합니다.")
     @PatchMapping("/{ticketId}/delegate")
+    @CustomErrorCodes(ticketErrorCodes = {TicketErrorCode.TICKET_NOT_FOUND, TicketErrorCode.TICKET_MANAGER_NOT_MATCH, TicketErrorCode.TICKET_MANAGER_NOT_MATCH,
+        TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS})
     public ApplicationResponse<PkResponse> delegateTicket(
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
