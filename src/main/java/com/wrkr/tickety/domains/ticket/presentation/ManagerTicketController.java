@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.response.ApplicationResponse;
@@ -22,17 +22,17 @@ public class ManagerTicketController {
 
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
     @GetMapping("/{managerId}")
-    public ResponseEntity<ApplicationResponse<TicketAllGetPagingResponse>> getManagerTickets(
-            @PathVariable String managerId,
-            @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam(required = false) TicketStatus status,
-            @RequestParam(required = false) String search
-            ) {
+    public ResponseEntity<ApplicationResponse<ManagerTicketAllGetPagingResponse>> getManagerTickets(
+        @PathVariable String managerId,
+        @RequestParam int page,
+        @RequestParam int size,
+        @RequestParam(required = false) TicketStatus status,
+        @RequestParam(required = false) String search
+    ) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        TicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, status,search);
+        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, status, search);
 
         return ResponseEntity.ok(ApplicationResponse.onSuccess(ticketAllGetPagingResponse));
     }

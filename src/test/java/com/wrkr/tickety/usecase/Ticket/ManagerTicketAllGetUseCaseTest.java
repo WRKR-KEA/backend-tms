@@ -2,7 +2,7 @@ package com.wrkr.tickety.usecase.Ticket;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
-import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -74,7 +74,7 @@ public class ManagerTicketAllGetUseCaseTest {
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
         // when
-        TicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(cryptoManagerId, pageable, null, search);
+        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(cryptoManagerId, pageable, null, search);
         // then
         assertEquals(3, ticketAllGetPagingResponse.tickets().size());
     }

@@ -28,5 +28,5 @@ public record TicketAllGetResponse(
 
         @Schema(description = "최근 업데이트일", example = "2021.08.01")
         LocalDateTime updatedAt
-) implements TicketListResponse {
+){
 }

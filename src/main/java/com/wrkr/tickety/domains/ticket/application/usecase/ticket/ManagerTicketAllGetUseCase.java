@@ -2,8 +2,8 @@ package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
-import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -23,17 +23,17 @@ public class ManagerTicketAllGetUseCase {
     private final MemberGetService memberGetService;
     private final TicketGetService ticketGetService;
 
-    public TicketAllGetPagingResponse getManagerTicketList(String cryptoManagerId, Pageable pageable, TicketStatus status,String search) {
+    public ManagerTicketAllGetPagingResponse getManagerTicketList(String cryptoManagerId, Pageable pageable, TicketStatus status, String search) {
 
         Long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
         memberGetService.getUserById(managerId)
-                .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable,status,search);
+        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable, status, search);
 
         Page<ManagerTicketAllGetResponse> mappedPage = ticketsPage.map(TicketMapper::toManagerTicketAllGetResponse);
 
-        return TicketAllGetPagingResponse.from(mappedPage);
+        return ManagerTicketAllGetPagingResponse.from(mappedPage);
     }
 }
