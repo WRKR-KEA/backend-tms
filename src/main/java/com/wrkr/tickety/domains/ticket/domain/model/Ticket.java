@@ -75,4 +75,16 @@ public class Ticket extends BaseTime {
     public boolean isCommentable() {
         return status.equals(TicketStatus.IN_PROGRESS);
     }
+
+    public boolean isDelegatable() {
+        return status.equals(TicketStatus.IN_PROGRESS);
+    }
+
+    public boolean hasManager() {
+        return this.manager != null;
+    }
+
+    public boolean isManagedBy(Long managerId) {
+        return this.manager != null && this.manager.getMemberId().equals(managerId);
+    }
 }
