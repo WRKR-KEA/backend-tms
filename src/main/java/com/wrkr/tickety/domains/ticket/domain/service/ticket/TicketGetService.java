@@ -26,12 +26,11 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 
-    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, String status, String search) {
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String search) {
         if (status == null) {
             return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, search);
         }
-        TicketStatus ticketStatus = TicketStatus.valueOf(status);
-        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, ticketStatus, search);
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, search);
 
     }
 }

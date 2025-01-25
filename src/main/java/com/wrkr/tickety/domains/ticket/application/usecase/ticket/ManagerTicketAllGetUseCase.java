@@ -5,6 +5,7 @@ import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
@@ -22,7 +23,7 @@ public class ManagerTicketAllGetUseCase {
     private final MemberGetService memberGetService;
     private final TicketGetService ticketGetService;
 
-    public TicketAllGetPagingResponse getManagerTicketList(String cryptoManagerId, Pageable pageable, String status,String search) {
+    public TicketAllGetPagingResponse getManagerTicketList(String cryptoManagerId, Pageable pageable, TicketStatus status,String search) {
 
         Long managerId = pkCrypto.decryptValue(cryptoManagerId);
 

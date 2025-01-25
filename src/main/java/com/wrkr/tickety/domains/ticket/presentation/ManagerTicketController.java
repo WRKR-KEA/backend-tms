@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.ticket.presentation;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +26,7 @@ public class ManagerTicketController {
             @PathVariable String managerId,
             @RequestParam int page,
             @RequestParam int size,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) TicketStatus status,
             @RequestParam(required = false) String search
             ) {
 
