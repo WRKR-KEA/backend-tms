@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TotalMemberInfoGetUseCase {
+public class SearchMemberInfoGetUseCase {
 
     private final MemberGetService memberGetService;
 
@@ -38,6 +38,7 @@ public class TotalMemberInfoGetUseCase {
             name,
             department
         );
+
         List<MemberInfoResponse> memberInfoResponseList = MemberMapper.toMemberInfoResponseList(memberPage.getContent());
 
         return MemberMapper.toMemberInfoPagingResponse(

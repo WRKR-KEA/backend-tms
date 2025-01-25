@@ -20,7 +20,7 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    // TODO: like 쿼리 사용하지 않도록 개선
+    // TODO: like 쿼리 사용하지 않도록 개선, No offset 페이징도 가능할지 생각해보기
     @Override
     public Page<MemberEntity> searchMember(Pageable pageable, Role role, String email, String name, String department) {
 

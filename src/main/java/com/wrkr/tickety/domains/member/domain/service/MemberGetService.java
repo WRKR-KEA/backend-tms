@@ -26,7 +26,8 @@ public class MemberGetService {
         Role role,
         String email,
         String name,
-        String department) {
+        String department
+    ) {
         return memberPersistenceAdapter.searchMember(
             pageable,
             role,
