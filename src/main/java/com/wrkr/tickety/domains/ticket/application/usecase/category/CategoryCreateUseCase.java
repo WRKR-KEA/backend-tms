@@ -4,7 +4,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.Category.Category
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
-import com.wrkr.tickety.domains.ticket.persistence.adapter.CategoryPersistenceAdapter;
+import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryCreateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CategoryCreateUseCase {
 
-    private final CategoryPersistenceAdapter categoryPersistenceAdapter;
+    private final CategoryCreateService categoryCreateService;
 
     public PkResponse createCategory(CategoryCreateRequest request) {
         Category requestCategory = CategoryMapper.mapToCategoryDomain(request);
-        Category savedCategory = categoryPersistenceAdapter.save(requestCategory);
+        Category savedCategory = categoryCreateService.createCategory(requestCategory);
         return CategoryMapper.mapToPkResponse(savedCategory);
     }
 

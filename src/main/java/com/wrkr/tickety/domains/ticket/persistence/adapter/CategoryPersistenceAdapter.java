@@ -35,8 +35,19 @@ public class CategoryPersistenceAdapter {
     }
 
     public Category save(final Category category) {
+        System.out.println("Category : " + category.getName());
+        if(category.getName().isEmpty() || category.getSeq() == null) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_CANNOT_NULL);
+        }
+
+        if(categoryRepository.existsByName(category.getName())) {
+            System.out.println("Category already exists");
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
+        }
+
         final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(category);
         final CategoryEntity savedCategoryEntity = this.categoryRepository.save(categoryEntity);
+        System.out.println("Category saved");
         return this.categoryPersistenceMapper.toDomain(savedCategoryEntity);
     }
 }
