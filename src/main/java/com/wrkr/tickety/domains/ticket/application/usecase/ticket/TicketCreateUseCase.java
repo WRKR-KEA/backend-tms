@@ -37,8 +37,8 @@ public class TicketCreateUseCase {
     public PkResponse createTicket(TicketCreateRequest request, Long userId) {
         Category category = categoryGetService.getCategory(decrypt(request.categoryId()));
 
-        Member member = UserGetService.getUserById(userId)
-            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = UserGetService.byMemberId(userId)
+            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         String serialNumber = generateSerialNumber();
         TicketStatus status = TicketStatus.REQUEST;

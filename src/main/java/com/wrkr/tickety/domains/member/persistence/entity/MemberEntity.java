@@ -39,6 +39,9 @@ public class MemberEntity extends BaseTimeEntity {
     private String email;
 
     @Column(nullable = false, length = 50)
+    private String department;
+
+    @Column(nullable = false, length = 50)
     private String position;
 
     @Column(nullable = false)
@@ -67,6 +70,10 @@ public class MemberEntity extends BaseTimeEntity {
     @ColumnDefault("0")
     private Boolean isDeleted;
 
+    @Column(nullable = false)
+    @ColumnDefault("1")
+    private Boolean isTempPassword;
+
     @Builder
     public MemberEntity(
             Long memberId,
@@ -75,6 +82,7 @@ public class MemberEntity extends BaseTimeEntity {
             String name,
             String phone,
             String email,
+            String department,
             String position,
             String profileImage,
             Role role,
@@ -82,7 +90,8 @@ public class MemberEntity extends BaseTimeEntity {
             Boolean agitNotification,
             Boolean emailNotification,
             Boolean serviceNotification,
-            Boolean isDeleted
+            Boolean isDeleted,
+            Boolean isTempPassword
     ) {
         this.memberId = memberId;
         this.nickname = nickname;
@@ -90,6 +99,7 @@ public class MemberEntity extends BaseTimeEntity {
         this.name = name;
         this.phone = phone;
         this.email = email;
+        this.department = department;
         this.position = position;
         this.profileImage = profileImage;
         this.role = role;
@@ -98,5 +108,6 @@ public class MemberEntity extends BaseTimeEntity {
         this.emailNotification = emailNotification;
         this.serviceNotification = serviceNotification;
         this.isDeleted = isDeleted;
+        this.isTempPassword = isTempPassword;
     }
 }
