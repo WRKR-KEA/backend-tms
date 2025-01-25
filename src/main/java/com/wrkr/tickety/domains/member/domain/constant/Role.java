@@ -20,7 +20,7 @@ public enum Role {
 
     @JsonCreator // Json -> Object, 역직렬화 수행하는 메서드
     public static Role from(String param) {
-        String upperParam = param.toUpperCase();
+        String upperParam = param == null ? null : param.toUpperCase();
 
         for (Role role : Role.values()) {
             if (role.name().equals(upperParam)) {
