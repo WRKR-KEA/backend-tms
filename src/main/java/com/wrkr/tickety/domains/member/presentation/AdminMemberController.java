@@ -20,6 +20,7 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
+import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -86,6 +87,7 @@ public class AdminMemberController {
 
     // TODO: ConstraintViolationException 제대로 처리되지 않는 문제 해결 필요
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
+    @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.BAD_REQUEST})
     @Parameters({
         @Parameter(name = "page", description = "페이지 번호, 1 이상이어야 합니다.", example = "1", required = true),
         @Parameter(name = "size", description = "페이지 크기, 10 이상이어야 합니다.", example = "10", required = true),
