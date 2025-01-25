@@ -16,6 +16,7 @@ import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoGetUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberUpdateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.SearchMemberInfoGetUseCase;
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
@@ -88,7 +89,7 @@ public class AdminMemberController {
     @Parameters({
         @Parameter(name = "page", description = "페이지 번호, 1 이상이어야 합니다.", example = "1", required = true),
         @Parameter(name = "size", description = "페이지 크기, 10 이상이어야 합니다.", example = "10", required = true),
-        @Parameter(name = "role", description = "회원 권한", example = "사용자"),
+        @Parameter(name = "role", description = "회원 역할 (USER | MANAGER | ADMIN)", example = "USER"),
         @Parameter(name = "email", description = "이메일", example = "wrkr.kea@gachon.ac.kr"),
         @Parameter(name = "name", description = "이름", example = "김가천"),
         @Parameter(name = "department", description = "부서", example = "개발팀")
@@ -97,7 +98,7 @@ public class AdminMemberController {
     public ApplicationResponse<MemberInfoPagingResponse> getTotalMemberInfo(
         @RequestParam(defaultValue = "1") @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.") int page,
         @RequestParam(defaultValue = "10") @Min(value = 10, message = "페이지 크기는 10 이상이어야 합니다.") int size,
-        @RequestParam(required = false) String role,
+        @RequestParam(required = false) Role role,
         @RequestParam(required = false) String email,
         @RequestParam(required = false) String name,
         @RequestParam(required = false) String department

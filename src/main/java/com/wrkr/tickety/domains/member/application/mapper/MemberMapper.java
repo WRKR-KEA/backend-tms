@@ -4,7 +4,6 @@ import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateReque
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPagingResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
-import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.List;
@@ -25,7 +24,7 @@ public class MemberMapper {
             .department(memberCreateRequest.department())
             .position(memberCreateRequest.position())
             .phone(memberCreateRequest.phone())
-            .role(Role.from(memberCreateRequest.role()))
+            .role(memberCreateRequest.role())
             .profileImage(memberCreateRequest.profileImage())
             .build();
     }

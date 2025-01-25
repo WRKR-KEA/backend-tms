@@ -24,7 +24,7 @@ public class SearchMemberInfoGetUseCase {
     public MemberInfoPagingResponse searchMemberInfo(
         int page,
         int size,
-        String role,
+        Role role,
         String email,
         String name,
         String department
@@ -33,7 +33,7 @@ public class SearchMemberInfoGetUseCase {
 
         Page<Member> memberPage = memberGetService.searchMember(
             pageable,
-            Role.from(role),
+            role,
             email,
             name,
             department

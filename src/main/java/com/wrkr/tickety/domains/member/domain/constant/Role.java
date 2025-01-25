@@ -20,14 +20,11 @@ public enum Role {
 
     @JsonCreator // Json -> Object, 역직렬화 수행하는 메서드
     public static Role from(String param) {
-        String upperParam = param == null ? null : param.toUpperCase();
-
         for (Role role : Role.values()) {
-            if (role.name().equals(upperParam)) {
+            if (role.name().equals(param)) {
                 return role;
             }
         }
-        log.error("Role.from() exception occur param: {}", param);
         return null;
     }
 }
