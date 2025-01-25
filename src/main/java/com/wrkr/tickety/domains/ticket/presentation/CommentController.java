@@ -29,7 +29,8 @@ public class CommentController {
     private final CommentGetUseCase commentGetUseCase;
 
     @PostMapping("/api/user/tickets/{ticketId}/comments")
-    @CustomErrorCodes(ticketErrorCodes = {TicketErrorCode.TICKET_NOT_FOUND}, commentErrorCodes = {CommentErrorCode.TICKET_STATUS_INVALID_FOR_COMMENT})
+    @CustomErrorCodes(ticketErrorCodes = {TicketErrorCode.TICKET_NOT_FOUND, TicketErrorCode.UNAUTHORIZED_ACCESS},
+        commentErrorCodes = {CommentErrorCode.COMMENT_CONFLICT})
     @Operation(summary = "코멘트 작성", description = "티켓에 대해 코멘트를 작성합니다.")
     public ApplicationResponse<CommentIdResponse> createComment(@PathVariable String ticketId, @RequestBody CommentRequest request) {
 
@@ -40,7 +41,7 @@ public class CommentController {
     }
 
     @GetMapping("/api/user/tickets/{ticketId}/comments")
-    @CustomErrorCodes(ticketErrorCodes = {TicketErrorCode.TICKET_NOT_FOUND})
+    @CustomErrorCodes(ticketErrorCodes = {TicketErrorCode.TICKET_NOT_FOUND, TicketErrorCode.UNAUTHORIZED_ACCESS})
     @Operation(summary = "코멘트 내역 조회", description = "티켓에 대해 코멘트 내역을 조회합니다.")
     public ApplicationResponse<CommentResponse> getComment(@PathVariable String ticketId) {
 

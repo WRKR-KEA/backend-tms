@@ -28,10 +28,10 @@ public class CommentCreateUseCase {
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (!ticket.isRelatedWith(member)) {
-            throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
+            throw ApplicationException.from(TicketErrorCode.UNAUTHORIZED_ACCESS);
         }
         if (!ticket.isCommentable()) {
-            throw ApplicationException.from(CommentErrorCode.TICKET_STATUS_INVALID_FOR_COMMENT);
+            throw ApplicationException.from(CommentErrorCode.COMMENT_CONFLICT);
         }
 
         Comment comment = Comment.builder()

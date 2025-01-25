@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum CommentErrorCode implements BaseErrorCode {
 
-    TICKET_STATUS_INVALID_FOR_COMMENT(HttpStatus.CONFLICT, "COMMENT_901", "해당 상태의 티켓에 코멘트를 달 수 없습니다."),
+    COMMENT_CONFLICT(HttpStatus.CONFLICT, "COMMENT_901", "해당 상태의 티켓에 코멘트를 달 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

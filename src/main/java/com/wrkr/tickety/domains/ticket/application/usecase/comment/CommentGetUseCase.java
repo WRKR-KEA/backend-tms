@@ -27,7 +27,7 @@ public class CommentGetUseCase {
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (ticket.isAccessibleBy(member)) {
-            throw ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND);
+            throw ApplicationException.from(TicketErrorCode.UNAUTHORIZED_ACCESS);
         }
 
         List<Comment> comments = commentGetService.getCommentsByTicket(ticket);
