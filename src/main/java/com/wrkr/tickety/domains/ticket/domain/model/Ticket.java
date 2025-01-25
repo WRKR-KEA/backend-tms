@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.model;
 
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.model.BaseTime;
@@ -53,5 +54,25 @@ public class Ticket extends BaseTime {
 
     public void updateManager(Member manager) {
         this.manager = manager;
+    }
+
+    public boolean isRelatedWith(Member member) {
+        if (member.getRole().equals(Role.MANAGER)) {
+            return this.manager.equals(member);
+        } else {
+            return this.user.equals(member);
+        }
+    }
+
+    public boolean isAccessibleBy(Member member) {
+        if (member.getRole().equals(Role.USER)) {
+            return this.user.equals(member);
+        } else {
+            return true;
+        }
+    }
+
+    public boolean isCommentable() {
+        return status.equals(TicketStatus.IN_PROGRESS);
     }
 }
