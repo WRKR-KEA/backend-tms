@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-@Schema(description = "코멘트 내역 조회 응답 DTO")
+@Schema(description = "코멘트 내역 조회 응답 DTO", name = "코멘트 내역 조회 응답")
 public record CommentResponse(
 
     @Schema(description = "티켓 ID", example = "ouqJF8uKst63ZPA2T70jda")
