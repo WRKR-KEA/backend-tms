@@ -6,6 +6,7 @@ import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,13 +23,15 @@ public class ManagerTicketController {
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
 
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
-    @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
     @GetMapping("/{managerId}")
     public ResponseEntity<ApplicationResponse<ManagerTicketAllGetPagingResponse>> getManagerTickets(
+        @Schema(description = "담당자 ID", example = "Gbdsnz3dU0kwFxKpavlkog")
         @PathVariable String managerId,
-        @RequestParam int page,
-        @RequestParam int size,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
+        @Schema(description = "검색어")
         @RequestParam(required = false) String search
     ) {
 
