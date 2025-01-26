@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.member.domain.model;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
@@ -33,22 +34,22 @@ public class Member extends BaseTime {
 
     @Builder
     public Member(
-            Long memberId,
-            String nickname,
-            String password,
-            String name,
-            String phone,
-            String email,
-            String department,
-            String position,
-            String profileImage,
-            Role role,
-            String agitUrl,
-            Boolean agitNotification,
-            Boolean emailNotification,
-            Boolean serviceNotification,
-            Boolean isDeleted,
-            Boolean isTempPassword
+        Long memberId,
+        String nickname,
+        String password,
+        String name,
+        String phone,
+        String email,
+        String department,
+        String position,
+        String profileImage,
+        Role role,
+        String agitUrl,
+        Boolean agitNotification,
+        Boolean emailNotification,
+        Boolean serviceNotification,
+        Boolean isDeleted,
+        Boolean isTempPassword
     ) {
         this.memberId = memberId;
         this.nickname = nickname;
@@ -82,6 +83,13 @@ public class Member extends BaseTime {
     public void modifyIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+    public void modifyMyPageInfo(MyPageInfoUpdateRequest myPageInfoUpdateRequest) {
+        this.position = myPageInfoUpdateRequest.position();
+        this.phone = myPageInfoUpdateRequest.phone();
+    }
+
+
     public Boolean IsDeleted() {
         return isDeleted;
     }
