@@ -82,4 +82,7 @@ public class Member extends BaseTime {
     public void modifyIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
+    public Boolean IsDeleted() {
+        return isDeleted;
+    }
 }
