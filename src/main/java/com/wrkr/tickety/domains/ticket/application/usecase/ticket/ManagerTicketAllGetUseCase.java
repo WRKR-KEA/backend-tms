@@ -27,7 +27,7 @@ public class ManagerTicketAllGetUseCase {
 
         Long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
-        memberGetService.getUserById(managerId)
+        memberGetService.byMemberId(managerId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable, status, search);
