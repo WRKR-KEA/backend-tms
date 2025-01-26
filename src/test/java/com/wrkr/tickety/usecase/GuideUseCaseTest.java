@@ -115,8 +115,20 @@ public class GuideUseCaseTest {
         long parentId = 1L;
         long categoryId = 2L;
         String cryptoCategoryId = pkCrypto.encryptValue(categoryId);
-        Category parent = new Category(parentId, null, "카테고리 1", 1, false, null, null);
-        Category category = new Category(categoryId, parent, "카테고리 2", 2, false, null, null);
+        Category parent = Category.builder()
+                .categoryId(parentId)
+                .name("카테고리 1")
+                .seq(1)
+                .isDeleted(false)
+                .build();
+        Category category = Category.builder()
+                .categoryId(categoryId)
+                .parent(parent)
+                .name("카테고리 2")
+                .seq(2)
+                .isDeleted(false)
+                .build();
+
         Guide guide = Guide.builder()
             .content("test")
             .category(category)

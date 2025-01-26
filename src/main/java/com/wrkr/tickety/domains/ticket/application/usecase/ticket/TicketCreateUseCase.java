@@ -35,7 +35,8 @@ public class TicketCreateUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
 
     public PkResponse createTicket(TicketCreateRequest request, Long userId) {
-        Category category = categoryGetService.getCategory(decrypt(request.categoryId()));
+        Category category = categoryGetService.getCategory(decrypt(request.categoryId()))
+            .orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST));
 
         Member member = UserGetService.byMemberId(userId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
