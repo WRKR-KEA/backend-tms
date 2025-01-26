@@ -24,4 +24,9 @@ public class TicketUpdateService {
         ticket.approveTicket(member);
         return ticketPersistenceAdapter.save(ticket);
     }
+
+    public Ticket updateManager(Ticket ticket, Member manager) {
+        ticket.updateManager(manager);
+        return ticketPersistenceAdapter.save(ticket);
+    }
 }

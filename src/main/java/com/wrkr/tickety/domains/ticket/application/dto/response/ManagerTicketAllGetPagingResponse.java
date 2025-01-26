@@ -6,10 +6,10 @@ import lombok.Builder;
 import org.springframework.data.domain.Page;
 
 @Builder
-@Schema(description = "티켓 페이징 응답 DTO")
-public record TicketAllGetPagingResponse(
+public record ManagerTicketAllGetPagingResponse(
+
     @Schema(description = "티켓 정보 목록")
-    List<TicketAllGetResponse> tickets,
+    List<ManagerTicketAllGetResponse> tickets,
 
     @Schema(description = "현재 페이지", example = "1")
     int currentPage,
@@ -24,13 +24,13 @@ public record TicketAllGetPagingResponse(
     int size
 ) {
 
-    public static TicketAllGetPagingResponse from(Page<TicketAllGetResponse> page) {
-        return TicketAllGetPagingResponse.builder()
+    public static ManagerTicketAllGetPagingResponse from(Page<ManagerTicketAllGetResponse> page) {
+        return ManagerTicketAllGetPagingResponse.builder()
             .tickets(page.getContent())
             .currentPage(page.getNumber() + 1)
-            .totalPages(page.getTotalPages())
-            .totalElements(page.getTotalElements())
             .size(page.getSize())
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
             .build();
     }
 }

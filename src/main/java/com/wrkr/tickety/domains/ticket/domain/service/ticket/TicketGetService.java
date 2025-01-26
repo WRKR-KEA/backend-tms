@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,13 @@ public class TicketGetService {
 
     public Ticket getTicketByTicketId(Long ticketId) {
         return ticketPersistenceAdapter.findById(ticketId);
+    }
+
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String search) {
+        if (status == null) {
+            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, search);
+        }
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, search);
+
     }
 }

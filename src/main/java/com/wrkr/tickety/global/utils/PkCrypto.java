@@ -33,6 +33,16 @@ public class PkCrypto {
         instance = this;
     }
 
+    /**
+     * 테스트 환경에서만 사용해야 합니다.
+     * <p>
+     * 프로덕션 환경에서 호출하지 마세요. Mock 객체를 싱글턴으로 설정하기 위해 제공됩니다.
+     */
+    @Deprecated
+    public static void setInstance(PkCrypto mockInstance) {
+        instance = mockInstance;
+    }
+
     private SecretKey generateKey() {
         byte[] keyBytes = secret.getBytes();
         return new SecretKeySpec(keyBytes, algorithm);
@@ -44,6 +54,7 @@ public class PkCrypto {
         }
         return instance;
     }
+
 
     public String encryptValue(Long value) {
         try {
@@ -92,6 +103,4 @@ public class PkCrypto {
     public static Long decrypt(String encryptedValue) {
         return getInstance().decryptValue(encryptedValue);
     }
-
-
 }

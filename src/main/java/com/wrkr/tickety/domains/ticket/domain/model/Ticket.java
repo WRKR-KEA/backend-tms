@@ -52,6 +52,10 @@ public class Ticket extends BaseTime {
         this.status = status;
     }
 
+    public void updateManager(Member manager) {
+        this.manager = manager;
+    }
+
     public boolean isRelatedWith(Member member) {
         if (member.getRole().equals(Role.MANAGER)) {
             return this.manager.equals(member);
@@ -79,5 +83,17 @@ public class Ticket extends BaseTime {
 
     public boolean isApprovable() {
         return status.equals(TicketStatus.REQUEST) && manager == null;
+    }
+
+    public boolean isDelegatable() {
+        return status.equals(TicketStatus.IN_PROGRESS);
+    }
+
+    public boolean hasManager() {
+        return this.manager != null;
+    }
+
+    public boolean isManagedBy(Long managerId) {
+        return this.manager != null && this.manager.getMemberId().equals(managerId);
     }
 }

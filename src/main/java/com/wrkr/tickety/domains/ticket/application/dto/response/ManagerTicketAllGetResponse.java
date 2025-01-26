@@ -5,13 +5,11 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
-@Schema(description = "티켓 전체 조회 응답 DTO")
-public record TicketAllGetResponse(
+@Schema(description = "담당자 자신이 담당한 티켓 목록 조회 응답")
+public record ManagerTicketAllGetResponse(
+
     @Schema(description = "티켓 id", example = "ouqJF8uKst63ZPA2T70jda")
     String id,
-
-    @Schema(description = "담당자 이름", example = "춘식이")
-    String managerName,
 
     @Schema(description = "티켓 일련번호", example = "VM-12345678")
     String serialNumber,
@@ -22,13 +20,14 @@ public record TicketAllGetResponse(
     @Schema(description = "티켓 상태", example = "요청")
     String status,
 
+    @Schema(description = "요청자 이름", example = "홍길동")
+    String requesterName,
+
     @Schema(description = "요청일", example = "2021.08.01")
     LocalDateTime createdAt,
-
-    @Schema(description = "시작일", example = "2021.08.01")
-    LocalDateTime startedAt,
 
     @Schema(description = "최근 업데이트일", example = "2021.08.01")
     LocalDateTime updatedAt
 ) {
+
 }

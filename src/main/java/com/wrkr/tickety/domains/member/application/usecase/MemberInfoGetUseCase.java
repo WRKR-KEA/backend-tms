@@ -14,7 +14,8 @@ import java.util.Optional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberGetUseCase {
+public class MemberInfoGetUseCase {
+
     private final MemberGetService memberGetService;
 
     public MemberInfoResponse getMemberInfo(String memberId) {
