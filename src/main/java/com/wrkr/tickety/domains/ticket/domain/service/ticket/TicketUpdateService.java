@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
+import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
@@ -16,6 +17,11 @@ public class TicketUpdateService {
 
     public Ticket updateStatus(Ticket ticket, TicketStatus ticketStatus) {
         ticket.updateStatus(ticketStatus);
+        return ticketPersistenceAdapter.save(ticket);
+    }
+
+    public Ticket approveTicket(Ticket ticket, Member member) {
+        ticket.approveTicket(member);
         return ticketPersistenceAdapter.save(ticket);
     }
 }

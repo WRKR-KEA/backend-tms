@@ -27,15 +27,15 @@ public class Ticket extends BaseTime {
 
     @Builder
     public Ticket(
-            Long ticketId,
-            Member user,
-            Member manager,
-            Category category,
-            String serialNumber,
-            String title,
-            String content,
-            TicketStatus status,
-            Boolean isPinned
+        Long ticketId,
+        Member user,
+        Member manager,
+        Category category,
+        String serialNumber,
+        String title,
+        String content,
+        TicketStatus status,
+        Boolean isPinned
     ) {
         this.ticketId = ticketId;
         this.user = user;
@@ -66,6 +66,11 @@ public class Ticket extends BaseTime {
         } else {
             return true;
         }
+    }
+
+    public void approveTicket(Member member) {
+        this.status = TicketStatus.IN_PROGRESS;
+        this.manager = member;
     }
 
     public boolean isCommentable() {
