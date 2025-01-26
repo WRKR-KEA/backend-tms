@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
@@ -26,16 +27,15 @@ public class CategoryMapper {
                 ).toList();
     }
 
+    public static PkResponse mapToPkResponse(Category category) {
+        return PkResponse.builder()
+                .id(PkCrypto.encrypt(category.getCategoryId()))
+                .build();
+    }
     public static Category mapToCategoryDomain(CategoryCreateRequest request) {
         return Category.builder()
                 .name(request.name())
                 .seq(request.seq())
-                .build();
-    }
-
-    public static PkResponse mapToPkResponse(Category category) {
-        return PkResponse.builder()
-                .id(PkCrypto.encrypt(category.getCategoryId()))
                 .build();
     }
 

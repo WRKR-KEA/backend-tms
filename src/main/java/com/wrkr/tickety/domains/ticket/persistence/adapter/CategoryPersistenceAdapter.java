@@ -8,7 +8,6 @@ import com.wrkr.tickety.domains.ticket.persistence.repository.CategoryRepository
 import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +29,8 @@ public class CategoryPersistenceAdapter {
     public List<Category> findByIsDeletedFalse() {
         final List<CategoryEntity> categoryEntities = categoryRepository.findByIsDeletedFalse();
         return categoryEntities.stream()
-                .map(this.categoryPersistenceMapper::toDomain)
-                .toList();
+            .map(this.categoryPersistenceMapper::toDomain)
+            .toList();
     }
 
     public Category save(final Category category) {

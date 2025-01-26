@@ -9,8 +9,6 @@ import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryGetA
 import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryUpdateUseCase;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +41,9 @@ public class CategoryController {
 
     @PostMapping("/admin/categories/{categoryId}")
     public ApplicationResponse<PkResponse> updateCategory(@PathVariable("categoryId") String categoryId, @RequestBody CategoryUpdateRequest request){
-        PkResponse encryptedCategoryId = categoryUpdateUseCase.updateCategory(request);
-        return ApplicationResponse.onSuccess(encryptedCategoryId);
+//        PkResponse encryptedCategoryId = categoryUpdateUseCase.updateCategory(request);
+//        return ApplicationResponse.onSuccess(encryptedCategoryId);
+        return null;
     }
 
 }

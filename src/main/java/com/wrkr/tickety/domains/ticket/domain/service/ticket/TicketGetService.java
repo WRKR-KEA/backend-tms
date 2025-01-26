@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import lombok.RequiredArgsConstructor;
@@ -7,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,15 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findAllByUserId(userId, pageable);
     }
 
-    public Optional<Ticket> getTicketByTicketId(Long ticketId) {
+    public Ticket getTicketByTicketId(Long ticketId) {
         return ticketPersistenceAdapter.findById(ticketId);
+    }
+
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String search) {
+        if (status == null) {
+            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, search);
+        }
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, search);
+
     }
 }

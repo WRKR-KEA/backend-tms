@@ -1,4 +1,8 @@
-package com.wrkr.tickety.domains.ticket.application.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
+
+import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.mapToTicket;
+import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
+import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
@@ -17,15 +21,9 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-
-
-import java.util.UUID;
-
-import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.mapToTicket;
-import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
-import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 
 @UseCase
 @RequiredArgsConstructor
@@ -41,7 +39,7 @@ public class TicketCreateUseCase {
         Category category = categoryGetService.getCategory(decrypt(request.categoryId()))
             .orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST));
 
-        Member member = UserGetService.getUserById(userId)
+        Member member = UserGetService.byMemberId(userId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         String serialNumber = generateSerialNumber();
@@ -51,7 +49,8 @@ public class TicketCreateUseCase {
         Ticket savedTicket = ticketSaveService.save(ticket);
 
         ModifiedType modifiedType = ModifiedType.STATUS;
-        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket, modifiedType);
+        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket,
+            modifiedType);
         ticketHistorySaveService.save(ticketHistory);
 
         return new PkResponse(encrypt(savedTicket.getTicketId()));
