@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @UseCase
 @RequiredArgsConstructor
 public class GuideCreateUseCase {
+
     private final GuideCreateService guideCreateService;
     private final CategoryGetService categoryGetService;
     private final GuideMapper guideMapper;
@@ -26,9 +27,9 @@ public class GuideCreateUseCase {
                 .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
 
         Guide guide = Guide.builder()
-                .content(guideCreateRequest.content())
-                .category(category)
-                .build();
+            .content(guideCreateRequest.content())
+            .category(category)
+            .build();
 
         Guide savedGuide = guideCreateService.createGuide(guide);
 

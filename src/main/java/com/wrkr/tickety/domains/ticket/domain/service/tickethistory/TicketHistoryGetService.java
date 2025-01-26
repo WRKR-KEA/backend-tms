@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.ticket.domain.service.tickethistory;
 
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketHistoryPersistenceAdapter;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,11 +15,11 @@ import java.time.LocalDateTime;
 @Transactional(readOnly = true)
 public class TicketHistoryGetService {
 
-    private final TicketHistoryRepository ticketHistoryRepository;
+    private final TicketHistoryPersistenceAdapter ticketHistoryPersistenceAdapter;
 
 
     public LocalDateTime getFirstManagerChangeDate(Long ticketId) {
-        return ticketHistoryRepository.findFirstByTicket_TicketIdAndModifiedOrderByCreatedAtAsc(
+        return ticketHistoryPersistenceAdapter.findFirstByTicketIdAndModifiedOrderByCreatedAtAsc(
                 ticketId,
                 ModifiedType.MANAGER
         ).map(TicketHistory::getCreatedAt).orElse(null);

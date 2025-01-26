@@ -24,7 +24,6 @@ public class CategoryGetAllUseCase {
     private final TemplateGetService templateGetService;
 
     public List<CategoryGetAllResponse> getAllCategories() {
-
         List<Category> categoryList = categoryGetService.byIsDeleted();
         List<CategoryGetAllResponse> categoryGetAllResponseList = CategoryMapper.mapToCategoryGetAllResponseDTO(categoryList);
 
