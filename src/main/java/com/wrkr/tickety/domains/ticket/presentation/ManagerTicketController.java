@@ -4,6 +4,7 @@ import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_N
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_MANAGER_NOT_MATCH;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_APPROVABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_FOUND;
+import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_REJECTABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
@@ -12,6 +13,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
@@ -42,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerTicketController {
 
     private final TicketApproveUseCase ticketApproveUseCase;
+    private final TicketRejectUseCase ticketRejectUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
 
@@ -59,6 +62,20 @@ public class ManagerTicketController {
         @RequestParam(value = "ticketId") List<String> ticketId
     ) {
         List<PkResponse> response = ticketApproveUseCase.approveTicket(memberId, ticketId);
+        return ApplicationResponse.onSuccess(response);
+    }
+
+    @PatchMapping("/{ticketId}/reject")
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_REJECTABLE, TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH})
+    @Parameters({
+        @Parameter(name = "ticketId", description = "티켓 PK", example = "abc123", required = true)
+    })
+    @Operation(summary = "담당자 - 티켓 반려", description = "담당자가 티켓을 반려합니다.")
+    public ApplicationResponse<PkResponse> rejectTicket(
+        @RequestParam(value = "memberId") String memberId,
+        @PathVariable(value = "ticketId") String ticketId
+    ) {
+        PkResponse response = ticketRejectUseCase.rejectTicket(memberId, ticketId);
         return ApplicationResponse.onSuccess(response);
     }
 
