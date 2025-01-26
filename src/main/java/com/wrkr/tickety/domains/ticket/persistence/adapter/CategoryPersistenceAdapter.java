@@ -47,4 +47,12 @@ public class CategoryPersistenceAdapter {
         final CategoryEntity savedCategoryEntity = this.categoryRepository.save(categoryEntity);
         return this.categoryPersistenceMapper.toDomain(savedCategoryEntity);
     }
+
+    public void saveAll(List<Category> children) {
+        final List<CategoryEntity> childrenEntities = children.stream()
+                .map(this.categoryPersistenceMapper::toEntity)
+                .toList();
+        this.categoryRepository.saveAll(childrenEntities);
+
+    }
 }

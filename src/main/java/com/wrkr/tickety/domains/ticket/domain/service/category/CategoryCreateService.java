@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Transactional
@@ -16,6 +18,10 @@ public class CategoryCreateService {
 
     public Category createCategory(Category category) {
         return categoryPersistenceAdapter.save(category);
+    }
+
+    public void initChildren(List<Category> children){
+        categoryPersistenceAdapter.saveAll(children);
     }
 
 

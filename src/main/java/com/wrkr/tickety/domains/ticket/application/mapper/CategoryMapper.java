@@ -38,4 +38,32 @@ public class CategoryMapper {
                 .id(PkCrypto.encrypt(category.getCategoryId()))
                 .build();
     }
+
+    public static List<Category> initChildren(Category savedCategory) {
+        Category createChildCategory = Category.builder()
+                .name("생성")
+                .seq(1)
+                .parent(savedCategory)
+                .build();
+
+        Category deleteChildCategory = Category.builder()
+                .name("삭제")
+                .seq(2)
+                .parent(savedCategory)
+                .build();
+
+        Category updateChildCategory = Category.builder()
+                .name("변경")
+                .seq(3)
+                .parent(savedCategory)
+                .build();
+
+        Category etcChildCategory = Category.builder()
+                .name("기타")
+                .seq(4)
+                .parent(savedCategory)
+                .build();
+
+        return List.of(createChildCategory, deleteChildCategory, updateChildCategory, etcChildCategory);
+    }
 }

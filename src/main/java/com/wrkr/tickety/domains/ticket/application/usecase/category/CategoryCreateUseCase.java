@@ -9,6 +9,8 @@ import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @UseCase
 @Transactional
 @RequiredArgsConstructor
@@ -19,6 +21,10 @@ public class CategoryCreateUseCase {
     public PkResponse createCategory(CategoryCreateRequest request) {
         Category requestCategory = CategoryMapper.mapToCategoryDomain(request);
         Category savedCategory = categoryCreateService.createCategory(requestCategory);
+
+        List<Category> children = CategoryMapper.initChildren(savedCategory);
+        categoryCreateService.initChildren(children);
+
         return CategoryMapper.mapToPkResponse(savedCategory);
     }
 
