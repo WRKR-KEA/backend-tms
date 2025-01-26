@@ -15,7 +15,15 @@ public class MemberGetService {
 
     private final MemberPersistenceAdapter memberPersistenceAdapter;
 
-    public Optional<Member> getUserById(Long userId) {
-        return memberPersistenceAdapter.findById(userId);
+    public Optional<Member> byMemberId(Long memberId) {
+        return memberPersistenceAdapter.findById(memberId);
+    }
+
+    public Boolean existsByEmail(String email) {
+        return memberPersistenceAdapter.existsByEmail(email);
+    }
+
+    public Boolean existsByNickname(String nickname) {
+        return memberPersistenceAdapter.existsByNickname(nickname);
     }
 }

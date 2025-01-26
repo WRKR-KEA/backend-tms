@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,7 +20,7 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findAllByUserId(userId, pageable);
     }
 
-    public Optional<Ticket> getTicketByTicketId(Long ticketId) {
+    public Ticket getTicketByTicketId(Long ticketId) {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 

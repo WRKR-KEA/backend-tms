@@ -6,6 +6,7 @@ spring:
       - mysql.yml
       - swagger.yml
       - crypto.yml
+      - mail.yml
 
 server:
   port: ${APPLICATION_PORT:8080}

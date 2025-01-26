@@ -69,6 +69,18 @@ public class PkCrypto {
         }
     }
 
+    public String encryptValue(String value) {
+        try {
+            Cipher cipher = Cipher.getInstance(algorithm);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            byte[] valueBytes = value.getBytes();
+            byte[] encrypted = cipher.doFinal(valueBytes);
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(encrypted);
+        } catch (Exception e) {
+            throw new IllegalStateException("문자열 암호화 실패", e);
+        }
+    }
+
     public Long decryptValue(String encryptedValue) {
         try {
             Cipher cipher = Cipher.getInstance(algorithm);
@@ -81,9 +93,9 @@ public class PkCrypto {
         }
     }
 
-    public static String encrypt(Long value) {
-        return getInstance().encryptValue(value);
-    }
+    public static String encrypt(Long value) {return getInstance().encryptValue(value);}
+  
+    public static String encrypt(String value) {return getInstance().encryptValue(value);}
 
     public static Long decrypt(String encryptedValue) {
         return getInstance().decryptValue(encryptedValue);
