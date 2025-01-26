@@ -76,4 +76,8 @@ public class Ticket extends BaseTime {
     public boolean isCommentable() {
         return status.equals(TicketStatus.IN_PROGRESS);
     }
+
+    public boolean isApprovable() {
+        return status.equals(TicketStatus.REQUEST) && manager == null;
+    }
 }
