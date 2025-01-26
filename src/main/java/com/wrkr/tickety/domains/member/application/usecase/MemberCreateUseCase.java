@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class MemberCreateUseCase {
+
     private final MemberCreateService memberCreateService;
     private final EmailCreateUseCase emailCreateUseCase; // TODO: UseCase간 서로 참조하도록 해도 되는지 고민 필요
 

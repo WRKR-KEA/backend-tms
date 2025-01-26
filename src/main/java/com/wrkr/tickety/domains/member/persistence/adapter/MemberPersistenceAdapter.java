@@ -1,15 +1,17 @@
 package com.wrkr.tickety.domains.member.persistence.adapter;
 
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.member.persistence.mapper.MemberPersistenceMapper;
 import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,8 +28,26 @@ public class MemberPersistenceAdapter {
 
     public Optional<Member> findById(final Long memberId) {
         final Optional<MemberEntity> memberEntity = Optional.ofNullable(this.memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
+            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
+    }
+
+    public Page<Member> searchMember(
+        final Pageable pageable,
+        final Role role,
+        final String email,
+        final String name,
+        final String department) {
+
+        Page<MemberEntity> memberEntityPage = memberRepository.searchMember(
+            pageable,
+            role,
+            email,
+            name,
+            department
+        );
+
+        return memberEntityPage.map(this.memberPersistenceMapper::toDomain);
     }
 
     public Boolean existsByEmail(final String email) {
