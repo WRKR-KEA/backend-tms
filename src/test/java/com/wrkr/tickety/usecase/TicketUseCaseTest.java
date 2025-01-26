@@ -25,7 +25,6 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,9 +55,6 @@ public class TicketUseCaseTest {
 
     @Mock
     private TicketUpdateService ticketUpdateService;
-
-    @Mock
-    private TicketHistorySaveService ticketHistorySaveService;
 
     @Mock
     private TicketHistoryGetService ticketHistoryGetService;
@@ -135,17 +131,18 @@ public class TicketUseCaseTest {
             .build();
 
         given(categoryGetService.getCategory(anyLong())).willReturn(category);
-        given(memberGetService.getUserById(anyLong())).willReturn(java.util.Optional.of(user));
+        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
         // when
         PkResponse pkResponse = ticketCreateUseCase.createTicket(ticketCreateRequest, USER_ID);
+
         // then
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.id()).isEqualTo(PkCrypto.encrypt(1L));
 
         verify(categoryGetService).getCategory(anyLong());
-        verify(memberGetService).getUserById(anyLong());
+        verify(memberGetService).byMemberId(anyLong());
         verify(ticketSaveService).save(any(Ticket.class));
     }
 
@@ -156,25 +153,21 @@ public class TicketUseCaseTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
-        given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(
-            ticketPage);
-        given(memberGetService.getUserById(anyLong())).willReturn(java.util.Optional.of(user));
-        given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(
-            LocalDateTime.now());
+        given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(ticketPage);
+        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
+        given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         //when
-        TicketAllGetPagingResponse ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(
-            USER_ID, pageable);
+        TicketAllGetPagingResponse ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageable);
 
         //then
         assertThat(ticketAllGetPagingResponse).isNotNull();
         assertThat(ticketAllGetPagingResponse.currentPage()).isEqualTo(1);
         assertThat(ticketAllGetPagingResponse.size()).isEqualTo(1);
-        assertThat(ticketAllGetPagingResponse.tickets().get(0).serialNumber()).isEqualTo(
-            "#12345678");
+        assertThat(ticketAllGetPagingResponse.tickets().get(0).serialNumber()).isEqualTo("#12345678");
 
         verify(ticketGetService).getTicketsByUserId(anyLong(), any(Pageable.class));
-        verify(memberGetService).getUserById(anyLong());
+        verify(memberGetService).byMemberId(anyLong());
     }
 
     @Test
@@ -182,8 +175,7 @@ public class TicketUseCaseTest {
     void getTicket() {
         // given
         given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
-        given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(
-            LocalDateTime.now());
+        given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         // when
         TicketDetailGetResponse response = ticketDetailGetUseCase.getTicket(USER_ID, TICKET_ID);
@@ -214,8 +206,7 @@ public class TicketUseCaseTest {
 
         given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
         given(ticketUpdateService.updateStatus(any(Ticket.class),
-            any(TicketStatus.class))).willReturn(
-            updatedTicket);
+            any(TicketStatus.class))).willReturn(updatedTicket);
 
         // when
         PkResponse pkResponse = ticketCancelUseCase.cancelTicket(USER_ID, TICKET_ID);
