@@ -13,6 +13,7 @@ public enum TicketErrorCode implements BaseErrorCode {
     TICKET_MANAGER_NOT_FOUND(HttpStatus.BAD_REQUEST, "TICKET_002", "승인되지 않은 티켓입니다"),
     TICKET_STATUS_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "TICKET_003", "진행 중인 티켓이 아닙니다."),
     TICKET_NOT_APPROVABLE(HttpStatus.BAD_REQUEST, "TICKET_005", "티켓 승인이 불가능한 상태입니다."),
+    TICKET_NOT_REJECTABLE(HttpStatus.BAD_REQUEST, "TICKET_005", "티켓 반려가 불가능한 상태입니다."),
 
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "TICKET_301", "티켓에 접근할 권한이 없습니다."),
     TICKET_NOT_BELONG_TO_USER(HttpStatus.FORBIDDEN, "TICKET_302", "티켓이 사용자에게 속해있지 않습니다."),
