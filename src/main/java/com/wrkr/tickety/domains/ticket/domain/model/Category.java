@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.model;
 
 import com.wrkr.tickety.global.model.BaseTime;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
@@ -10,7 +9,6 @@ import java.util.List;
 
 @Getter
 @SuperBuilder
-@Table(name = "category")
 public class Category extends BaseTime {
 
     private Long categoryId;
