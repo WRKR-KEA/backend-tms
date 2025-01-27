@@ -30,7 +30,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Order(-10000)
 public class LogFilter extends OncePerRequestFilter {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(
@@ -64,8 +64,8 @@ public class LogFilter extends OncePerRequestFilter {
 
         MDC.put("value.request.method", requestWrapper.getMethod());
         MDC.put("value.request.url", uri);
-        MDC.put("value.request.params", getParams(requestWrapper));
-        MDC.put("value.request.body", getBody(requestWrapper));
+        MDC.put("value.request.params", getRequestParams(requestWrapper));
+        MDC.put("value.request.body", getRequestBody(requestWrapper));
 
         MDC.put("value.response.status", Integer.toString(responseWrapper.getStatus()));
         try {
@@ -84,7 +84,7 @@ public class LogFilter extends OncePerRequestFilter {
         MDC.clear();
     }
 
-    private String getParams(ContentCachingRequestWrapper request) throws JsonProcessingException {
+    private String getRequestParams(ContentCachingRequestWrapper request) throws JsonProcessingException {
         Map<String, Object> map = new HashMap<>();
         for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
             String key = entry.getKey();
@@ -96,7 +96,7 @@ public class LogFilter extends OncePerRequestFilter {
         return objectMapper.writeValueAsString(map);
     }
 
-    private static String getBody(ContentCachingRequestWrapper request) {
+    private String getRequestBody(ContentCachingRequestWrapper request) {
         return new String(request.getContentAsByteArray());
     }
 
