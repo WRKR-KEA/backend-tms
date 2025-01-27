@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum CategoryErrorCode implements BaseErrorCode {
 
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY_001", "카테고리를 찾을 수 없습니다."),
+    CATEGORY_NOT_EXIST(HttpStatus.NOT_FOUND, "CATEGORY_400", "카테고리를 찾을 수 없습니다."),
+    CATEGORY_CANNOT_NULL(HttpStatus.BAD_REQUEST, "CATEGORY_401", "카테고리 이름 및 순서는 필수입니다."),
+    CATEGORY_ALREADY_EXIST(HttpStatus.CONFLICT, "CATEGORY_409", "이미 존재하는 이름의 카테고리입니다."),
     ;
 
     private final HttpStatus httpStatus;
