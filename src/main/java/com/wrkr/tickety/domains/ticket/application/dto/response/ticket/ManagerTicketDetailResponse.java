@@ -11,6 +11,9 @@ public record ManagerTicketDetailResponse(
     @Schema(description = "티켓 id", example = "Bqs3C822lkMNdWlmE-szUw")
     String ticketId,
 
+    @Schema(description = "티켓 식별번호", example = "VM001")
+    String ticketSerialNumber,
+
     @Schema(description = "티켓 제목", example = "VM 생성 요청")
     String title,
 
