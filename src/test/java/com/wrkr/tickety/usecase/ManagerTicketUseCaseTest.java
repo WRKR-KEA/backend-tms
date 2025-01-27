@@ -8,14 +8,13 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
-import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,9 +37,6 @@ public class ManagerTicketUseCaseTest {
 
     @Mock
     private TicketUpdateService ticketUpdateService;
-
-    @Mock
-    private TicketHistorySaveService ticketHistorySaveService;
 
     @InjectMocks
     private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
@@ -136,26 +132,22 @@ public class ManagerTicketUseCaseTest {
             .category(category)
             .build();
 
-        given(memberGetService.getUserById(MANAGER_ID)).willReturn(Optional.of(manager));
-        given(memberGetService.getUserById(delegateManagerId)).willReturn(
-            Optional.of(delegateManager));
+        given(memberGetService.byMemberId(MANAGER_ID)).willReturn(Optional.of(manager));
+        given(memberGetService.byMemberId(delegateManagerId)).willReturn(Optional.of(delegateManager));
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 
         // when
-        PkResponse response = managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID,
-            ticketDelegateRequest);
+        TicketPkResponse response = managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.id()).isEqualTo(PkCrypto.encrypt(TICKET_ID));
+        assertThat(response.ticketId()).isEqualTo(PkCrypto.encrypt(TICKET_ID));
         assertThat(updatedTicket.getManager()).isEqualTo(delegateManager);
 
-        verify(memberGetService).getUserById(MANAGER_ID);
-        verify(memberGetService).getUserById(delegateManagerId);
+        verify(memberGetService).byMemberId(MANAGER_ID);
+        verify(memberGetService).byMemberId(delegateManagerId);
         verify(ticketGetService).getTicketByTicketId(TICKET_ID);
         verify(ticketUpdateService).updateManager(ticket, delegateManager);
-
     }
-
 }

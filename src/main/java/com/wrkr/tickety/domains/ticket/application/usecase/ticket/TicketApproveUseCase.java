@@ -1,11 +1,12 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper.mapToTicketHistory;
+import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.toTicketPkResponse;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
@@ -31,11 +32,11 @@ public class TicketApproveUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
 
-    public List<PkResponse> approveTicket(String memberId, List<String> ticketIdList) {
+    public List<TicketPkResponse> approveTicket(String memberId, List<String> ticketIdList) {
         Member member = memberGetService.byMemberId(PkCrypto.decrypt(memberId)).get();
         validateManagerRole(member);
 
-        List<PkResponse> response = new ArrayList<>();
+        List<TicketPkResponse> response = new ArrayList<>();
 
         for (String ticketId : ticketIdList) {
             Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
@@ -44,11 +45,7 @@ public class TicketApproveUseCase {
 
             updateTicketHistory(approvedTicket);
 
-            response.add(
-                PkResponse.builder()
-                    .id(PkCrypto.encrypt(approvedTicket.getTicketId()))
-                    .build()
-            );
+            response.add(toTicketPkResponse(PkCrypto.encrypt(approvedTicket.getTicketId())));
         }
 
         return response;

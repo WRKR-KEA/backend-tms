@@ -3,9 +3,9 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
@@ -43,7 +43,7 @@ public class UserTicketController {
     @PostMapping
     @Operation(summary = "사용자 티켓 요청", description = "사용자의 티켓을 요청합니다.")
     @CustomErrorCodes(ticketErrorCodes = {})
-    public ApplicationResponse<PkResponse> createTicket(
+    public ApplicationResponse<TicketPkResponse> createTicket(
         @RequestParam(value = "userId") Long userId,
         @Parameter(description = "티켓 요청 정보", required = true)
         @Valid @RequestBody TicketCreateRequest request
@@ -77,7 +77,7 @@ public class UserTicketController {
     @Operation(summary = "사용자 요청 티켓 취소", description = "사용자가 요청한 티켓을 취소합니다.")
     @CustomErrorCodes(ticketErrorCodes = {TicketErrorCode.TICKET_NOT_FOUND, TicketErrorCode.TICKET_NOT_BELONG_TO_USER,
         TicketErrorCode.TICKET_NOT_REQUEST_STATUS})
-    public ApplicationResponse<PkResponse> cancelTicket(
+    public ApplicationResponse<TicketPkResponse> cancelTicket(
         @RequestParam(value = "userId") Long userId,
         @PathVariable("ticketId") String ticketId
     ) {

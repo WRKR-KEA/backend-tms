@@ -1,9 +1,11 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
+import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.toTicketPkResponse;
+
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -29,7 +31,7 @@ public class ManagerTicketDelegateUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final MemberGetService memberGetService;
 
-    public PkResponse delegateTicket(Long ticketId, Long currentManagerId,
+    public TicketPkResponse delegateTicket(Long ticketId, Long currentManagerId,
         TicketDelegateRequest request) {
         Optional<Member> delegateManager = memberGetService.byMemberId(
             PkCrypto.decrypt(request.delegateManagerId()));
@@ -44,7 +46,7 @@ public class ManagerTicketDelegateUseCase {
             ModifiedType.MANAGER);
         ticketHistorySaveService.save(ticketHistory);
 
-        return new PkResponse(PkCrypto.encrypt(delegatedTicket.getTicketId()));
+        return toTicketPkResponse(PkCrypto.encrypt(delegatedTicket.getTicketId()));
     }
 
     private void validateTicket(Ticket ticket, Long currentManagerId) {
