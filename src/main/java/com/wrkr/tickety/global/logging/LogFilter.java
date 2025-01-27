@@ -30,7 +30,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Order(-10000)
 public class LogFilter extends OncePerRequestFilter {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(
@@ -39,7 +39,12 @@ public class LogFilter extends OncePerRequestFilter {
         @NonNull FilterChain filterChain
     ) throws IOException, ServletException {
 
-        long start = System.currentTimeMillis();
+        String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+
+        if (uri.startsWith("/api/tickety-tms")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
@@ -49,56 +54,42 @@ public class LogFilter extends OncePerRequestFilter {
         MDC.put("request_ip", ip);
         MDC.put("request_timestamp", Instant.ofEpochMilli(System.currentTimeMillis()).toString());
 
+        long start = System.currentTimeMillis();
+
         filterChain.doFilter(requestWrapper, responseWrapper);
 
         long end = System.currentTimeMillis();
         long ms = end - start;
 
-        ApplicationResponse<Object> applicationResponse = objectMapper.readValue(responseWrapper.getContentInputStream(), new TypeReference<>() {});
+        String responseContent = new String(responseWrapper.getContentAsByteArray());
         responseWrapper.copyBodyToResponse();
-
-        String uri = URLDecoder.decode(requestWrapper.getRequestURI(), StandardCharsets.UTF_8);
 
         MDC.put("type", "api");
         MDC.put("value.total_ms", Long.toString(ms));
 
         MDC.put("value.request.method", requestWrapper.getMethod());
         MDC.put("value.request.url", uri);
-        MDC.put("value.request.params", getParams(requestWrapper));
-        MDC.put("value.request.body", getBody(requestWrapper));
+        MDC.put("value.request.params", getRequestParams(requestWrapper));
+        MDC.put("value.request.body", getRequestBody(requestWrapper));
 
         MDC.put("value.response.status", Integer.toString(responseWrapper.getStatus()));
-        MDC.put("value.response.code", applicationResponse.getCode());
-        MDC.put("value.response.message", applicationResponse.getMessage());
+        try {
+            ApplicationResponse<Object> applicationResponse = objectMapper.readValue(responseContent, new TypeReference<>() {
+            });
+            MDC.put("value.response.code", applicationResponse.getCode());
+            MDC.put("value.response.message", applicationResponse.getMessage());
+            MDC.put("value.response.result", getResponseResult(applicationResponse));
 
-        Object result = applicationResponse.getResult();
-        if (result instanceof Map || result instanceof List) {
-            MDC.put("value.response.result",
-                objectMapper.writeValueAsString(applicationResponse.getResult()));
-        } else {
-            MDC.put("value.response.result", String.valueOf(result));
+        } catch (JsonProcessingException e) {
+            MDC.put("value.response.body", responseContent);
         }
 
         log.info("Api Log");
 
-        MDC.remove("type");
-        MDC.remove("value.total_ms");
-
-        MDC.remove("value.request.method");
-        MDC.remove("value.request.url");
-        MDC.remove("value.request.params");
-        MDC.remove("value.request.body");
-
-        MDC.remove("value.response.status");
-        MDC.remove("value.response.code");
-        MDC.remove("value.response.message");
-        MDC.remove("value.response.result");
-
-        MDC.remove("request_ip");
-        MDC.remove("request_timestamp");
+        MDC.clear();
     }
 
-    private String getParams(ContentCachingRequestWrapper request) throws JsonProcessingException {
+    private String getRequestParams(ContentCachingRequestWrapper request) throws JsonProcessingException {
         Map<String, Object> map = new HashMap<>();
         for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
             String key = entry.getKey();
@@ -110,7 +101,16 @@ public class LogFilter extends OncePerRequestFilter {
         return objectMapper.writeValueAsString(map);
     }
 
-    private static String getBody(ContentCachingRequestWrapper request) {
+    private String getRequestBody(ContentCachingRequestWrapper request) {
         return new String(request.getContentAsByteArray());
+    }
+
+    private String getResponseResult(ApplicationResponse<?> applicationResponse) throws JsonProcessingException {
+        Object result = applicationResponse.getResult();
+        if (result instanceof Map || result instanceof List) {
+            return objectMapper.writeValueAsString(applicationResponse.getResult());
+        } else {
+            return String.valueOf(result);
+        }
     }
 }
