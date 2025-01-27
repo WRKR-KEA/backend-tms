@@ -25,8 +25,8 @@ public class TicketAllGetUseCase {
     private final MemberGetService memberGetService;
 
     public TicketAllGetPagingResponse getAllTickets(Long userId, Pageable pageable) {
-        memberGetService.getUserById(userId)
-            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
+        memberGetService.byMemberId(userId)
+                .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Page<Ticket> ticketsPage = ticketGetService.getTicketsByUserId(userId, pageable);
 

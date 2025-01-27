@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.member.domain.model;
 
+import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
@@ -19,6 +20,7 @@ public class Member extends BaseTime {
     private String name;
     private String phone;
     private String email;
+    private String department;
     private String position;
     private String profileImage;
     private Role role;
@@ -27,23 +29,26 @@ public class Member extends BaseTime {
     private Boolean emailNotification;
     private Boolean serviceNotification;
     private Boolean isDeleted;
+    private Boolean isTempPassword;
 
     @Builder
     public Member(
-            Long memberId,
-            String nickname,
-            String password,
-            String name,
-            String phone,
-            String email,
-            String position,
-            String profileImage,
-            Role role,
-            String agitUrl,
-            Boolean agitNotification,
-            Boolean emailNotification,
-            Boolean serviceNotification,
-            Boolean isDeleted
+        Long memberId,
+        String nickname,
+        String password,
+        String name,
+        String phone,
+        String email,
+        String department,
+        String position,
+        String profileImage,
+        Role role,
+        String agitUrl,
+        Boolean agitNotification,
+        Boolean emailNotification,
+        Boolean serviceNotification,
+        Boolean isDeleted,
+        Boolean isTempPassword
     ) {
         this.memberId = memberId;
         this.nickname = nickname;
@@ -51,6 +56,7 @@ public class Member extends BaseTime {
         this.name = name;
         this.phone = phone;
         this.email = email;
+        this.department = department;
         this.position = position;
         this.profileImage = profileImage;
         this.role = role;
@@ -59,5 +65,25 @@ public class Member extends BaseTime {
         this.emailNotification = emailNotification;
         this.serviceNotification = serviceNotification;
         this.isDeleted = isDeleted;
+        this.isTempPassword = isTempPassword;
+    }
+
+    public void modifyMemberInfo(MemberUpdateRequest memberUpdateRequest) {
+        this.email = memberUpdateRequest.email();
+        this.name = memberUpdateRequest.name();
+        this.nickname = memberUpdateRequest.nickname();
+        this.department = memberUpdateRequest.department();
+        this.position = memberUpdateRequest.position();
+        this.phone = memberUpdateRequest.phone();
+        this.role = memberUpdateRequest.role();
+        this.profileImage = memberUpdateRequest.profileImage();
+    }
+
+    public void modifyIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public boolean isManager() {
+        return role == Role.MANAGER;
     }
 }
