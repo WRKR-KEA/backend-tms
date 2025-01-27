@@ -11,6 +11,8 @@ public enum MemberErrorCode implements BaseErrorCode {
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_401", "회원을 찾을 수 없습니다."),
 
+    MEMBER_NOT_ALLOWED(HttpStatus.FORBIDDEN, "MEMBER_301", "접근 권한이 없는 회원입니다."),
+
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "MEMBER_001", "유효하지 않은 이메일 형식입니다."),
     INVALID_PHONE_FORMAT(HttpStatus.BAD_REQUEST, "MEMBER_002", "유효하지 않은 전화번호 형식입니다."),
     INVALID_ROLE(HttpStatus.BAD_REQUEST, "MEMBER_003", "유효하지 않은 역할입니다."),

@@ -7,9 +7,9 @@ import com.wrkr.tickety.domains.ticket.persistence.mapper.CategoryPersistenceMap
 import com.wrkr.tickety.domains.ticket.persistence.repository.CategoryRepository;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,9 +20,10 @@ public class CategoryPersistenceAdapter {
 
     public Optional<Category> findById(final Long categoryId) {
         final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findById(categoryId);
-        if(categoryEntity.isEmpty()) {
+        if (categoryEntity.isEmpty()) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST);
         }
+
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
     }
 
@@ -34,11 +35,11 @@ public class CategoryPersistenceAdapter {
     }
 
     public Category save(final Category category) {
-        if(category.getName().isEmpty() || category.getSeq() == null) {
+        if (category.getName().isEmpty() || category.getSeq() == null) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_CANNOT_NULL);
         }
 
-        if(categoryRepository.existsByName(category.getName())) {
+        if (categoryRepository.existsByName(category.getName())) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
         }
 
@@ -49,9 +50,8 @@ public class CategoryPersistenceAdapter {
 
     public void saveAll(List<Category> children) {
         final List<CategoryEntity> childrenEntities = children.stream()
-                .map(this.categoryPersistenceMapper::toEntity)
-                .toList();
+            .map(this.categoryPersistenceMapper::toEntity)
+            .toList();
         this.categoryRepository.saveAll(childrenEntities);
-
     }
 }

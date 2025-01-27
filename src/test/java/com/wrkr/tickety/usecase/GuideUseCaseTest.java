@@ -26,6 +26,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -116,18 +117,18 @@ public class GuideUseCaseTest {
         long categoryId = 2L;
         String cryptoCategoryId = pkCrypto.encryptValue(categoryId);
         Category parent = Category.builder()
-                .categoryId(parentId)
-                .name("카테고리 1")
-                .seq(1)
-                .isDeleted(false)
-                .build();
+            .categoryId(parentId)
+            .name("카테고리 1")
+            .seq(1)
+            .isDeleted(false)
+            .build();
         Category category = Category.builder()
-                .categoryId(categoryId)
-                .parent(parent)
-                .name("카테고리 2")
-                .seq(2)
-                .isDeleted(false)
-                .build();
+            .categoryId(categoryId)
+            .parent(parent)
+            .name("카테고리 2")
+            .seq(2)
+            .isDeleted(false)
+            .build();
 
         Guide guide = Guide.builder()
             .content("test")
@@ -138,7 +139,7 @@ public class GuideUseCaseTest {
             .categoryId(categoryId)
             .build();
 
-        given(categoryGetService.getCategory(categoryId)).willReturn(category);
+        given(categoryGetService.getCategory(categoryId)).willReturn(Optional.ofNullable(category));
         given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
         given(guideMapper.guideIdToPkResponse(guide)).willReturn(
             PkResponse.builder().id(cryptoCategoryId).build());
