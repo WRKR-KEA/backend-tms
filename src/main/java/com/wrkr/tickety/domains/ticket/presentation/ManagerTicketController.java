@@ -9,12 +9,16 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_S
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByTicketStatusResponse;
+import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
+import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,10 +26,13 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -44,6 +51,7 @@ public class ManagerTicketController {
     private final TicketApproveUseCase ticketApproveUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
+    private final StatisticsGetUseCase statisticsGetUseCase;
 
     @PatchMapping("/approve")
     @CustomErrorCodes(
@@ -92,4 +100,22 @@ public class ManagerTicketController {
             managerTicketDelegateUseCase.delegateTicket(PkCrypto.decrypt(ticketId), PkCrypto.decrypt(request.currentManagerId()), request)
         );
     }
+
+    @Operation(summary = "기간별(일별 or 월별) & 티켓 상태별 티켓 개수 조회", description = "")
+    @Parameters({
+        @Parameter(name = "statisticsType", description = "통계 타입 (daily | monthly | yearly)", example = "daily"),
+        @Parameter(name = "ticketStatus", description = "티켓 상태 (request | in_progress | complete | cancel | reject)", example = "in_progress"),
+    })
+    @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.METHOD_ARGUMENT_NOT_VALID})
+    @GetMapping("/statistics")
+    public ApplicationResponse<StatisticsByTicketStatusResponse> getTicketCountStatistics(
+        @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date,
+        @RequestParam(defaultValue = "TOTAL") StatisticsType statisticsType,
+        @RequestParam(required = false) TicketStatus ticketStatus
+    ) {
+        return ApplicationResponse.onSuccess(
+            statisticsGetUseCase.getTicketCountStatistics(date.atStartOfDay(), statisticsType, ticketStatus)
+        );
+    }
+
 }
