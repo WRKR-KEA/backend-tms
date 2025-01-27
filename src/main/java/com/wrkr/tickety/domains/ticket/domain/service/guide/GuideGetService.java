@@ -4,7 +4,6 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.GuidePersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,9 +15,7 @@ public class GuideGetService {
 
     private final GuidePersistenceAdapter guidePersistenceAdapter;
 
-    public Guide getGuideContentByCategory(String cryptoCategoryId) {
-
-        long categoryId = PkCrypto.decrypt(cryptoCategoryId);
+    public Guide getGuideContentByCategory(Long categoryId) {
 
         Guide guide = guidePersistenceAdapter.findByCategoryId(categoryId)
             .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));

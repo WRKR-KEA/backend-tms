@@ -13,11 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class GuideDeleteUseCase {
 
     private final GuideDeleteService guideDeleteService;
-    private final PkCrypto pkCrypto;
 
-    public PkResponse deleteGuide(String cryptoGuideId) {
-        //todo 삭제 확인 로직 추가?
-        PkResponse pkResponse = guideDeleteService.deleteGuide(cryptoGuideId);
+    public PkResponse deleteGuide(Long guideId) {
+
+        PkResponse pkResponse = guideDeleteService.deleteGuide(guideId);
 
         return pkResponse;
     }

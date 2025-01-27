@@ -16,9 +16,9 @@ public class GuideGetUseCase {
     private final GuideGetService guideGetService;
     private final GuideMapper guideMapper;
 
-    public GuideResponse getGuide(String cryptoCategoryId) {
+    public GuideResponse getGuide(Long categoryId) {
 
-        Guide guide = guideGetService.getGuideContentByCategory(cryptoCategoryId);
+        Guide guide = guideGetService.getGuideContentByCategory(categoryId);
         GuideResponse guideResponse = guideMapper.guideToGuideResponse(guide);
 
         return guideResponse;

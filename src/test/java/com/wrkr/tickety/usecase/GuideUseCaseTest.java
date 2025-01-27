@@ -83,7 +83,7 @@ public class GuideUseCaseTest {
     @DisplayName("카테고리id를 이용해 도움말을 조회한다.")
     void testGetGuide() throws ApplicationException {
         // given
-        String categoryId = "1";
+        Long categoryId = 1L;
 
         Guide guideDomain = Guide.builder()
             .guideId(1L)
@@ -130,7 +130,7 @@ public class GuideUseCaseTest {
             PkResponse.builder().id(cryptoCategoryId).build());
 
         // when
-        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, cryptoCategoryId);
+        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, categoryId);
 
         // then
         assertEquals(cryptoCategoryId, response.id());
@@ -150,13 +150,13 @@ public class GuideUseCaseTest {
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
             .content("수정된 도움말")
             .build();
-        given(guideUpdateService.updateGuide(cryptoGuideId, guideUpdateRequest)).willReturn(
+        given(guideUpdateService.updateGuide(guideId, guideUpdateRequest)).willReturn(
             guideDomain);
         given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(
             new PkResponse(cryptoGuideId));
 
         // when
-        PkResponse response = guideUpdateUseCase.modifyGuide(cryptoGuideId, guideUpdateRequest);
+        PkResponse response = guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest);
 
         // then
         assertEquals(cryptoGuideId, response.id());
@@ -166,7 +166,7 @@ public class GuideUseCaseTest {
     @DisplayName("도움말을 삭제한다. 유스케이스 계츠을 테스트한다.")
     void deleteGuideTestInUseCase() {
         // given
-        String guideId = "1";
+        Long guideId = 1L;
 
         // when
         guideDeleteUseCase.deleteGuide(guideId);

@@ -8,7 +8,6 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideCreateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +20,9 @@ public class GuideCreateUseCase {
     private final CategoryGetService categoryGetService;
     private final GuideMapper guideMapper;
 
-    public PkResponse createGuide(GuideCreateRequest guideCreateRequest, String cryptoCategoryId) {
+    public PkResponse createGuide(GuideCreateRequest guideCreateRequest, Long categoryId) {
 
-        Category category = categoryGetService.getCategory(PkCrypto.decrypt(cryptoCategoryId));
+        Category category = categoryGetService.getCategory(categoryId);
 
         Guide guide = Guide.builder()
             .content(guideCreateRequest.content())

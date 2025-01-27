@@ -17,7 +17,7 @@ public class GuideUpdateUseCase {
     private final GuideUpdateService guideService;
     private final GuideMapper guideMapper;
 
-    public PkResponse modifyGuide(String cryptoGuideId, GuideUpdateRequest guideUpdateRequest) {
+    public PkResponse modifyGuide(Long cryptoGuideId, GuideUpdateRequest guideUpdateRequest) {
         Guide guide = guideService.updateGuide(cryptoGuideId, guideUpdateRequest);
         return guideMapper.guideIdToPkResponse(guide);
     }
