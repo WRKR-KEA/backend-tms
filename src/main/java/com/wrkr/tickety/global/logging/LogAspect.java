@@ -23,23 +23,21 @@ public class LogAspect {
         String className = joinPoint.getSignature().getDeclaringType().getName();
         String methodName = joinPoint.getSignature().getName();
         String params = Arrays.toString(joinPoint.getArgs());
-        long ms = -1;
+        boolean success = false;
 
+        long start = System.currentTimeMillis();
         try {
-            long start = System.currentTimeMillis();
-
             Object result = joinPoint.proceed();
-
-            long end = System.currentTimeMillis();
-            ms = end - start;
-
+            success = true;
             return result;
         } finally {
+            long end = System.currentTimeMillis();
             MDC.put("type", "method");
             MDC.put("value.class", className);
             MDC.put("value.method", methodName);
             MDC.put("value.params", params);
-            MDC.put("value.total_ms", Long.toString(ms));
+            MDC.put("value.success", String.valueOf(success));
+            MDC.put("value.total_ms", Long.toString(end - start));
 
             log.info("Method Log");
 
@@ -47,6 +45,7 @@ public class LogAspect {
             MDC.remove("value.class");
             MDC.remove("value.method");
             MDC.remove("value.params");
+            MDC.remove("value.success");
             MDC.remove("value.total_ms");
         }
     }
