@@ -16,7 +16,6 @@ import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideCreateUseC
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideDeleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideUpdateUseCase;
-import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
@@ -86,7 +85,7 @@ public class GuideUseCaseTest {
         // given
         String categoryId = "1";
 
-        GuideDomain guideDomain = GuideDomain.builder()
+        Guide guideDomain = Guide.builder()
             .guideId(1L)
             .content("테스트 도움말")
             .build();
@@ -123,7 +122,6 @@ public class GuideUseCaseTest {
             .build();
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
             .content("test")
-            .categoryId(categoryId)
             .build();
 
         given(categoryGetService.getCategory(categoryId)).willReturn(category);
