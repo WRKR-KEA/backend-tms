@@ -20,31 +20,33 @@ public class LogAspect {
 
     @Around("method()")
     public Object logMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
-
         String className = joinPoint.getSignature().getDeclaringType().getName();
         String methodName = joinPoint.getSignature().getName();
         String params = Arrays.toString(joinPoint.getArgs());
+        boolean success = false;
 
-        Object result = joinPoint.proceed();
+        long start = System.currentTimeMillis();
+        try {
+            Object result = joinPoint.proceed();
+            success = true;
+            return result;
+        } finally {
+            long end = System.currentTimeMillis();
+            MDC.put("type", "method");
+            MDC.put("value.class", className);
+            MDC.put("value.method", methodName);
+            MDC.put("value.params", params);
+            MDC.put("value.success", String.valueOf(success));
+            MDC.put("value.total_ms", Long.toString(end - start));
 
-        long end = System.currentTimeMillis();
-        long ms = end - start;
+            log.info("Method Log");
 
-        MDC.put("type", "method");
-        MDC.put("value.class", className);
-        MDC.put("value.method", methodName);
-        MDC.put("value.params", params);
-        MDC.put("value.total_ms", Long.toString(ms));
-
-        log.info("Method Log");
-
-        MDC.remove("type");
-        MDC.remove("value.class");
-        MDC.remove("value.method");
-        MDC.remove("value.params");
-        MDC.remove("value.total_ms");
-
-        return result;
+            MDC.remove("type");
+            MDC.remove("value.class");
+            MDC.remove("value.method");
+            MDC.remove("value.params");
+            MDC.remove("value.success");
+            MDC.remove("value.total_ms");
+        }
     }
 }
