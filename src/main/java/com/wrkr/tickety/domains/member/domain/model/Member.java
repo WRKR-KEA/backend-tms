@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.member.domain.model;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
-import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
@@ -84,9 +83,9 @@ public class Member extends BaseTime {
         this.isDeleted = isDeleted;
     }
 
-    public void modifyMyPageInfo(MyPageInfoUpdateRequest myPageInfoUpdateRequest) {
-        this.position = myPageInfoUpdateRequest.position();
-        this.phone = myPageInfoUpdateRequest.phone();
+    public void modifyMyPageInfo(String position, String phone) {
+        this.position = position;
+        this.phone = phone;
     }
 
 

@@ -25,6 +25,6 @@ public class MyPageInfoGetUseCase {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
-        return MyPageMapper.toMyPageInfoResponse(findMember.orElse(null));
+        return MyPageMapper.toMyPageInfoResponse(findMember.get());
     }
 }

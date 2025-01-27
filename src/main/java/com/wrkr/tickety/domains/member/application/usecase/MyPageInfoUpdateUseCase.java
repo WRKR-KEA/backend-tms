@@ -28,7 +28,7 @@ public class MyPageInfoUpdateUseCase {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
-        member.get().modifyMyPageInfo(request);
+        member.get().modifyMyPageInfo(request.position(), request.phone());
         Member modifieddMember = memberUpdateService.modifyMemberInfo(member.get());
 
         return PkResponse.builder()
