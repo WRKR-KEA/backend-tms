@@ -72,7 +72,7 @@ public class MyPageUseCaseTest {
         given(memberGetService.byMemberId(MEMBER_ID)).willReturn(Optional.of(member));
 
         // when
-        MyPageInfoResponse response = myPageInfoGetUseCase.getMyPageInfo(PkCrypto.encrypt(MEMBER_ID));
+        MyPageInfoResponse response = myPageInfoGetUseCase.getMyPageInfo(MEMBER_ID);
 
         // then
         assertThat(response).isNotNull();
@@ -107,7 +107,7 @@ public class MyPageUseCaseTest {
         given(memberUpdateService.modifyMemberInfo(member)).willReturn(modifiedMember);
 
         //when
-        PkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(PkCrypto.encrypt(MEMBER_ID), request);
+        PkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(MEMBER_ID, request);
 
         //then
         assertThat(response).isNotNull();

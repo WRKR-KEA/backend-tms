@@ -8,6 +8,7 @@ import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
+import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +36,7 @@ public class MyPageController {
     public ApplicationResponse<MyPageInfoResponse> getMemberInfo(
         @PathVariable String memberId
     ) {
-        MyPageInfoResponse response = myPageInfoGetUseCase.getMyPageInfo(memberId);
+        MyPageInfoResponse response = myPageInfoGetUseCase.getMyPageInfo(PkCrypto.decrypt(memberId));
         return ApplicationResponse.onSuccess(response);
     }
 
@@ -48,7 +49,7 @@ public class MyPageController {
         @Parameter(description = "회원 정보 수정 요청 정보", required = true)
         @Valid @RequestBody MyPageInfoUpdateRequest request
     ) {
-        PkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(memberId, request);
+        PkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(PkCrypto.decrypt(memberId), request);
         return ApplicationResponse.onSuccess(response);
     }
 
