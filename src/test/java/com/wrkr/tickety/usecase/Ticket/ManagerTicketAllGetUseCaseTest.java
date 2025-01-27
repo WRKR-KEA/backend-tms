@@ -49,10 +49,8 @@ public class ManagerTicketAllGetUseCaseTest {
 
     @BeforeEach
     void setUp() {
-
         PkCrypto.setInstance(pkCrypto);
     }
-
 
     @Test
     @DisplayName("담당자의 티켓 목록을 조회한다.")
@@ -76,8 +74,10 @@ public class ManagerTicketAllGetUseCaseTest {
         when(memberGetService.byMemberId(managerId)).thenReturn(Optional.of(member));
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
+
         // when
         ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(cryptoManagerId, pageable, null, search);
+
         // then
         assertEquals(3, ticketAllGetPagingResponse.tickets().size());
     }
@@ -90,6 +90,7 @@ public class ManagerTicketAllGetUseCaseTest {
         long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
         when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
+
         //then
         ApplicationException exception = assertThrows(ApplicationException.class,
             () -> memberGetService.byMemberId(managerId).orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));

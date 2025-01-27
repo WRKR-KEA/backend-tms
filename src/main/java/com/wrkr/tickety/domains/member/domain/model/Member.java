@@ -88,8 +88,11 @@ public class Member extends BaseTime {
         this.phone = phone;
     }
 
-
     public Boolean isDeleted() {
         return isDeleted;
+    }
+      
+    public boolean isManager() {
+        return role == Role.MANAGER;
     }
 }

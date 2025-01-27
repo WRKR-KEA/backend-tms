@@ -13,13 +13,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class GuideUpdateService {
 
-    private final PkCrypto pkCrypto;
     private final GuidePersistenceAdapter guidePersistenceAdapter;
 
-    public Guide updateGuide(String cryptoGuideId, GuideUpdateRequest guideUpdateRequest) {
-        long guideId = pkCrypto.decryptValue(cryptoGuideId);
+    public Guide updateGuide(Long guideId, GuideUpdateRequest guideUpdateRequest) {
+
         Guide guide = guidePersistenceAdapter.findById(guideId)
-                .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
+            .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
 
         guide.updateContent(guideUpdateRequest.content());
 
