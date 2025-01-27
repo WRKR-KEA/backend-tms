@@ -11,6 +11,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideUpdateUseC
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
+import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Guide Controller")
-@RequestMapping("/guide")
 public class GuideController {
     private final GuideCreateUseCase guideCreateUseCase;
     private final GuideUpdateUseCase guideUpdateUseCase;
@@ -38,7 +38,7 @@ public class GuideController {
     @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
     @GetMapping("/api/user/guide/{cryptoCategoryId}")
     public ResponseEntity<ApplicationResponse<GuideResponse>> getGuideContent(@PathVariable String cryptoCategoryId) {
-        GuideResponse guideResponse = guideGetUseCase.getGuide(cryptoCategoryId);
+        GuideResponse guideResponse = guideGetUseCase.getGuide(PkCrypto.decrypt(cryptoCategoryId));
         return ResponseEntity.ok(ApplicationResponse.onSuccess(guideResponse));
     }
 
@@ -50,7 +50,7 @@ public class GuideController {
             in = ParameterIn.PATH)
     @PostMapping("/api/admin/guide/{cryptoCategoryId}")
     public ResponseEntity<ApplicationResponse<PkResponse>> createGuide(@RequestBody GuideCreateRequest guideCreateRequest, @PathVariable String cryptoCategoryId) {
-        PkResponse pkResponse = guideCreateUseCase.createGuide(guideCreateRequest, cryptoCategoryId);
+        PkResponse pkResponse = guideCreateUseCase.createGuide(guideCreateRequest, PkCrypto.decrypt(cryptoCategoryId));
         return ResponseEntity.ok(ApplicationResponse.onSuccess(pkResponse));
     }
 
@@ -63,7 +63,7 @@ public class GuideController {
     @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
     @PatchMapping("/api/admin/guide/{cryptoGuideId}")
     public ResponseEntity<ApplicationResponse<PkResponse>> updateGuide(@PathVariable String cryptoGuideId, @RequestBody GuideUpdateRequest guideUpdateRequest) {
-        PkResponse pkResponse = guideUpdateUseCase.modifyGuide(cryptoGuideId, guideUpdateRequest);
+        PkResponse pkResponse = guideUpdateUseCase.modifyGuide(PkCrypto.decrypt(cryptoGuideId), guideUpdateRequest);
         return ResponseEntity.ok(ApplicationResponse.onSuccess(pkResponse));
     }
 
@@ -76,7 +76,7 @@ public class GuideController {
     @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
     @DeleteMapping("/api/admin/guide/{cryptoGuideId}")
     public ResponseEntity<ApplicationResponse<PkResponse>> deleteGuide(@PathVariable String cryptoGuideId) {
-        return ResponseEntity.ok(ApplicationResponse.onSuccess(guideDeleteUseCase.deleteGuide(cryptoGuideId)));
+        return ResponseEntity.ok(ApplicationResponse.onSuccess(guideDeleteUseCase.deleteGuide(PkCrypto.decrypt(cryptoGuideId))));
     }
 
 
