@@ -20,21 +20,21 @@ public class LogAspect {
 
     @Around("method()")
     public Object logMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
-
         String className = joinPoint.getSignature().getDeclaringType().getName();
         String methodName = joinPoint.getSignature().getName();
         String params = Arrays.toString(joinPoint.getArgs());
+        long ms = -1;
 
         try {
-            return joinPoint.proceed();
-        } catch (Exception e) {
-            MDC.put("value.failed", "true");
-            throw e;
-        } finally {
-            long end = System.currentTimeMillis();
-            long ms = end - start;
+            long start = System.currentTimeMillis();
 
+            Object result = joinPoint.proceed();
+
+            long end = System.currentTimeMillis();
+            ms = end - start;
+
+            return result;
+        } finally {
             MDC.put("type", "method");
             MDC.put("value.class", className);
             MDC.put("value.method", methodName);
@@ -43,7 +43,11 @@ public class LogAspect {
 
             log.info("Method Log");
 
-            MDC.clear();
+            MDC.remove("type");
+            MDC.remove("value.class");
+            MDC.remove("value.method");
+            MDC.remove("value.params");
+            MDC.remove("value.total_ms");
         }
     }
 }
