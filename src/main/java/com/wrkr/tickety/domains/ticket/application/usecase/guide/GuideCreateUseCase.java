@@ -21,7 +21,7 @@ public class GuideCreateUseCase {
     public PkResponse createGuide(GuideCreateRequest guideCreateRequest, String cryptoCategoryId) {
         //todo 카테고리 도메인이 아직 없어서 카테고리 도메인이 생기면 dto <-> 카테고리 도메인 mapper에서 암호화/복호화 로직을 처리하는 방향으로 수정 예정
 
-        Category category = categoryGetService.getCategory(guideCreateRequest.categoryId());
+        Category category = categoryGetService.getCategory(guideCreateRequest.categoryId()).get();
 
         Guide guide = Guide.builder()
             .content(guideCreateRequest.content())

@@ -15,6 +15,7 @@ import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
+import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,6 +38,9 @@ public class ManagerTicketUseCaseTest {
 
     @Mock
     private TicketUpdateService ticketUpdateService;
+
+    @Mock
+    private TicketHistorySaveService ticketHistorySaveService;
 
     @InjectMocks
     private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;

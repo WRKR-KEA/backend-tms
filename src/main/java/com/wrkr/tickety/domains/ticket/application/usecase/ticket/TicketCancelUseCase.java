@@ -33,14 +33,14 @@ public class TicketCancelUseCase {
         if (!ticket.getUser().getMemberId().equals(userId)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_BELONG_TO_USER);
         }
+
         if (!ticket.getStatus().equals(TicketStatus.REQUEST)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_REQUEST_STATUS);
         }
 
         Ticket updatedTicket = TicketUpdateService.updateStatus(ticket, TicketStatus.CANCEL);
 
-        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(updatedTicket,
-            ModifiedType.STATUS);
+        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(updatedTicket, ModifiedType.STATUS);
         ticketHistorySaveService.save(ticketHistory);
 
         return toTicketPkResponse(PkCrypto.encrypt(updatedTicket.getTicketId()));

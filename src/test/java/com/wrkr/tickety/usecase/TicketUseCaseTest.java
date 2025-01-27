@@ -25,9 +25,11 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,6 +63,9 @@ public class TicketUseCaseTest {
 
     @Mock
     private MemberGetService memberGetService;
+
+    @Mock
+    private TicketHistorySaveService ticketHistorySaveService;
 
     @InjectMocks
     private TicketCreateUseCase ticketCreateUseCase;
@@ -130,7 +135,7 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(category);
+        given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
         given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 

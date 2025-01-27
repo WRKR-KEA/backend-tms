@@ -31,19 +31,15 @@ public class ManagerTicketDelegateUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final MemberGetService memberGetService;
 
-    public TicketPkResponse delegateTicket(Long ticketId, Long currentManagerId,
-        TicketDelegateRequest request) {
-        Optional<Member> delegateManager = memberGetService.byMemberId(
-            PkCrypto.decrypt(request.delegateManagerId()));
+    public TicketPkResponse delegateTicket(Long ticketId, Long currentManagerId, TicketDelegateRequest request) {
+        Optional<Member> delegateManager = memberGetService.byMemberId(PkCrypto.decrypt(request.delegateManagerId()));
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
         validateTicket(ticket, currentManagerId);
 
-        Ticket delegatedTicket = ticketUpdateService.updateManager(ticket,
-            delegateManager.orElse(null));
+        Ticket delegatedTicket = ticketUpdateService.updateManager(ticket, delegateManager.orElse(null));
 
-        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(delegatedTicket,
-            ModifiedType.MANAGER);
+        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(delegatedTicket, ModifiedType.MANAGER);
         ticketHistorySaveService.save(ticketHistory);
 
         return toTicketPkResponse(PkCrypto.encrypt(delegatedTicket.getTicketId()));
@@ -52,7 +48,7 @@ public class ManagerTicketDelegateUseCase {
     private void validateTicket(Ticket ticket, Long currentManagerId) {
         memberGetService.byMemberId(currentManagerId);
 
-        if (ticket.hasManager()) {
+        if (!ticket.hasManager()) {
             throw ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_FOUND);
         }
 
@@ -60,7 +56,7 @@ public class ManagerTicketDelegateUseCase {
             throw ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_MATCH);
         }
 
-        if (ticket.isDelegatable()) {
+        if (!ticket.isDelegatable()) {
             throw ApplicationException.from(TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS);
         }
     }
