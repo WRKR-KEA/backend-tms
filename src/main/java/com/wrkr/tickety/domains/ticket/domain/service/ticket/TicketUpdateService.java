@@ -20,6 +20,11 @@ public class TicketUpdateService {
         return ticketPersistenceAdapter.save(ticket);
     }
 
+    public Ticket approveTicket(Ticket ticket, Member member) {
+        ticket.approveTicket(member);
+        return ticketPersistenceAdapter.save(ticket);
+    }
+
     public Ticket updateManager(Ticket ticket, Member manager) {
         ticket.updateManager(manager);
         return ticketPersistenceAdapter.save(ticket);

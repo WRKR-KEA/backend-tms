@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.mapToTicket;
+import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.toTicketPkResponse;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 
@@ -8,7 +9,7 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -34,9 +35,8 @@ public class TicketCreateUseCase {
     private final MemberGetService UserGetService;
     private final TicketHistorySaveService ticketHistorySaveService;
 
-    public PkResponse createTicket(TicketCreateRequest request, Long userId) {
-        Category category = categoryGetService.getCategory(decrypt(request.categoryId()))
-            .orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST));
+    public TicketPkResponse createTicket(TicketCreateRequest request, Long userId) {
+        Category category = categoryGetService.getCategory(decrypt(request.categoryId())).get();
 
         Member member = UserGetService.byMemberId(userId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -52,7 +52,7 @@ public class TicketCreateUseCase {
             modifiedType);
         ticketHistorySaveService.save(ticketHistory);
 
-        return new PkResponse(encrypt(savedTicket.getTicketId()));
+        return toTicketPkResponse(encrypt(savedTicket.getTicketId()));
     }
 
     // TODO: 고민 해보고 추후 수정이 필요한 부분
