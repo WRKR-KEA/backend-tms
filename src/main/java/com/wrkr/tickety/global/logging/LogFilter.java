@@ -39,7 +39,12 @@ public class LogFilter extends OncePerRequestFilter {
         @NonNull FilterChain filterChain
     ) throws IOException, ServletException {
 
-        long start = System.currentTimeMillis();
+        String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+
+        if (uri.startsWith("/api/tickety-tms")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
@@ -49,6 +54,8 @@ public class LogFilter extends OncePerRequestFilter {
         MDC.put("request_ip", ip);
         MDC.put("request_timestamp", Instant.ofEpochMilli(System.currentTimeMillis()).toString());
 
+        long start = System.currentTimeMillis();
+
         filterChain.doFilter(requestWrapper, responseWrapper);
 
         long end = System.currentTimeMillis();
@@ -56,8 +63,6 @@ public class LogFilter extends OncePerRequestFilter {
 
         String responseContent = new String(responseWrapper.getContentAsByteArray());
         responseWrapper.copyBodyToResponse();
-
-        String uri = URLDecoder.decode(requestWrapper.getRequestURI(), StandardCharsets.UTF_8);
 
         MDC.put("type", "api");
         MDC.put("value.total_ms", Long.toString(ms));
