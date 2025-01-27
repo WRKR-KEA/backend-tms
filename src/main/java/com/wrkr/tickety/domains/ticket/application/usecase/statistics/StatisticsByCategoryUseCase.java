@@ -47,8 +47,8 @@ public class StatisticsByCategoryUseCase {
         List<TicketCount> secondCategoryTicketCountList = mappingTicketCount(secondCategoryList, type, date);
 
         StatisticData statisticData = StatisticData.builder()
-            .FirstCategoryTicketCount(firstCategoryTicketCountList)
-            .SecondCategoryTicketCount(secondCategoryTicketCountList).build();
+            .firstCategoryTicketCount(firstCategoryTicketCountList)
+            .secondCategoryTicketCount(secondCategoryTicketCountList).build();
 
         return StatisticsByCategoryResponse.builder()
             .date(date.format(DateTimeFormatter.ISO_DATE))
@@ -77,19 +77,19 @@ public class StatisticsByCategoryUseCase {
         return categoryList.stream()
             .map(category -> switch (type) {
 
-                case daily -> {
+                case DAILY -> {
                     LocalDateTime startOfDay = requestDateTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
                     LocalDateTime startOfNextDay = startOfDay.plusDays(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfDay, startOfNextDay);
                 }
 
-                case monthly -> {
+                case MONTHLY -> {
                     LocalDateTime startOfMonth = requestDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
                     LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfMonth, startOfNextMonth);
                 }
 
-                case yearly -> {
+                case YEARLY -> {
                     LocalDateTime startOfYear = requestDateTime.withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
                     LocalDateTime startOfNextYear = startOfYear.plusYears(1);
                     yield statisticsService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), startOfYear, startOfNextYear);

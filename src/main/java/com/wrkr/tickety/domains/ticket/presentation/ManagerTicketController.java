@@ -5,6 +5,8 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCate
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByCategoryUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.global.response.ApplicationResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +25,15 @@ public class ManagerTicketController {
     private final StatisticsByCategoryUseCase statisticsByCategoryUseCase;
 
     @PostMapping("/statistics/{type}")
+    @Operation(summary = "카테고리별 통계 조회")
     public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
-        @PathVariable StatisticsType type,
+        @Parameter(description = "통계 타입", example = "daily", required = true)
+        @PathVariable String type,
+        @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true)
         @RequestBody @Valid StatisticsByCategoryRequest request
     ) {
 
-        return ApplicationResponse.onSuccess(statisticsByCategoryUseCase.getStatisticsByCategory(type, request.date()));
+        StatisticsType statisticsType = StatisticsType.from(type);
+        return ApplicationResponse.onSuccess(statisticsByCategoryUseCase.getStatisticsByCategory(statisticsType, request.date()));
     }
 }
