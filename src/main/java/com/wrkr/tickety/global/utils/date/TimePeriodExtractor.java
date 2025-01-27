@@ -28,7 +28,7 @@ public class TimePeriodExtractor {
             }
             case TOTAL -> {
                 // datetime 최솟값: 1000-01-01 00:00:00.000000
-                startDateTime = LocalDateTime.of(1000, 1, 1, 0, 0); // datetime 최솟값
+                startDateTime = LocalDateTime.of(1000, 1, 1, 0, 0);
                 endDateTime = LocalDateTime.now();
             }
             default -> {

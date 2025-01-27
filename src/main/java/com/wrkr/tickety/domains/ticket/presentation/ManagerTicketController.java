@@ -109,7 +109,7 @@ public class ManagerTicketController {
     @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.METHOD_ARGUMENT_NOT_VALID})
     @GetMapping("/statistics")
     public ApplicationResponse<StatisticsByTicketStatusResponse> getTicketCountStatistics(
-        @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date,
+        @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date, // TODO: date formatting 처리(2025 -> 2025-01-01) or (2025-01 -> 2025-01-01)
         @RequestParam(defaultValue = "TOTAL") StatisticsType statisticsType,
         @RequestParam(required = false) TicketStatus ticketStatus
     ) {
