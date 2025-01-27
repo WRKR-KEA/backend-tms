@@ -54,7 +54,7 @@ public class LogFilter extends OncePerRequestFilter {
         long end = System.currentTimeMillis();
         long ms = end - start;
 
-        ApplicationResponse<Object> applicationResponse = objectMapper.readValue(responseWrapper.getContentInputStream(), new TypeReference<>() {});
+        String responseContent = new String(responseWrapper.getContentAsByteArray());
         responseWrapper.copyBodyToResponse();
 
         String uri = URLDecoder.decode(requestWrapper.getRequestURI(), StandardCharsets.UTF_8);
@@ -68,34 +68,20 @@ public class LogFilter extends OncePerRequestFilter {
         MDC.put("value.request.body", getBody(requestWrapper));
 
         MDC.put("value.response.status", Integer.toString(responseWrapper.getStatus()));
-        MDC.put("value.response.code", applicationResponse.getCode());
-        MDC.put("value.response.message", applicationResponse.getMessage());
+        try {
+            ApplicationResponse<Object> applicationResponse = objectMapper.readValue(responseContent, new TypeReference<>() {
+            });
+            MDC.put("value.response.code", applicationResponse.getCode());
+            MDC.put("value.response.message", applicationResponse.getMessage());
+            MDC.put("value.response.result", getResponseResult(applicationResponse));
 
-        Object result = applicationResponse.getResult();
-        if (result instanceof Map || result instanceof List) {
-            MDC.put("value.response.result",
-                objectMapper.writeValueAsString(applicationResponse.getResult()));
-        } else {
-            MDC.put("value.response.result", String.valueOf(result));
+        } catch (JsonProcessingException e) {
+            MDC.put("value.response.body", responseContent);
         }
 
         log.info("Api Log");
 
-        MDC.remove("type");
-        MDC.remove("value.total_ms");
-
-        MDC.remove("value.request.method");
-        MDC.remove("value.request.url");
-        MDC.remove("value.request.params");
-        MDC.remove("value.request.body");
-
-        MDC.remove("value.response.status");
-        MDC.remove("value.response.code");
-        MDC.remove("value.response.message");
-        MDC.remove("value.response.result");
-
-        MDC.remove("request_ip");
-        MDC.remove("request_timestamp");
+        MDC.clear();
     }
 
     private String getParams(ContentCachingRequestWrapper request) throws JsonProcessingException {
@@ -112,5 +98,14 @@ public class LogFilter extends OncePerRequestFilter {
 
     private static String getBody(ContentCachingRequestWrapper request) {
         return new String(request.getContentAsByteArray());
+    }
+
+    private String getResponseResult(ApplicationResponse<?> applicationResponse) throws JsonProcessingException {
+        Object result = applicationResponse.getResult();
+        if (result instanceof Map || result instanceof List) {
+            return objectMapper.writeValueAsString(applicationResponse.getResult());
+        } else {
+            return String.valueOf(result);
+        }
     }
 }
