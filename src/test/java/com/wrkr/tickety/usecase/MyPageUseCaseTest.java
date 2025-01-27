@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MyPageInfoResponse;
 import com.wrkr.tickety.domains.member.application.usecase.MyPageInfoGetUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MyPageInfoUpdateUseCase;
@@ -13,7 +14,6 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberUpdateService;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -107,11 +107,11 @@ public class MyPageUseCaseTest {
         given(memberUpdateService.modifyMemberInfo(member)).willReturn(modifiedMember);
 
         //when
-        PkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(MEMBER_ID, request);
+        MemberPkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(MEMBER_ID, request);
 
         //then
         assertThat(response).isNotNull();
-        assertThat(response.id()).isEqualTo(PkCrypto.encrypt(MEMBER_ID));
+        assertThat(response.memberId()).isEqualTo(PkCrypto.encrypt(MEMBER_ID));
 
         verify(memberGetService).byMemberId(MEMBER_ID);
         verify(memberUpdateService).modifyMemberInfo(member);

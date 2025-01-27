@@ -1,11 +1,11 @@
 package com.wrkr.tickety.domains.member.presentation;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MyPageInfoResponse;
 import com.wrkr.tickety.domains.member.application.usecase.MyPageInfoGetUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MyPageInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
@@ -44,12 +44,12 @@ public class MyPageController {
     @Operation(summary = "마이페이지 회원 정보 수정", description = "마이페이지 회원 정보를 조회합니다.")
     @PatchMapping("/{memberId}")
     @CustomErrorCodes(memberErrorCodes = {MemberErrorCode.MEMBER_NOT_FOUND, MemberErrorCode.DELETED_MEMBER})
-    public ApplicationResponse<PkResponse> updateMemberInfo(
+    public ApplicationResponse<MemberPkResponse> updateMemberInfo(
         @PathVariable String memberId,
         @Parameter(description = "회원 정보 수정 요청 정보", required = true)
         @Valid @RequestBody MyPageInfoUpdateRequest request
     ) {
-        PkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(PkCrypto.decrypt(memberId), request);
+        MemberPkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(PkCrypto.decrypt(memberId), request);
         return ApplicationResponse.onSuccess(response);
     }
 
