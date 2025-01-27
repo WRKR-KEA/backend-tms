@@ -136,9 +136,8 @@ public class ManagerTicketUseCaseTest {
             .category(category)
             .build();
 
-        given(memberGetService.getUserById(MANAGER_ID)).willReturn(Optional.of(manager));
-        given(memberGetService.getUserById(delegateManagerId)).willReturn(
-            Optional.of(delegateManager));
+        given(memberGetService.byMemberId(MANAGER_ID)).willReturn(Optional.of(manager));
+        given(memberGetService.byMemberId(delegateManagerId)).willReturn(Optional.of(delegateManager));
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 
@@ -151,8 +150,8 @@ public class ManagerTicketUseCaseTest {
         assertThat(response.id()).isEqualTo(PkCrypto.encrypt(TICKET_ID));
         assertThat(updatedTicket.getManager()).isEqualTo(delegateManager);
 
-        verify(memberGetService).getUserById(MANAGER_ID);
-        verify(memberGetService).getUserById(delegateManagerId);
+        verify(memberGetService).byMemberId(MANAGER_ID);
+        verify(memberGetService).byMemberId(delegateManagerId);
         verify(ticketGetService).getTicketByTicketId(TICKET_ID);
         verify(ticketUpdateService).updateManager(ticket, delegateManager);
 

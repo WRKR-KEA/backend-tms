@@ -1,5 +1,10 @@
 package com.wrkr.tickety.usecase.Ticket;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
@@ -10,6 +15,8 @@ import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,14 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -74,7 +73,7 @@ public class ManagerTicketAllGetUseCaseTest {
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest, 3);
-        when(memberGetService.getUserById(managerId)).thenReturn(Optional.of(member));
+        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.of(member));
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
         // when
@@ -90,10 +89,10 @@ public class ManagerTicketAllGetUseCaseTest {
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
-        when(memberGetService.getUserById(managerId)).thenReturn(Optional.empty());
+        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
         //then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> memberGetService.getUserById(managerId)
-            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
+        ApplicationException exception = assertThrows(ApplicationException.class,
+            () -> memberGetService.byMemberId(managerId).orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
     }

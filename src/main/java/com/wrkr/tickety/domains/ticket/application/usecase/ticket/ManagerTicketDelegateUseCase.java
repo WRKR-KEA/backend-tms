@@ -50,7 +50,7 @@ public class ManagerTicketDelegateUseCase {
     private void validateTicket(Ticket ticket, Long currentManagerId) {
         memberGetService.byMemberId(currentManagerId);
 
-        if (ticket.hasManager()) {
+        if (!ticket.hasManager()) {
             throw ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_FOUND);
         }
 
@@ -58,7 +58,7 @@ public class ManagerTicketDelegateUseCase {
             throw ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_MATCH);
         }
 
-        if (ticket.isDelegatable()) {
+        if (!ticket.isDelegatable()) {
             throw ApplicationException.from(TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS);
         }
     }
