@@ -90,7 +90,7 @@ public class Member extends BaseTime {
     }
 
 
-    public Boolean IsDeleted() {
+    public Boolean isDeleted() {
         return isDeleted;
     }
 }

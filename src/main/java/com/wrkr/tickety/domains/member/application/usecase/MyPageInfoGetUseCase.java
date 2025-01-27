@@ -21,10 +21,10 @@ public class MyPageInfoGetUseCase {
     public MyPageInfoResponse getMyPageInfo(Long memberId) {
         Optional<Member> findMember = memberGetService.byMemberId(memberId);
 
-        if (findMember.get().IsDeleted()) {
+        if (findMember.get().isDeleted()) {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
-        return MyPageMapper.toMyPageInfoResposne(findMember.orElse(null));
+        return MyPageMapper.toMyPageInfoResponse(findMember.orElse(null));
     }
 }

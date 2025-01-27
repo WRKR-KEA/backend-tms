@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyPageMapper {
 
-    public static MyPageInfoResponse toMyPageInfoResposne(Member member) {
+    public static MyPageInfoResponse toMyPageInfoResponse(Member member) {
         return MyPageInfoResponse.builder()
             .memberId(PkCrypto.encrypt(member.getMemberId()))
             .email(member.getEmail())

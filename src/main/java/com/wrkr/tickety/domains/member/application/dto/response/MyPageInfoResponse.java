@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
-@Schema(description = "회원 정보 조회 요청 DTO")
+@Schema(description = "회원 정보 조회 응답 DTO")
 public record MyPageInfoResponse(
     @Schema(description = "회원 PK", example = "MJMzUD7jxcQfUiy3yPMl6A")
     String memberId,

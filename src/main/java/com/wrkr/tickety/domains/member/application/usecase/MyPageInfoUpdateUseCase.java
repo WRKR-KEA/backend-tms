@@ -24,7 +24,7 @@ public class MyPageInfoUpdateUseCase {
     public PkResponse updateMyPageInfo(Long memberId, MyPageInfoUpdateRequest request) {
         Optional<Member> member = memberGetService.byMemberId(memberId);
 
-        if (member.get().IsDeleted()) {
+        if (member.get().isDeleted()) {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
