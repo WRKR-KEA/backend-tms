@@ -10,9 +10,9 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
@@ -25,9 +25,11 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,6 +63,9 @@ public class TicketUseCaseTest {
 
     @Mock
     private MemberGetService memberGetService;
+
+    @Mock
+    private TicketHistorySaveService ticketHistorySaveService;
 
     @InjectMocks
     private TicketCreateUseCase ticketCreateUseCase;
@@ -130,16 +135,16 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(category);
+        given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
         given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
         // when
-        PkResponse pkResponse = ticketCreateUseCase.createTicket(ticketCreateRequest, USER_ID);
+        TicketPkResponse pkResponse = ticketCreateUseCase.createTicket(ticketCreateRequest, USER_ID);
 
         // then
         assertThat(pkResponse).isNotNull();
-        assertThat(pkResponse.id()).isEqualTo(PkCrypto.encrypt(1L));
+        assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
         verify(categoryGetService).getCategory(anyLong());
         verify(memberGetService).byMemberId(anyLong());
@@ -205,15 +210,14 @@ public class TicketUseCaseTest {
             .build();
 
         given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
-        given(ticketUpdateService.updateStatus(any(Ticket.class),
-            any(TicketStatus.class))).willReturn(updatedTicket);
+        given(ticketUpdateService.updateStatus(any(Ticket.class), any(TicketStatus.class))).willReturn(updatedTicket);
 
         // when
-        PkResponse pkResponse = ticketCancelUseCase.cancelTicket(USER_ID, TICKET_ID);
+        TicketPkResponse pkResponse = ticketCancelUseCase.cancelTicket(USER_ID, TICKET_ID);
 
         // then
         assertThat(pkResponse).isNotNull();
-        assertThat(pkResponse.id()).isEqualTo(PkCrypto.encrypt(1L));
+        assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
         verify(ticketGetService).getTicketByTicketId(anyLong());
         verify(ticketUpdateService).updateStatus(any(Ticket.class), any(TicketStatus.class));

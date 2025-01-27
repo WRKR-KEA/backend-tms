@@ -9,7 +9,7 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_S
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
@@ -53,15 +53,13 @@ public class ManagerTicketController {
         ticketErrorCodes = {TICKET_NOT_APPROVABLE, TICKET_NOT_FOUND},
         memberErrorCodes = {MEMBER_NOT_ALLOWED}
     )
-    @Parameters({
-        @Parameter(name = "ticketId", description = "티켓 PK 리스트", example = "['abc123', 'def456']", required = true)
-    })
+    @Parameters({@Parameter(name = "ticketId", description = "티켓 PK 리스트", example = "['abc123', 'def456']", required = true)})
     @Operation(summary = "담당자 - 티켓 승인", description = "담당자가 티켓을 일괄 또는 개별 승인합니다.")
-    public ApplicationResponse<List<PkResponse>> approveTicket(
+    public ApplicationResponse<List<TicketPkResponse>> approveTicket(
         @RequestParam(value = "memberId") String memberId,
         @RequestParam(value = "ticketId") List<String> ticketId
     ) {
-        List<PkResponse> response = ticketApproveUseCase.approveTicket(memberId, ticketId);
+        List<TicketPkResponse> response = ticketApproveUseCase.approveTicket(memberId, ticketId);
         return ApplicationResponse.onSuccess(response);
     }
 
@@ -102,7 +100,7 @@ public class ManagerTicketController {
     @Operation(summary = "해당 티켓 담당자 변경", description = "해당 티켓의 담당자를 변경합니다.")
     @PatchMapping("/{ticketId}/delegate")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_STATUS_NOT_IN_PROGRESS})
-    public ApplicationResponse<PkResponse> delegateTicket(
+    public ApplicationResponse<TicketPkResponse> delegateTicket(
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
         @Valid @RequestBody TicketDelegateRequest request

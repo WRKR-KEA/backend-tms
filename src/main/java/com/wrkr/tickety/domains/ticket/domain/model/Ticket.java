@@ -78,15 +78,15 @@ public class Ticket extends BaseTime {
     }
 
     public boolean isCommentable() {
-        return status.equals(TicketStatus.IN_PROGRESS);
+        return this.status.equals(TicketStatus.IN_PROGRESS);
     }
 
     public boolean isApprovable() {
-        return status.equals(TicketStatus.REQUEST) && manager == null;
+        return this.status.equals(TicketStatus.REQUEST) && manager == null;
     }
 
     public boolean isDelegatable() {
-        return status.equals(TicketStatus.IN_PROGRESS);
+        return this.status.equals(TicketStatus.IN_PROGRESS);
     }
 
     public boolean hasManager() {
