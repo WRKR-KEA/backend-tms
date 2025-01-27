@@ -1,6 +1,8 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.toTicketPkResponse;
+
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -25,22 +27,22 @@ public class TicketCancelUseCase {
     private final TicketUpdateService TicketUpdateService;
     private final TicketHistorySaveService ticketHistorySaveService;
 
-    public PkResponse cancelTicket(Long userId, Long ticketId) {
+    public TicketPkResponse cancelTicket(Long userId, Long ticketId) {
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
         if (!ticket.getUser().getMemberId().equals(userId)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_BELONG_TO_USER);
         }
+
         if (!ticket.getStatus().equals(TicketStatus.REQUEST)) {
             throw ApplicationException.from(TicketErrorCode.TICKET_NOT_REQUEST_STATUS);
         }
 
         Ticket updatedTicket = TicketUpdateService.updateStatus(ticket, TicketStatus.CANCEL);
 
-        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(updatedTicket,
-            ModifiedType.STATUS);
+        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(updatedTicket, ModifiedType.STATUS);
         ticketHistorySaveService.save(ticketHistory);
 
-        return new PkResponse(PkCrypto.encrypt(updatedTicket.getTicketId()));
+        return toTicketPkResponse(PkCrypto.encrypt(updatedTicket.getTicketId()));
     }
 }
