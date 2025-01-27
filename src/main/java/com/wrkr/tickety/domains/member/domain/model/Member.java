@@ -68,7 +68,10 @@ public class Member extends BaseTime {
         this.isTempPassword = isTempPassword;
     }
 
-    public void modifyMemberInfo(MemberUpdateRequest memberUpdateRequest) {
+    // TODO: 필드 단위로 파라미터 받기
+    public void modifyMemberInfo(
+        MemberUpdateRequest memberUpdateRequest
+    ) {
         this.email = memberUpdateRequest.email();
         this.name = memberUpdateRequest.name();
         this.nickname = memberUpdateRequest.nickname();
