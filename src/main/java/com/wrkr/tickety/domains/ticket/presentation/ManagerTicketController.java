@@ -65,15 +65,13 @@ public class ManagerTicketController {
 
     @PatchMapping("/{ticketId}/reject")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_REJECTABLE, TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH})
-    @Parameters({
-        @Parameter(name = "ticketId", description = "티켓 PK", example = "abc123", required = true)
-    })
+    @Parameters({@Parameter(name = "ticketId", description = "티켓 PK", example = "abc123", required = true)})
     @Operation(summary = "담당자 - 티켓 반려", description = "담당자가 티켓을 반려합니다.")
-    public ApplicationResponse<PkResponse> rejectTicket(
+    public ApplicationResponse<TicketPkResponse> rejectTicket(
         @RequestParam(value = "memberId") String memberId,
         @PathVariable(value = "ticketId") String ticketId
     ) {
-        PkResponse response = ticketRejectUseCase.rejectTicket(memberId, ticketId);
+        TicketPkResponse response = ticketRejectUseCase.rejectTicket(memberId, ticketId);
         return ApplicationResponse.onSuccess(response);
     }
 

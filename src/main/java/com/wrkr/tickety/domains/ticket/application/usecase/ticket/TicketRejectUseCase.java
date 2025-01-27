@@ -1,10 +1,11 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper.mapToTicketHistory;
+import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.toTicketPkResponse;
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.IN_PROGRESS;
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.REJECT;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
@@ -27,7 +28,7 @@ public class TicketRejectUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
 
-    public PkResponse rejectTicket(String memberId, String ticketId) {
+    public TicketPkResponse rejectTicket(String memberId, String ticketId) {
         Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
         validateTicketManager(ticket, PkCrypto.decrypt(memberId));
         validateRejectableStatus(ticket);
@@ -35,9 +36,7 @@ public class TicketRejectUseCase {
 
         updateTicketHistory(rejectedTicket);
 
-        return PkResponse.builder()
-            .id(PkCrypto.encrypt(rejectedTicket.getTicketId()))
-            .build();
+        return toTicketPkResponse(PkCrypto.encrypt(rejectedTicket.getTicketId()));
     }
 
     private void validateTicketManager(Ticket ticket, Long memberId) {
