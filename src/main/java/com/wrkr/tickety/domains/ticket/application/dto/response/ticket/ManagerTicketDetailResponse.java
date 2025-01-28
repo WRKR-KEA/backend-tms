@@ -49,13 +49,13 @@ public record ManagerTicketDetailResponse(
     @Schema(description = "담당자 닉네임", example = "manage.r")
     String managerNickname,
 
-    @Schema(description = "생성 일시", example = "2021-01-01T00:00:00")
+    @Schema(description = "생성 일시", example = "2021-01-01")
     String createdAt,
 
-    @Schema(description = "수정 일시", example = "2021-01-01T00:00:00")
+    @Schema(description = "수정 일시", example = "2021-01-01")
     String updatedAt,
 
-    @Schema(description = "시작 일시", example = "2021-01-01T00:00:00")
+    @Schema(description = "시작 일시", example = "2021-01-01")
     String startedAt,
 
     @Schema(description = "종료 일시", example = "null")
