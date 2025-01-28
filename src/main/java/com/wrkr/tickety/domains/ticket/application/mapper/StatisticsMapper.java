@@ -7,13 +7,11 @@ import java.util.List;
 public class StatisticsMapper {
 
     public static StatisticsByTicketStatusResponse mapToStatisticsByTicketStatusResponse(
-        String targetDate,
-        String statisticsType,
+        String baseDate,
         List<TicketCount> ticketCountList
     ) {
         return StatisticsByTicketStatusResponse.builder()
-            .targetDate(targetDate)
-            .statisticsType(statisticsType)
+            .baseDate(baseDate)
             .countList(ticketCountList)
             .build();
     }

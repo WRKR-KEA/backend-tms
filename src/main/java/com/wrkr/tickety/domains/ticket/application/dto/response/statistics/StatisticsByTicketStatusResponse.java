@@ -6,20 +6,19 @@ import lombok.Builder;
 
 @Builder
 public record StatisticsByTicketStatusResponse(
-    String targetDate,
-    String statisticsType,
+    String baseDate,
     List<TicketCount> countList
 ) {
 
     @Builder
     public record TicketCount(
-        String date,  // 월 또는 일
+        String targetDate,  // 월 또는 일
         Long count
     ) {
 
         @QueryProjection
-        public TicketCount(String date, Long count) {
-            this.date = date;
+        public TicketCount(String targetDate, Long count) {
+            this.targetDate = targetDate;
             this.count = count;
         }
     }
