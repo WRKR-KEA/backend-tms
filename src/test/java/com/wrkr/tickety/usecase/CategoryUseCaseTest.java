@@ -49,7 +49,6 @@ public class CategoryUseCaseTest {
                 .name("Infra1")
                 .seq(1)
                 .parent(null)
-                .children(null)
                 .build();
 
         CategoryEntity secondCategoryEntity = CategoryEntity.builder()
@@ -57,7 +56,6 @@ public class CategoryUseCaseTest {
                 .name("Infra2")
                 .seq(2)
                 .parent(null)
-                .children(null)
                 .build();
 
         CategoryEntity updateFirstCategoryEntity = CategoryEntity.builder()
@@ -82,7 +80,6 @@ public class CategoryUseCaseTest {
                 .name("Infra1")
                 .seq(1)
                 .parent(null)
-                .children(childFirstCategoryEntityList)
                 .build();
 
         CategoryEntity updatedSecondCategoryEntity = CategoryEntity.builder()
@@ -90,7 +87,6 @@ public class CategoryUseCaseTest {
                 .name("Infra2")
                 .seq(2)
                 .parent(null)
-                .children(childSecondCategoryEntityList)
                 .build();
 
         List<CategoryEntity> categoryEntityList = List.of(updatedFirstCategoryEntity, updatedSecondCategoryEntity);
