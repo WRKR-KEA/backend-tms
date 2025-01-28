@@ -6,10 +6,11 @@ import com.wrkr.tickety.domains.ticket.persistence.entity.CategoryEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.CategoryPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.CategoryRepository;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class CategoryPersistenceAdapter {
 
     public Optional<Category> findById(final Long categoryId) {
         final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findById(categoryId);
-        if(categoryEntity.isEmpty()) {
+        if (categoryEntity.isEmpty()) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST);
         }
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
@@ -41,11 +42,11 @@ public class CategoryPersistenceAdapter {
     }
 
     public Category save(final Category category) {
-        if(category.getName().isEmpty() || category.getSeq() == null) {
+        if (category.getName().isEmpty() || category.getSeq() == null) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
         }
 
-        if(categoryRepository.existsByNameAndIsDeletedFalse(category.getName())) {
+        if (categoryRepository.existsByNameAndIsDeletedFalse(category.getName())) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
         }
 
@@ -56,27 +57,27 @@ public class CategoryPersistenceAdapter {
 
     public void saveAll(List<Category> children) {
         final List<CategoryEntity> childrenEntities = children.stream()
-                .map(this.categoryPersistenceMapper::toEntity)
-                .toList();
+            .map(this.categoryPersistenceMapper::toEntity)
+            .toList();
         this.categoryRepository.saveAll(childrenEntities);
-
     }
 
     public List<Category> updateAll(List<Category> requestCategories) {
-                final List<CategoryEntity> categoryEntities = requestCategories.stream()
-                .map(this.categoryPersistenceMapper::toEntity)
-                .toList();
+        final List<CategoryEntity> categoryEntities = requestCategories.stream()
+            .map(this.categoryPersistenceMapper::toEntity)
+            .toList();
 
         final List<CategoryEntity> savedCategoryEntities = this.categoryRepository.saveAll(categoryEntities);
         return savedCategoryEntities.stream()
-                .map(this.categoryPersistenceMapper::toDomain)
-                .toList();
+            .map(this.categoryPersistenceMapper::toDomain)
+            .toList();
     }
 
     public Category updateCategoryName(Category updatedCategory) {
-        if(this.categoryRepository.existsByNameAndIsDeletedFalseAndCategoryIdNot(updatedCategory.getName(), updatedCategory.getCategoryId())) {
+        if (this.categoryRepository.existsByNameAndIsDeletedFalseAndCategoryIdNot(updatedCategory.getName(), updatedCategory.getCategoryId())) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
         }
+
         final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(updatedCategory);
         final CategoryEntity savedCategoryEntity = this.categoryRepository.save(categoryEntity);
         return this.categoryPersistenceMapper.toDomain(savedCategoryEntity);
@@ -87,8 +88,8 @@ public class CategoryPersistenceAdapter {
         final CategoryEntity deletedCategoryEntity = this.categoryRepository.save(categoryEntity);
 
         final List<CategoryEntity> childrenEntities = children.stream()
-                .map(this.categoryPersistenceMapper::toEntity)
-                .toList();
+            .map(this.categoryPersistenceMapper::toEntity)
+            .toList();
         this.categoryRepository.saveAll(childrenEntities);
         return this.categoryPersistenceMapper.toDomain(deletedCategoryEntity);
     }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 
 @Builder
 public record ManagerTicketAllGetPagingResponse(
+
     @Schema(description = "티켓 정보 목록")
     List<ManagerTicketAllGetResponse> tickets,
 
@@ -24,7 +25,6 @@ public record ManagerTicketAllGetPagingResponse(
 ) {
 
     public static ManagerTicketAllGetPagingResponse from(Page<ManagerTicketAllGetResponse> page) {
-
         return ManagerTicketAllGetPagingResponse.builder()
             .tickets(page.getContent())
             .currentPage(page.getNumber() + 1)

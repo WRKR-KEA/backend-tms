@@ -33,22 +33,22 @@ public class Member extends BaseTime {
 
     @Builder
     public Member(
-            Long memberId,
-            String nickname,
-            String password,
-            String name,
-            String phone,
-            String email,
-            String department,
-            String position,
-            String profileImage,
-            Role role,
-            String agitUrl,
-            Boolean agitNotification,
-            Boolean emailNotification,
-            Boolean serviceNotification,
-            Boolean isDeleted,
-            Boolean isTempPassword
+        Long memberId,
+        String nickname,
+        String password,
+        String name,
+        String phone,
+        String email,
+        String department,
+        String position,
+        String profileImage,
+        Role role,
+        String agitUrl,
+        Boolean agitNotification,
+        Boolean emailNotification,
+        Boolean serviceNotification,
+        Boolean isDeleted,
+        Boolean isTempPassword
     ) {
         this.memberId = memberId;
         this.nickname = nickname;
@@ -81,5 +81,18 @@ public class Member extends BaseTime {
 
     public void modifyIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public void modifyMyPageInfo(String position, String phone) {
+        this.position = position;
+        this.phone = phone;
+    }
+
+    public Boolean isDeleted() {
+        return isDeleted;
+    }
+      
+    public boolean isManager() {
+        return role == Role.MANAGER;
     }
 }

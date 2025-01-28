@@ -16,7 +16,6 @@ import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideCreateUseC
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideDeleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideUpdateUseCase;
-import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
@@ -26,6 +25,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,9 +86,9 @@ public class GuideUseCaseTest {
     @DisplayName("카테고리id를 이용해 도움말을 조회한다.")
     void testGetGuide() throws ApplicationException {
         // given
-        String categoryId = "1";
+        Long categoryId = 1L;
 
-        GuideDomain guideDomain = GuideDomain.builder()
+        Guide guideDomain = Guide.builder()
             .guideId(1L)
             .content("테스트 도움말")
             .build();
@@ -118,18 +118,18 @@ public class GuideUseCaseTest {
         long categoryId = 2L;
         String cryptoCategoryId = pkCrypto.encryptValue(categoryId);
         Category parent = Category.builder()
-                .categoryId(parentId)
-                .name("카테고리 1")
-                .seq(1)
-                .isDeleted(false)
-                .build();
+            .categoryId(parentId)
+            .name("카테고리 1")
+            .seq(1)
+            .isDeleted(false)
+            .build();
         Category category = Category.builder()
-                .categoryId(categoryId)
-                .parent(parent)
-                .name("카테고리 2")
-                .seq(2)
-                .isDeleted(false)
-                .build();
+            .categoryId(categoryId)
+            .parent(parent)
+            .name("카테고리 2")
+            .seq(2)
+            .isDeleted(false)
+            .build();
 
         Guide guide = Guide.builder()
             .content("test")
@@ -137,7 +137,6 @@ public class GuideUseCaseTest {
             .build();
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
             .content("test")
-            .categoryId(categoryId)
             .build();
 
         given(categoryGetService.getCategory(categoryId)).willReturn(Optional.ofNullable(category));
@@ -146,7 +145,7 @@ public class GuideUseCaseTest {
             PkResponse.builder().id(cryptoCategoryId).build());
 
         // when
-        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, cryptoCategoryId);
+        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, categoryId);
 
         // then
         assertEquals(cryptoCategoryId, response.id());
@@ -166,13 +165,13 @@ public class GuideUseCaseTest {
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
             .content("수정된 도움말")
             .build();
-        given(guideUpdateService.updateGuide(cryptoGuideId, guideUpdateRequest)).willReturn(
+        given(guideUpdateService.updateGuide(guideId, guideUpdateRequest)).willReturn(
             guideDomain);
         given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(
             new PkResponse(cryptoGuideId));
 
         // when
-        PkResponse response = guideUpdateUseCase.modifyGuide(cryptoGuideId, guideUpdateRequest);
+        PkResponse response = guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest);
 
         // then
         assertEquals(cryptoGuideId, response.id());
@@ -182,7 +181,7 @@ public class GuideUseCaseTest {
     @DisplayName("도움말을 삭제한다. 유스케이스 계츠을 테스트한다.")
     void deleteGuideTestInUseCase() {
         // given
-        String guideId = "1";
+        Long guideId = 1L;
 
         // when
         guideDeleteUseCase.deleteGuide(guideId);

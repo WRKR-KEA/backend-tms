@@ -129,12 +129,12 @@ tasks.withType(GenerateSwaggerUI) {
     doFirst {
         def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
-        def securitySchemesContent =  "  securitySchemes:\n" +  \
-                                      "    APIKey:\n" +  \
-                                      "      type: apiKey\n" +  \
-                                      "      name: Authorization\n" +  \
-                                      "      in: header\n" + \
-                                      "security:\n" +
+        def securitySchemesContent = "  securitySchemes:\n" +   \
+                                       "    APIKey:\n" +   \
+                                       "      type: apiKey\n" +   \
+                                       "      name: Authorization\n" +   \
+                                       "      in: header\n" +  \
+                                       "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent
@@ -194,7 +194,7 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = 0.00
             }
-            
+
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
@@ -243,4 +243,3 @@ clean {
 tasks.withType(JavaCompile) {
     options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
-

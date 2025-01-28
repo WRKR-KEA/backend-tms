@@ -12,17 +12,17 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class GuideDeleteService {
+
     private final PkCrypto pkCrypto;
     private final GuidePersistenceAdapter guidePersistenceAdapter;
 
-    public PkResponse deleteGuide(String cryptoGuideId) {
-        Long guideId = pkCrypto.decryptValue(cryptoGuideId);
+    public PkResponse deleteGuide(Long guideId) {
 
         Guide guideEntity = guidePersistenceAdapter.findById(guideId)
-                .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
+            .orElseThrow(() -> ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
 
         guidePersistenceAdapter.deleteById(guideEntity.getGuideId());
-
+        String cryptoGuideId = pkCrypto.encryptValue(guideId);
         return new PkResponse(cryptoGuideId);
     }
 }

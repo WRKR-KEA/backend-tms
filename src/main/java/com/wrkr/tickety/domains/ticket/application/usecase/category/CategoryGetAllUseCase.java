@@ -24,7 +24,6 @@ public class CategoryGetAllUseCase {
     private final TemplateGetService templateGetService;
 
     public List<CategoryGetAllResponse> getAllCategories() {
-
         List<Category> categoryList = categoryGetService.byIsDeletedFalse();
         List<CategoryGetAllResponse> categoryGetAllResponseList = CategoryMapper.mapToCategoryGetAllResponseDTO(categoryList);
 
@@ -37,6 +36,5 @@ public class CategoryGetAllUseCase {
                             .isExistsTemplate(templateGetService.existsByCategoryId(PkCrypto.decrypt(category.categoryId())))
                             .build())
                 .toList();
-
     }
 }
