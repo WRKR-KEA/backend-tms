@@ -9,9 +9,11 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
 
     List<CategoryEntity> findByIsDeletedFalse();
 
+    List<CategoryEntity> findByParentCategoryIdAndIsDeletedFalse(Long categoryId);
+
     Boolean existsByNameAndIsDeletedFalse(String name);
 
     Boolean existsByNameAndIsDeletedFalseAndCategoryIdNot(String name, Long categoryId);
 
-    List<CategoryEntity> findByParentCategoryIdAndIsDeletedFalse(Long categoryId);
+    Boolean existsByCategoryIdAndIsDeletedFalseAndParentIsNull(Long categoryId);
 }

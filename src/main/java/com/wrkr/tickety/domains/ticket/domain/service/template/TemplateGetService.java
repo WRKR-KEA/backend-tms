@@ -1,19 +1,25 @@
 package com.wrkr.tickety.domains.ticket.domain.service.template;
 
-import com.wrkr.tickety.domains.ticket.persistence.repository.TemplateRepository;
+import com.wrkr.tickety.domains.ticket.domain.model.Template;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.TemplatePersistenceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TemplateGetService {
-    private final TemplateRepository templateRepository;
+
+    private final TemplatePersistenceAdapter templatePersistenceAdapter;
 
     public Boolean existsByCategoryId(Long categoryId) {
-        return templateRepository.existsByCategory_CategoryId(categoryId);
+        return templatePersistenceAdapter.existsByCategory(categoryId);
+    }
+
+    public Template getTemplateByCategoryId(Long categoryId) {
+        return templatePersistenceAdapter.findByCategory(categoryId);
     }
 
 }
