@@ -7,9 +7,12 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_N
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
@@ -43,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Manager Ticket Controller")
 public class ManagerTicketController {
 
+    private final DepartmentTicketUseCase departmentTicketUseCase;
     private final TicketApproveUseCase ticketApproveUseCase;
     private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
@@ -54,6 +58,17 @@ public class ManagerTicketController {
         @Schema(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw") @PathVariable String ticketId
     ) {
         return ApplicationResponse.onSuccess(managerTicketDetailUseCase.getManagerTicketDetail(PkCrypto.decrypt(ticketId)));
+    }
+
+    @Operation(summary = "부서 전체 티켓 조회 및 검색", description = "부서 내부의 모든 티켓을 조회합니다.")
+    @GetMapping("/department")
+    public ApplicationResponse<DepartmentTicketResponse> getDepartmentTicket(
+        DepartmentTicketRequest request,
+        @Schema(description = "페이징", nullable = true, example = "{\"page\":1,\"size\":20}")
+        Pageable pageable
+    ) {
+        pageable = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        return ApplicationResponse.onSuccess(departmentTicketUseCase.getDepartmentTicket(request, pageable));
     }
 
     @PatchMapping("/approve")

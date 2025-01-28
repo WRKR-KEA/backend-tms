@@ -6,6 +6,8 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAll
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse.TicketDTO;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
@@ -14,6 +16,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistor
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.springframework.data.domain.Page;
 
 public class TicketMapper {
 
@@ -101,5 +104,26 @@ public class TicketMapper {
             .completedAt(completeDate == null ? null : completeDate.format(DateTimeFormatter.ISO_DATE))
             .status(ticket.getStatus())
             .build();
+    }
+
+    public static DepartmentTicketResponse toDepartmentTicketResponse(Page<Ticket> ticketPage) {
+
+        return DepartmentTicketResponse.builder()
+            .page(ticketPage.getNumber() + 1)
+            .size(ticketPage.getSize())
+            .totalPage(ticketPage.getTotalPages())
+            .totalElements(ticketPage.getTotalElements())
+            .tickets(
+                ticketPage.map(ticket -> TicketDTO.builder()
+                    .ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+                    .ticketSerialNumber(ticket.getSerialNumber())
+                    .status(ticket.getStatus())
+                    .title(ticket.getTitle())
+                    .userNickname(ticket.getUser().getNickname())
+                    .managerNickname(ticket.getManager().getNickname())
+                    .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
+                    .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+                    .build()).toList()
+            ).build();
     }
 }

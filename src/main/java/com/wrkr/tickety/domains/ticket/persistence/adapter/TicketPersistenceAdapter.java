@@ -7,6 +7,7 @@ import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,8 +37,11 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(ticketEntity);
     }
 
-    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status,final String search) {
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status, final String search) {
         return ticketRepository.findByManagerFilters(managerId, status, pageable, search).map(this.ticketPersistenceMapper::toDomain);
     }
 
+    public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate, final Pageable pageable) {
+        return ticketRepository.getAll(query, status, startDate, endDate, pageable).map(ticketPersistenceMapper::toDomain);
+    }
 }

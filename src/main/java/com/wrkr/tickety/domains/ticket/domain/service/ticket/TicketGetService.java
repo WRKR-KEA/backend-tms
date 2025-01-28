@@ -3,6 +3,7 @@ package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +31,9 @@ public class TicketGetService {
         }
         return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, search);
 
+    }
+
+    public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
     }
 }
