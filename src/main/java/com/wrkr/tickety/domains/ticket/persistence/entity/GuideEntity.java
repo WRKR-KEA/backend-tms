@@ -1,7 +1,5 @@
 package com.wrkr.tickety.domains.ticket.persistence.entity;
 
-import com.wrkr.tickety.domains.ticket.domain.GuideDomain;
-import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

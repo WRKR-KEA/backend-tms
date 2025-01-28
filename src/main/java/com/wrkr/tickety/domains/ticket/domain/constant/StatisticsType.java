@@ -1,6 +1,8 @@
 package com.wrkr.tickety.domains.ticket.domain.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.wrkr.tickety.domains.ticket.exception.StatisticsErrorCode;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +19,10 @@ public enum StatisticsType {
 
     @JsonCreator
     public static StatisticsType from(String type) {
+
         return Arrays.stream(StatisticsType.values())
             .filter(statisticsType -> statisticsType.uriValue.equalsIgnoreCase(type))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Unknown type: " + type));
+            .orElseThrow(() -> ApplicationException.from(StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION));
     }
 }

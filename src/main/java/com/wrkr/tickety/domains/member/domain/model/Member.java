@@ -86,6 +86,15 @@ public class Member extends BaseTime {
         this.isDeleted = isDeleted;
     }
 
+    public void modifyMyPageInfo(String position, String phone) {
+        this.position = position;
+        this.phone = phone;
+    }
+
+    public Boolean isDeleted() {
+        return isDeleted;
+    }
+      
     public boolean isManager() {
         return role == Role.MANAGER;
     }

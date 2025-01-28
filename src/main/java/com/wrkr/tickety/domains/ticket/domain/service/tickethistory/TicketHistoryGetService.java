@@ -4,10 +4,12 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.Stati
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketHistoryPersistenceAdapter;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +40,13 @@ public class TicketHistoryGetService {
             statisticsType,
             ticketStatus
         );
+    public LocalDateTime getStartDate(Ticket ticket) {
+        Optional<TicketHistory> ticketHistoryOptional = ticketHistoryPersistenceAdapter.findByTicketAndChangedStatus(ticket, TicketStatus.IN_PROGRESS);
+        return ticketHistoryOptional.map(TicketHistory::getCreatedAt).orElse(null);
+    }
+
+    public LocalDateTime getCompleteDate(Ticket ticket) {
+        Optional<TicketHistory> ticketHistoryOptional = ticketHistoryPersistenceAdapter.findByTicketAndChangedStatus(ticket, TicketStatus.COMPLETE);
+        return ticketHistoryOptional.map(TicketHistory::getCreatedAt).orElse(null);
     }
 }
