@@ -44,3 +44,4 @@ node_modules/
 
 ### Q File ###
 build/generated
+/src/main/generated
