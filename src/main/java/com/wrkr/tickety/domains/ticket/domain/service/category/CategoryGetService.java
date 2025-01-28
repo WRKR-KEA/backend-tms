@@ -23,9 +23,6 @@ public class CategoryGetService {
         return categoryPersistenceAdapter.findByIsDeletedFalse();
     }
 
-    public Category getCategory(Long categoryId) {
-    }
-  
     public Optional<Category> getCategory(Long categoryId) {
         return categoryPersistenceAdapter.findById(categoryId);
     }
