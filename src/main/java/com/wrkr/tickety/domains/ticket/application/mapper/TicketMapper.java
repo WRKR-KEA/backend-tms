@@ -6,12 +6,14 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAll
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TicketMapper {
 
@@ -80,6 +82,24 @@ public class TicketMapper {
             .requesterName(ticket.getUser().getName())
             .createdAt(ticket.getCreatedAt())
             .updatedAt(ticket.getUpdatedAt())
+            .build();
+    }
+
+    public static ManagerTicketDetailResponse toManagerTicketDetailResponse(Ticket ticket, LocalDateTime startDate, LocalDateTime completeDate) {
+
+        return ManagerTicketDetailResponse.builder()
+            .ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+            .ticketSerialNumber(ticket.getSerialNumber())
+            .title(ticket.getTitle())
+            .content(ticket.getContent())
+            .category(ticket.getCategory().getParent().getName() + " " + ticket.getCategory().getName())
+            .userNickname(ticket.getUser().getNickname())
+            .managerNickname(ticket.getManager().getNickname())
+            .createdAt(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
+            .updatedAt(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+            .startedAt(startDate == null ? null : startDate.format(DateTimeFormatter.ISO_DATE))
+            .completedAt(completeDate == null ? null : completeDate.format(DateTimeFormatter.ISO_DATE))
+            .status(ticket.getStatus())
             .build();
     }
 }
