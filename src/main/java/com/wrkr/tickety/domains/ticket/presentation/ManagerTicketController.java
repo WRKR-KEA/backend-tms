@@ -5,6 +5,7 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_M
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_APPROVABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_FOUND;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
@@ -46,14 +47,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Manager Ticket Controller")
 public class ManagerTicketController {
 
+    private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
     private final DepartmentTicketUseCase departmentTicketUseCase;
     private final TicketApproveUseCase ticketApproveUseCase;
-    private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
 
     @Operation(summary = "티켓 상세 조회", description = "특정 티켓을 상세 조회합니다.")
     @GetMapping("/{ticketId}")
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND})
     public ApplicationResponse<ManagerTicketDetailResponse> getManagerTicketDetail(
         @Schema(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw") @PathVariable String ticketId
     ) {
@@ -62,6 +64,7 @@ public class ManagerTicketController {
 
     @Operation(summary = "부서 전체 티켓 조회 및 검색", description = "부서 내부의 모든 티켓을 조회합니다.")
     @GetMapping("/department")
+    @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
     public ApplicationResponse<DepartmentTicketResponse> getDepartmentTicket(
         DepartmentTicketRequest request,
         @Schema(description = "페이징", nullable = true, example = "{\"page\":1,\"size\":20}")
