@@ -26,13 +26,10 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -109,12 +106,12 @@ public class ManagerTicketController {
     @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.METHOD_ARGUMENT_NOT_VALID})
     @GetMapping("/statistics")
     public ApplicationResponse<StatisticsByTicketStatusResponse> getTicketCountStatistics(
-        @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date, // TODO: date formatting 처리(2025 -> 2025-01-01) or (2025-01 -> 2025-01-01)
+        @RequestParam String date,
         @RequestParam(defaultValue = "TOTAL") StatisticsType statisticsType,
         @RequestParam(required = false) TicketStatus ticketStatus
     ) {
         return ApplicationResponse.onSuccess(
-            statisticsGetUseCase.getTicketCountStatistics(date.atStartOfDay(), statisticsType, ticketStatus)
+            statisticsGetUseCase.getTicketCountStatistics(date, statisticsType, ticketStatus)
         );
     }
 
