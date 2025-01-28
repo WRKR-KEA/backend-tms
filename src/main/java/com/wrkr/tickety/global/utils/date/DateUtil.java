@@ -3,11 +3,11 @@ package com.wrkr.tickety.global.utils.date;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import lombok.Builder;
-import lombok.Getter;
+import java.time.format.DateTimeParseException;
 
-public class TimePeriodExtractor {
+public class DateUtil {
 
     public static TimePeriod extractTimePeriod(LocalDateTime dateTime, StatisticsType statisticsType) {
         LocalDateTime startDateTime;
@@ -39,16 +39,21 @@ public class TimePeriodExtractor {
         return new TimePeriod(startDateTime, endDateTime);
     }
 
-    @Getter
-    @Builder
-    public static class TimePeriod {
+    public static LocalDate convertToLocalDate(String date) {
+        if (date == null || date.isEmpty()) {
+            return LocalDate.now();
+        }
 
-        private final LocalDateTime startDateTime;
-        private final LocalDateTime endDateTime;
-
-        public TimePeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-            this.startDateTime = startDateTime;
-            this.endDateTime = endDateTime;
+        try {
+            if (date.matches("\\d{4}")) { // 예: 2025
+                return LocalDate.parse(date + "-01-01");
+            } else if (date.matches("\\d{4}-\\d{2}")) { // 예: 2025-01
+                return LocalDate.parse(date + "-01");
+            } else {
+                return LocalDate.parse(date); // 기본 ISO 형식
+            }
+        } catch (DateTimeParseException e) {
+            throw new ApplicationException(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
         }
     }
 }
