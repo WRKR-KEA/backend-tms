@@ -36,6 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.Optional;
+
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class GuideUseCaseTest {
@@ -138,7 +140,7 @@ public class GuideUseCaseTest {
             .categoryId(categoryId)
             .build();
 
-        given(categoryGetService.getCategory(categoryId)).willReturn(category);
+        given(categoryGetService.getCategory(categoryId)).willReturn(Optional.ofNullable(category));
         given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
         given(guideMapper.guideIdToPkResponse(guide)).willReturn(
             PkResponse.builder().id(cryptoCategoryId).build());

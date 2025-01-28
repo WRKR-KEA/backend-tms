@@ -29,6 +29,8 @@ import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistor
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -134,8 +136,8 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(category);
-        given(memberGetService.getUserById(anyLong())).willReturn(java.util.Optional.of(user));
+        given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
+        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
         // when
@@ -145,7 +147,7 @@ public class TicketUseCaseTest {
         assertThat(pkResponse.id()).isEqualTo(PkCrypto.encrypt(1L));
 
         verify(categoryGetService).getCategory(anyLong());
-        verify(memberGetService).getUserById(anyLong());
+        verify(memberGetService).byMemberId(anyLong());
         verify(ticketSaveService).save(any(Ticket.class));
     }
 
@@ -158,7 +160,7 @@ public class TicketUseCaseTest {
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
         given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(
             ticketPage);
-        given(memberGetService.getUserById(anyLong())).willReturn(java.util.Optional.of(user));
+        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(
             LocalDateTime.now());
 
@@ -174,7 +176,7 @@ public class TicketUseCaseTest {
             "#12345678");
 
         verify(ticketGetService).getTicketsByUserId(anyLong(), any(Pageable.class));
-        verify(memberGetService).getUserById(anyLong());
+        verify(memberGetService).byMemberId(anyLong());
     }
 
     @Test

@@ -74,7 +74,7 @@ public class ManagerTicketAllGetUseCaseTest {
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest, 3);
-        when(memberGetService.getUserById(managerId)).thenReturn(Optional.of(member));
+        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.of(member));
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
         // when
@@ -90,9 +90,9 @@ public class ManagerTicketAllGetUseCaseTest {
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
-        when(memberGetService.getUserById(managerId)).thenReturn(Optional.empty());
+        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
         //then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> memberGetService.getUserById(managerId)
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> memberGetService.byMemberId(managerId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
