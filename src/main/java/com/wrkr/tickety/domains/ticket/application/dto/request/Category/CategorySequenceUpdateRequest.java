@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
-@Schema(description = "카테고리 순서 변경 DTO", name = "CategoryOrderUpdateRequest")
+@Schema(description = "카테고리 순서 변경 DTO", name = "CategorySequenceUpdateRequest")
 public record CategorySequenceUpdateRequest(
 
         @Schema(description = "카테고리 ID", example = "Gbdsnz3dU0kwFxKpavlkog==")
