@@ -9,8 +9,10 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_S
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
@@ -42,8 +44,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerTicketController {
 
     private final TicketApproveUseCase ticketApproveUseCase;
+    private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
+
+    @Operation(summary = "티켓 상세 조회", description = "특정 티켓을 상세 조회합니다.")
+    @GetMapping("/{ticketId}")
+    public ApplicationResponse<ManagerTicketDetailResponse> getManagerTicketDetail(
+        @Schema(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw") @PathVariable String ticketId
+    ) {
+        return ApplicationResponse.onSuccess(managerTicketDetailUseCase.getManagerTicketDetail(PkCrypto.decrypt(ticketId)));
+    }
 
     @PatchMapping("/approve")
     @CustomErrorCodes(
