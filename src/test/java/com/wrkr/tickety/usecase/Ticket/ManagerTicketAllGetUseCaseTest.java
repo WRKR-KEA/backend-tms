@@ -91,9 +91,9 @@ public class ManagerTicketAllGetUseCaseTest {
 
         when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
 
-        // then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> memberGetService.byMemberId(managerId)
-            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
+        //then
+        ApplicationException exception = assertThrows(ApplicationException.class,
+            () -> memberGetService.byMemberId(managerId).orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
     }

@@ -136,6 +136,7 @@ public class TicketUseCaseTest {
             .build();
 
         given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
+
         given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
@@ -158,6 +159,7 @@ public class TicketUseCaseTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
+
         given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(ticketPage);
         given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
