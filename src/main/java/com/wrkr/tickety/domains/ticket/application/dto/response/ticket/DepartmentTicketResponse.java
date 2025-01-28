@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response.ticket;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
@@ -8,7 +9,7 @@ import lombok.Builder;
 @Schema(description = "부서 전체 티켓 조회 및 검색 응답 DTO", name = "부서 전체 티켓 조회 및 검색 응답")
 public record DepartmentTicketResponse(
 
-    @Schema(description = "요청된 페이지", example = "0")
+    @Schema(description = "요청된 페이지", example = "1")
     Integer page,
 
     @Schema(description = "요청된 사이즈", example = "20")
@@ -35,7 +36,7 @@ public record DepartmentTicketResponse(
         String ticketSerialNumber,
 
         @Schema(description = "티켓 상태", example = "REQUESTED")
-        String status,
+        TicketStatus status,
 
         @Schema(description = "티켓 제목", example = "VM 생성 요청")
         String title,
