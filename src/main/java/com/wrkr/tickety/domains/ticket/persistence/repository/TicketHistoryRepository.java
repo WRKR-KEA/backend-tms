@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TicketHistoryRepository extends JpaRepository<TicketHistoryEntity, Long> {
+public interface TicketHistoryRepository extends JpaRepository<TicketHistoryEntity, Long>, TicketHistoryQueryDslRepository {
 
     TicketHistoryEntity findFirstByTicket_TicketIdAndModifiedOrderByCreatedAtAsc(
         Long ticketId,
