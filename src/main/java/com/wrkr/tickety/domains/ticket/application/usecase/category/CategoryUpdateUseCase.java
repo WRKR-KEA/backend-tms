@@ -44,7 +44,7 @@ public class CategoryUpdateUseCase {
     }
 
     public PkResponse updateCategoryName(Long categoryId, CategoryNameUpdateRequest request) {
-        if(!Objects.equals(categoryId, PkCrypto.decrypt(request.categoryId()))) throw ApplicationException.from(CommonErrorCode.BAD_REQUEST);
+        if(!Objects.equals(categoryId, PkCrypto.decrypt(request.categoryId()))) throw ApplicationException.from(CommonErrorCode.ID_MISMATCH);
         if(request.name().isEmpty()) throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
 
         Category findCategory = categoryGetService.getCategory(categoryId)
