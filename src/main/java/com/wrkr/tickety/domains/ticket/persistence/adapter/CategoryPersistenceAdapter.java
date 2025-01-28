@@ -38,7 +38,7 @@ public class CategoryPersistenceAdapter {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_CANNOT_NULL);
         }
 
-        if(categoryRepository.existsByName(category.getName())) {
+        if(categoryRepository.existsByNameAndIsDeletedFalse(category.getName())) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
         }
 
@@ -53,5 +53,16 @@ public class CategoryPersistenceAdapter {
                 .toList();
         this.categoryRepository.saveAll(childrenEntities);
 
+    }
+
+    public List<Category> updateAll(List<Category> requestCategories) {
+                final List<CategoryEntity> categoryEntities = requestCategories.stream()
+                .map(this.categoryPersistenceMapper::toEntity)
+                .toList();
+
+        final List<CategoryEntity> savedCategoryEntities = this.categoryRepository.saveAll(categoryEntities);
+        return savedCategoryEntities.stream()
+                .map(this.categoryPersistenceMapper::toDomain)
+                .toList();
     }
 }
