@@ -11,8 +11,17 @@ public enum TicketStatus {
     IN_PROGRESS("진행"),
     COMPLETE("완료"),
     CANCEL("취소"),
-    REJECT("반려")
+    REJECT("반려"),
     ;
 
     private final String description;
+
+    public static TicketStatus fromValueOrNull(String value) {
+
+        try {
+            return valueOf(value.trim().toUpperCase());
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return null;
+        }
+    }
 }
