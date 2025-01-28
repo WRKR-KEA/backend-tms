@@ -36,17 +36,15 @@ public class StatisticsGetUseCase {
             ticketStatus
         );
 
-/*
         List<TicketCount> completeCountList = getCompleteCountList(
             ticketCountList,
             localDate,
             statisticsType
         );
-*/
 
         return StatisticsMapper.mapToStatisticsByTicketStatusResponse(
             date,
-            ticketCountList
+            completeCountList
         );
     }
 
@@ -59,7 +57,7 @@ public class StatisticsGetUseCase {
         List<TicketCount> completeCountList = new ArrayList<>();
 
         switch (statisticsType) {
-            case TOTAL: {
+            case YEARLY: {
                 int baseYear = localDate.getYear();
                 for (int year = baseYear - 5; year <= baseYear + 5; year++) {
                     String targetDate = String.valueOf(year);
@@ -68,7 +66,7 @@ public class StatisticsGetUseCase {
                 }
                 break;
             }
-            case YEARLY: {
+            case MONTHLY: {
                 int baseYear = localDate.getYear();
                 for (int month = 1; month <= 12; month++) {
                     String targetDate = String.format("%04d-%02d", baseYear, month);
@@ -77,7 +75,7 @@ public class StatisticsGetUseCase {
                 }
                 break;
             }
-            case MONTHLY: {
+            case DAILY: {
                 int year = localDate.getYear();
                 int month = localDate.getMonthValue();
                 int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
@@ -89,7 +87,7 @@ public class StatisticsGetUseCase {
                 }
                 break;
             }
-            case DAILY: {
+            case HOURLY: {
                 int year = localDate.getYear();
                 int month = localDate.getMonthValue();
                 int day = localDate.getDayOfMonth();

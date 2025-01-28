@@ -15,21 +15,21 @@ public class DateUtil {
 
         switch (statisticsType) {
             case YEARLY -> {
-                startDateTime = dateTime.withDayOfYear(1).toLocalDate().atStartOfDay();
-                endDateTime = dateTime.plusYears(1).withDayOfYear(1).toLocalDate().atStartOfDay();
-            }
-            case MONTHLY -> {
-                startDateTime = dateTime.withDayOfMonth(1).toLocalDate().atStartOfDay();
-                endDateTime = dateTime.plusMonths(1).withDayOfMonth(1).toLocalDate().atStartOfDay();
-            }
-            case DAILY -> {
-                startDateTime = dateTime.toLocalDate().atStartOfDay();
-                endDateTime = dateTime.toLocalDate().plusDays(1).atStartOfDay();
-            }
-            case TOTAL -> {
                 // datetime 최솟값: 1000-01-01 00:00:00.000000
                 startDateTime = LocalDateTime.of(1000, 1, 1, 0, 0);
                 endDateTime = LocalDateTime.now();
+            }
+            case MONTHLY -> {
+                startDateTime = dateTime.withDayOfYear(1).toLocalDate().atStartOfDay();
+                endDateTime = dateTime.plusYears(1).withDayOfYear(1).toLocalDate().atStartOfDay();
+            }
+            case DAILY -> {
+                startDateTime = dateTime.withDayOfMonth(1).toLocalDate().atStartOfDay();
+                endDateTime = dateTime.plusMonths(1).withDayOfMonth(1).toLocalDate().atStartOfDay();
+            }
+            case HOURLY -> {
+                startDateTime = dateTime.toLocalDate().atStartOfDay();
+                endDateTime = dateTime.toLocalDate().plusDays(1).atStartOfDay();
             }
             default -> {
                 throw new ApplicationException(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);

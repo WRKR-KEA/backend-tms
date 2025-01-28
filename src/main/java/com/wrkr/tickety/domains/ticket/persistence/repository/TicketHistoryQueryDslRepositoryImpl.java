@@ -56,10 +56,10 @@ public class TicketHistoryQueryDslRepositoryImpl implements TicketHistoryQueryDs
 
     private StringTemplate getDateFormatTemplate(StatisticsType statisticsType, QTicketHistoryEntity th) {
         return switch (statisticsType) {
-            case TOTAL -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y"));
-            case YEARLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m"));
-            case MONTHLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d"));
-            case DAILY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d %H"));
+            case YEARLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y"));
+            case MONTHLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m"));
+            case DAILY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d"));
+            case HOURLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d %H"));
             default -> throw new ApplicationException(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
         };
     }

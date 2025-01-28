@@ -10,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum StatisticsType {
+    HOURLY("hourly"),
     DAILY("daily"),
     MONTHLY("monthly"),
-    YEARLY("yearly"),
-    TOTAL("total");
+    YEARLY("yearly");
 
     private final String uriValue;
 
