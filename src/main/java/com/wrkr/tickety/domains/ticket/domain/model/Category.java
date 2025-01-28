@@ -26,4 +26,15 @@ public class Category extends BaseTime {
                 .deletedAt(presentCategory.getDeletedAt())
                 .build();
     }
+
+    public static Category softDeleteCategory(Category presentCategory) {
+        return Category.builder()
+                .categoryId(presentCategory.getCategoryId())
+                .parent(presentCategory.getParent())
+                .name(presentCategory.getName())
+                .seq(presentCategory.getSeq())
+                .isDeleted(true)
+                .deletedAt(LocalDateTime.now())
+                .build();
+    }
 }

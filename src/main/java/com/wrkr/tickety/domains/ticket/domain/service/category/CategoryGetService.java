@@ -23,4 +23,8 @@ public class CategoryGetService {
     public Optional<Category> getCategory(Long categoryId) {
         return categoryPersistenceAdapter.findById(categoryId);
     }
+
+    public List<Category> getChildren(Long categoryId) {
+        return categoryPersistenceAdapter.findChildren(categoryId);
+    }
 }

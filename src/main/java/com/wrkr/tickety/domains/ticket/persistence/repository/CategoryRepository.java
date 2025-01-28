@@ -12,4 +12,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     Boolean existsByNameAndIsDeletedFalse(String name);
 
     Boolean existsByNameAndIsDeletedFalseAndCategoryIdNot(String name, Long categoryId);
+
+    List<CategoryEntity> findByParentCategoryIdAndIsDeletedFalse(Long categoryId);
 }

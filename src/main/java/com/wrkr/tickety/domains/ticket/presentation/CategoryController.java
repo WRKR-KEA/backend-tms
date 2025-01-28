@@ -6,6 +6,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.Category.Category
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryCreateUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryDeleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryGetAllUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryUpdateUseCase;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
@@ -29,6 +30,7 @@ public class CategoryController {
     private final CategoryGetAllUseCase categoryGetAllUseCase;
     private final CategoryCreateUseCase categoryCreateUseCase;
     private final CategoryUpdateUseCase categoryUpdateUseCase;
+    private final CategoryDeleteUseCase categoryDeleteUseCase;
 
     @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXIST})
     @Operation(summary = "카테고리 전체 조회", description = "관리자가 카테고리를 전체 조회합니다.")
@@ -60,6 +62,15 @@ public class CategoryController {
     @PatchMapping("/admin/categories/{categoryId}")
     public ApplicationResponse<PkResponse> updateCategoryName(@PathVariable String categoryId, @RequestBody CategoryNameUpdateRequest request){
         PkResponse encryptedCategoryId = categoryUpdateUseCase.updateCategoryName(PkCrypto.decrypt(categoryId), request);
+        return ApplicationResponse.onSuccess(encryptedCategoryId);
+    }
+
+    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXIST, CategoryErrorCode.CATEGORY_ALREADY_DELETED})
+    @Parameter(name = "categoryId", description = "수정할 카테고리 ID", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true)
+    @Operation(summary = "카테고리 삭제", description = "관리자가 카테고리를 삭제합니다.")
+    @DeleteMapping("/admin/categories/{categoryId}")
+    public ApplicationResponse<PkResponse> softDeleteCategory(@PathVariable String categoryId){
+        PkResponse encryptedCategoryId = categoryDeleteUseCase.softDeleteCategory(PkCrypto.decrypt(categoryId));
         return ApplicationResponse.onSuccess(encryptedCategoryId);
     }
 

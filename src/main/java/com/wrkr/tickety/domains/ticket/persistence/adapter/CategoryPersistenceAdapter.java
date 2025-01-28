@@ -33,6 +33,13 @@ public class CategoryPersistenceAdapter {
             .toList();
     }
 
+    public List<Category> findChildren(Long categoryId) {
+        final List<CategoryEntity> categoryEntities = categoryRepository.findByParentCategoryIdAndIsDeletedFalse(categoryId);
+        return categoryEntities.stream()
+                .map(this.categoryPersistenceMapper::toDomain)
+                .toList();
+    }
+
     public Category save(final Category category) {
         if(category.getName().isEmpty() || category.getSeq() == null) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
@@ -74,4 +81,17 @@ public class CategoryPersistenceAdapter {
         final CategoryEntity savedCategoryEntity = this.categoryRepository.save(categoryEntity);
         return this.categoryPersistenceMapper.toDomain(savedCategoryEntity);
     }
+
+    public Category softDelete(Category category, List<Category> children) {
+        final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(category);
+        final CategoryEntity deletedCategoryEntity = this.categoryRepository.save(categoryEntity);
+
+        final List<CategoryEntity> childrenEntities = children.stream()
+                .map(this.categoryPersistenceMapper::toEntity)
+                .toList();
+        this.categoryRepository.saveAll(childrenEntities);
+        return this.categoryPersistenceMapper.toDomain(deletedCategoryEntity);
+    }
+
+
 }
