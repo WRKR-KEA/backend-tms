@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
@@ -13,6 +12,18 @@ public class CategoryMapper {
 
     private CategoryMapper() {
         throw new IllegalArgumentException();
+    }
+
+    public static PkResponse mapToPkResponse(Category category) {
+        return PkResponse.builder()
+                .id(PkCrypto.encrypt(category.getCategoryId()))
+                .build();
+    }
+
+    public static List<PkResponse> mapToPkResponseList(List<Category> updatedCategories) {
+        return updatedCategories.stream()
+                .map(CategoryMapper::mapToPkResponse)
+                .toList();
     }
 
     public static List<CategoryGetAllResponse> mapToCategoryGetAllResponseDTO(List<Category> categoryList) {
@@ -27,11 +38,6 @@ public class CategoryMapper {
                 ).toList();
     }
 
-    public static PkResponse mapToPkResponse(Category category) {
-        return PkResponse.builder()
-                .id(PkCrypto.encrypt(category.getCategoryId()))
-                .build();
-    }
     public static Category mapToCategoryDomain(CategoryCreateRequest request) {
         return Category.builder()
                 .name(request.name())
