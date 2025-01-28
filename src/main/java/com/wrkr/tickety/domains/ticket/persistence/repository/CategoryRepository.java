@@ -4,7 +4,6 @@ import com.wrkr.tickety.domains.ticket.persistence.entity.CategoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
 
@@ -12,7 +11,5 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
 
     Boolean existsByNameAndIsDeletedFalse(String name);
 
-    Boolean existsByNameAndIsDeletedFalseAndCategoryId(String name, Long categoryId);
-
-    Optional<CategoryEntity> findByCategoryIdAndIsDeletedFalse(Long categoryId);
+    Boolean existsByNameAndIsDeletedFalseAndCategoryIdNot(String name, Long categoryId);
 }

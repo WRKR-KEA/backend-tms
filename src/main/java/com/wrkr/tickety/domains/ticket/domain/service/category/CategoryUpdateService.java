@@ -18,4 +18,8 @@ public class CategoryUpdateService {
     public List<Category> updateAll(List<Category> requestCategories) {
         return categoryPersistenceAdapter.updateAll(requestCategories);
     }
+
+    public Category updateCategoryName(Category updatedCategory) {
+        return categoryPersistenceAdapter.updateCategoryName(updatedCategory);
+    }
 }

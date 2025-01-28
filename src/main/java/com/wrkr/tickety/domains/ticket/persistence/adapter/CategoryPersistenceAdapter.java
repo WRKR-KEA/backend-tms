@@ -35,7 +35,7 @@ public class CategoryPersistenceAdapter {
 
     public Category save(final Category category) {
         if(category.getName().isEmpty() || category.getSeq() == null) {
-            throw ApplicationException.from(CategoryErrorCode.CATEGORY_CANNOT_NULL);
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
         }
 
         if(categoryRepository.existsByNameAndIsDeletedFalse(category.getName())) {
@@ -64,5 +64,14 @@ public class CategoryPersistenceAdapter {
         return savedCategoryEntities.stream()
                 .map(this.categoryPersistenceMapper::toDomain)
                 .toList();
+    }
+
+    public Category updateCategoryName(Category updatedCategory) {
+        if(this.categoryRepository.existsByNameAndIsDeletedFalseAndCategoryIdNot(updatedCategory.getName(), updatedCategory.getCategoryId())) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
+        }
+        final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(updatedCategory);
+        final CategoryEntity savedCategoryEntity = this.categoryRepository.save(categoryEntity);
+        return this.categoryPersistenceMapper.toDomain(savedCategoryEntity);
     }
 }
