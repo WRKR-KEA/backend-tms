@@ -32,7 +32,6 @@ public class ManagerTicketController {
         @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true)
         @RequestBody @Valid StatisticsByCategoryRequest request
     ) {
-
         StatisticsType statisticsType = StatisticsType.from(type);
         return ApplicationResponse.onSuccess(statisticsByCategoryUseCase.getStatisticsByCategory(statisticsType, request.date()));
     }

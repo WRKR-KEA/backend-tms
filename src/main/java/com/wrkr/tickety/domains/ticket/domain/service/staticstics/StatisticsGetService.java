@@ -7,12 +7,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class StatisticsService {
+public class StatisticsGetService {
 
     private final TicketPersistenceAdapter ticketPersistenceAdapter;
 
     public Long getStatisticsByCategoryAndDateRange(Long categoryId, LocalDateTime startOfMonth, LocalDateTime startOfNextMonth) {
-
         return ticketPersistenceAdapter.findTicketCountByCategoryAndDateRange(categoryId, startOfMonth, startOfNextMonth);
     }
 
