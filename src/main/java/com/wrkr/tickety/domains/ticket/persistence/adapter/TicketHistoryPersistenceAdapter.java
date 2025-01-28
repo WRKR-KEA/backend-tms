@@ -39,7 +39,7 @@ public class TicketHistoryPersistenceAdapter {
         return Optional.ofNullable(ticketHistoryPersistenceMapper.toDomain(ticketHistoryEntity));
     }
 
-    public List<TicketCount> countByTicketStatusAndPeriod(
+    public List<TicketCount> countByTicketStatusDuringPeriod(
         LocalDateTime startDate,
         LocalDateTime endDate,
         StatisticsType statisticsType,

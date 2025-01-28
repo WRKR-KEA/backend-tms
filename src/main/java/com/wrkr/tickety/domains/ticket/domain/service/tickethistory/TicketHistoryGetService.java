@@ -34,12 +34,14 @@ public class TicketHistoryGetService {
         StatisticsType statisticsType,
         TicketStatus ticketStatus
     ) {
-        return ticketHistoryPersistenceAdapter.countByTicketStatusAndPeriod(
+        return ticketHistoryPersistenceAdapter.countByTicketStatusDuringPeriod(
             startDate,
             endDate,
             statisticsType,
             ticketStatus
         );
+    }
+
     public LocalDateTime getStartDate(Ticket ticket) {
         Optional<TicketHistory> ticketHistoryOptional = ticketHistoryPersistenceAdapter.findByTicketAndChangedStatus(ticket, TicketStatus.IN_PROGRESS);
         return ticketHistoryOptional.map(TicketHistory::getCreatedAt).orElse(null);
