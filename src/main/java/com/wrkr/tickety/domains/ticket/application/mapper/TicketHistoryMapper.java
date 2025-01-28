@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
-import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 
@@ -19,6 +18,4 @@ public class TicketHistoryMapper {
             .modified(modifiedType)
             .build();
     }
-
-
 }

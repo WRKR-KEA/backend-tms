@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
@@ -39,11 +40,14 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(ticketEntity);
     }
 
-
     public Long findTicketCountByCategoryAndDateRange(final Long categoryId,
         final LocalDateTime start,
         final LocalDateTime end) {
 
         return ticketRepository.findTicketCountByCategoryAndDateRange(categoryId, start, end);
+    }
+
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status,final String search) {
+        return ticketRepository.findByManagerFilters(managerId, status, pageable, search).map(this.ticketPersistenceMapper::toDomain);
     }
 }
