@@ -43,11 +43,11 @@ public record ManagerTicketDetailResponse(
     @Schema(description = "업무", example = "VM 추가")
     String category,
 
-    @Schema(description = "요청자 이름", example = "요청자")
-    String userName,
+    @Schema(description = "사용자 닉네임", example = "request.er")
+    String userNickname,
 
-    @Schema(description = "담당자 이름", example = "담당자")
-    String managerName,
+    @Schema(description = "담당자 닉네임", example = "manage.r")
+    String managerNickname,
 
     @Schema(description = "생성 일시", example = "2021-01-01T00:00:00")
     String createdAt,
