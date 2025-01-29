@@ -106,10 +106,10 @@ public class ManagerTicketController {
     }
 
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
-    @GetMapping("/tickets/{managerId}")
+    @GetMapping("/tickets")
     public ResponseEntity<ApplicationResponse<ManagerTicketAllGetPagingResponse>> getManagerTickets(
         @Schema(description = "담당자 ID", example = "Gbdsnz3dU0kwFxKpavlkog")
-        @PathVariable String managerId,
+        @RequestParam String managerId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
