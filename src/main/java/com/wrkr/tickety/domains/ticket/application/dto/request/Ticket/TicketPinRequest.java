@@ -10,7 +10,7 @@ public record TicketPinRequest(
 
     @Schema(description = "현재 담당자 ID", example = "Bqs3C822lkMNdWlmE-szUw")
     @NotNull
-    String memeberId,
+    String managerId,
 
     @Schema(description = "고정할 티켓 ID", example = "Bqs3C822lkMNdWlmE-szUw")
     @NotNull

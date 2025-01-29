@@ -1,16 +1,14 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByCategoryUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.*;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
@@ -54,6 +52,7 @@ public class ManagerTicketController {
     private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
+    private final ManagerTicketPinUseCase managerTicketPinUseCase;
 
     @PostMapping("/statistics/{type}")
     @Operation(summary = "카테고리별 통계 조회")
@@ -122,4 +121,12 @@ public class ManagerTicketController {
             managerTicketDelegateUseCase.delegateTicket(PkCrypto.decrypt(ticketId), PkCrypto.decrypt(request.currentManagerId()), request)
         );
     }
+
+    @Operation(summary = "해당 티켓 상단 고정", description = "해당 티켓을 상단 고정합니다.")
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_STATUS_NOT_IN_PROGRESS})
+    @PatchMapping("/tickets/pin")
+    public ApplicationResponse<TicketPkResponse> pinTicket(@RequestBody TicketPinRequest request) {
+        return ApplicationResponse.onSuccess(managerTicketPinUseCase.pinTicket(request));
+    }
+
 }

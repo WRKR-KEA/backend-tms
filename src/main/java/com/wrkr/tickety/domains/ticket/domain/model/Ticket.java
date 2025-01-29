@@ -77,6 +77,10 @@ public class Ticket extends BaseTime {
         this.manager = member;
     }
 
+    public void pinTicket(Ticket ticket) {
+        this.isPinned = !this.isPinned;
+    }
+
     public boolean isCommentable() {
         return this.status.equals(TicketStatus.IN_PROGRESS);
     }
