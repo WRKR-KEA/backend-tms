@@ -32,7 +32,7 @@ public class CategoryController {
     private final CategoryUpdateUseCase categoryUpdateUseCase;
     private final CategoryDeleteUseCase categoryDeleteUseCase;
 
-    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXIST})
+    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXISTS})
     @Operation(summary = "카테고리 전체 조회", description = "관리자가 카테고리를 전체 조회합니다.")
     @GetMapping("/admin/categories")
     public ApplicationResponse<List<CategoryGetAllResponse>> getAllCategories() {
@@ -40,7 +40,7 @@ public class CategoryController {
         return ApplicationResponse.onSuccess(categoryList);
     }
 
-    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL,CategoryErrorCode.CATEGORY_ALREADY_EXIST,})
+    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL,CategoryErrorCode.CATEGORY_ALREADY_EXISTS,})
     @Operation(summary = "카테고리 추가", description = "관리자가 카테고리를 추가합니다.")
     @PostMapping("/admin/categories")
     public ApplicationResponse<PkResponse> createCategory(@RequestBody CategoryCreateRequest request){
@@ -48,7 +48,7 @@ public class CategoryController {
         return ApplicationResponse.onSuccess(encryptedCategoryId);
     }
 
-    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXIST, CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL})
+    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXISTS, CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL})
     @Operation(summary = "카테고리 순서 수정", description = "관리자가 카테고리의 순서를 수정합니다.")
     @PatchMapping("/admin/categories")
     public ApplicationResponse<List<PkResponse>> updateCategoriesSequence(@RequestBody List<CategorySequenceUpdateRequest> request){
@@ -56,7 +56,7 @@ public class CategoryController {
         return ApplicationResponse.onSuccess(encryptedCategoryId);
     }
 
-    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXIST, CategoryErrorCode.CATEGORY_ALREADY_EXIST, CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL})
+    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXISTS, CategoryErrorCode.CATEGORY_ALREADY_EXISTS, CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL})
     @Parameter(name = "categoryId", description = "수정할 카테고리 ID", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true)
     @Operation(summary = "카테고리 이름 수정", description = "관리자가 카테고리 이름을 수정합니다.")
     @PatchMapping("/admin/categories/{categoryId}")
@@ -65,7 +65,7 @@ public class CategoryController {
         return ApplicationResponse.onSuccess(encryptedCategoryId);
     }
 
-    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXIST, CategoryErrorCode.CATEGORY_ALREADY_DELETED})
+    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXISTS, CategoryErrorCode.CATEGORY_ALREADY_DELETED})
     @Parameter(name = "categoryId", description = "수정할 카테고리 ID", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true)
     @Operation(summary = "카테고리 삭제", description = "관리자가 카테고리를 삭제합니다.")
     @DeleteMapping("/admin/categories/{categoryId}")

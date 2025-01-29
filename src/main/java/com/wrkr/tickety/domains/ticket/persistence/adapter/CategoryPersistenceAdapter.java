@@ -22,7 +22,7 @@ public class CategoryPersistenceAdapter {
     public Optional<Category> findById(final Long categoryId) {
         final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findById(categoryId);
         if (categoryEntity.isEmpty()) {
-            throw ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST);
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS);
         }
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
     }
@@ -47,7 +47,7 @@ public class CategoryPersistenceAdapter {
         }
 
         if (categoryRepository.existsByNameAndIsDeletedFalse(category.getName())) {
-            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXISTS);
         }
 
         final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(category);
@@ -75,7 +75,7 @@ public class CategoryPersistenceAdapter {
 
     public Category updateCategoryName(Category updatedCategory) {
         if (this.categoryRepository.existsByNameAndIsDeletedFalseAndCategoryIdNot(updatedCategory.getName(), updatedCategory.getCategoryId())) {
-            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXISTS);
         }
 
         final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(updatedCategory);

@@ -34,7 +34,7 @@ public class CategoryUpdateUseCase {
                 if(categorySequenceUpdateRequest.seq() == null) throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
 
                 Category findCategory = categoryGetService.getCategory(PkCrypto.decrypt(categorySequenceUpdateRequest.categoryId()))
-                    .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+                    .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
                 return updateCategory(findCategory, null, categorySequenceUpdateRequest.seq()
                 );
             }).toList();
@@ -48,7 +48,7 @@ public class CategoryUpdateUseCase {
         if(request.name().isEmpty()) throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
 
         Category findCategory = categoryGetService.getCategory(categoryId)
-            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
 
         Category updatedCategory = updateCategory(findCategory, request.name(), null);
         Category savedCategory = categoryUpdateService.updateCategoryName(updatedCategory);

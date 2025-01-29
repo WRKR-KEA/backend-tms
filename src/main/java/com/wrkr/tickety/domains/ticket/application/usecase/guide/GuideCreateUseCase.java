@@ -25,7 +25,7 @@ public class GuideCreateUseCase {
     public PkResponse createGuide(GuideCreateRequest guideCreateRequest, Long categoryId) {
 
         Category category = categoryGetService.getCategory(categoryId).orElseThrow(
-            () -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST)
+            () -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXISTS)
         );
 
         Guide guide = Guide.builder()

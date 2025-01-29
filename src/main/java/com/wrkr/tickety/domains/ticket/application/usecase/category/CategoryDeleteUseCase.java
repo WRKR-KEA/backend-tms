@@ -23,7 +23,7 @@ public class CategoryDeleteUseCase {
 
     public PkResponse softDeleteCategory(Long categoryId) {
         Category reqeustCategory = categoryGetService.getCategory(categoryId)
-            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
         if(reqeustCategory.getIsDeleted()) throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_DELETED);
 
         List<Category> requestChildren = categoryGetService.getChildren(categoryId);
