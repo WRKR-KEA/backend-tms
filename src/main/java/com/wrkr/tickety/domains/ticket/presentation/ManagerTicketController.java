@@ -120,7 +120,9 @@ public class ManagerTicketController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, status, search);
+        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(PkCrypto.decrypt(managerId),
+                                                                                                                       pageable,
+                                                                                                                       status, search);
 
         return ResponseEntity.ok(ApplicationResponse.onSuccess(ticketAllGetPagingResponse));
     }
