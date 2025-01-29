@@ -8,8 +8,5 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CategoryPersistenceMapper extends PersistenceMapper<CategoryEntity, Category> {
-
-    @Mapping(target = "parent", ignore = true)
-    Category toDomain(CategoryEntity entity);
 }
 
