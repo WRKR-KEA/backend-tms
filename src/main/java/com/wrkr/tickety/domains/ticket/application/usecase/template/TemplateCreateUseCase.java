@@ -16,6 +16,7 @@ import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @UseCase
 @Transactional
 @RequiredArgsConstructor
@@ -27,9 +28,6 @@ public class TemplateCreateUseCase {
 
     public TemplatePKResponse createTemplate(AdminTemplateCreateRequest request) {
         Category category = categoryGetService.getCategory(PkCrypto.decrypt(request.categoryId())).orElseThrow(() -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXISTS));
-        if(category.getParent() != null){
-            throw new ApplicationException(TemplateErrorCode.TEMPLATE_CANNOT_BE_CREATED_FOR_SUBCATEGORY);
-        }
         if(templateGetService.existsByCategoryId(category.getCategoryId())){
             throw new ApplicationException(TemplateErrorCode.TEMPLATE_ALREADY_EXISTS);
         }
