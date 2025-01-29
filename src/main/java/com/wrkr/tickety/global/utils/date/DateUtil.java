@@ -37,7 +37,7 @@ public class DateUtil {
             }
 
             default -> {
-                throw new ApplicationException(StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION);
+                throw ApplicationException.from(StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION);
             }
         }
 
@@ -58,7 +58,7 @@ public class DateUtil {
                 return LocalDate.parse(date); // 기본 ISO 형식
             }
         } catch (DateTimeParseException e) {
-            throw new ApplicationException(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
+            throw ApplicationException.from(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
         }
     }
 }

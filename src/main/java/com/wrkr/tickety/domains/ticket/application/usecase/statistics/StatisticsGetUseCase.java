@@ -104,7 +104,7 @@ public class StatisticsGetUseCase {
             }
 
             default: {
-                throw new ApplicationException(StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION);
+                throw ApplicationException.from(StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION);
             }
         }
 
