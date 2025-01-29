@@ -12,7 +12,6 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCateg
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
-import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
@@ -60,7 +59,6 @@ public class ManagerTicketController {
     private final TicketRejectUseCase ticketRejectUseCase;
     private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
     private final DepartmentTicketUseCase departmentTicketUseCase;
-    private final TicketApproveUseCase ticketApproveUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
 
