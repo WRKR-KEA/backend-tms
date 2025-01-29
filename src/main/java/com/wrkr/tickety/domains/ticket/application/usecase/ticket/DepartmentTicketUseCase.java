@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.response.PageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -21,7 +22,7 @@ public class DepartmentTicketUseCase {
 
     private final TicketGetService ticketGetService;
 
-    public DepartmentTicketResponse getDepartmentTicket(DepartmentTicketRequest request, Pageable pageable) {
+    public PageResponse<DepartmentTicketResponse> getDepartmentTicket(DepartmentTicketRequest request, Pageable pageable) {
 
         LocalDate startDate = parseLocalDateOrNull(request.startDate());
         LocalDate endDate = parseLocalDateOrNull(request.endDate());

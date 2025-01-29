@@ -10,6 +10,7 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUM
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.PageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
@@ -65,12 +66,11 @@ public class ManagerTicketController {
     @Operation(summary = "부서 전체 티켓 조회 및 검색", description = "부서 내부의 모든 티켓을 조회합니다.")
     @GetMapping("/department")
     @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
-    public ApplicationResponse<DepartmentTicketResponse> getDepartmentTicket(
+    public ApplicationResponse<PageResponse<DepartmentTicketResponse>> getDepartmentTicket(
         DepartmentTicketRequest request,
         @Schema(description = "페이징", nullable = true, example = "{\"page\":1,\"size\":20}")
         Pageable pageable
     ) {
-        pageable = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
         return ApplicationResponse.onSuccess(departmentTicketUseCase.getDepartmentTicket(request, pageable));
     }
 
