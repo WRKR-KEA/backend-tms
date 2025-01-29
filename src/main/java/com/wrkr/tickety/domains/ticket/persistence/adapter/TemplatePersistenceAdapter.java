@@ -39,4 +39,10 @@ public class TemplatePersistenceAdapter {
         TemplateEntity createdTemplateEntity = templateRepository.save(requestTemplateEntity);
         return templatePersistenceMapper.toDomain(createdTemplateEntity);
     }
+
+    public Template delete(Long templateId) {
+        TemplateEntity deleteTemplateEntity = templateRepository.findById(templateId).orElseThrow(() -> new ApplicationException(TemplateErrorCode.TEMPLATE_NOT_EXISTS));
+        templateRepository.delete(deleteTemplateEntity);
+        return templatePersistenceMapper.toDomain(deleteTemplateEntity);
+    }
 }
