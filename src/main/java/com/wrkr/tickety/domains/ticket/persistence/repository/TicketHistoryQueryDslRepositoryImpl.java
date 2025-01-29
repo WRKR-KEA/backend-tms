@@ -12,8 +12,6 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.Stati
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.QTicketHistoryEntity;
-import com.wrkr.tickety.global.exception.ApplicationException;
-import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -56,11 +54,10 @@ public class TicketHistoryQueryDslRepositoryImpl implements TicketHistoryQueryDs
 
     private StringTemplate getDateFormatTemplate(StatisticsType statisticsType, QTicketHistoryEntity th) {
         return switch (statisticsType) {
-            case YEARLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y"));
-            case MONTHLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m"));
-            case DAILY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d"));
-            case HOURLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d %H"));
-            default -> throw new ApplicationException(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
+            case YEARLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m"));
+            case MONTHLY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d"));
+            case DAILY -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y-%m-%d %H"));
+            case TOTAL -> Expressions.stringTemplate("DATE_FORMAT({0}, {1})", th.createdAt, ConstantImpl.create("%Y"));
         };
     }
 

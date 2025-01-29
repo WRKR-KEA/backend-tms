@@ -6,9 +6,9 @@ import com.wrkr.tickety.domains.ticket.application.mapper.StatisticsMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
+import com.wrkr.tickety.domains.ticket.exception.StatisticsErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.global.utils.date.DateUtil;
 import com.wrkr.tickety.global.utils.date.TimePeriod;
 import java.time.LocalDate;
@@ -57,7 +57,7 @@ public class StatisticsGetUseCase {
         List<TicketCount> completeCountList = new ArrayList<>();
 
         switch (statisticsType) {
-            case YEARLY: {
+            case TOTAL: {
                 int baseYear = localDate.getYear();
                 for (int year = baseYear - 5; year <= baseYear + 5; year++) {
                     String targetDate = String.valueOf(year);
@@ -66,7 +66,8 @@ public class StatisticsGetUseCase {
                 }
                 break;
             }
-            case MONTHLY: {
+
+            case YEARLY: {
                 int baseYear = localDate.getYear();
                 for (int month = 1; month <= 12; month++) {
                     String targetDate = String.format("%04d-%02d", baseYear, month);
@@ -75,7 +76,8 @@ public class StatisticsGetUseCase {
                 }
                 break;
             }
-            case DAILY: {
+
+            case MONTHLY: {
                 int year = localDate.getYear();
                 int month = localDate.getMonthValue();
                 int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
@@ -87,7 +89,8 @@ public class StatisticsGetUseCase {
                 }
                 break;
             }
-            case HOURLY: {
+
+            case DAILY: {
                 int year = localDate.getYear();
                 int month = localDate.getMonthValue();
                 int day = localDate.getDayOfMonth();
@@ -99,8 +102,9 @@ public class StatisticsGetUseCase {
                 }
                 break;
             }
+
             default: {
-                throw new ApplicationException(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
+                throw new ApplicationException(StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION);
             }
         }
 

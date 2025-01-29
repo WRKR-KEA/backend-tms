@@ -1,11 +1,13 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_ALLOWED;
+import static com.wrkr.tickety.domains.ticket.exception.StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_MANAGER_NOT_MATCH;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_APPROVABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_FOUND;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_REJECTABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
@@ -13,9 +15,9 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAll
 import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByTicketStatusResponse;
-import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByCategoryUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
@@ -25,7 +27,6 @@ import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
-import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -144,13 +145,16 @@ public class ManagerTicketController {
 
     @Operation(summary = "기간별(일별 or 월별) & 티켓 상태별 티켓 개수 조회", description = "")
     @Parameters({
-        @Parameter(name = "statisticsType", description = "통계 타입 (daily | monthly | yearly)", example = "daily"),
+        @Parameter(name = "statisticsType", description = "통계 타입 (daily | monthly | yearly | total)", example = "daily"),
         @Parameter(name = "ticketStatus", description = "티켓 상태 (request | in_progress | complete | cancel | reject)", example = "in_progress"),
     })
-    @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.METHOD_ARGUMENT_NOT_VALID})
-    @GetMapping("/statistics")
+    @CustomErrorCodes(
+        commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID},
+        statisticsErrorCodes = {ILLEGAL_STATISTICS_OPTION}
+    )
+    @GetMapping("/statistics/count")
     public ApplicationResponse<StatisticsByTicketStatusResponse> getTicketCountStatistics(
-        @RequestParam String date,
+        @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().toString()}") String date,
         @RequestParam(defaultValue = "TOTAL") StatisticsType statisticsType,
         @RequestParam(required = false) TicketStatus ticketStatus
     ) {
