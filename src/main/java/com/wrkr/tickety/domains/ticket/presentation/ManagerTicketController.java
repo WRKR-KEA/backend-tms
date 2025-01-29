@@ -56,7 +56,7 @@ public class ManagerTicketController {
     @GetMapping("/{ticketId}")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND})
     public ApplicationResponse<ManagerTicketDetailResponse> getManagerTicketDetail(
-        @Schema(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw") @PathVariable String ticketId
+        @Parameter(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw") @PathVariable String ticketId
     ) {
         return ApplicationResponse.onSuccess(managerTicketDetailUseCase.getManagerTicketDetail(PkCrypto.decrypt(ticketId)));
     }
@@ -66,7 +66,7 @@ public class ManagerTicketController {
     @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
     public ApplicationResponse<PageResponse<DepartmentTicketResponse>> getDepartmentTicket(
         DepartmentTicketRequest request,
-        @Schema(description = "페이징", nullable = true, example = "{\"page\":1,\"size\":20}")
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
         Pageable pageable
     ) {
         return ApplicationResponse.onSuccess(departmentTicketUseCase.getDepartmentTicket(request, pageable));
