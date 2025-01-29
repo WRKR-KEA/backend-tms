@@ -100,4 +100,8 @@ public class Ticket extends BaseTime {
     public boolean isManagedBy(Long managerId) {
         return this.manager != null && this.manager.getMemberId().equals(managerId);
     }
+
+    public boolean isTicketStatus(TicketStatus status) {
+        return status.equals(this.status);
+    }
 }
