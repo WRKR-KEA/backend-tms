@@ -21,11 +21,11 @@ public class ManagerTicketAllGetUseCase {
     private final MemberGetService memberGetService;
     private final TicketGetService ticketGetService;
 
-    public ManagerTicketAllGetPagingResponse getManagerTicketList(Long managerId, Pageable pageable, TicketStatus status, String search) {
+    public ManagerTicketAllGetPagingResponse getManagerTicketList(Long managerId, Pageable pageable, TicketStatus status, String query) {
         memberGetService.byMemberId(managerId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable, status, search);
+        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable, status, query);
 
         Page<ManagerTicketAllGetResponse> mappedPage = ticketsPage.map(TicketMapper::toManagerTicketAllGetResponse);
 

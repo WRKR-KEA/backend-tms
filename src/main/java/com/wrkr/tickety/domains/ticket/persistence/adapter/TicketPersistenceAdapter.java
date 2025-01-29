@@ -47,7 +47,7 @@ public class TicketPersistenceAdapter {
         return ticketRepository.findTicketCountByCategoryAndDateRange(categoryId, start, end);
     }
 
-    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status,final String search) {
-        return ticketRepository.findByManagerFilters(managerId, status, pageable, search).map(this.ticketPersistenceMapper::toDomain);
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status,final String query) {
+        return ticketRepository.findByManagerFilters(managerId, status, pageable, query).map(this.ticketPersistenceMapper::toDomain);
     }
 }

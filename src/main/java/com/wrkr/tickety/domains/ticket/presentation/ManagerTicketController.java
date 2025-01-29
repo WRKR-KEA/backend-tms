@@ -34,7 +34,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -107,7 +106,7 @@ public class ManagerTicketController {
 
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
     @GetMapping("/tickets")
-    public ResponseEntity<ApplicationResponse<ManagerTicketAllGetPagingResponse>> getManagerTickets(
+    public ApplicationResponse<ManagerTicketAllGetPagingResponse> getManagerTickets(
         @Schema(description = "담당자 ID", example = "Gbdsnz3dU0kwFxKpavlkog")
         @RequestParam String managerId,
         @RequestParam(defaultValue = "0") int page,
@@ -115,16 +114,16 @@ public class ManagerTicketController {
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
         @Schema(description = "검색어")
-        @RequestParam(required = false) String search
+        @RequestParam(required = false) String query
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
 
         ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(PkCrypto.decrypt(managerId),
                                                                                                                        pageable,
-                                                                                                                       status, search);
+                                                                                                                       status, query);
 
-        return ResponseEntity.ok(ApplicationResponse.onSuccess(ticketAllGetPagingResponse));
+        return ApplicationResponse.onSuccess(ticketAllGetPagingResponse);
     }
 
     @Operation(summary = "해당 티켓 담당자 변경", description = "해당 티켓의 담당자를 변경합니다.")
