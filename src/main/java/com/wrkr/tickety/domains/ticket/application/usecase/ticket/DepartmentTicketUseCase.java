@@ -1,12 +1,12 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import java.time.DateTimeException;

@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.application.dto.response;
+package com.wrkr.tickety.global.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
