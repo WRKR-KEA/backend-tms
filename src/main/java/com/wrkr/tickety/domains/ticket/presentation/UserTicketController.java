@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
@@ -12,13 +12,13 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUs
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
+import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -54,12 +54,10 @@ public class UserTicketController {
     @GetMapping
     @Operation(summary = "사용자 요청 전체 티켓 조회", description = "사용자가 요청했던 전체 티켓을 조회합니다.")
     @CustomErrorCodes(ticketErrorCodes = {})
-    public ApplicationResponse<TicketAllGetPagingResponse> getAllTickets(
+    public ApplicationResponse<PageResponse<TicketAllGetResponse>> getAllTickets(
         @RequestParam(value = "userId") Long userId,
-        @RequestParam(value = "page") int page,
-        @RequestParam(value = "size") int size
+        Pageable pageable
     ) {
-        Pageable pageable = PageRequest.of(page, size);
         return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(userId, pageable));
     }
 
