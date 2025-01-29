@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
 import com.wrkr.tickety.domains.ticket.domain.model.Template;
-import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.TemplateErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TemplateEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TemplatePersistenceMapper;
@@ -25,18 +24,15 @@ public class TemplatePersistenceAdapter {
 
     public Template findByCategory(Long categoryId) {
         if(!categoryRepository.existsByCategoryIdAndIsDeletedFalseAndParentIsNull(categoryId)) {
-            throw new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST);
+            throw new ApplicationException(TemplateErrorCode.TEMPLATE_CANNOT_DO_FOR_SUBCATEGORY_OR_DELETED);
         }
-        TemplateEntity templateEntity = templateRepository.findByCategory_CategoryId(categoryId).orElseThrow(() -> new ApplicationException(TemplateErrorCode.TEMPLATE_NOT_EXIST));
+        TemplateEntity templateEntity = templateRepository.findByCategory_CategoryId(categoryId).orElseThrow(() -> new ApplicationException(TemplateErrorCode.TEMPLATE_NOT_EXISTS));
         return templatePersistenceMapper.toDomain(templateEntity);
     }
 
     public Template save(Template template) {
         if(!categoryRepository.existsByCategoryIdAndIsDeletedFalseAndParentIsNull(template.getCategory().getCategoryId())) {
-            throw new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST);
-        }
-        if(templateRepository.existsByCategory_CategoryId(template.getCategory().getCategoryId())) {
-            throw new ApplicationException(TemplateErrorCode.TEMPLATE_ALREADY_EXIST);
+            throw new ApplicationException(TemplateErrorCode.TEMPLATE_CANNOT_DO_FOR_SUBCATEGORY_OR_DELETED);
         }
 
         TemplateEntity requestTemplateEntity = templatePersistenceMapper.toEntity(template);

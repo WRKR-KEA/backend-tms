@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.AdminTemplateGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplatePKResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
@@ -30,6 +31,14 @@ public class TemplateMapper {
     public static Template mapToTemplateDomain(AdminTemplateCreateRequest request, Category category) {
         return Template.builder()
                 .category(category)
+                .content(request.content())
+                .build();
+    }
+
+    public static Template updateTemplateDomain(Template template, AdminTemplateUpdateRequest request) {
+        return Template.builder()
+                .templateId(template.getTemplateId())
+                .category(template.getCategory())
                 .content(request.content())
                 .build();
     }
