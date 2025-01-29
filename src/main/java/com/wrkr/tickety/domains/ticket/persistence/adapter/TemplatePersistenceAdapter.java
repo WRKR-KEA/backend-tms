@@ -19,7 +19,6 @@ public class TemplatePersistenceAdapter {
     private final TemplateRepository templateRepository;
     private final CategoryRepository categoryRepository;
 
-
     public Boolean existsByCategory(Long categoryId) {
         return templateRepository.existsByCategory_CategoryId(categoryId);
     }
@@ -30,5 +29,18 @@ public class TemplatePersistenceAdapter {
         }
         TemplateEntity templateEntity = templateRepository.findByCategory_CategoryId(categoryId).orElseThrow(() -> new ApplicationException(TemplateErrorCode.TEMPLATE_NOT_EXIST));
         return templatePersistenceMapper.toDomain(templateEntity);
+    }
+
+    public Template save(Template template) {
+        if(!categoryRepository.existsByCategoryIdAndIsDeletedFalseAndParentIsNull(template.getCategory().getCategoryId())) {
+            throw new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST);
+        }
+        if(templateRepository.existsByCategory_CategoryId(template.getCategory().getCategoryId())) {
+            throw new ApplicationException(TemplateErrorCode.TEMPLATE_ALREADY_EXIST);
+        }
+
+        TemplateEntity requestTemplateEntity = templatePersistenceMapper.toEntity(template);
+        TemplateEntity createdTemplateEntity = templateRepository.save(requestTemplateEntity);
+        return templatePersistenceMapper.toDomain(createdTemplateEntity);
     }
 }
