@@ -25,10 +25,6 @@ public class TicketGetService {
     }
 
     public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String query) {
-        if (status == null) {
-            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, query);
-        }
         return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query);
-
     }
 }
