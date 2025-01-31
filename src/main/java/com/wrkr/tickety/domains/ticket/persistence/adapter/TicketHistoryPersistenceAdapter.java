@@ -42,14 +42,14 @@ public class TicketHistoryPersistenceAdapter {
     public List<TicketCount> countByTicketStatusDuringPeriod(
         LocalDateTime startDate,
         LocalDateTime endDate,
-        StatisticsType statisticsType,
-        TicketStatus ticketStatus
+        StatisticsType type,
+        TicketStatus status
     ) {
         return this.ticketHistoryRepository.countByTicketStatusDuringPeriod(
             startDate,
             endDate,
-            statisticsType,
-            ticketStatus
+            type,
+            status
         );
     }
 

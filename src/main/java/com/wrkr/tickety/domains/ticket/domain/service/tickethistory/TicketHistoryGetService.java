@@ -31,14 +31,14 @@ public class TicketHistoryGetService {
     public List<TicketCount> getTicketCountStatistics(
         LocalDateTime startDate,
         LocalDateTime endDate,
-        StatisticsType statisticsType,
-        TicketStatus ticketStatus
+        StatisticsType type,
+        TicketStatus status
     ) {
         return ticketHistoryPersistenceAdapter.countByTicketStatusDuringPeriod(
             startDate,
             endDate,
-            statisticsType,
-            ticketStatus
+            type,
+            status
         );
     }
 

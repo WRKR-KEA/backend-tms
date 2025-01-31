@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface TicketHistoryQueryDslRepository {
 
-    List<TicketCount> countByTicketStatusDuringPeriod(LocalDateTime startDate, LocalDateTime endDate, StatisticsType statisticsType,
-        TicketStatus ticketStatus);
+    List<TicketCount> countByTicketStatusDuringPeriod(LocalDateTime startDate, LocalDateTime endDate, StatisticsType type,
+        TicketStatus status);
 }

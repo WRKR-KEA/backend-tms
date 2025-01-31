@@ -155,11 +155,11 @@ public class ManagerTicketController {
     @GetMapping("/statistics/count")
     public ApplicationResponse<StatisticsByTicketStatusResponse> getTicketCountStatistics(
         @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().toString()}") String date,
-        @RequestParam(defaultValue = "TOTAL") StatisticsType statisticsType,
-        @RequestParam(required = false) TicketStatus ticketStatus
+        @RequestParam(defaultValue = "TOTAL") StatisticsType type,
+        @RequestParam(required = false) TicketStatus status
     ) {
         return ApplicationResponse.onSuccess(
-            statisticsGetUseCase.getTicketCountStatistics(date, statisticsType, ticketStatus)
+            statisticsGetUseCase.getTicketCountStatistics(date, type, status)
         );
     }
 

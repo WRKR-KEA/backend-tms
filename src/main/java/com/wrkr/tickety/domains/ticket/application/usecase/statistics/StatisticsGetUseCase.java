@@ -25,21 +25,21 @@ public class StatisticsGetUseCase {
 
     private final TicketHistoryGetService ticketHistoryGetService;
 
-    public StatisticsByTicketStatusResponse getTicketCountStatistics(String date, StatisticsType statisticsType, TicketStatus ticketStatus) {
+    public StatisticsByTicketStatusResponse getTicketCountStatistics(String date, StatisticsType type, TicketStatus status) {
         LocalDate localDate = DateUtil.convertToLocalDate(date);
-        TimePeriod timePeriod = DateUtil.extractTimePeriod(localDate.atStartOfDay(), statisticsType);
+        TimePeriod timePeriod = DateUtil.extractTimePeriod(localDate.atStartOfDay(), type);
 
         List<TicketCount> ticketCountList = ticketHistoryGetService.getTicketCountStatistics(
             timePeriod.getStartDateTime(),
             timePeriod.getEndDateTime(),
-            statisticsType,
-            ticketStatus
+            type,
+            status
         );
 
         List<TicketCount> completeCountList = getCompleteCountList(
             ticketCountList,
             localDate,
-            statisticsType
+            type
         );
 
         return StatisticsMapper.mapToStatisticsByTicketStatusResponse(

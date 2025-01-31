@@ -26,12 +26,12 @@ public class TicketHistoryQueryDslRepositoryImpl implements TicketHistoryQueryDs
     public List<TicketCount> countByTicketStatusDuringPeriod(
         LocalDateTime startDate,
         LocalDateTime endDate,
-        StatisticsType statisticsType,
-        TicketStatus ticketStatus
+        StatisticsType type,
+        TicketStatus status
     ) {
         QTicketHistoryEntity th = ticketHistoryEntity;
 
-        StringTemplate dateFormat = getDateFormatTemplate(statisticsType, th);
+        StringTemplate dateFormat = getDateFormatTemplate(type, th);
 
         List<TicketCount> countList = jpaQueryFactory
             .select(
@@ -43,7 +43,7 @@ public class TicketHistoryQueryDslRepositoryImpl implements TicketHistoryQueryDs
             .from(th)
             .where(
                 betweenPeriod(startDate, endDate),
-                statusEq(ticketStatus)
+                statusEq(status)
             )
             .groupBy(dateFormat)
             .orderBy(dateFormat.asc())
