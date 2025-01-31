@@ -4,9 +4,9 @@ import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_N
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_MANAGER_NOT_MATCH;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_APPROVABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_COMPLETABLE;
+import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_DELEGATABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_FOUND;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_REJECTABLE;
-import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
@@ -142,7 +142,7 @@ public class ManagerTicketController {
 
     @Operation(summary = "해당 티켓 담당자 변경", description = "해당 티켓의 담당자를 변경합니다.")
     @PatchMapping("/tickets/{ticketId}/delegate")
-    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_STATUS_NOT_IN_PROGRESS})
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_NOT_DELEGATABLE})
     public ApplicationResponse<TicketPkResponse> delegateTicket(
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
