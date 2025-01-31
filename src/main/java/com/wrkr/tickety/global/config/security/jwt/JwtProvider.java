@@ -40,8 +40,8 @@ public class JwtProvider {
     private static final String TYPE = "type";
 
     public String generateAccessToken(String nickname, Role role) {
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-        Instant accessDate = LocalDateTime.now().plusSeconds(accessExpiration).atZone(ZoneId.systemDefault()).toInstant();
+        SecretKey key = getSecretKey();
+        Instant accessDate = getExpiration(accessExpiration);
 
         return Jwts.builder()
             .claim(ROLE, role)
@@ -53,8 +53,8 @@ public class JwtProvider {
     }
 
     public String generateRefreshToken(String nickname, Role role, Long memberId) {
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-        Instant refreshDate = LocalDateTime.now().plusSeconds(refreshExpiration).atZone(ZoneId.systemDefault()).toInstant();
+        SecretKey key = getSecretKey();
+        Instant refreshDate = getExpiration(refreshExpiration);
 
         String refreshToken = Jwts.builder()
             .claim(ROLE, role)
@@ -67,5 +67,13 @@ public class JwtProvider {
         redisRepository.setValues(REFRESH.toString() + memberId, refreshToken, Duration.ofSeconds(refreshExpiration));
 
         return refreshToken;
+    }
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
+
+    private Instant getExpiration(long expiration) {
+        return LocalDateTime.now().plusSeconds(expiration).atZone(ZoneId.systemDefault()).toInstant();
     }
 }
