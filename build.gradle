@@ -116,6 +116,9 @@ dependencies {
     // POI(Excel)
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    // Liquibase
+    implementation 'org.liquibase:liquibase-core'
 }
 
 tasks.named('test') {
