@@ -8,11 +8,11 @@ public class StatisticsMapper {
 
     public static StatisticsByTicketStatusResponse mapToStatisticsByTicketStatusResponse(
         String baseDate,
-        List<TicketCount> ticketCountList
+        List<TicketCount> ticketCounts
     ) {
         return StatisticsByTicketStatusResponse.builder()
             .baseDate(baseDate)
-            .countList(ticketCountList)
+            .countList(ticketCounts)
             .build();
     }
 }

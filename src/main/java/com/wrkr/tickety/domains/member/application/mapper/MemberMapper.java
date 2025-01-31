@@ -65,7 +65,7 @@ public class MemberMapper {
             .build();
     }
 
-    public static List<MemberInfoResponse> toMemberInfoResponseList(List<Member> memberList) {
+    public static List<MemberInfoResponse> toMemberInfoResponses(List<Member> memberList) {
         return memberList.stream()
             .map(MemberMapper::toMemberInfoResponse)
             .toList();

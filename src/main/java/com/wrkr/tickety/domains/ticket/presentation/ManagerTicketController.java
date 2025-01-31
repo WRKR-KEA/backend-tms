@@ -143,10 +143,10 @@ public class ManagerTicketController {
         );
     }
 
-    @Operation(summary = "기간별(일별 or 월별) & 티켓 상태별 티켓 개수 조회", description = "")
+    @Operation(summary = "기간별 & 티켓 상태별 티켓 개수 조회", description = "")
     @Parameters({
-        @Parameter(name = "statisticsType", description = "통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)", example = "DAILY"),
-        @Parameter(name = "ticketStatus", description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS"),
+        @Parameter(name = "type", description = "통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)", example = "DAILY"),
+        @Parameter(name = "status", description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS"),
     })
     @CustomErrorCodes(
         commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID},

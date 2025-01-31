@@ -29,40 +29,40 @@ public class StatisticsGetUseCase {
         LocalDate localDate = DateUtil.convertToLocalDate(date);
         TimePeriod timePeriod = DateUtil.extractTimePeriod(localDate.atStartOfDay(), type);
 
-        List<TicketCount> ticketCountList = ticketHistoryGetService.getTicketCountStatistics(
+        List<TicketCount> ticketCounts = ticketHistoryGetService.getTicketCountStatistics(
             timePeriod.getStartDateTime(),
             timePeriod.getEndDateTime(),
             type,
             status
         );
 
-        List<TicketCount> completeCountList = getCompleteCountList(
-            ticketCountList,
+        List<TicketCount> completeCounts = getCompleteCounts(
+            ticketCounts,
             localDate,
             type
         );
 
         return StatisticsMapper.mapToStatisticsByTicketStatusResponse(
             date,
-            completeCountList
+            completeCounts
         );
     }
 
     // targetDate 재가공 및 count가 0인 targetDate도 리스트에 포함
-    private List<TicketCount> getCompleteCountList(
-        List<TicketCount> ticketCountList,
+    private List<TicketCount> getCompleteCounts(
+        List<TicketCount> ticketCounts,
         LocalDate localDate,
         StatisticsType statisticsType
     ) {
-        List<TicketCount> completeCountList = new ArrayList<>();
+        List<TicketCount> completeCounts = new ArrayList<>();
 
         switch (statisticsType) {
             case TOTAL: {
                 int baseYear = localDate.getYear();
                 for (int year = baseYear - 5; year <= baseYear + 5; year++) {
                     String targetDate = String.valueOf(year);
-                    Long count = getCountForTargetDate(ticketCountList, targetDate);
-                    completeCountList.add(new TicketCount(targetDate, count));
+                    Long count = getCountForTargetDate(ticketCounts, targetDate);
+                    completeCounts.add(new TicketCount(targetDate, count));
                 }
                 break;
             }
@@ -71,8 +71,8 @@ public class StatisticsGetUseCase {
                 int baseYear = localDate.getYear();
                 for (int month = 1; month <= 12; month++) {
                     String targetDate = String.format("%04d-%02d", baseYear, month);
-                    Long count = getCountForTargetDate(ticketCountList, targetDate);
-                    completeCountList.add(new TicketCount(String.valueOf(month), count));
+                    Long count = getCountForTargetDate(ticketCounts, targetDate);
+                    completeCounts.add(new TicketCount(String.valueOf(month), count));
                 }
                 break;
             }
@@ -84,8 +84,8 @@ public class StatisticsGetUseCase {
 
                 for (int day = 1; day <= daysInMonth; day++) {
                     String targetDate = String.format("%04d-%02d-%02d", year, month, day);
-                    Long count = getCountForTargetDate(ticketCountList, targetDate);
-                    completeCountList.add(new TicketCount(String.valueOf(day), count));
+                    Long count = getCountForTargetDate(ticketCounts, targetDate);
+                    completeCounts.add(new TicketCount(String.valueOf(day), count));
                 }
                 break;
             }
@@ -97,8 +97,8 @@ public class StatisticsGetUseCase {
 
                 for (int hour = 0; hour < 24; hour++) {
                     String targetDate = String.format("%04d-%02d-%02d %02d", year, month, day, hour);
-                    Long count = getCountForTargetDate(ticketCountList, targetDate);
-                    completeCountList.add(new TicketCount(String.valueOf(hour), count));
+                    Long count = getCountForTargetDate(ticketCounts, targetDate);
+                    completeCounts.add(new TicketCount(String.valueOf(hour), count));
                 }
                 break;
             }
@@ -108,11 +108,11 @@ public class StatisticsGetUseCase {
             }
         }
 
-        return completeCountList;
+        return completeCounts;
     }
 
-    private Long getCountForTargetDate(List<TicketCount> ticketCountList, String targetDate) {
-        return ticketCountList.stream()
+    private Long getCountForTargetDate(List<TicketCount> ticketCounts, String targetDate) {
+        return ticketCounts.stream()
             .filter(tc -> tc.targetDate().equals(targetDate))
             .map(TicketCount::count)
             .findFirst()
