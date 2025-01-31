@@ -19,6 +19,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketD
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
@@ -57,15 +58,14 @@ public class ManagerTicketController {
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
 
-    @PostMapping("/statistics/{type}")
+    @PostMapping("/statistics/{statisticsType}")
     @Operation(summary = "카테고리별 통계 조회")
     public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
         @Parameter(description = "통계 타입", example = "daily", required = true)
-        @PathVariable String type,
+        @PathVariable StatisticsType statisticsType,
         @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true)
         @RequestBody @Valid StatisticsByCategoryRequest request
     ) {
-        StatisticsType statisticsType = StatisticsType.from(type);
         return ApplicationResponse.onSuccess(statisticsByCategoryUseCase.getStatisticsByCategory(statisticsType, request.date()));
     }
 
@@ -113,6 +113,7 @@ public class ManagerTicketController {
         @RequestParam(defaultValue = "10") int size,
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
+        @RequestParam(required = false) SortType sortType,
         @Schema(description = "검색어")
         @RequestParam(required = false) String query
     ) {
@@ -121,7 +122,7 @@ public class ManagerTicketController {
 
         ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(PkCrypto.decrypt(managerId),
                                                                                                                        pageable,
-                                                                                                                       status, query);
+                                                                                                                       status, query, sortType);
 
         return ApplicationResponse.onSuccess(ticketAllGetPagingResponse);
     }
