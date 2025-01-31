@@ -85,7 +85,7 @@ public class AdminMemberController {
         return ApplicationResponse.onSuccess(memberInfoDTO);
     }
 
-    // TODO: ConstraintViolationException 제대로 처리되지 않는 문제 해결 필요
+    // TODO: ConstraintViolationException 제대로 처리되지 않는 문제 해결 필요, 페이징 공통 응답 클래스 이용
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
     @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.BAD_REQUEST})
     @Parameters({
