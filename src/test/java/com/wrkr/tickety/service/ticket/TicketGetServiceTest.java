@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -68,10 +69,10 @@ public class TicketGetServiceTest {
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageable, tickets.size());
 
         //when
-        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, query)).thenReturn(ticketPage);
+        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, query, SortType.NEWEST)).thenReturn(ticketPage);
 
         //then
-        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, query);
+        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, query,SortType.NEWEST);
         assertThat(result).isEqualTo(ticketPage);
     }
 }
