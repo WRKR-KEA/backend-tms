@@ -3,9 +3,10 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_ALLOWED;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_MANAGER_NOT_MATCH;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_APPROVABLE;
+import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_COMPLETABLE;
+import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_DELEGATABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_FOUND;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_REJECTABLE;
-import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
@@ -18,6 +19,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketA
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCompleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -54,6 +56,7 @@ public class ManagerTicketController {
     private final StatisticsByCategoryUseCase statisticsByCategoryUseCase;
     private final TicketApproveUseCase ticketApproveUseCase;
     private final TicketRejectUseCase ticketRejectUseCase;
+    private final TicketCompleteUseCase ticketCompleteUseCase;
     private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
@@ -105,6 +108,18 @@ public class ManagerTicketController {
         return ApplicationResponse.onSuccess(response);
     }
 
+    @PatchMapping("/{ticketId}/complete")
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_COMPLETABLE, TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH})
+    @Parameters({@Parameter(name = "ticketId", description = "티켓 PK", example = "abc123", required = true)})
+    @Operation(summary = "담당자 - 티켓 완료", description = "담당자가 티켓을 완료합니다.")
+    public ApplicationResponse<TicketPkResponse> completeTicket(
+        @RequestParam(value = "memberId") String memberId,
+        @PathVariable(value = "ticketId") String ticketId
+    ) {
+        TicketPkResponse response = ticketCompleteUseCase.completeTicket(memberId, ticketId);
+        return ApplicationResponse.onSuccess(response);
+    }
+
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
     @GetMapping("/tickets/{managerId}")
     public ResponseEntity<ApplicationResponse<ManagerTicketAllGetPagingResponse>> getManagerTickets(
@@ -127,7 +142,7 @@ public class ManagerTicketController {
 
     @Operation(summary = "해당 티켓 담당자 변경", description = "해당 티켓의 담당자를 변경합니다.")
     @PatchMapping("/tickets/{ticketId}/delegate")
-    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_STATUS_NOT_IN_PROGRESS})
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_NOT_DELEGATABLE})
     public ApplicationResponse<TicketPkResponse> delegateTicket(
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
