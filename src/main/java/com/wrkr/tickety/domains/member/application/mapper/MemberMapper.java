@@ -57,7 +57,7 @@ public class MemberMapper {
         int size
     ) {
         return MemberInfoPagingResponse.builder()
-            .memberList(memberInfoResponseList)
+            .members(memberInfoResponseList)
             .currentPage(currentPage)
             .totalPages(totalPages)
             .totalElements(totalElements)
