@@ -1,11 +1,14 @@
 package com.wrkr.tickety.domains.ticket.domain.service.tickethistory;
 
+import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByTicketStatusResponse.TicketCount;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
+import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketHistoryPersistenceAdapter;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,20 @@ public class TicketHistoryGetService {
             ticketId,
             ModifiedType.MANAGER
         ).map(TicketHistory::getCreatedAt).orElse(null);
+    }
+
+    public List<TicketCount> getTicketCountStatistics(
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        StatisticsType type,
+        TicketStatus status
+    ) {
+        return ticketHistoryPersistenceAdapter.countByTicketStatusDuringPeriod(
+            startDate,
+            endDate,
+            type,
+            status
+        );
     }
 
     public LocalDateTime getStartDate(Ticket ticket) {

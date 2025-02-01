@@ -1,6 +1,8 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
+import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByTicketStatusResponse.TicketCount;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
+import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
@@ -9,6 +11,8 @@ import com.wrkr.tickety.domains.ticket.persistence.entity.TicketHistoryEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketHistoryPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketHistoryRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -33,6 +37,20 @@ public class TicketHistoryPersistenceAdapter {
             modifiedType
         );
         return Optional.ofNullable(ticketHistoryPersistenceMapper.toDomain(ticketHistoryEntity));
+    }
+
+    public List<TicketCount> countByTicketStatusDuringPeriod(
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        StatisticsType type,
+        TicketStatus status
+    ) {
+        return this.ticketHistoryRepository.countByTicketStatusDuringPeriod(
+            startDate,
+            endDate,
+            type,
+            status
+        );
     }
 
     public Optional<TicketHistory> findByTicketAndChangedStatus(Ticket ticket, TicketStatus status) {
