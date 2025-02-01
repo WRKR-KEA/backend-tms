@@ -42,11 +42,13 @@ public class TicketPersistenceAdapter {
     }
 
     public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status, final String search) {
-        return ticketRepository.findByManagerFilters(managerId, status, pageable, search).map(this.ticketPersistenceMapper::toDomain);
+        Page<TicketEntity> ticketEntityPage = ticketRepository.findByManagerFilters(managerId, status, pageable, search);
+        return ticketEntityPage.map(this.ticketPersistenceMapper::toDomain);
     }
 
     public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate, final Pageable pageable) {
-        return ticketRepository.getAll(query, status, startDate, endDate, pageable).map(ticketPersistenceMapper::toDomain);
+        Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageable);
+        return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
     }
 
     public Long findTicketCountByCategoryAndDateRange(final Long categoryId, final LocalDateTime start, final LocalDateTime end) {
