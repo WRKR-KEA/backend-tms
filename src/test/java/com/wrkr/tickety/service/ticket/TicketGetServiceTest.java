@@ -13,7 +13,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,7 +38,6 @@ public class TicketGetServiceTest {
      */
     public List<Ticket> createTestTickets() {
         List<Ticket> tickets = new ArrayList<>();
-        Random random = new Random();
 
         for (long i = 1; i <= 10; i++) {
             Ticket ticket = Ticket.builder()
@@ -49,8 +48,8 @@ public class TicketGetServiceTest {
                 .serialNumber("SN-" + i)
                 .title("Test Ticket " + i)
                 .content("This is test ticket number " + i)
-                .status(random.nextBoolean() ? TicketStatus.IN_PROGRESS : null)
-                .isPinned(random.nextBoolean())
+                .status(i % 2 == 0 ? TicketStatus.IN_PROGRESS : null)
+                .isPinned(i % 2 == 0)
                 .build();
 
             tickets.add(ticket);
@@ -59,6 +58,7 @@ public class TicketGetServiceTest {
     }
 
     @Test
+    @DisplayName("담당자가 설정한 필터로 담당자의 티켓 티켓 리스트를 조회한다.")
     void getTicketByManagerFilter() {
         //given
         List<Ticket> tickets = createTestTickets();
@@ -72,7 +72,10 @@ public class TicketGetServiceTest {
         when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, query, SortType.NEWEST)).thenReturn(ticketPage);
 
         //then
-        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, query,SortType.NEWEST);
-        assertThat(result).isEqualTo(ticketPage);
+        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, query, SortType.NEWEST);
+        assertThat(result.getContent()).isEqualTo(ticketPage.getContent());
+        assertThat(result.getTotalElements()).isEqualTo(ticketPage.getTotalElements());
+        assertThat(result.getTotalPages()).isEqualTo(ticketPage.getTotalPages());
+        assertThat(result.getPageable()).isEqualTo(ticketPage.getPageable());
     }
 }
