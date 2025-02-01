@@ -97,6 +97,7 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'com.h2database:h2'
 
     // Webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -116,6 +117,17 @@ dependencies {
     // POI(Excel)
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
@@ -129,12 +141,12 @@ tasks.withType(GenerateSwaggerUI) {
     doFirst {
         def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
-        def securitySchemesContent = "  securitySchemes:\n" +   \
-                                       "    APIKey:\n" +   \
-                                       "      type: apiKey\n" +   \
-                                       "      name: Authorization\n" +   \
-                                       "      in: header\n" +  \
-                                       "security:\n" +
+        def securitySchemesContent = "  securitySchemes:\n" +     \
+                                         "    APIKey:\n" +     \
+                                         "      type: apiKey\n" +     \
+                                         "      name: Authorization\n" +     \
+                                         "      in: header\n" +    \
+                                         "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent
