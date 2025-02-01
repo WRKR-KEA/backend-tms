@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
+import com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
