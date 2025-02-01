@@ -40,6 +40,7 @@ public class SecurityConfig {
         "/swagger-resources/**",
         "/swagger-ui.html/**",
         "/swagger-ui/**",
+        "/api/tickety-tms/**"
     };
 
     private static final String[] PUBLIC_API_ENDPOINTS = {
