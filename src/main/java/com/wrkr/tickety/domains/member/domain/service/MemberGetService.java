@@ -1,10 +1,12 @@
 package com.wrkr.tickety.domains.member.domain.service;
 
+import com.wrkr.tickety.domains.auth.exception.AuthErrorCode;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,5 +47,15 @@ public class MemberGetService {
 
     public Boolean existsByNickname(String nickname) {
         return memberPersistenceAdapter.existsByNickname(nickname);
+    }
+
+    public Member loadMemberByNickname(String nickname) {
+        return memberPersistenceAdapter.findByNicknameAndIsDeleted(nickname)
+            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public Member getMemberByNickname(String nickname) {
+        return memberPersistenceAdapter.findByNicknameAndIsDeleted(nickname)
+            .orElseThrow(() -> ApplicationException.from(AuthErrorCode.INVALID_CREDENTIALS));
     }
 }
