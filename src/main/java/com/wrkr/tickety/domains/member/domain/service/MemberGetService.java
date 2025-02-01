@@ -2,8 +2,9 @@ package com.wrkr.tickety.domains.member.domain.service;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdapter;
-import java.util.Optional;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +18,9 @@ public class MemberGetService {
 
     private final MemberPersistenceAdapter memberPersistenceAdapter;
 
-    public Optional<Member> byMemberId(Long memberId) {
-        return memberPersistenceAdapter.findById(memberId);
+    public Member byMemberId(Long memberId) {
+        return memberPersistenceAdapter.findById(memberId)
+            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     public Page<Member> searchMember(
