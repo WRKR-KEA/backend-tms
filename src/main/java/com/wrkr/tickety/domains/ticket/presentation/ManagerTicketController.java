@@ -8,7 +8,6 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_N
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_DELEGATABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_FOUND;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_REJECTABLE;
-import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
