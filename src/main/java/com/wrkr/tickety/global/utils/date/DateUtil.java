@@ -45,7 +45,7 @@ public class DateUtil {
     }
 
     public static LocalDate convertToLocalDate(String date) {
-        if (date == null || date.isEmpty()) {
+        if (date.isBlank()) {
             return LocalDate.now();
         }
 
