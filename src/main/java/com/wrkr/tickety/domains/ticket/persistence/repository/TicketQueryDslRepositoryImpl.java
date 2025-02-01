@@ -3,6 +3,7 @@ package com.wrkr.tickety.domains.ticket.persistence.repository;
 import static com.wrkr.tickety.domains.ticket.persistence.entity.QTicketEntity.ticketEntity;
 
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
@@ -30,23 +31,15 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
         String search,
         SortType sortType
     ) {
-        var orderSpecifiers = new ArrayList<OrderSpecifier<?>>();
-        orderSpecifiers.add(ticketEntity.isPinned.desc());
-        if (sortType != null) {
-            orderSpecifiers.add(sortType == SortType.NEWEST
-                                    ? ticketEntity.createdAt.desc()
-                                    : ticketEntity.createdAt.asc());
-        }
-
+        var orderSpecifiers = getOrderSpecifier(sortType);
 
         List<TicketEntity> ticketEntityList = queryFactory.selectFrom(ticketEntity)
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
-                status != null ? ticketEntity.status.eq(status) : null,
-                search != null ? ticketEntity.serialNumber.contains(search)
-                    .or(ticketEntity.content.contains(search)) : null
+                statusEq(status),
+                searchEq(search)
             )
-            .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
+            .orderBy(orderSpecifiers)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -55,9 +48,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
             .from(ticketEntity)
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
-                status != null ? ticketEntity.status.eq(status) : null,
-                search != null ? ticketEntity.serialNumber.contains(search)
-                    .or(ticketEntity.content.contains(search)) : null
+                statusEq(status),
+                searchEq(search)
             );
 
         return PageableExecutionUtils.getPage(
@@ -66,6 +58,26 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
             total::fetchOne
         );
 
+    }
+
+    private OrderSpecifier<?>[] getOrderSpecifier(SortType sortType) {
+        ArrayList<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+        orderSpecifiers.add(ticketEntity.isPinned.desc());
+        if (sortType != null) {
+            orderSpecifiers.add(sortType == SortType.NEWEST
+                                    ? ticketEntity.createdAt.desc()
+                                    : ticketEntity.createdAt.asc());
+        }
+        return orderSpecifiers.toArray(new OrderSpecifier[0]);
+    }
+
+    private BooleanExpression statusEq(TicketStatus status) {
+        return status == null ? null : ticketEntity.status.eq(status);
+    }
+
+    private BooleanExpression searchEq(String search) {
+        return search == null ? null : ticketEntity.serialNumber.contains(search)
+            .or(ticketEntity.content.contains(search));
     }
 
 }
