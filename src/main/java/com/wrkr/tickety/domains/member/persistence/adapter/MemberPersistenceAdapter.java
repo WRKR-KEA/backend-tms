@@ -32,6 +32,11 @@ public class MemberPersistenceAdapter {
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
     }
 
+    public Optional<Member> findByNicknameAndIsDeleted(final String nickname) {
+        final Optional<MemberEntity> memberEntity = this.memberRepository.findByNicknameAndIsDeleted(nickname, false);
+        return memberEntity.map(this.memberPersistenceMapper::toDomain);
+    }
+
     public Page<Member> searchMember(
         final Pageable pageable,
         final Role role,
