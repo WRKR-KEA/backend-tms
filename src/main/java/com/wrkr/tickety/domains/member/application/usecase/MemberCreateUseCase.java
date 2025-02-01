@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
+import com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil;
 import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
@@ -24,8 +25,8 @@ public class MemberCreateUseCase {
 
     public MemberPkResponse createMember(MemberCreateRequest memberCreateRequest) {
         String tempPassword = UUIDGenerator.generateUUID().substring(0, 12);
-        // TODO: PasswordEncodeUtil으로 암호화 로직 변경
-        String encryptedPassword = PkCrypto.encrypt(tempPassword);
+
+        String encryptedPassword = PasswordEncoderUtil.encodePassword(tempPassword);
         Member createdMember = memberSaveService.save(MemberMapper.toMember(memberCreateRequest, encryptedPassword));
 
         EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(createdMember.getEmail(), EmailConstants.TEMP_PASSWORD_SUBJECT, null);
