@@ -143,7 +143,7 @@ public class ManagerTicketController {
         );
     }
 
-    @Operation(summary = "기간별 & 티켓 상태별 티켓 개수 조회", description = "")
+    @Operation(summary = "기간별 & 티켓 상태별 티켓 개수 조회", description = "기간별 & 티켓 상태별로 티켓의 개수를 조회합니다.")
     @Parameters({
         @Parameter(name = "type", description = "통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)", example = "DAILY"),
         @Parameter(name = "status", description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS"),
