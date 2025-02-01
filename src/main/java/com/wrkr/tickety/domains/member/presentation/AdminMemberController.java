@@ -14,8 +14,8 @@ import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoRespon
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoGetUseCase;
-import com.wrkr.tickety.domains.member.application.usecase.MemberUpdateUseCase;
-import com.wrkr.tickety.domains.member.application.usecase.SearchMemberInfoGetUseCase;
+import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
+import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCase;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
@@ -47,9 +47,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminMemberController {
 
     private final MemberCreateUseCase memberCreateUseCase;
-    private final MemberUpdateUseCase memberUpdateUseCase;
+    private final MemberInfoUpdateUseCase memberInfoUpdateUseCase;
     private final MemberInfoGetUseCase memberInfoGetUseCase;
-    private final SearchMemberInfoGetUseCase searchMemberInfoGetUseCase;
+    private final MemberInfoSearchUseCase memberInfoSearchUseCase;
 
     // TODO: 해당 컨트롤러 모든 API에 헤더 토큰으로 요청한 회원 PK 추출 및 권한이 관리자인지 검증 필요
     // TODO: Image 처리 방식 논의 필요(Multipart or ImageUrl DTO로 바로 받기)
@@ -65,7 +65,7 @@ public class AdminMemberController {
     @CustomErrorCodes(memberErrorCodes = {MEMBER_NOT_FOUND, INVALID_EMAIL_FORMAT, INVALID_PHONE_FORMAT, INVALID_ROLE})
     @PatchMapping("/{memberId}")
     public ApplicationResponse<MemberPkResponse> modifyMemberInfo(@PathVariable String memberId, @RequestBody @Valid MemberUpdateRequest memberUpdateRequest) {
-        MemberPkResponse memberPkResponse = memberUpdateUseCase.modifyMemberInfo(memberId, memberUpdateRequest);
+        MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberUpdateRequest);
         return ApplicationResponse.onSuccess(memberPkResponse);
     }
 
@@ -73,7 +73,7 @@ public class AdminMemberController {
     @CustomErrorCodes(memberErrorCodes = {MEMBER_NOT_FOUND})
     @DeleteMapping
     public ApplicationResponse<Void> softDeleteMember(@RequestBody MemberDeleteRequest memberDeleteRequest) {
-        memberUpdateUseCase.softDeleteMember(memberDeleteRequest.memberIdList());
+        memberInfoUpdateUseCase.softDeleteMember(memberDeleteRequest.memberIdList());
         return ApplicationResponse.onSuccess();
     }
 
@@ -106,7 +106,7 @@ public class AdminMemberController {
         @RequestParam(required = false) String department
     ) {
         return ApplicationResponse.onSuccess(
-            searchMemberInfoGetUseCase.searchMemberInfo(
+            memberInfoSearchUseCase.searchMemberInfo(
                 page - 1,
                 size,
                 role,

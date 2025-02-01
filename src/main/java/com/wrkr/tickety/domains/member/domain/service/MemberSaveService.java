@@ -8,11 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberCreateService {
+public class MemberSaveService {
+
     private final MemberPersistenceAdapter memberPersistenceAdapter;
 
     @Transactional
-    public Member createMember(Member member) {
+    public Member save(Member member) {
         return memberPersistenceAdapter.save(member);
     }
 }
