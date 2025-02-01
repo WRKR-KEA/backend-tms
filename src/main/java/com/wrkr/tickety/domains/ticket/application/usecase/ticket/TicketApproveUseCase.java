@@ -33,7 +33,7 @@ public class TicketApproveUseCase {
     private final TicketUpdateService ticketUpdateService;
 
     public List<TicketPkResponse> approveTicket(String memberId, List<String> ticketIdList) {
-        Member member = memberGetService.byMemberId(PkCrypto.decrypt(memberId)).get();
+        Member member = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
         validateManagerRole(member);
 
         List<TicketPkResponse> response = new ArrayList<>();
