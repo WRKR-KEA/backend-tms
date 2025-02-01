@@ -17,7 +17,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByCategoryUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
@@ -58,7 +58,7 @@ public class ManagerTicketController {
     private final TicketApproveUseCase ticketApproveUseCase;
     private final TicketRejectUseCase ticketRejectUseCase;
     private final ManagerTicketDetailUseCase managerTicketDetailUseCase;
-    private final DepartmentTicketUseCase departmentTicketUseCase;
+    private final DepartmentTicketAllGetUseCase departmentTicketAllGetUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
 
@@ -91,7 +91,7 @@ public class ManagerTicketController {
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
         Pageable pageable
     ) {
-        return ApplicationResponse.onSuccess(departmentTicketUseCase.getDepartmentTicket(request, pageable));
+        return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(request, pageable));
     }
 
     @PatchMapping("/tickets/approve")

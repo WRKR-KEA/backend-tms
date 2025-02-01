@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class DepartmentTicketUseCase {
+public class DepartmentTicketAllGetUseCase {
 
     private final TicketGetService ticketGetService;
 
-    public PageResponse<DepartmentTicketResponse> getDepartmentTicket(DepartmentTicketRequest request, Pageable pageable) {
+    public PageResponse<DepartmentTicketResponse> getDepartmentTicketList(DepartmentTicketRequest request, Pageable pageable) {
 
         LocalDate startDate = parseLocalDateOrNull(request.startDate());
         LocalDate endDate = parseLocalDateOrNull(request.endDate());
