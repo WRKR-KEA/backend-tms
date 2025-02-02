@@ -32,8 +32,8 @@ public class TicketApproveUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
 
-    public List<TicketPkResponse> approveTicket(String memberId, List<String> ticketIdList) {
-        Member member = memberGetService.byMemberId(PkCrypto.decrypt(memberId)).get();
+    public List<TicketPkResponse> approveTicket(Long memberId, List<String> ticketIdList) {
+        Member member = findMemberByMemberId(memberId);
         validateManagerRole(member);
 
         List<TicketPkResponse> response = new ArrayList<>();
@@ -49,6 +49,11 @@ public class TicketApproveUseCase {
         }
 
         return response;
+    }
+
+    private Member findMemberByMemberId(Long memberId) {
+        return memberGetService.byMemberId(memberId)
+            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     private void validateManagerRole(Member member) {

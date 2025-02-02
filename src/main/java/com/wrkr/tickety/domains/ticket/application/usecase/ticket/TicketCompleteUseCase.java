@@ -28,9 +28,9 @@ public class TicketCompleteUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
 
-    public TicketPkResponse completeTicket(String memberId, String ticketId) {
+    public TicketPkResponse completeTicket(Long memberId, String ticketId) {
         Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
-        validateTicketManager(ticket, PkCrypto.decrypt(memberId));
+        validateTicketManager(ticket, memberId);
         validateCompletableStatus(ticket);
         Ticket completedTicket = ticketUpdateService.updateStatus(ticket, COMPLETE);
 
