@@ -78,4 +78,46 @@ public class TicketGetServiceTest {
         assertThat(result.getTotalPages()).isEqualTo(ticketPage.getTotalPages());
         assertThat(result.getPageable()).isEqualTo(ticketPage.getPageable());
     }
+
+    @Test
+    @DisplayName("담당자가 설정한 필터로 담당자의 티켓 티켓 리스트를 조회한다.정보가 없는 경우를 테스트한다.")
+    void getTicketByManagerFilterWithoutContent() {
+        //given
+        List<Ticket> tickets = new ArrayList<>();
+        Long managerId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+        String query = "Test Ticket";
+
+        Page<Ticket> ticketPage = new PageImpl<>(tickets, pageable, 0);
+
+        //when
+        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, query, SortType.NEWEST)).thenReturn(ticketPage);
+
+        //then
+        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, query, SortType.NEWEST);
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotalElements()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("담당자가 설정한 필터로 담당자의 티켓 티켓 리스트를 조회한다.페이지가 여러개일 경우를 테스트한다.")
+    void getTicketByManagerFilterWithMultiplePages() {
+        //given
+        List<Ticket> tickets = createTestTickets();
+        Long managerId = 1L;
+        Pageable pageable = PageRequest.of(0, 5);
+        String query = "Test Ticket";
+
+        Page<Ticket> ticketPage = new PageImpl<>(tickets, pageable, tickets.size());
+
+        //when
+        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, query, SortType.NEWEST)).thenReturn(ticketPage);
+
+        //then
+        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, query, SortType.NEWEST);
+        assertThat(result.getContent()).isEqualTo(ticketPage.getContent());
+        assertThat(result.getTotalElements()).isEqualTo(ticketPage.getTotalElements());
+        assertThat(result.getTotalPages()).isEqualTo(ticketPage.getTotalPages());
+        assertThat(result.getPageable()).isEqualTo(ticketPage.getPageable());
+    }
 }
