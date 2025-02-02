@@ -57,7 +57,7 @@ public class ManagerTicketDelegateUseCase {
         }
 
         if (!ticket.isDelegatable()) {
-            throw ApplicationException.from(TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS);
+            throw ApplicationException.from(TicketErrorCode.TICKET_NOT_DELEGATABLE);
         }
     }
 }

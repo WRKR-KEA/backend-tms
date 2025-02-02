@@ -57,7 +57,7 @@ public class MemberMapper {
         int size
     ) {
         return MemberInfoPagingResponse.builder()
-            .memberList(memberInfoResponseList)
+            .members(memberInfoResponseList)
             .currentPage(currentPage)
             .totalPages(totalPages)
             .totalElements(totalElements)
@@ -65,7 +65,7 @@ public class MemberMapper {
             .build();
     }
 
-    public static List<MemberInfoResponse> toMemberInfoResponseList(List<Member> memberList) {
+    public static List<MemberInfoResponse> toMemberInfoResponses(List<Member> memberList) {
         return memberList.stream()
             .map(MemberMapper::toMemberInfoResponse)
             .toList();
