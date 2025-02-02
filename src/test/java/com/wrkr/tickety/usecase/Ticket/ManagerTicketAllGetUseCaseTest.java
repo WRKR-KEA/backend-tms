@@ -77,7 +77,8 @@ public class ManagerTicketAllGetUseCaseTest {
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search, SortType.NEWEST)).willReturn(ticketsPage);
 
         // when
-        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, null, search,SortType.NEWEST);
+        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, null, search,
+            SortType.NEWEST);
 
         // then
         assertEquals(3, ticketAllGetPagingResponse.tickets().size());
@@ -90,11 +91,11 @@ public class ManagerTicketAllGetUseCaseTest {
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
-        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
+//        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
 
         //then
         ApplicationException exception = assertThrows(ApplicationException.class,
-            () -> memberGetService.byMemberId(managerId).orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
+            () -> memberGetService.byMemberId(managerId));
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
     }
