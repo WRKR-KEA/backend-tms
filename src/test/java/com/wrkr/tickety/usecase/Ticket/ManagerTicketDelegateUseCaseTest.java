@@ -1,4 +1,4 @@
-package com.wrkr.tickety.usecase;
+package com.wrkr.tickety.usecase.Ticket;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ManagerTicketUseCaseTest {
+public class ManagerTicketDelegateUseCaseTest {
 
     @Mock
     private TicketGetService ticketGetService;

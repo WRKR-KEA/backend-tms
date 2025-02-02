@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
@@ -24,11 +25,7 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 
-    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String search) {
-        if (status == null) {
-            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, search);
-        }
-        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, search);
-
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String query, SortType sortType) {
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query, sortType);
     }
 }

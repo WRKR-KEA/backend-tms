@@ -39,10 +39,10 @@ public class MemberInfoSearchUseCase {
             department
         );
 
-        List<MemberInfoResponse> memberInfoResponseList = MemberMapper.toMemberInfoResponseList(memberPage.getContent());
+        List<MemberInfoResponse> memberInfoResponses = MemberMapper.toMemberInfoResponses(memberPage.getContent());
 
         return MemberMapper.toMemberInfoPagingResponse(
-            memberInfoResponseList,
+            memberInfoResponses,
             memberPage.getNumber() + 1,
             memberPage.getTotalPages(),
             memberPage.getTotalElements(),

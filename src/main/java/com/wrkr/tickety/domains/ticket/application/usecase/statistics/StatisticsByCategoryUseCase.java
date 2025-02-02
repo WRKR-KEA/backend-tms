@@ -9,6 +9,8 @@ import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetServic
 import com.wrkr.tickety.domains.ticket.domain.service.staticstics.StatisticsGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.global.utils.date.DateUtil;
+import com.wrkr.tickety.global.utils.date.TimePeriod;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -73,6 +75,12 @@ public class StatisticsByCategoryUseCase {
     private List<Long> getTicketCountByCategoryList(List<Category> categoryList, StatisticsType type, LocalDateTime requestDateTime) {
         return categoryList.stream()
             .map(category -> switch (type) {
+
+                case TOTAL -> {
+                    TimePeriod timePeriod = DateUtil.extractTimePeriod(requestDateTime, type);
+                    yield statisticsGetService.getStatisticsByCategoryAndDateRange(category.getCategoryId(), timePeriod.getStartDateTime(),
+                        timePeriod.getEndDateTime());
+                }
 
                 case DAILY -> {
                     LocalDateTime startOfDay = requestDateTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
