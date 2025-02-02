@@ -111,7 +111,6 @@ public class ManagerTicketDelegateUseCaseTest {
         Long delegateManagerId = 3L;
 
         TicketDelegateRequest ticketDelegateRequest = TicketDelegateRequest.builder()
-            .currentManagerId(PkCrypto.encrypt(MANAGER_ID))
             .delegateManagerId(PkCrypto.encrypt(delegateManagerId))
             .build();
 

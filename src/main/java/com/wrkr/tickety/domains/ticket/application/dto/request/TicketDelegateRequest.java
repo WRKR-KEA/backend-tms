@@ -8,14 +8,9 @@ import lombok.Builder;
 @Schema(description = "티켓 담당자 변경 요청 DTO")
 public record TicketDelegateRequest(
 
-    @Schema(description = "현재 담당자 ID", example = "Bqs3C822lkMNdWlmE-szUw")
-    @NotNull
-    String currentManagerId,
-
     @Schema(description = "위임할 담당자 ID", example = "Bqs3C822lkMNdWlmE-szUw")
     @NotNull
     String delegateManagerId
-
 ) {
 
 }
