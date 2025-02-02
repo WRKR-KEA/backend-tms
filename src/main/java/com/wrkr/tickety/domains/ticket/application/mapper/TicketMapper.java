@@ -82,6 +82,7 @@ public class TicketMapper {
             .requesterName(ticket.getUser().getName())
             .createdAt(ticket.getCreatedAt())
             .updatedAt(ticket.getUpdatedAt())
+            .isPinned(ticket.getIsPinned())
             .build();
     }
 

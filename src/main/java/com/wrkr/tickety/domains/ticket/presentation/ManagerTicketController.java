@@ -25,6 +25,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketD
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCompleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
@@ -40,7 +41,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,15 +66,14 @@ public class ManagerTicketController {
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
     private final StatisticsGetUseCase statisticsGetUseCase;
 
-    @PostMapping("/statistics/{type}")
+    @PostMapping("/statistics/{statisticsType}")
     @Operation(summary = "카테고리별 통계 조회")
     public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
         @Parameter(description = "통계 타입", example = "daily", required = true)
-        @PathVariable String type,
+        @PathVariable StatisticsType statisticsType,
         @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true)
         @RequestBody @Valid StatisticsByCategoryRequest request
     ) {
-        StatisticsType statisticsType = StatisticsType.from(type);
         return ApplicationResponse.onSuccess(statisticsByCategoryUseCase.getStatisticsByCategory(statisticsType, request.date()));
     }
 
@@ -126,23 +125,26 @@ public class ManagerTicketController {
     }
 
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
-    @GetMapping("/tickets/{managerId}")
-    public ResponseEntity<ApplicationResponse<ManagerTicketAllGetPagingResponse>> getManagerTickets(
+    @GetMapping("/tickets")
+    public ApplicationResponse<ManagerTicketAllGetPagingResponse> getManagerTickets(
         @Schema(description = "담당자 ID", example = "Gbdsnz3dU0kwFxKpavlkog")
-        @PathVariable String managerId,
+        @RequestParam String managerId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
+        @RequestParam(required = false) SortType sortType,
         @Schema(description = "검색어")
-        @RequestParam(required = false) String search
+        @RequestParam(required = false) String query
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, status, search);
+        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(PkCrypto.decrypt(managerId),
+                                                                                                                       pageable,
+                                                                                                                       status, query, sortType);
 
-        return ResponseEntity.ok(ApplicationResponse.onSuccess(ticketAllGetPagingResponse));
+        return ApplicationResponse.onSuccess(ticketAllGetPagingResponse);
     }
 
     @Operation(summary = "해당 티켓 담당자 변경", description = "해당 티켓의 담당자를 변경합니다.")
