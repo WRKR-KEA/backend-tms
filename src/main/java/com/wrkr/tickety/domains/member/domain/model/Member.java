@@ -88,11 +88,8 @@ public class Member extends BaseTime {
         this.phone = phone;
     }
 
-    public void modifyPassword(String password) {
+    public void modifyPassword(String password, Boolean isTempPassword) {
         this.password = password;
-    }
-
-    public void modifyIsTempPassword(Boolean isTempPassword) {
         this.isTempPassword = isTempPassword;
     }
 

@@ -22,8 +22,10 @@ public class PasswordUpdateUseCase {
     public MemberPkResponse updatePassword(Long memberId, String rawPassword) {
         Member findMember = memberGetService.byMemberId(memberId);
 
-        findMember.modifyPassword(PasswordEncoderUtil.encodePassword(rawPassword));
-        findMember.modifyIsTempPassword(false);
+        findMember.modifyPassword(
+            PasswordEncoderUtil.encodePassword(rawPassword),
+            false
+        );
 
         Member modifiedMember = memberSaveService.save(findMember);
 
