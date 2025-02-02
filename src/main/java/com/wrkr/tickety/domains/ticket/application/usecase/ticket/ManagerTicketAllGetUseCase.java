@@ -9,8 +9,6 @@ import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.utils.PkCrypto;
-import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,13 +20,10 @@ public class ManagerTicketAllGetUseCase {
     private final MemberGetService memberGetService;
     private final TicketGetService ticketGetService;
 
-    public ManagerTicketAllGetPagingResponse getManagerTicketList(String cryptoManagerId, Pageable pageable, TicketStatus status, String search) {
-
-        Long managerId = pkCrypto.decryptValue(cryptoManagerId);
-
+    public ManagerTicketAllGetPagingResponse getManagerTicketList(Long managerId, Pageable pageable, TicketStatus status, String search, SortType sortType) {
         memberGetService.byMemberId(managerId);
 
-        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable, status, search);
+        Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageable, status, search, sortType);
 
         Page<ManagerTicketAllGetResponse> mappedPage = ticketsPage.map(TicketMapper::toManagerTicketAllGetResponse);
 
