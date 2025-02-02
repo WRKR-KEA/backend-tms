@@ -1,6 +1,5 @@
 package com.wrkr.tickety.domains.ticket.persistence.repository;
 
-import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
@@ -16,19 +15,4 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
 
     @Query("SELECT COUNT(t) FROM TicketEntity t WHERE t.category.categoryId = :categoryId AND t.createdAt >= :date AND t.createdAt < :end")
     Long findTicketCountByCategoryAndDateRange(Long categoryId, LocalDateTime date, LocalDateTime end);
-
-    @Query("""
-            SELECT t
-            FROM TicketEntity t
-            WHERE t.manager.memberId = :managerId
-              AND (:status IS NULL OR t.status = :status)
-              AND (:search IS NULL OR t.serialNumber LIKE %:search% OR t.content LIKE %:search%)
-            ORDER BY  t.isPinned
-        """)
-    Page<TicketEntity> findByManagerFilters(
-        @Param("managerId") Long managerId,
-        @Param("status") TicketStatus status,
-        Pageable pageable,
-        @Param("search") String search
-    );
 }

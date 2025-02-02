@@ -2,14 +2,17 @@ package com.wrkr.tickety.domains.ticket.persistence.repository;
 
 import static com.wrkr.tickety.domains.ticket.persistence.entity.QTicketEntity.ticketEntity;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -56,6 +59,42 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
         );
     }
 
+    @Override
+    public Page<TicketEntity> findByManagerFilters(
+        Long managerId,
+        TicketStatus status,
+        Pageable pageable,
+        String search,
+        SortType sortType
+    ) {
+        var orderSpecifiers = getOrderSpecifier(sortType);
+
+        List<TicketEntity> ticketEntityList = jpaQueryFactory.selectFrom(ticketEntity)
+            .where(
+                ticketEntity.manager.memberId.eq(managerId),
+                statusEq(status),
+                searchEq(search)
+            )
+            .orderBy(orderSpecifiers)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        JPAQuery<Long> total = jpaQueryFactory.select(ticketEntity.count())
+            .from(ticketEntity)
+            .where(
+                ticketEntity.manager.memberId.eq(managerId),
+                statusEq(status),
+                searchEq(search)
+            );
+
+        return PageableExecutionUtils.getPage(
+            ticketEntityList,
+            pageable,
+            total::fetchOne
+        );
+    }
+
     private BooleanExpression titleOrManagerNicknameOrSerialNumberContainsIgnoreCase(String query) {
         return query == null ? null : ticketEntity.title.containsIgnoreCase(query)
             .or(ticketEntity.manager.nickname.containsIgnoreCase(query))
@@ -72,5 +111,21 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
 
     private BooleanExpression createdAtLoe(LocalDate endDate) {
         return endDate == null ? null : ticketEntity.createdAt.loe(LocalDateTime.of(endDate, LocalTime.MAX));
+    }
+
+    private OrderSpecifier<?>[] getOrderSpecifier(SortType sortType) {
+        ArrayList<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+        orderSpecifiers.add(ticketEntity.isPinned.desc());
+        if (sortType != null) {
+            orderSpecifiers.add(sortType == SortType.NEWEST
+                ? ticketEntity.createdAt.desc()
+                : ticketEntity.createdAt.asc());
+        }
+        return orderSpecifiers.toArray(new OrderSpecifier[0]);
+    }
+
+    private BooleanExpression searchEq(String search) {
+        return search == null ? null : ticketEntity.serialNumber.contains(search)
+            .or(ticketEntity.content.contains(search));
     }
 }

@@ -31,7 +31,7 @@ public class DepartmentTicketAllGetUseCase {
         }
 
         String query = request.query() == null || request.query().isBlank() ? null : request.query();
-        TicketStatus status = TicketStatus.fromValueOrNull(request.status());
+        TicketStatus status = TicketStatus.from(request.status());
 
         return TicketMapper.toDepartmentTicketResponse(ticketGetService.getDepartmentTickets(query, status, startDate, endDate, pageable));
     }

@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
@@ -41,11 +42,6 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(ticketEntity);
     }
 
-    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status, final String search) {
-        Page<TicketEntity> ticketEntityPage = ticketRepository.findByManagerFilters(managerId, status, pageable, search);
-        return ticketEntityPage.map(this.ticketPersistenceMapper::toDomain);
-    }
-
     public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate, final Pageable pageable) {
         Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageable);
         return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
@@ -53,5 +49,10 @@ public class TicketPersistenceAdapter {
 
     public Long findTicketCountByCategoryAndDateRange(final Long categoryId, final LocalDateTime start, final LocalDateTime end) {
         return ticketRepository.findTicketCountByCategoryAndDateRange(categoryId, start, end);
+    }
+
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status, final String query,
+        final SortType sortType) {
+        return ticketRepository.findByManagerFilters(managerId, status, pageable, query, sortType).map(this.ticketPersistenceMapper::toDomain);
     }
 }

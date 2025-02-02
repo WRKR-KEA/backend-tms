@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.constant;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +18,10 @@ public enum TicketStatus {
 
     private final String description;
 
-    public static TicketStatus fromValueOrNull(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-
+    @JsonCreator
+    public static TicketStatus from(String status) {
         return Arrays.stream(TicketStatus.values())
-            .filter(status -> status.name().equalsIgnoreCase(value.trim()))
+            .filter(ticketStatus -> ticketStatus.name().equalsIgnoreCase(status))
             .findFirst()
             .orElse(null);
     }

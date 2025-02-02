@@ -10,6 +10,7 @@ import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
@@ -65,18 +66,18 @@ public class ManagerTicketAllGetUseCaseTest {
         Pageable pageable = PageRequest.of(page, size);
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         List<Ticket> tickets = List.of(
-            Ticket.builder().ticketId(1L).status(TicketStatus.CANCEL).user(requestMember).build(),
-            Ticket.builder().ticketId(2L).status(TicketStatus.COMPLETE).user(requestMember).build(),
-            Ticket.builder().ticketId(3L).status(TicketStatus.IN_PROGRESS).user(requestMember).build()
+            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).build(),
+            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).build(),
+            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).build()
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest, 3);
         when(memberGetService.byMemberId(managerId)).thenReturn(Optional.of(member));
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
-        given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
+        given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search, SortType.NEWEST)).willReturn(ticketsPage);
 
         // when
-        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(cryptoManagerId, pageable, null, search);
+        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, null, search,SortType.NEWEST);
 
         // then
         assertEquals(3, ticketAllGetPagingResponse.tickets().size());
