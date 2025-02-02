@@ -20,8 +20,9 @@ public class MemberGetService {
 
     private final MemberPersistenceAdapter memberPersistenceAdapter;
 
-    public Optional<Member> byMemberId(Long memberId) {
-        return memberPersistenceAdapter.findById(memberId);
+    public Member byMemberId(Long memberId) {
+        return memberPersistenceAdapter.findById(memberId)
+            .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     public Page<Member> searchMember(

@@ -10,6 +10,7 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_N
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_REJECTABLE;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
 
+import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
@@ -43,6 +44,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,10 +74,9 @@ public class ManagerTicketController {
     @PostMapping("/statistics/{statisticsType}")
     @Operation(summary = "카테고리별 통계 조회")
     public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
-        @Parameter(description = "통계 타입", example = "daily", required = true)
-        @PathVariable StatisticsType statisticsType,
-        @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true)
-        @RequestBody @Valid StatisticsByCategoryRequest request
+        @AuthenticationPrincipal Member member,
+        @Parameter(description = "통계 타입", example = "daily", required = true) @PathVariable StatisticsType statisticsType,
+        @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true) @RequestBody @Valid StatisticsByCategoryRequest request
     ) {
         return ApplicationResponse.onSuccess(statisticsByCategoryUseCase.getStatisticsByCategory(statisticsType, request.date()));
     }
@@ -84,6 +85,7 @@ public class ManagerTicketController {
     @GetMapping("/tickets/{ticketId}")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND})
     public ApplicationResponse<ManagerTicketDetailResponse> getManagerTicketDetail(
+        @AuthenticationPrincipal Member member,
         @Parameter(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw") @PathVariable String ticketId
     ) {
         return ApplicationResponse.onSuccess(managerTicketDetailUseCase.getManagerTicketDetail(PkCrypto.decrypt(ticketId)));
@@ -115,10 +117,10 @@ public class ManagerTicketController {
     @Parameters({@Parameter(name = "ticketId", description = "티켓 PK 리스트", example = "['abc123', 'def456']", required = true)})
     @Operation(summary = "담당자 - 티켓 승인", description = "담당자가 티켓을 일괄 또는 개별 승인합니다.")
     public ApplicationResponse<List<TicketPkResponse>> approveTicket(
-        @RequestParam(value = "memberId") String memberId,
+        @AuthenticationPrincipal Member member,
         @RequestParam(value = "ticketId") List<String> ticketId
     ) {
-        List<TicketPkResponse> response = ticketApproveUseCase.approveTicket(memberId, ticketId);
+        List<TicketPkResponse> response = ticketApproveUseCase.approveTicket(member.getMemberId(), ticketId);
         return ApplicationResponse.onSuccess(response);
     }
 
@@ -127,10 +129,10 @@ public class ManagerTicketController {
     @Parameters({@Parameter(name = "ticketId", description = "티켓 PK", example = "abc123", required = true)})
     @Operation(summary = "담당자 - 티켓 반려", description = "담당자가 티켓을 반려합니다.")
     public ApplicationResponse<TicketPkResponse> rejectTicket(
-        @RequestParam(value = "memberId") String memberId,
+        @AuthenticationPrincipal Member member,
         @PathVariable(value = "ticketId") String ticketId
     ) {
-        TicketPkResponse response = ticketRejectUseCase.rejectTicket(memberId, ticketId);
+        TicketPkResponse response = ticketRejectUseCase.rejectTicket(member.getMemberId(), ticketId);
         return ApplicationResponse.onSuccess(response);
     }
 
@@ -139,18 +141,17 @@ public class ManagerTicketController {
     @Parameters({@Parameter(name = "ticketId", description = "티켓 PK", example = "abc123", required = true)})
     @Operation(summary = "담당자 - 티켓 완료", description = "담당자가 티켓을 완료합니다.")
     public ApplicationResponse<TicketPkResponse> completeTicket(
-        @RequestParam(value = "memberId") String memberId,
+        @AuthenticationPrincipal Member member,
         @PathVariable(value = "ticketId") String ticketId
     ) {
-        TicketPkResponse response = ticketCompleteUseCase.completeTicket(memberId, ticketId);
+        TicketPkResponse response = ticketCompleteUseCase.completeTicket(member.getMemberId(), ticketId);
         return ApplicationResponse.onSuccess(response);
     }
 
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
     @GetMapping("/tickets")
     public ApplicationResponse<PageResponse<ManagerTicketAllGetResponse>> getManagerTickets(
-        @Schema(description = "담당자 ID", example = "Gbdsnz3dU0kwFxKpavlkog")
-        @RequestParam String managerId,
+        @AuthenticationPrincipal Member member,
         Pageable pageable,
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
@@ -158,24 +159,23 @@ public class ManagerTicketController {
         @Schema(description = "검색어")
         @RequestParam(required = false) String query
     ) {
+        PageResponse<ManagerTicketAllGetResponse> response = managerTicketAllGetUseCase.getManagerTicketList(
+            member.getMemberId(), pageable, status, query, sortType
+        );
 
-        PageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(PkCrypto.decrypt(managerId),
-            pageable, status, query, sortType);
-
-        return ApplicationResponse.onSuccess(ticketAllGetPagingResponse);
+        return ApplicationResponse.onSuccess(response);
     }
 
     @Operation(summary = "해당 티켓 담당자 변경", description = "해당 티켓의 담당자를 변경합니다.")
     @PatchMapping("/tickets/{ticketId}/delegate")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_NOT_DELEGATABLE})
     public ApplicationResponse<TicketPkResponse> delegateTicket(
+        @AuthenticationPrincipal Member member,
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
         @Valid @RequestBody TicketDelegateRequest request
     ) {
-        return ApplicationResponse.onSuccess(
-            managerTicketDelegateUseCase.delegateTicket(PkCrypto.decrypt(ticketId), PkCrypto.decrypt(request.currentManagerId()), request)
-        );
+        return ApplicationResponse.onSuccess(managerTicketDelegateUseCase.delegateTicket(PkCrypto.decrypt(ticketId), member.getMemberId(), request));
     }
 
     @Operation(summary = "기간별 & 티켓 상태별 티켓 개수 조회", description = "기간별 & 티켓 상태별로 티켓의 개수를 조회합니다.")
@@ -189,6 +189,7 @@ public class ManagerTicketController {
     )
     @GetMapping("/statistics/count")
     public ApplicationResponse<StatisticsByTicketStatusResponse> getTicketCountStatistics(
+        @AuthenticationPrincipal Member member,
         @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().toString()}") String date,
         @RequestParam(defaultValue = "TOTAL") StatisticsType type,
         @RequestParam(required = false) TicketStatus status
