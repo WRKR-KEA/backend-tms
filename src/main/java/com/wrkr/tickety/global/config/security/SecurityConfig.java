@@ -5,6 +5,7 @@ import com.wrkr.tickety.global.config.security.filter.JwtAuthenticationFilter;
 import com.wrkr.tickety.global.config.security.handler.CustomAccessDeniedHandler;
 import com.wrkr.tickety.global.config.security.handler.CustomAuthenticationEntryPoint;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,10 +82,22 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("http://localhost:8080");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
+
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000",
+            "http://localhost:8080"
+        ));
+
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        configuration.setAllowedMethods(Arrays.asList(
+            "GET",
+            "POST",
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
+        ));
+
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
