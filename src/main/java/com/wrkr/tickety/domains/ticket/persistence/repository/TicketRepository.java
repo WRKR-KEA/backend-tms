@@ -15,5 +15,4 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
 
     @Query("SELECT COUNT(t) FROM TicketEntity t WHERE t.category.categoryId = :categoryId AND t.createdAt >= :date AND t.createdAt < :end")
     Long findTicketCountByCategoryAndDateRange(Long categoryId, LocalDateTime date, LocalDateTime end);
-
 }

@@ -1,12 +1,10 @@
 package com.wrkr.tickety.domains.member.application.mapper;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
-import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPagingResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -47,27 +45,5 @@ public class MemberMapper {
             .role(member.getRole().getDescription())
             .profileImage(member.getProfileImage())
             .build();
-    }
-
-    public static MemberInfoPagingResponse toMemberInfoPagingResponse(
-        List<MemberInfoResponse> memberInfoResponseList,
-        int currentPage,
-        int totalPages,
-        long totalElements,
-        int size
-    ) {
-        return MemberInfoPagingResponse.builder()
-            .members(memberInfoResponseList)
-            .currentPage(currentPage)
-            .totalPages(totalPages)
-            .totalElements(totalElements)
-            .size(size)
-            .build();
-    }
-
-    public static List<MemberInfoResponse> toMemberInfoResponses(List<Member> memberList) {
-        return memberList.stream()
-            .map(MemberMapper::toMemberInfoResponse)
-            .toList();
     }
 }

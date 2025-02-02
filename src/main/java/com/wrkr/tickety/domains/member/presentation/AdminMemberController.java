@@ -9,7 +9,6 @@ import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_N
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberDeleteRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
-import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPagingResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
@@ -20,6 +19,7 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
+import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -108,7 +108,7 @@ public class AdminMemberController {
         @Parameter(name = "department", description = "부서", example = "개발팀")
     })
     @GetMapping
-    public ApplicationResponse<MemberInfoPagingResponse> getTotalMemberInfo(
+    public ApplicationResponse<PageResponse<MemberInfoResponse>> getTotalMemberInfo(
         @AuthenticationPrincipal Member member,
         @RequestParam(defaultValue = "1") @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.") int page,
         @RequestParam(defaultValue = "10") @Min(value = 10, message = "페이지 크기는 10 이상이어야 합니다.") int size,

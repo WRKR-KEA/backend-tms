@@ -1,13 +1,12 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
-import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPagingResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import java.util.List;
+import com.wrkr.tickety.global.common.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +20,7 @@ public class MemberInfoSearchUseCase {
 
     private final MemberGetService memberGetService;
 
-    public MemberInfoPagingResponse searchMemberInfo(
+    public PageResponse<MemberInfoResponse> searchMemberInfo(
         int page,
         int size,
         Role role,
@@ -39,14 +38,9 @@ public class MemberInfoSearchUseCase {
             department
         );
 
-        List<MemberInfoResponse> memberInfoResponses = MemberMapper.toMemberInfoResponses(memberPage.getContent());
-
-        return MemberMapper.toMemberInfoPagingResponse(
-            memberInfoResponses,
-            memberPage.getNumber() + 1,
-            memberPage.getTotalPages(),
-            memberPage.getTotalElements(),
-            memberPage.getSize()
+        return PageResponse.of(
+            memberPage,
+            MemberMapper::toMemberInfoResponse
         );
     }
 }

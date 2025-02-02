@@ -8,12 +8,13 @@ import static org.mockito.Mockito.when;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
-import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
+import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.List;
@@ -76,11 +77,12 @@ public class ManagerTicketAllGetUseCaseTest {
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search, SortType.NEWEST)).willReturn(ticketsPage);
 
         // when
-        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, null, search,
+        PageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, null,
+            search,
             SortType.NEWEST);
 
         // then
-        assertEquals(3, ticketAllGetPagingResponse.tickets().size());
+        assertEquals(3, ticketAllGetPagingResponse.elements().size());
     }
 
     @Test
