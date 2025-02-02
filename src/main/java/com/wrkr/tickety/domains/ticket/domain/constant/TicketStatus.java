@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.constant;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,11 +18,13 @@ public enum TicketStatus {
     private final String description;
 
     public static TicketStatus fromValueOrNull(String value) {
-
-        try {
-            return valueOf(value.trim().toUpperCase());
-        } catch (NullPointerException | IllegalArgumentException e) {
+        if (value == null || value.trim().isEmpty()) {
             return null;
         }
+
+        return Arrays.stream(TicketStatus.values())
+            .filter(status -> status.name().equalsIgnoreCase(value.trim()))
+            .findFirst()
+            .orElse(null);
     }
 }
