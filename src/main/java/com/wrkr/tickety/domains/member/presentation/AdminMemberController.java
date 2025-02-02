@@ -14,8 +14,8 @@ import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoRespon
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoGetUseCase;
-import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCase;
+import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
@@ -73,7 +73,7 @@ public class AdminMemberController {
         @PathVariable String memberId,
         @RequestBody @Valid MemberUpdateRequest memberUpdateRequest
     ) {
-        MemberPkResponse memberPkResponse = memberUpdateUseCase.modifyMemberInfo(memberId, memberUpdateRequest);
+        MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberUpdateRequest);
         return ApplicationResponse.onSuccess(memberPkResponse);
     }
 
@@ -84,7 +84,7 @@ public class AdminMemberController {
         @AuthenticationPrincipal Member member,
         @RequestBody MemberDeleteRequest memberDeleteRequest
     ) {
-        memberUpdateUseCase.softDeleteMember(memberDeleteRequest.memberIdList());
+        memberInfoUpdateUseCase.softDeleteMember(memberDeleteRequest.memberIdList());
         return ApplicationResponse.onSuccess();
     }
 
