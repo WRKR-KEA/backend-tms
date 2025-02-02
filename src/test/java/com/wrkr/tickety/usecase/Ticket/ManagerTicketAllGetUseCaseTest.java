@@ -90,7 +90,7 @@ public class ManagerTicketAllGetUseCaseTest {
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
-//        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
+        when(memberGetService.byMemberId(managerId)).thenThrow(new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         //then
         ApplicationException exception = assertThrows(ApplicationException.class,
