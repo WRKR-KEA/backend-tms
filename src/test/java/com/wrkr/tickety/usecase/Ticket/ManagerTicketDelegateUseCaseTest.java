@@ -135,8 +135,7 @@ public class ManagerTicketDelegateUseCaseTest {
             .category(category)
             .build();
 
-        given(memberGetService.byMemberId(MANAGER_ID)).willReturn(manager);
-        given(memberGetService.byMemberId(delegateManagerId)).willReturn(manager);
+        given(memberGetService.byMemberId(delegateManagerId)).willReturn(delegateManager);
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 
