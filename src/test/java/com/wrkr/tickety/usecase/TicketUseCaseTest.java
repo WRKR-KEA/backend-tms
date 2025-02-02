@@ -137,7 +137,7 @@ public class TicketUseCaseTest {
 
         given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
 
-        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
+        given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
         // when
@@ -161,7 +161,7 @@ public class TicketUseCaseTest {
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
 
         given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(ticketPage);
-        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
+        given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         //when

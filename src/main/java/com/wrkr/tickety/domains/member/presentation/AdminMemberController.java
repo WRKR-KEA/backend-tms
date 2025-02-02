@@ -14,8 +14,8 @@ import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoRespon
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoGetUseCase;
-import com.wrkr.tickety.domains.member.application.usecase.MemberUpdateUseCase;
-import com.wrkr.tickety.domains.member.application.usecase.SearchMemberInfoGetUseCase;
+import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCase;
+import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
@@ -49,9 +49,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminMemberController {
 
     private final MemberCreateUseCase memberCreateUseCase;
-    private final MemberUpdateUseCase memberUpdateUseCase;
+    private final MemberInfoUpdateUseCase memberInfoUpdateUseCase;
     private final MemberInfoGetUseCase memberInfoGetUseCase;
-    private final SearchMemberInfoGetUseCase searchMemberInfoGetUseCase;
+    private final MemberInfoSearchUseCase memberInfoSearchUseCase;
 
     // TODO: Image 처리 방식 논의 필요(Multipart or ImageUrl DTO로 바로 받기)
     @Operation(summary = "관리자 - 회원 등록", description = "회원을 등록 시 이메일로 임시 비밀번호를 발급합니다.")
@@ -73,7 +73,7 @@ public class AdminMemberController {
         @PathVariable String memberId,
         @RequestBody @Valid MemberUpdateRequest memberUpdateRequest
     ) {
-        MemberPkResponse memberPkResponse = memberUpdateUseCase.modifyMemberInfo(memberId, memberUpdateRequest);
+        MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberUpdateRequest);
         return ApplicationResponse.onSuccess(memberPkResponse);
     }
 
@@ -84,7 +84,7 @@ public class AdminMemberController {
         @AuthenticationPrincipal Member member,
         @RequestBody MemberDeleteRequest memberDeleteRequest
     ) {
-        memberUpdateUseCase.softDeleteMember(memberDeleteRequest.memberIdList());
+        memberInfoUpdateUseCase.softDeleteMember(memberDeleteRequest.memberIdList());
         return ApplicationResponse.onSuccess();
     }
 
@@ -118,7 +118,7 @@ public class AdminMemberController {
         @RequestParam(required = false) String department
     ) {
         return ApplicationResponse.onSuccess(
-            searchMemberInfoGetUseCase.searchMemberInfo(
+            memberInfoSearchUseCase.searchMemberInfo(
                 page - 1,
                 size,
                 role,

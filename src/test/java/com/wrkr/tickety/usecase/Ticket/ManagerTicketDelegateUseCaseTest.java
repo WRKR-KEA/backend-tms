@@ -17,7 +17,6 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -135,8 +134,7 @@ public class ManagerTicketDelegateUseCaseTest {
             .category(category)
             .build();
 
-        given(memberGetService.byMemberId(MANAGER_ID)).willReturn(Optional.of(manager));
-        given(memberGetService.byMemberId(delegateManagerId)).willReturn(Optional.of(delegateManager));
+        given(memberGetService.byMemberId(delegateManagerId)).willReturn(delegateManager);
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 
