@@ -28,7 +28,7 @@ public class UserMemberController {
 
     @Operation(summary = "비밀번호 재설정", description = "사용자 또는 담당자가 비밀번호 재설정을 진행합니다.")
     @CustomErrorCodes(memberErrorCodes = {INVALID_PASSWORD_FORMAT})
-    @PatchMapping
+    @PatchMapping("/password")
     public ApplicationResponse<MemberPkResponse> updatePassword(
         @AuthenticationPrincipal Member member,
         @RequestBody @Valid PasswordUpdateRequest passwordUpdateRequest
