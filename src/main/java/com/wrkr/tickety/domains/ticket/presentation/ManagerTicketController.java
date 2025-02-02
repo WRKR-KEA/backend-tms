@@ -12,7 +12,6 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUM
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
@@ -94,11 +93,18 @@ public class ManagerTicketController {
     @GetMapping("/tickets/department")
     @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
     public ApplicationResponse<PageResponse<DepartmentTicketResponse>> getDepartmentTicket(
-        DepartmentTicketRequest request,
+        @Parameter(description = "검색어 (제목, 담당자, 티켓 번호 대상)", example = "VM")
+        @RequestParam(required = false) String query,
+        @Parameter(description = "필터링 - 티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
+        @RequestParam(required = false) String status,
+        @Parameter(description = "필터링 - 요청일 시작", example = "2025-01-27")
+        @RequestParam(required = false) String startDate,
+        @Parameter(description = "필터링 - 요청일 끝", example = "2025-01-27")
+        @RequestParam(required = false) String endDate,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
         Pageable pageable
     ) {
-        return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(request, pageable));
+        return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(query, status, startDate, endDate, pageable));
     }
 
     @PatchMapping("/tickets/approve")
@@ -154,7 +160,7 @@ public class ManagerTicketController {
     ) {
 
         PageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(PkCrypto.decrypt(managerId),
-                                                                                                                       pageable, status, query, sortType);
+            pageable, status, query, sortType);
 
         return ApplicationResponse.onSuccess(ticketAllGetPagingResponse);
     }

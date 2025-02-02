@@ -1,6 +1,5 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.DepartmentTicketRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -22,16 +21,17 @@ public class DepartmentTicketAllGetUseCase {
 
     private final TicketGetService ticketGetService;
 
-    public PageResponse<DepartmentTicketResponse> getDepartmentTicketList(DepartmentTicketRequest request, Pageable pageable) {
+    public PageResponse<DepartmentTicketResponse> getDepartmentTicketList(String queryReq, String statusReq, String startDateReq, String endDateReq,
+        Pageable pageable) {
 
-        LocalDate startDate = parseLocalDateOrNull(request.startDate());
-        LocalDate endDate = parseLocalDateOrNull(request.endDate());
+        LocalDate startDate = parseLocalDateOrNull(startDateReq);
+        LocalDate endDate = parseLocalDateOrNull(endDateReq);
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
             throw ApplicationException.from(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
         }
 
-        String query = request.query() == null || request.query().isBlank() ? null : request.query();
-        TicketStatus status = TicketStatus.from(request.status());
+        String query = queryReq == null || queryReq.isBlank() ? null : queryReq;
+        TicketStatus status = TicketStatus.from(statusReq);
 
         return TicketMapper.toDepartmentTicketResponse(ticketGetService.getDepartmentTickets(query, status, startDate, endDate, pageable));
     }
