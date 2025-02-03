@@ -1,11 +1,13 @@
 package com.wrkr.tickety.domains.ticket.persistence.repository;
 
 import com.wrkr.tickety.domains.ticket.persistence.entity.CategoryEntity;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
+
+    Optional<CategoryEntity> findByCategoryIdAndIsDeletedFalse(Long categoryId);
 
     List<CategoryEntity> findByIsDeletedFalse();
 
@@ -14,4 +16,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     Boolean existsByNameAndIsDeletedFalseAndCategoryIdNot(String name, Long categoryId);
 
     List<CategoryEntity> findByParentCategoryIdAndIsDeletedFalse(Long categoryId);
+
+    List<CategoryEntity> findByCategoryIdInAndIsDeletedFalse(List<Long> categoryIds);
 }
