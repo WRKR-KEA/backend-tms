@@ -6,8 +6,11 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.QDepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.persistence.entity.QTicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,6 +60,34 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
             pageable,
             countQuery::fetchOne
         );
+    }
+
+    @Override
+    public List<DepartmentTicketPreResponse> getAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
+        QTicketEntity t = ticketEntity;
+
+        return jpaQueryFactory
+            .select(
+                new QDepartmentTicketPreResponse(
+                    t.ticketId,
+                    t.serialNumber,
+                    t.status,
+                    t.title,
+                    t.user.nickname,
+                    t.manager.nickname,
+                    t.createdAt,
+                    t.updatedAt
+                )
+            )
+            .from(t)
+            .where(
+                titleOrManagerNicknameOrSerialNumberContainsIgnoreCase(query),
+                statusEq(status),
+                createdAtGoe(startDate),
+                createdAtLoe(endDate)
+            )
+            .orderBy(t.ticketId.desc())
+            .fetch();
     }
 
     @Override
