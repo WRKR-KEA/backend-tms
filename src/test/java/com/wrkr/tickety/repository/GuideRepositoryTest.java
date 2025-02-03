@@ -31,27 +31,26 @@ public class GuideRepositoryTest {
 
     private GuideEntity guideEntity;
 
+    @BeforeEach
+    public void setup() {
+        CategoryEntity categoryEntity = CategoryEntity.builder()
+            .name("category")
+            .isDeleted(false)
+            .seq(1)
+            .build();
+        entityManager.persist(categoryEntity);
+        entityManager.flush();
+
+        guideEntity = GuideEntity.builder()
+            .category(categoryEntity)
+            .content("guide")
+            .build();
+        entityManager.persist(guideEntity);
+        entityManager.flush();
+    }
 
     @Nested
     class findByCategoryTest {
-
-        @BeforeEach
-        public void setup() {
-            CategoryEntity categoryEntity = CategoryEntity.builder()
-                .name("category")
-                .isDeleted(false)
-                .seq(1)
-                .build();
-            entityManager.persist(categoryEntity);
-            entityManager.flush();
-
-            guideEntity = GuideEntity.builder()
-                .category(categoryEntity)
-                .content("guide")
-                .build();
-            entityManager.persist(guideEntity);
-            entityManager.flush();
-        }
 
         @Test
         @DisplayName("카테고리 아이디로 가이드를 찾는다.")
@@ -80,23 +79,10 @@ public class GuideRepositoryTest {
         @Test
         @DisplayName("카테고리 아이디로 가이드가 존재하는지 확인한다. 카테고리가 있을때를 테스트한다.")
         public void existsByCategory_CategoryIdTest() {
-            CategoryEntity categoryEntity = CategoryEntity.builder()
-                .name("category")
-                .isDeleted(false)
-                .seq(1)
-                .build();
-            entityManager.persist(categoryEntity);
-            entityManager.flush();
-
-            guideEntity = GuideEntity.builder()
-                .category(categoryEntity)
-                .content("guide")
-                .build();
-            entityManager.persist(guideEntity);
-            entityManager.flush();
-
+            //given
+            Long categoryId = guideEntity.getCategory().getCategoryId();
             //when
-            boolean exists = guideRepository.existsByCategory_CategoryId(guideEntity.getCategory().getCategoryId());
+            boolean exists = guideRepository.existsByCategory_CategoryId(categoryId);
             //then
             assert exists;
         }
