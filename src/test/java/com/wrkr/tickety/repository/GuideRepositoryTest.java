@@ -31,6 +31,7 @@ public class GuideRepositoryTest {
 
     private GuideEntity guideEntity;
 
+
     @Nested
     class findByCategoryTest {
 
@@ -55,8 +56,10 @@ public class GuideRepositoryTest {
         @Test
         @DisplayName("카테고리 아이디로 가이드를 찾는다.")
         public void findByCategory_CategoryIdTest() {
+            //given
+            Long categoryId = guideEntity.getCategory().getCategoryId();
             //when
-            GuideEntity foundGuideEntity = guideRepository.findByCategory_CategoryId(1L).orElseThrow();
+            GuideEntity foundGuideEntity = guideRepository.findByCategory_CategoryId(categoryId).orElseThrow();
             //then
             assert foundGuideEntity.getContent().equals(guideEntity.getContent());
         }
@@ -77,17 +80,32 @@ public class GuideRepositoryTest {
         @Test
         @DisplayName("카테고리 아이디로 가이드가 존재하는지 확인한다. 카테고리가 있을때를 테스트한다.")
         public void existsByCategory_CategoryIdTest() {
+            CategoryEntity categoryEntity = CategoryEntity.builder()
+                .name("category")
+                .isDeleted(false)
+                .seq(1)
+                .build();
+            entityManager.persist(categoryEntity);
+            entityManager.flush();
+
+            guideEntity = GuideEntity.builder()
+                .category(categoryEntity)
+                .content("guide")
+                .build();
+            entityManager.persist(guideEntity);
+            entityManager.flush();
+
             //when
-            boolean exists = guideRepository.existsByCategory_CategoryId(1L);
+            boolean exists = guideRepository.existsByCategory_CategoryId(guideEntity.getCategory().getCategoryId());
             //then
-            assert !exists;
+            assert exists;
         }
 
         @Test
         @DisplayName("카테고리 아이디로 가이드가 존재하는지 확인한다. 카테고리가 없을때를 테스트한다.")
         public void existsByCategory_CategoryId_NotFoundTest() {
             //when
-            boolean exists = guideRepository.existsByCategory_CategoryId(2L);
+            boolean exists = guideRepository.existsByCategory_CategoryId(100L);
             //then
             assert !exists;
         }
