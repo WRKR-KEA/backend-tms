@@ -15,4 +15,17 @@ public class Category extends BaseTime {
     private Integer seq;
     private Boolean isDeleted;
     private LocalDateTime deletedAt;
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateSeq(Integer seq) {
+        this.seq = seq;
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 }

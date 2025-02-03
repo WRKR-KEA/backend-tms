@@ -35,7 +35,7 @@ public class StatisticsByCategoryUseCase {
 
         List<Category> secondCategoryList = new ArrayList<>();
 
-        categoryGetService.byIsDeleted().forEach(category -> {
+        categoryGetService.byIsDeletedFalse().forEach(category -> {
             if (category.getParent() == null) {
                 firstCategoryList.add(category);
             } else {
