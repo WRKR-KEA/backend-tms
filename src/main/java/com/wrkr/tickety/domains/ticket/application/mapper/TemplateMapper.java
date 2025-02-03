@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.AdminTemplateGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplatePKResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
@@ -16,30 +15,22 @@ public class TemplateMapper {
 
     public static TemplatePKResponse mapToTemplatePKResponse(Template template) {
         return TemplatePKResponse.builder()
-                .templateId(PkCrypto.encrypt(template.getTemplateId()))
-                .build();
+            .templateId(PkCrypto.encrypt(template.getTemplateId()))
+            .build();
     }
 
     public static AdminTemplateGetResponse mapToAdminTemplateGetResponse(Template template) {
         return AdminTemplateGetResponse.builder()
-                .templateId(PkCrypto.encrypt(template.getTemplateId()))
-                .categoryId(PkCrypto.encrypt(template.getCategory().getCategoryId()))
-                .content(template.getContent())
-                .build();
+            .templateId(PkCrypto.encrypt(template.getTemplateId()))
+            .categoryId(PkCrypto.encrypt(template.getCategory().getCategoryId()))
+            .content(template.getContent())
+            .build();
     }
 
     public static Template mapToTemplateDomain(AdminTemplateCreateRequest request, Category category) {
         return Template.builder()
-                .category(category)
-                .content(request.content())
-                .build();
-    }
-
-    public static Template updateTemplateDomain(Template template, AdminTemplateUpdateRequest request) {
-        return Template.builder()
-                .templateId(template.getTemplateId())
-                .category(template.getCategory())
-                .content(request.content())
-                .build();
+            .category(category)
+            .content(request.content())
+            .build();
     }
 }
