@@ -3,7 +3,7 @@ name: Report Jacoco Test Coverage
 on:
   pull_request:
     branches: [ "develop" ]
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 permissions: write-all
 
@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Cache Gradle
         uses: actions/cache@v3
@@ -38,9 +38,16 @@ jobs:
 
       - name: Inject secret into env.properties
         run: |
-          touch ./src/main/resources/env.properties
-          echo "ENV_PROPERTIES=${{ secrets.ENV_PROPERTIES }}" > ./src/main/resources/env.properties
-          cat ./src/main/resources/env.properties
+          cat <<EOF > ./src/test/resources/env.properties
+          PK_CRYPTO_ALGORITHM=${{ secrets.PK_CRYPTO_ALGORITHM }}
+          PK_CRYPTO_SECRET=${{ secrets.PK_CRYPTO_SECRET }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}
+          JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          EOF
+          
+          cat ./src/test/resources/env.properties
 
       - name: Run Tests and Generate Coverage
         shell: bash

@@ -1,8 +1,10 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +26,11 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 
-    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String search) {
-        if (status == null) {
-            return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, null, search);
-        }
-        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, search);
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, Pageable pageable, TicketStatus status, String query, SortType sortType) {
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query, sortType);
+    }
 
+    public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
     }
 }

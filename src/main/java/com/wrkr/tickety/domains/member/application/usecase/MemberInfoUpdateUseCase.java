@@ -8,34 +8,33 @@ import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberUpdateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class MemberUpdateUseCase {
+public class MemberInfoUpdateUseCase {
+
     private final MemberUpdateService memberUpdateService;
     private final MemberGetService memberGetService;
 
     public MemberPkResponse modifyMemberInfo(String memberId, MemberUpdateRequest memberUpdateRequest) {
-        Optional<Member> findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
+        Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
-        findMember.get().modifyMemberInfo(memberUpdateRequest);
-        Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember.orElse(null));
+        findMember.modifyMemberInfo(memberUpdateRequest);
+        Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember);
 
         return MemberMapper.toMemberPkResponse(PkCrypto.encrypt(modifiedMember.getMemberId()));
     }
 
     public void softDeleteMember(List<String> memberIdList) {
         memberIdList.forEach(memberId -> {
-            Optional<Member> findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
+            Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
-            findMember.get().modifyIsDeleted(true);
-            Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember.orElse(null));
+            findMember.modifyIsDeleted(true);
+            Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember);
 
             memberUpdateService.modifyMemberInfo(modifiedMember);
         });

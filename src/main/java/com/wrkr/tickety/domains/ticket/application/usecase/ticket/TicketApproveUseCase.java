@@ -32,8 +32,8 @@ public class TicketApproveUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
 
-    public List<TicketPkResponse> approveTicket(String memberId, List<String> ticketIdList) {
-        Member member = memberGetService.byMemberId(PkCrypto.decrypt(memberId)).get();
+    public List<TicketPkResponse> approveTicket(Long memberId, List<String> ticketIdList) {
+        Member member = memberGetService.byMemberId(memberId);
         validateManagerRole(member);
 
         List<TicketPkResponse> response = new ArrayList<>();

@@ -28,9 +28,9 @@ public class TicketRejectUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
 
-    public TicketPkResponse rejectTicket(String memberId, String ticketId) {
+    public TicketPkResponse rejectTicket(Long memberId, String ticketId) {
         Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
-        validateTicketManager(ticket, PkCrypto.decrypt(memberId));
+        validateTicketManager(ticket, memberId);
         validateRejectableStatus(ticket);
         Ticket rejectedTicket = ticketUpdateService.updateStatus(ticket, REJECT);
 
