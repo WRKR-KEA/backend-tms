@@ -30,7 +30,6 @@ import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -136,7 +135,7 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
+        given(categoryGetService.getCategory(anyLong())).willReturn(category);
 
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
