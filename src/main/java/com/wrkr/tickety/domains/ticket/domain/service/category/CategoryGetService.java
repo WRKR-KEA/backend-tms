@@ -20,9 +20,9 @@ public class CategoryGetService {
         return categoryPersistenceAdapter.findByIsDeletedFalse();
     }
 
-    public Category getCategory(Long categoryId) {
+    public Category getParentCategory(Long categoryId) {
         return categoryPersistenceAdapter.findById(categoryId)
-            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
     }
 
     public List<Category> getCategories(List<Long> categoryIds) {

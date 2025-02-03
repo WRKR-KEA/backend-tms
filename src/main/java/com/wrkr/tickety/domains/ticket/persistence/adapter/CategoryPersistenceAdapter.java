@@ -18,7 +18,7 @@ public class CategoryPersistenceAdapter {
     private final CategoryPersistenceMapper categoryPersistenceMapper;
 
     public Optional<Category> findById(final Long categoryId) {
-        final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findByCategoryIdAndIsDeletedFalse(categoryId);
+        final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findByCategoryIdAndIsDeletedFalseAndParentIsNull(categoryId);
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
     }
 

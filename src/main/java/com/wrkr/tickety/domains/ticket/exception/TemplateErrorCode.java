@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum CategoryErrorCode implements BaseErrorCode {
+public enum TemplateErrorCode implements BaseErrorCode {
 
-    CATEGORY_NOT_EXISTS(HttpStatus.NOT_FOUND, "CATEGORY_401", "카테고리를 찾을 수 없습니다."),
-    CATEGORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "CATEGORY_901", "이미 존재하는 이름의 카테고리입니다.");
+    TEMPLATE_NOT_EXISTS(HttpStatus.NOT_FOUND, "TEMPLATE_401", "템플릿이 존재하지 않습니다."),
+    TEMPLATE_ALREADY_EXISTS(HttpStatus.CONFLICT, "TEMPLATE_901", "템플릿이 이미 존재합니다.");
 
     private final HttpStatus httpStatus;
     private final String customCode;

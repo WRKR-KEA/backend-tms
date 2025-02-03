@@ -20,7 +20,7 @@ public class CategoryDeleteUseCase {
     private final CategoryDeleteService categoryDeleteService;
 
     public CategoryPK softDeleteCategory(Long categoryId) {
-        Category findCategory = categoryGetService.getCategory(categoryId);
+        Category findCategory = categoryGetService.getParentCategory(categoryId);
         Category deletedCategory = categoryDeleteService.softDeleteCategory(findCategory);
         softDeleteChildCategories(categoryId);
         return CategoryMapper.mapToPkResponse(deletedCategory);

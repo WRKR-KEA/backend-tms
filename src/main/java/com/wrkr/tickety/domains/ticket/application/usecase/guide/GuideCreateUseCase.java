@@ -22,7 +22,7 @@ public class GuideCreateUseCase {
 
     public PkResponse createGuide(GuideCreateRequest guideCreateRequest, Long categoryId) {
 
-        Category category = categoryGetService.getCategory(categoryId);
+        Category category = categoryGetService.getParentCategory(categoryId);
         Guide guide = Guide.builder()
             .content(guideCreateRequest.content())
             .category(category)

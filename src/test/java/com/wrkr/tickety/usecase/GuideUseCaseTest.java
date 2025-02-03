@@ -120,11 +120,11 @@ public class GuideUseCaseTest {
     void testGetGuideWithNonExistCategory() {
         // given
         Long categoryId = 1L;
-        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
         // when
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideGetUseCase.getGuide(categoryId));
         //then
-        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
+        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXISTS, e.getCode());
 
     }
 
@@ -157,7 +157,7 @@ public class GuideUseCaseTest {
             .content("test")
             .build();
 
-        given(categoryGetService.getCategory(categoryId)).willReturn(category);
+        given(categoryGetService.getParentCategory(categoryId)).willReturn(category);
         given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
         given(guideMapper.guideIdToPkResponse(guide)).willReturn(
             PkResponse.builder().id(cryptoCategoryId).build());
@@ -199,7 +199,7 @@ public class GuideUseCaseTest {
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
             .content("test")
             .build();
-        when(categoryGetService.getCategory(categoryId)).thenReturn(category);
+        when(categoryGetService.getParentCategory(categoryId)).thenReturn(category);
         when(guideCreateService.createGuide(any(Guide.class))).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_ALREADY_EXIST));
         // when
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));

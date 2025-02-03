@@ -32,7 +32,7 @@ public class CategoryCreateUseCase {
 
     private void checkCategoryNameIsUnique(String name) {
         if (categoryGetService.isCategoryNameExists(name)) {
-            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXISTS);
         }
     }
 
