@@ -1,6 +1,9 @@
 package com.wrkr.tickety.domains.ticket.domain.service.template;
 
-import com.wrkr.tickety.domains.ticket.domain.model.Template;
+import com.wrkr.tickety.domains.ticket.persistence.repository.TemplateRepository;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TemplatePersistenceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +17,13 @@ public class TemplateGetService {
 
     private final TemplatePersistenceAdapter templatePersistenceAdapter;
 
-    public Boolean existsByCategoryId(Long categoryId) {
-        return templatePersistenceAdapter.existsByCategory(categoryId);
-    }
+    public Map<Long, Boolean> existsByCategoryIds(List<Long> categoryIds) {
+        List<Long> existsTemplateIds = templatePersistenceAdapter.existsByCategoryIds(categoryIds);
 
-    public Template getTemplateByCategoryId(Long categoryId) {
-        return templatePersistenceAdapter.findByCategory(categoryId);
+        return categoryIds.stream()
+            .collect(Collectors.toMap(
+                categoryId -> categoryId,
+                existsTemplateIds::contains
+            ));
     }
-
 }

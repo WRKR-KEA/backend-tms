@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Category Controller")
 @RequestMapping("/api")
-public class CategoryController {
+public class AdminCategoryController {
 
     private final CategoryGetAllUseCase categoryGetAllUseCase;
     private final CategoryCreateUseCase categoryCreateUseCase;
