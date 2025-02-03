@@ -1,4 +1,4 @@
-package com.wrkr.tickety.usecase;
+package com.wrkr.tickety.usecase.Ticket;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -17,7 +17,6 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ManagerTicketUseCaseTest {
+public class ManagerTicketDelegateUseCaseTest {
 
     @Mock
     private TicketGetService ticketGetService;
@@ -111,7 +110,6 @@ public class ManagerTicketUseCaseTest {
         Long delegateManagerId = 3L;
 
         TicketDelegateRequest ticketDelegateRequest = TicketDelegateRequest.builder()
-            .currentManagerId(PkCrypto.encrypt(MANAGER_ID))
             .delegateManagerId(PkCrypto.encrypt(delegateManagerId))
             .build();
 
@@ -136,8 +134,7 @@ public class ManagerTicketUseCaseTest {
             .category(category)
             .build();
 
-        given(memberGetService.byMemberId(MANAGER_ID)).willReturn(Optional.of(manager));
-        given(memberGetService.byMemberId(delegateManagerId)).willReturn(Optional.of(delegateManager));
+        given(memberGetService.byMemberId(delegateManagerId)).willReturn(delegateManager);
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 

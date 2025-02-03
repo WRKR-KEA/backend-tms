@@ -1,11 +1,19 @@
 package com.wrkr.tickety.domains.ticket.persistence.entity;
 
-import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
-import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -57,15 +65,15 @@ public class TicketEntity extends BaseTimeEntity {
 
     @Builder
     public TicketEntity(
-            Long ticketId,
-            MemberEntity user,
-            MemberEntity manager,
-            CategoryEntity category,
-            String serialNumber,
-            String title,
-            String content,
-            TicketStatus status,
-            Boolean isPinned
+        Long ticketId,
+        MemberEntity user,
+        MemberEntity manager,
+        CategoryEntity category,
+        String serialNumber,
+        String title,
+        String content,
+        TicketStatus status,
+        Boolean isPinned
     ) {
         this.ticketId = ticketId;
         this.user = user;

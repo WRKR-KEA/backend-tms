@@ -1,23 +1,22 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
-import static com.wrkr.tickety.domains.ticket.domain.model.Category.updateCategory;
+import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryNameUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategorySequenceUpdateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
-import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryUpdateService;
+import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
+import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryUpdateService;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import com.wrkr.tickety.global.response.code.CommonErrorCode;
-import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Objects;
 
 
 @UseCase
@@ -28,30 +27,30 @@ public class CategoryUpdateUseCase {
     private final CategoryGetService categoryGetService;
     private final CategoryUpdateService categoryUpdateService;
 
-    public List<PkResponse> updateCategorySequence(List<CategorySequenceUpdateRequest> request) {
-        List<Category> requestUpdatedCategories = request.stream()
-            .map(categorySequenceUpdateRequest ->{
-                if(categorySequenceUpdateRequest.seq() == null) throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
+    public CategoryPkResponse updateCategorySequence(List<CategorySequenceUpdateRequest> request) {
+        List<Long> categoryIds = request.stream()
+            .map(req -> decrypt(req.categoryId()))
+            .toList();
 
-                Category findCategory = categoryGetService.getCategory(PkCrypto.decrypt(categorySequenceUpdateRequest.categoryId()))
-                    .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
-                return updateCategory(findCategory, null, categorySequenceUpdateRequest.seq()
-                );
-            }).toList();
+        List<Category> findCategories = categoryGetService.getCategories(categoryIds);
+        Map<Long, Integer> categoryIdToSeqMap = request.stream()
+            .collect(Collectors.toMap(req -> decrypt(req.categoryId()), CategorySequenceUpdateRequest::seq));
+        List<Category> updatedCategories = categoryUpdateService.updateCategorySequence(findCategories, categoryIdToSeqMap);
 
-        List<Category> updatedCategories = categoryUpdateService.updateAll(requestUpdatedCategories);
         return CategoryMapper.mapToPkResponseList(updatedCategories);
     }
 
-    public PkResponse updateCategoryName(Long categoryId, CategoryNameUpdateRequest request) {
-        if(!Objects.equals(categoryId, PkCrypto.decrypt(request.categoryId()))) throw ApplicationException.from(CommonErrorCode.ID_MISMATCH);
-        if(request.name().isEmpty()) throw ApplicationException.from(CategoryErrorCode.CATEGORY_FIELD_CANNOT_NULL);
+    public CategoryPkResponse.CategoryPK updateCategoryName(Long categoryId, CategoryNameUpdateRequest request) {
+        checkCategoryNameIsUnique(categoryId, request.name());
 
-        Category findCategory = categoryGetService.getCategory(categoryId)
-            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
-
-        Category updatedCategory = updateCategory(findCategory, request.name(), null);
-        Category savedCategory = categoryUpdateService.updateCategoryName(updatedCategory);
+        Category findCategory = categoryGetService.getCategory(categoryId);
+        Category savedCategory = categoryUpdateService.updateCategoryName(findCategory, request.name());
         return CategoryMapper.mapToPkResponse(savedCategory);
+    }
+
+    private void checkCategoryNameIsUnique(Long categoryId, String name) {
+        if (categoryGetService.isCategoryNameExists(categoryId, name)) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
+        }
     }
 }

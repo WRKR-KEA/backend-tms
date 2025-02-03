@@ -7,7 +7,6 @@ import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +18,12 @@ public class MyPageInfoGetUseCase {
     private final MemberGetService memberGetService;
 
     public MyPageInfoResponse getMyPageInfo(Long memberId) {
-        Optional<Member> findMember = memberGetService.byMemberId(memberId);
+        Member findMember = memberGetService.byMemberId(memberId);
 
-        if (findMember.get().isDeleted()) {
+        if (findMember.isDeleted()) {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
-        return MyPageMapper.toMyPageInfoResponse(findMember.get());
+        return MyPageMapper.toMyPageInfoResponse(findMember);
     }
 }

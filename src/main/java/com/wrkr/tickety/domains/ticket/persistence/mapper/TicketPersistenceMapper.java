@@ -5,7 +5,7 @@ import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.global.common.mapper.PersistenceMapper;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = {CategoryPersistenceMapper.class})
+@Mapper(componentModel = "spring")
 public interface TicketPersistenceMapper extends PersistenceMapper<TicketEntity, Ticket> {
 
 }

@@ -27,7 +27,10 @@ public record ManagerTicketAllGetResponse(
     LocalDateTime createdAt,
 
     @Schema(description = "최근 업데이트일", example = "2021.08.01")
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+
+    @Schema(description = "고정 여부", example = "true")
+    boolean isPinned
 ) {
 
 }

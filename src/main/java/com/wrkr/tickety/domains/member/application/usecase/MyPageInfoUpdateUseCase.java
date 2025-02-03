@@ -9,7 +9,6 @@ import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +21,14 @@ public class MyPageInfoUpdateUseCase {
     private final MemberUpdateService memberUpdateService;
 
     public MemberPkResponse updateMyPageInfo(Long memberId, MyPageInfoUpdateRequest request) {
-        Optional<Member> member = memberGetService.byMemberId(memberId);
+        Member member = memberGetService.byMemberId(memberId);
 
-        if (member.get().isDeleted()) {
+        if (member.isDeleted()) {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
-        member.get().modifyMyPageInfo(request.position(), request.phone());
-        Member modifieddMember = memberUpdateService.modifyMemberInfo(member.get());
+        member.modifyMyPageInfo(request.position(), request.phone());
+        Member modifieddMember = memberUpdateService.modifyMemberInfo(member);
 
         return MemberPkResponse.builder()
             .memberId(PkCrypto.encrypt(modifieddMember.getMemberId()))

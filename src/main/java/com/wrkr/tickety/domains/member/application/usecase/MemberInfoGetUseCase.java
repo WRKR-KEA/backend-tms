@@ -9,8 +9,6 @@ import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -20,8 +18,8 @@ public class MemberInfoGetUseCase {
 
     public MemberInfoResponse getMemberInfo(String memberId) {
         // TODO: 프로젝션 사용도 고려
-        Optional<Member> findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
+        Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
-        return MemberMapper.toMemberInfoResponse(findMember.orElse(null));
+        return MemberMapper.toMemberInfoResponse(findMember);
     }
 }
