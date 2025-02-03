@@ -9,8 +9,6 @@ import com.wrkr.tickety.domains.ticket.domain.service.template.TemplateUpdateSer
 import com.wrkr.tickety.domains.ticket.exception.TemplateErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import com.wrkr.tickety.global.response.code.CommonErrorCode;
-import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +21,16 @@ public class TemplateUpdateUseCase {
     private final TemplateUpdateService templateUpdateService;
 
     public TemplatePKResponse updateTemplate(Long categoryId, AdminTemplateUpdateRequest request) {
-        if(!categoryId.equals(PkCrypto.decrypt(request.categoryId()))){
-            throw new ApplicationException(CommonErrorCode.ID_MISMATCH);
-        }
-
-        if(!templateGetService.existsByCategoryId(categoryId)){
-            throw new ApplicationException(TemplateErrorCode.TEMPLATE_NOT_EXISTS);
-        }
+        checkTemplateExists(categoryId);
 
         Template template = templateGetService.getTemplateByCategoryId(categoryId);
-        Template requestTemplate = TemplateMapper.updateTemplateDomain(template, request);
-        Template updatedTemplate = templateUpdateService.update(requestTemplate);
+        Template updatedTemplate = templateUpdateService.update(template, request);
         return TemplateMapper.mapToTemplatePKResponse(updatedTemplate);
+    }
+
+    public void checkTemplateExists(Long categoryId) {
+        if (!templateGetService.existsByCategoryId(categoryId)) {
+            throw ApplicationException.from(TemplateErrorCode.TEMPLATE_NOT_EXISTS);
+        }
     }
 }
