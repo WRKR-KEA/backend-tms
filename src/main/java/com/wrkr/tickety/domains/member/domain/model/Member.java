@@ -91,10 +91,15 @@ public class Member extends BaseTime {
         this.phone = phone;
     }
 
+    public void modifyPassword(String password, Boolean isTempPassword) {
+        this.password = password;
+        this.isTempPassword = isTempPassword;
+    }
+
     public Boolean isDeleted() {
         return isDeleted;
     }
-      
+
     public boolean isManager() {
         return role == Role.MANAGER;
     }

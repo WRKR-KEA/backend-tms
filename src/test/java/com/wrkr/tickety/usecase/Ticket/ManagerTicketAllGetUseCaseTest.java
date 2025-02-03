@@ -8,15 +8,16 @@ import static org.mockito.Mockito.when;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
-import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetPagingResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
+import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,21 +66,23 @@ public class ManagerTicketAllGetUseCaseTest {
         Pageable pageable = PageRequest.of(page, size);
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         List<Ticket> tickets = List.of(
-            Ticket.builder().ticketId(1L).status(TicketStatus.CANCEL).user(requestMember).build(),
-            Ticket.builder().ticketId(2L).status(TicketStatus.COMPLETE).user(requestMember).build(),
-            Ticket.builder().ticketId(3L).status(TicketStatus.IN_PROGRESS).user(requestMember).build()
+            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).build(),
+            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).build(),
+            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).build()
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest, 3);
-        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.of(member));
+        when(memberGetService.byMemberId(managerId)).thenReturn(member);
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
-        given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
+        given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search, SortType.NEWEST)).willReturn(ticketsPage);
 
         // when
-        ManagerTicketAllGetPagingResponse ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(cryptoManagerId, pageable, null, search);
+        PageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, null,
+            search,
+            SortType.NEWEST);
 
         // then
-        assertEquals(3, ticketAllGetPagingResponse.tickets().size());
+        assertEquals(3, ticketAllGetPagingResponse.elements().size());
     }
 
     @Test
@@ -89,11 +92,11 @@ public class ManagerTicketAllGetUseCaseTest {
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
-        when(memberGetService.byMemberId(managerId)).thenReturn(Optional.empty());
+        when(memberGetService.byMemberId(managerId)).thenThrow(new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         //then
         ApplicationException exception = assertThrows(ApplicationException.class,
-            () -> memberGetService.byMemberId(managerId).orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
+            () -> memberGetService.byMemberId(managerId));
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
     }

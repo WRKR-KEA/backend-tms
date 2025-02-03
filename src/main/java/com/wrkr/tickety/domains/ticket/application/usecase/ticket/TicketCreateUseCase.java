@@ -7,7 +7,6 @@ import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
-import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper;
@@ -20,7 +19,6 @@ import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetServic
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.exception.ApplicationException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +36,7 @@ public class TicketCreateUseCase {
     public TicketPkResponse createTicket(TicketCreateRequest request, Long userId) {
         Category category = categoryGetService.getCategory(decrypt(request.categoryId()));
 
-        Member member = UserGetService.byMemberId(userId)
-            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = UserGetService.byMemberId(userId);
 
         String serialNumber = generateSerialNumber();
         TicketStatus status = TicketStatus.REQUEST;
