@@ -43,7 +43,7 @@ public class CategoryUpdateUseCase {
     public CategoryPkResponse.CategoryPK updateCategoryName(Long categoryId, CategoryNameUpdateRequest request) {
         checkCategoryNameIsUnique(categoryId, request.name());
 
-        Category findCategory = categoryGetService.getCategory(categoryId);
+        Category findCategory = categoryGetService.getParentCategory(categoryId);
         Category savedCategory = categoryUpdateService.updateCategoryName(findCategory, request.name());
         return CategoryMapper.mapToPkResponse(savedCategory);
     }

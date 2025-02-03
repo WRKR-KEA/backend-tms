@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
 
-    Optional<CategoryEntity> findByCategoryIdAndIsDeletedFalse(Long categoryId);
-
     List<CategoryEntity> findByIsDeletedFalse();
 
     Boolean existsByNameAndIsDeletedFalse(String name);
@@ -19,5 +17,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
 
     List<CategoryEntity> findByCategoryIdInAndIsDeletedFalse(List<Long> categoryIds);
 
-    Boolean existsByCategoryIdAndIsDeletedFalseAndParentIsNull(Long categoryId);
+    Optional<CategoryEntity> findByCategoryIdAndIsDeletedFalseAndParentIsNull(Long categoryId);
+
 }
