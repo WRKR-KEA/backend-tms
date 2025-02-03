@@ -67,4 +67,8 @@ public class CategoryPersistenceAdapter {
     public boolean isCategoryNameExists(String name) {
         return this.categoryRepository.existsByNameAndIsDeletedFalse(name);
     }
+
+    public boolean isCategoryValid(Long categoryId) {
+        return this.categoryRepository.existsByCategoryIdAndIsDeletedFalseAndParentIsNull(categoryId);
+    }
 }

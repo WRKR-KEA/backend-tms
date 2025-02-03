@@ -50,7 +50,7 @@ public class CategoryUpdateUseCase {
 
     private void checkCategoryNameIsUnique(Long categoryId, String name) {
         if (categoryGetService.isCategoryNameExists(categoryId, name)) {
-            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXIST);
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXISTS);
         }
     }
 }

@@ -22,7 +22,7 @@ public class CategoryGetService {
 
     public Category getCategory(Long categoryId) {
         return categoryPersistenceAdapter.findById(categoryId)
-            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
     }
 
     public List<Category> getCategories(List<Long> categoryIds) {
@@ -39,5 +39,9 @@ public class CategoryGetService {
 
     public boolean isCategoryNameExists(String name) {
         return categoryPersistenceAdapter.isCategoryNameExists(name);
+    }
+
+    public boolean isCategoryValid(Long categoryId) {
+        return categoryPersistenceAdapter.isCategoryValid(categoryId);
     }
 }

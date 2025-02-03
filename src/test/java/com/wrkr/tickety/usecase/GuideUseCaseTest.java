@@ -40,8 +40,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Optional;
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class GuideUseCaseTest {
@@ -119,11 +117,11 @@ public class GuideUseCaseTest {
     void testGetGuideWithNonExistCategory() {
         // given
         Long categoryId = 1L;
-        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
         // when
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideGetUseCase.getGuide(categoryId));
         //then
-        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
+        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXISTS, e.getCode());
 
     }
 
@@ -180,7 +178,7 @@ public class GuideUseCaseTest {
         // when
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));
         //then
-        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
+        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXISTS, e.getCode());
     }
 
     @Test
