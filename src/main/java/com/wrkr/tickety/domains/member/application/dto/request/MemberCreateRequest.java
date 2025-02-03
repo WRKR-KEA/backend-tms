@@ -42,7 +42,6 @@ public record MemberCreateRequest(
     @PhoneNumberFormat
     String phone,
 
-    // TODO: 권한 값 검증 필요(사용자, 담당자, 관리자 중 하나여야함)
     @Schema(description = "회원 역할 (USER | MANAGER | ADMIN)", example = "USER")
     @RoleFormat
     Role role,
