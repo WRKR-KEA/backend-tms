@@ -19,7 +19,6 @@ import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
-import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class TicketCreateUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
 
     public TicketPkResponse createTicket(TicketCreateRequest request, Long userId) {
-        Category category = categoryGetService.getCategory(decrypt(request.categoryId())).get();
+        Category category = categoryGetService.getCategory(decrypt(request.categoryId()));
 
         Member member = UserGetService.byMemberId(userId)
             .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
