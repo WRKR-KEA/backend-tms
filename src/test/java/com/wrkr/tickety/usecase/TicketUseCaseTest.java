@@ -135,7 +135,7 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(category);
+        given(categoryGetService.getParentCategory(anyLong())).willReturn(category);
 
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
@@ -147,7 +147,7 @@ public class TicketUseCaseTest {
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
-        verify(categoryGetService).getCategory(anyLong());
+        verify(categoryGetService).getParentCategory(anyLong());
         verify(memberGetService).byMemberId(anyLong());
         verify(ticketSaveService).save(any(Ticket.class));
     }
