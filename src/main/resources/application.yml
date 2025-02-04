@@ -6,6 +6,7 @@ spring:
       - mysql.yml
       - swagger.yml
       - crypto.yml
+      - liquibase.yml
       - mail.yml
       - redis.yml
       - jwt.yml
