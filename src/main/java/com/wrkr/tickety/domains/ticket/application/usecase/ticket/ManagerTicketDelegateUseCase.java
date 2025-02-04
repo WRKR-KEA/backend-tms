@@ -8,6 +8,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketDele
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
+import com.wrkr.tickety.domains.ticket.domain.event.TicketDelegateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
@@ -18,6 +19,7 @@ import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -29,6 +31,7 @@ public class ManagerTicketDelegateUseCase {
     private final TicketUpdateService ticketUpdateService;
     private final TicketHistorySaveService ticketHistorySaveService;
     private final MemberGetService memberGetService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public TicketPkResponse delegateTicket(Long ticketId, Long currentManagerId, TicketDelegateRequest request) {
         Member delegateManager = memberGetService.byMemberId(PkCrypto.decrypt(request.delegateManagerId()));
@@ -40,6 +43,12 @@ public class ManagerTicketDelegateUseCase {
 
         TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(delegatedTicket, ModifiedType.MANAGER);
         ticketHistorySaveService.save(ticketHistory);
+
+        applicationEventPublisher.publishEvent(TicketDelegateEvent.builder()
+                                                   .ticket(delegatedTicket)
+                                                   .prevManager(ticket.getManager())
+                                                   .newManager(delegateManager)
+                                                   .build());
 
         return toTicketPkResponse(PkCrypto.encrypt(delegatedTicket.getTicketId()));
     }

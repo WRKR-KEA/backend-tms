@@ -5,8 +5,10 @@ import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.to
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.IN_PROGRESS;
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.REJECT;
 
+import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
+import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
@@ -17,6 +19,7 @@ import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -27,6 +30,7 @@ public class TicketRejectUseCase {
     private final TicketGetService ticketGetService;
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public TicketPkResponse rejectTicket(Long memberId, String ticketId) {
         Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
@@ -35,6 +39,12 @@ public class TicketRejectUseCase {
         Ticket rejectedTicket = ticketUpdateService.updateStatus(ticket, REJECT);
 
         updateTicketHistory(rejectedTicket);
+
+        applicationEventPublisher.publishEvent(TicketStatusChangeEvent.builder()
+                                                   .ticket(rejectedTicket)
+                                                   .user(rejectedTicket.getUser())
+                                                   .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_REJECT)
+                                                   .build());
 
         return toTicketPkResponse(PkCrypto.encrypt(rejectedTicket.getTicketId()));
     }
