@@ -55,4 +55,8 @@ public class TicketPersistenceAdapter {
         final SortType sortType) {
         return ticketRepository.findByManagerFilters(managerId, status, pageable, query, sortType).map(this.ticketPersistenceMapper::toDomain);
     }
+
+    public Long countByCreateAtBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return ticketRepository.countByCreatedAtBetween(startDate, endDate);
+    }
 }

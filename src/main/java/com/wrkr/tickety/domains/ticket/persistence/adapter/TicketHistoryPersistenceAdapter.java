@@ -59,4 +59,8 @@ public class TicketHistoryPersistenceAdapter {
             ticketEntity, ModifiedType.STATUS, status);
         return Optional.ofNullable(ticketHistoryPersistenceMapper.toDomain(ticketHistoryEntity));
     }
+
+    public Long countByChangedStatus(TicketStatus status, LocalDateTime startDate, LocalDateTime endDate) {
+        return ticketHistoryRepository.countByStatusAndCreatedAtBetweenAndModified(status, startDate, endDate, ModifiedType.STATUS);
+    }
 }
