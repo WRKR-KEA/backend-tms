@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.domain.service.staticstics;
+package com.wrkr.tickety.domains.ticket.domain.service.statistics;
 
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import java.time.LocalDateTime;
