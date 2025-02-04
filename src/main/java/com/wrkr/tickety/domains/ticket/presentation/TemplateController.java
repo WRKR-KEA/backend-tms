@@ -4,7 +4,7 @@ import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateUpdateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.template.AdminTemplateGetResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplateGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplatePKResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.template.TemplateCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.template.TemplateDeleteUseCase;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Template Controller")
 @RequestMapping("/api/")
-public class AdminTemplateController {
+public class TemplateController {
 
     private final TemplateGetUseCase templateGetUseCase;
     private final TemplateCreateUseCase templateCreateUseCase;
@@ -41,10 +41,10 @@ public class AdminTemplateController {
 
     @CustomErrorCodes(templateErrorCodes = {TemplateErrorCode.TEMPLATE_NOT_EXISTS,})
     @Parameter(name = "categoryId", description = "조회할 템플릿의 카테고리 ID", example = "Tqs3C822lkMNdWlmE-szUw", required = true)
-    @Operation(summary = "관리자 템플릿 조회", description = "관리자가 카테고리 ID에 따른 템플릿을 조회합니다.")
-    @GetMapping("admin/templates/{categoryId}")
-    public ApplicationResponse<AdminTemplateGetResponse> getTemplate(@PathVariable String categoryId) {
-        AdminTemplateGetResponse template = templateGetUseCase.getTemplate(decrypt(categoryId));
+    @Operation(summary = "사용자, 관리자 템플릿 조회", description = "사용자 및 관리자가 카테고리 ID에 따른 템플릿을 조회합니다.")
+    @GetMapping("user/templates/{categoryId}")
+    public ApplicationResponse<TemplateGetResponse> getTemplate(@PathVariable String categoryId) {
+        TemplateGetResponse template = templateGetUseCase.getTemplate(decrypt(categoryId));
         return ApplicationResponse.onSuccess(template);
     }
 
