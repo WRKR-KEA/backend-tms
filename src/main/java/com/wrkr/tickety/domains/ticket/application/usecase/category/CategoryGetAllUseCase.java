@@ -22,7 +22,7 @@ public class CategoryGetAllUseCase {
     private final GuideGetService guideGetService;
     private final TemplateGetService templateGetService;
 
-    public AdminCategoryGetAllResponse getAllCategories() {
+    public AdminCategoryGetAllResponse adminGetAllCategories() {
         List<Category> parentCategories = categoryGetService.findParents();
 
         List<Long> categoryIds = parentCategories.stream()
