@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 public enum AgitTicketAlarmMessageType {
     TICKET_APPROVED("티켓 %s 이 승인되었습니다."),
     TICKET_REJECT("티켓 %s 이 반려되었습니다."),
-    TICKET_DELEGATED_USER("티켓 %s 의 담당자가 변경되었습니다."),
-    TICKET_DELEGATE_MANAGER("%s 이 티켓 %s의 위임을 요청했습니다."),
     TICKET_FINISHED("티켓 %s 이 완료되었습니다."),
     ;
 

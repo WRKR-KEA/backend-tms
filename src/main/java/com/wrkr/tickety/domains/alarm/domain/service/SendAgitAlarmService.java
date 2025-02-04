@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.alarm.domain.service;
 
 import com.wrkr.tickety.domains.alarm.domain.constant.AgitCommentAlarmMessage;
 import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketAlarmMessageType;
+import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketDelegateAlarmMessage;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import java.io.IOException;
@@ -20,8 +21,6 @@ public class SendAgitAlarmService {
         String message = switch (agitTicketAlarmMessageType) {
             case TICKET_APPROVED -> AgitTicketAlarmMessageType.TICKET_APPROVED.format(ticketSerialNumber);
             case TICKET_REJECT -> AgitTicketAlarmMessageType.TICKET_REJECT.format(ticketSerialNumber);
-            case TICKET_DELEGATED_USER -> AgitTicketAlarmMessageType.TICKET_DELEGATED_USER.format(ticketSerialNumber);
-            case TICKET_DELEGATE_MANAGER -> AgitTicketAlarmMessageType.TICKET_DELEGATE_MANAGER.format(member.getNickname(), ticketSerialNumber);
             case TICKET_FINISHED -> AgitTicketAlarmMessageType.TICKET_FINISHED.format(ticketSerialNumber);
         };
         requestAgitApi(agitUrl, message);
@@ -32,6 +31,16 @@ public class SendAgitAlarmService {
         String agitUrl = receiver.getAgitUrl();
         String message = AgitCommentAlarmMessage.COMMENT_UPDATE.format(ticketSerialNumber);
         requestAgitApi(agitUrl, message);
+    }
+
+    public void sendTicketDelegateAgitAlarm(Member prevManager, Member newManager, Ticket ticket) {
+        String MessageToUser = AgitTicketDelegateAlarmMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(ticket.getSerialNumber(), newManager.getName());
+        requestAgitApi(ticket.getUser().getAgitUrl(), MessageToUser);
+
+        String MessageToManager = AgitTicketDelegateAlarmMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(ticket.getSerialNumber(), prevManager.getName());
+        requestAgitApi(newManager.getAgitUrl(), MessageToManager);
+
+
     }
 
     /**
@@ -71,4 +80,5 @@ public class SendAgitAlarmService {
             }
         }
     }
+
 }
