@@ -10,7 +10,7 @@ public class RoleFormatValidator implements ConstraintValidator<RoleFormat, Role
 
     @Override
     public void initialize(RoleFormat constraintAnnotation) {
-        // 초기화 메서드 (필요시 사용)
+        ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
