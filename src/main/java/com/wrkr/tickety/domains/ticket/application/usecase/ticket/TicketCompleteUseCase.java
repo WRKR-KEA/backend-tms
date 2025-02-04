@@ -5,8 +5,10 @@ import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.to
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.COMPLETE;
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.IN_PROGRESS;
 
+import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketAlarmMessageType;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
+import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
@@ -17,6 +19,7 @@ import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -27,6 +30,7 @@ public class TicketCompleteUseCase {
     private final TicketGetService ticketGetService;
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketUpdateService ticketUpdateService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public TicketPkResponse completeTicket(Long memberId, String ticketId) {
         Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
@@ -35,6 +39,12 @@ public class TicketCompleteUseCase {
         Ticket completedTicket = ticketUpdateService.updateStatus(ticket, COMPLETE);
 
         updateTicketHistory(completedTicket);
+
+        applicationEventPublisher.publishEvent(TicketStatusChangeEvent.builder()
+                                                   .ticket(completedTicket)
+                                                   .user(completedTicket.getUser())
+                                                   .agitTicketAlarmMessageType(AgitTicketAlarmMessageType.TICKET_FINISHED)
+                                                   .build());
 
         return toTicketPkResponse(PkCrypto.encrypt(completedTicket.getTicketId()));
     }
