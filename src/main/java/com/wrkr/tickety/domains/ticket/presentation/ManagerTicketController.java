@@ -12,7 +12,8 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUM
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
@@ -25,6 +26,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTick
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketPinUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCompleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
@@ -69,6 +71,7 @@ public class ManagerTicketController {
     private final DepartmentTicketAllGetUseCase departmentTicketAllGetUseCase;
     private final ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
+    private final ManagerTicketPinUseCase managerTicketPinUseCase;
     private final StatisticsGetUseCase statisticsGetUseCase;
 
     @PostMapping("/statistics/{statisticsType}")
@@ -198,5 +201,13 @@ public class ManagerTicketController {
             statisticsGetUseCase.getTicketCountStatistics(date, type, status)
         );
     }
+
+    @Operation(summary = "해당 티켓 상단 고정", description = "해당 티켓을 상단 고정합니다.")
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH})
+    @PatchMapping("/tickets/pin")
+    public ApplicationResponse<TicketPkResponse> pinTicket(@RequestBody TicketPinRequest request) {
+        return ApplicationResponse.onSuccess(managerTicketPinUseCase.pinTicket(request));
+    }
+
 
 }

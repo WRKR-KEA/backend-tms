@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.application.dto.request;
+package com.wrkr.tickety.domains.ticket.application.dto.request.Ticket;
 
 public record TicketRequest(
 
