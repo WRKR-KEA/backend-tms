@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.AdminCategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
@@ -22,16 +22,17 @@ public class CategoryGetAllUseCase {
     private final GuideGetService guideGetService;
     private final TemplateGetService templateGetService;
 
-    public CategoryGetAllResponse getAllCategories() {
-        List<Category> categoryList = categoryGetService.byIsDeletedFalse();
+    public AdminCategoryGetAllResponse getAllCategories() {
+        List<Category> parentCategories = categoryGetService.findParents();
 
-        List<Long> categoryIds = categoryList.stream()
+        List<Long> categoryIds = parentCategories.stream()
             .map(Category::getCategoryId)
             .toList();
 
         Map<Long, Boolean> existsGuideMap = guideGetService.existsByCategoryIds(categoryIds);
         Map<Long, Boolean> existsTemplateMap = templateGetService.existsByCategoryIds(categoryIds);
+        List<Category> childCategories = categoryGetService.getChildrenByCategoryIds(categoryIds);
 
-        return CategoryMapper.mapToCategoryGetAllResponseDTO(categoryList, existsGuideMap, existsTemplateMap);
+        return CategoryMapper.mapToCategoryGetAllResponseDTO(parentCategories, childCategories, existsGuideMap, existsTemplateMap);
     }
 }

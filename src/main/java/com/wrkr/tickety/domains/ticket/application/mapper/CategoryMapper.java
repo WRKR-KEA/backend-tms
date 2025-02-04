@@ -4,7 +4,7 @@ import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
-import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.AdminCategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import java.util.List;
 import java.util.Map;
@@ -31,20 +31,32 @@ public class CategoryMapper {
             .build();
     }
 
-    public static CategoryGetAllResponse mapToCategoryGetAllResponseDTO(
-        List<Category> categoryList,
+    public static AdminCategoryGetAllResponse mapToCategoryGetAllResponseDTO(
+        List<Category> parentCategories,
+        List<Category> childCategories,
         Map<Long, Boolean> existsGuideMap,
         Map<Long, Boolean> existsTemplateMap) {
 
-        return CategoryGetAllResponse.builder()
+        return AdminCategoryGetAllResponse.builder()
             .categories(
-                categoryList.stream()
-                    .map(category -> CategoryGetAllResponse.categories.builder()
+                parentCategories.stream()
+                    .map(category -> AdminCategoryGetAllResponse.categories.builder()
                         .categoryId(encrypt(category.getCategoryId()))
                         .name(category.getName())
                         .seq(category.getSeq())
                         .isExistsGuide(existsGuideMap.get(category.getCategoryId()))
                         .isExistsTemplate(existsTemplateMap.get(category.getCategoryId()))
+                        .childCategories(
+                            childCategories.stream()
+                                .filter(childCategory -> childCategory.getParent().getCategoryId().equals(category.getCategoryId()))
+                                .map(childCategory -> AdminCategoryGetAllResponse.categories.childCategories.builder()
+                                    .categoryId(encrypt(childCategory.getCategoryId()))
+                                    .name(childCategory.getName())
+                                    .seq(childCategory.getSeq())
+                                    .build()
+                                )
+                                .toList()
+                        )
                         .build()
                     )
                     .toList()
