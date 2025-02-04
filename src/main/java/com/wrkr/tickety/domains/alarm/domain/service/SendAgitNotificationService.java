@@ -5,15 +5,19 @@ import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketDelegateNotifica
 import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.time.Duration;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.util.retry.Retry;
 
 @Service
+@AllArgsConstructor
 public class SendAgitNotificationService {
+
+    private final WebClient webClient;
 
     public void sendTicketStatusChangeAgitAlarm(Member member, Ticket ticket, AgitTicketNotificationMessageType agitTicketNotificationMessageType) {
         String agitUrl = member.getAgitUrl();
@@ -50,36 +54,15 @@ public class SendAgitNotificationService {
     private void requestAgitApi(String agitUrl, String message) {
         String jsonPayload = String.format("{\"text\": \"%s\"}", message);
 
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(agitUrl))
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-            .build();
-
-        HttpClient client = HttpClient.newHttpClient();
-        int maxRetries = 3;
-        int attempt = 0;
-
-        while (attempt < maxRetries) {
-            try {
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                    return;
-                }
-            } catch (IOException | InterruptedException e) {
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-            attempt++;
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
+        webClient.post()
+            .uri(agitUrl)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .bodyValue(jsonPayload)
+            .retrieve()
+            .toBodilessEntity()
+            .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1))
+                           .filter(throwable -> !(throwable instanceof InterruptedException)))
+            .block();
     }
 
 }
