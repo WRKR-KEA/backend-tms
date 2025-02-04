@@ -38,11 +38,13 @@ public class SendAgitNotificationService {
     }
 
     public void sendTicketDelegateAgitAlarm(Member prevManager, Member newManager, Ticket ticket) {
-        String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(ticket.getSerialNumber(), newManager.getName());
+        String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(ticket.getSerialNumber(),
+                                                                                                            prevManager.getNickname());
         requestAgitApi(ticket.getUser().getAgitUrl(), MessageToUser);
 
-        String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(ticket.getSerialNumber(),
-                                                                                                                      prevManager.getName());
+        String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(prevManager.getNickname(),
+                                                                                                                      ticket.getSerialNumber()
+        );
         requestAgitApi(newManager.getAgitUrl(), MessageToManager);
 
 
