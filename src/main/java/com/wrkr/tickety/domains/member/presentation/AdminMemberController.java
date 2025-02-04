@@ -19,6 +19,7 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
+import com.wrkr.tickety.global.common.dto.PageRequest;
 import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
@@ -27,7 +28,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -110,8 +110,7 @@ public class AdminMemberController {
     @GetMapping
     public ApplicationResponse<PageResponse<MemberInfoResponse>> getTotalMemberInfo(
         @AuthenticationPrincipal Member member,
-        @RequestParam(defaultValue = "1") @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.") int page,
-        @RequestParam(defaultValue = "10") @Min(value = 10, message = "페이지 크기는 10 이상이어야 합니다.") int size,
+        PageRequest pageRequest,
         @RequestParam(required = false) Role role,
         @RequestParam(required = false) String email,
         @RequestParam(required = false) String name,
@@ -119,8 +118,7 @@ public class AdminMemberController {
     ) {
         return ApplicationResponse.onSuccess(
             memberInfoSearchUseCase.searchMemberInfo(
-                page - 1,
-                size,
+                pageRequest,
                 role,
                 email,
                 name,
