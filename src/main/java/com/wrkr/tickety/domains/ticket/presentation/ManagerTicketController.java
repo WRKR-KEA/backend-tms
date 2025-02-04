@@ -22,16 +22,15 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketD
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCompleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
-import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
+import com.wrkr.tickety.global.common.dto.PageRequest;
 import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -132,15 +131,14 @@ public class ManagerTicketController {
     @GetMapping()
     public ApplicationResponse<PageResponse<ManagerTicketAllGetResponse>> getManagerTickets(
         @AuthenticationPrincipal Member member,
-        Pageable pageable,
+        PageRequest pageRequest,
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
-        @RequestParam(required = false) SortType sortType,
-        @Schema(description = "검색어")
+        @Parameter(description = "검색어")
         @RequestParam(required = false) String query
     ) {
         PageResponse<ManagerTicketAllGetResponse> response = managerTicketAllGetUseCase.getManagerTicketList(
-            member.getMemberId(), pageable, status, query, sortType
+            member.getMemberId(), pageRequest, status, query
         );
 
         return ApplicationResponse.onSuccess(response);

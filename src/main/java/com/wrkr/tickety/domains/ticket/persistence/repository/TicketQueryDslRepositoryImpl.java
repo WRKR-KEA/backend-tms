@@ -9,6 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
+import com.wrkr.tickety.global.common.dto.PageRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -63,21 +64,20 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     public Page<TicketEntity> findByManagerFilters(
         Long managerId,
         TicketStatus status,
-        Pageable pageable,
-        String search,
-        SortType sortType
+        PageRequest pageRequest,
+        String query
     ) {
-        var orderSpecifiers = getOrderSpecifier(sortType);
+        var orderSpecifiers = getOrderSpecifier(pageRequest.sortType());
 
         List<TicketEntity> ticketEntityList = jpaQueryFactory.selectFrom(ticketEntity)
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
                 statusEq(status),
-                searchEq(search)
+                searchEq(query)
             )
             .orderBy(orderSpecifiers)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
+            .offset((long) pageRequest.size() * pageRequest.page())
+            .limit(pageRequest.size())
             .fetch();
 
         JPAQuery<Long> total = jpaQueryFactory.select(ticketEntity.count())
@@ -85,12 +85,12 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
                 statusEq(status),
-                searchEq(search)
+                searchEq(query)
             );
 
         return PageableExecutionUtils.getPage(
             ticketEntityList,
-            pageable,
+            pageRequest.toPageable(),
             total::fetchOne
         );
     }
@@ -117,9 +117,13 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
         ArrayList<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         orderSpecifiers.add(ticketEntity.isPinned.desc());
         if (sortType != null) {
-            orderSpecifiers.add(sortType == SortType.NEWEST
-                ? ticketEntity.createdAt.desc()
-                : ticketEntity.createdAt.asc());
+            orderSpecifiers.add(
+                switch (sortType) {
+                    case NEWEST -> ticketEntity.createdAt.desc();
+                    case OLDEST -> ticketEntity.createdAt.asc();
+                    case UPDATED -> ticketEntity.updatedAt.desc();
+                }
+            );
         }
         return orderSpecifiers.toArray(new OrderSpecifier[0]);
     }
