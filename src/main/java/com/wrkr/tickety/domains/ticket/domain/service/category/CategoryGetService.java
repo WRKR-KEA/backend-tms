@@ -20,9 +20,9 @@ public class CategoryGetService {
         return categoryPersistenceAdapter.findByIsDeletedFalse();
     }
 
-    public Category getCategory(Long categoryId) {
+    public Category getParentCategory(Long categoryId) {
         return categoryPersistenceAdapter.findById(categoryId)
-            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
     }
 
     public List<Category> getCategories(List<Long> categoryIds) {
@@ -33,11 +33,19 @@ public class CategoryGetService {
         return categoryPersistenceAdapter.findChildren(categoryId);
     }
 
+    public List<Category> getChildrenByCategoryIds(List<Long> categoryIds) {
+        return categoryPersistenceAdapter.getChildrenByCategoryIds(categoryIds);
+    }
+
     public boolean isCategoryNameExists(Long categoryId, String name) {
         return categoryPersistenceAdapter.isCategoryNameExists(categoryId, name);
     }
 
     public boolean isCategoryNameExists(String name) {
         return categoryPersistenceAdapter.isCategoryNameExists(name);
+    }
+
+    public List<Category> findParents() {
+        return categoryPersistenceAdapter.findParents();
     }
 }

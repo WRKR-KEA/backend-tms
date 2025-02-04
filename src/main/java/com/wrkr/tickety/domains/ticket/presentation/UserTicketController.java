@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;

@@ -1,6 +1,9 @@
 package com.wrkr.tickety.domains.ticket.domain.service.template;
 
-import com.wrkr.tickety.domains.ticket.persistence.repository.TemplateRepository;
+import com.wrkr.tickety.domains.ticket.domain.model.Template;
+import com.wrkr.tickety.domains.ticket.exception.TemplateErrorCode;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.TemplatePersistenceAdapter;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,20 +13,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TemplateGetService {
 
-    private final TemplateRepository templateRepository;
+    private final TemplatePersistenceAdapter templatePersistenceAdapter;
 
-    //TODO: adapter 관련 pull하여 로직 추가
     public Map<Long, Boolean> existsByCategoryIds(List<Long> categoryIds) {
-        List<Long> existsTemplateIds = templateRepository.findByCategory_CategoryIdIn(categoryIds);
+        List<Long> existsTemplateIds = templatePersistenceAdapter.existsByCategoryIds(categoryIds);
 
         return categoryIds.stream()
             .collect(Collectors.toMap(
                 categoryId -> categoryId,
                 existsTemplateIds::contains
             ));
+    }
+
+    public Template getTemplateByCategoryId(Long categoryId) {
+        return templatePersistenceAdapter.findByCategoryId(categoryId)
+            .orElseThrow(() -> ApplicationException.from(TemplateErrorCode.TEMPLATE_NOT_EXISTS));
+    }
+
+    public Boolean existsByCategoryId(Long categoryId) {
+        return templatePersistenceAdapter.existsByCategoryId(categoryId);
+    }
+
+    public Template getTemplateByTemplateId(Long templateId) {
+        return templatePersistenceAdapter.findByTemplateId(templateId)
+            .orElseThrow(() -> ApplicationException.from(TemplateErrorCode.TEMPLATE_NOT_EXISTS));
     }
 }

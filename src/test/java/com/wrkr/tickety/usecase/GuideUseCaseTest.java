@@ -27,6 +27,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.CategoryPersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.Optional;
@@ -40,14 +41,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Optional;
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class GuideUseCaseTest {
 
     @Mock
     private GuideMapper guideMapper;
+
+    @Mock
+    private CategoryPersistenceAdapter categoryPersistenceAdapter;
 
     @Mock
     private GuideUpdateService guideUpdateService;
@@ -119,11 +121,11 @@ public class GuideUseCaseTest {
     void testGetGuideWithNonExistCategory() {
         // given
         Long categoryId = 1L;
-        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
         // when
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideGetUseCase.getGuide(categoryId));
         //then
-        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
+        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXISTS, e.getCode());
 
     }
 
@@ -156,7 +158,7 @@ public class GuideUseCaseTest {
             .content("test")
             .build();
 
-        given(categoryGetService.getCategory(categoryId)).willReturn(Optional.ofNullable(category));
+        given(categoryGetService.getParentCategory(categoryId)).willReturn(category);
         given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
         given(guideMapper.guideIdToPkResponse(guide)).willReturn(
             PkResponse.builder().id(cryptoCategoryId).build());
@@ -166,21 +168,6 @@ public class GuideUseCaseTest {
 
         // then
         assertEquals(cryptoCategoryId, response.id());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 카테고리로 도움말을 생성하면 예외가 발생한다.")
-    void testCreateGuideWithNonExistCategory() {
-        // given
-        long categoryId = 1L;
-        GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
-            .content("test")
-            .build();
-        when(categoryGetService.getCategory(categoryId)).thenReturn(Optional.empty());
-        // when
-        ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));
-        //then
-        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
     }
 
     @Test
@@ -197,7 +184,7 @@ public class GuideUseCaseTest {
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
             .content("test")
             .build();
-        when(categoryGetService.getCategory(categoryId)).thenReturn(Optional.of(category));
+        when(categoryGetService.getParentCategory(categoryId)).thenReturn(category);
         when(guideCreateService.createGuide(any(Guide.class))).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_ALREADY_EXIST));
         // when
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));

@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verify;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
-import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
@@ -31,7 +31,6 @@ import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -135,7 +134,7 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
+        given(categoryGetService.getParentCategory(anyLong())).willReturn(category);
 
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
@@ -147,7 +146,7 @@ public class TicketUseCaseTest {
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
-        verify(categoryGetService).getCategory(anyLong());
+        verify(categoryGetService).getParentCategory(anyLong());
         verify(memberGetService).byMemberId(anyLong());
         verify(ticketSaveService).save(any(Ticket.class));
     }
