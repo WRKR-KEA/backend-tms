@@ -30,7 +30,7 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query);
     }
 
-    public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
+    public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, PageRequest pageRequest) {
+        return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageRequest);
     }
 }

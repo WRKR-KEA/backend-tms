@@ -5,13 +5,13 @@ import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.common.dto.PageRequest;
 import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -22,7 +22,7 @@ public class DepartmentTicketAllGetUseCase {
     private final TicketGetService ticketGetService;
 
     public PageResponse<DepartmentTicketResponse> getDepartmentTicketList(String queryReq, String statusReq, String startDateReq, String endDateReq,
-        Pageable pageable) {
+        PageRequest pageRequest) {
 
         LocalDate startDate = parseLocalDateOrNull(startDateReq);
         LocalDate endDate = parseLocalDateOrNull(endDateReq);
@@ -33,7 +33,7 @@ public class DepartmentTicketAllGetUseCase {
         String query = queryReq == null || queryReq.isBlank() ? null : queryReq;
         TicketStatus status = TicketStatus.from(statusReq);
 
-        return TicketMapper.toDepartmentTicketResponse(ticketGetService.getDepartmentTickets(query, status, startDate, endDate, pageable));
+        return TicketMapper.toDepartmentTicketResponse(ticketGetService.getDepartmentTickets(query, status, startDate, endDate, pageRequest));
     }
 
     private LocalDate parseLocalDateOrNull(String date) {

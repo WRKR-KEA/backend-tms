@@ -42,8 +42,9 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(ticketEntity);
     }
 
-    public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate, final Pageable pageable) {
-        Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageable);
+    public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate,
+        final PageRequest pageRequest) {
+        Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageRequest);
         return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
     }
 

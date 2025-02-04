@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +27,9 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, PageRequest pageRequest) {
+
+        var orderSpecifiers = getOrderSpecifier(pageRequest.sortType());
 
         List<TicketEntity> ticketEntityList = jpaQueryFactory
             .selectFrom(ticketEntity)
@@ -38,9 +39,9 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 createdAtGoe(startDate),
                 createdAtLoe(endDate)
             )
-            .orderBy(ticketEntity.ticketId.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
+            .orderBy(orderSpecifiers)
+            .offset((long) pageRequest.size() * pageRequest.page())
+            .limit(pageRequest.size())
             .fetch();
 
         JPAQuery<Long> countQuery = jpaQueryFactory
@@ -55,7 +56,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
 
         return PageableExecutionUtils.getPage(
             ticketEntityList,
-            pageable,
+            pageRequest.toPageable(),
             countQuery::fetchOne
         );
     }

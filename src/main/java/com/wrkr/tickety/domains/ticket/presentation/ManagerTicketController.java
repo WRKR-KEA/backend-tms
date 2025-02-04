@@ -35,7 +35,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -74,18 +73,19 @@ public class ManagerTicketController {
     @GetMapping("/department")
     @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
     public ApplicationResponse<PageResponse<DepartmentTicketResponse>> getDepartmentTicket(
+        @AuthenticationPrincipal Member member,
         @Parameter(description = "검색어 (제목, 담당자, 티켓 번호 대상)", example = "VM")
         @RequestParam(required = false) String query,
         @Parameter(description = "필터링 - 티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) String status,
-        @Parameter(description = "필터링 - 요청일 시작", example = "2025-01-27")
+        @Parameter(description = "필터링 - 요청일 시작", example = "2024-01-27")
         @RequestParam(required = false) String startDate,
         @Parameter(description = "필터링 - 요청일 끝", example = "2025-01-27")
         @RequestParam(required = false) String endDate,
-        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
-        @RequestParam(required = false) Pageable pageable
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20,\"sortType\":\"newest\"}")
+        PageRequest pageRequest
     ) {
-        return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(query, status, startDate, endDate, pageable));
+        return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(query, status, startDate, endDate, pageRequest));
     }
 
     @PatchMapping("/approve")
