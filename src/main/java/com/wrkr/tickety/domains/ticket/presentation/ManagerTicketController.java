@@ -82,7 +82,7 @@ public class ManagerTicketController {
         @RequestParam(required = false) String startDate,
         @Parameter(description = "필터링 - 요청일 끝", example = "2025-01-27")
         @RequestParam(required = false) String endDate,
-        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20,\"sortType\":\"newest\"}")
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20,\"sortType\":\"UPDATED\"}")
         PageRequest pageRequest
     ) {
         return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(query, status, startDate, endDate, pageRequest));
@@ -131,6 +131,7 @@ public class ManagerTicketController {
     @GetMapping()
     public ApplicationResponse<PageResponse<ManagerTicketAllGetResponse>> getManagerTickets(
         @AuthenticationPrincipal Member member,
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20,\"sortType\":\"NEWEST\"}")
         PageRequest pageRequest,
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,

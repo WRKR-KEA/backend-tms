@@ -100,8 +100,6 @@ public class AdminMemberController {
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
     @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.BAD_REQUEST})
     @Parameters({
-        @Parameter(name = "page", description = "페이지 번호, 1 이상이어야 합니다.", example = "1", required = true),
-        @Parameter(name = "size", description = "페이지 크기, 10 이상이어야 합니다.", example = "10", required = true),
         @Parameter(name = "role", description = "회원 역할 (USER | MANAGER | ADMIN)", example = "USER"),
         @Parameter(name = "email", description = "이메일", example = "wrkr.kea@gachon.ac.kr"),
         @Parameter(name = "name", description = "이름", example = "김가천"),
@@ -110,6 +108,7 @@ public class AdminMemberController {
     @GetMapping
     public ApplicationResponse<PageResponse<MemberInfoResponse>> getTotalMemberInfo(
         @AuthenticationPrincipal Member member,
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
         PageRequest pageRequest,
         @RequestParam(required = false) Role role,
         @RequestParam(required = false) String email,

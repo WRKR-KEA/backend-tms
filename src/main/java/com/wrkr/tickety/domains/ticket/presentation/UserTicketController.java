@@ -57,6 +57,7 @@ public class UserTicketController {
     @CustomErrorCodes(ticketErrorCodes = {})
     public ApplicationResponse<PageResponse<TicketAllGetResponse>> getAllTickets(
         @AuthenticationPrincipal Member member,
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
         PageRequest pageRequest
     ) {
         return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest));
