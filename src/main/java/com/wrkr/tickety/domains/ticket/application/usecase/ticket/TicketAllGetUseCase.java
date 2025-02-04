@@ -7,10 +7,10 @@ import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.common.dto.PageRequest;
 import com.wrkr.tickety.global.common.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -22,10 +22,10 @@ public class TicketAllGetUseCase {
     private final TicketHistoryGetService ticketHistoryGetService;
     private final MemberGetService memberGetService;
 
-    public PageResponse<TicketAllGetResponse> getAllTickets(Long userId, Pageable pageable) {
+    public PageResponse<TicketAllGetResponse> getAllTickets(Long userId, PageRequest pageRequest) {
         memberGetService.byMemberId(userId);
 
-        Page<Ticket> ticketsPage = ticketGetService.getTicketsByUserId(userId, pageable);
+        Page<Ticket> ticketsPage = ticketGetService.getTicketsByUserId(userId, pageRequest);
 
         return PageResponse.of(ticketsPage, ticket ->
             TicketMapper.toTicketAllGetResponse(ticket, ticketHistoryGetService));

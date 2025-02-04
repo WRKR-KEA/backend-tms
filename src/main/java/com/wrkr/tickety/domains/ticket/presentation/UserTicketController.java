@@ -13,6 +13,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUs
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
+import com.wrkr.tickety.global.common.dto.PageRequest;
 import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +21,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -57,9 +57,9 @@ public class UserTicketController {
     @CustomErrorCodes(ticketErrorCodes = {})
     public ApplicationResponse<PageResponse<TicketAllGetResponse>> getAllTickets(
         @AuthenticationPrincipal Member member,
-        Pageable pageable
+        PageRequest pageRequest
     ) {
-        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageable));
+        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest));
     }
 
     @GetMapping("/{ticketId}")

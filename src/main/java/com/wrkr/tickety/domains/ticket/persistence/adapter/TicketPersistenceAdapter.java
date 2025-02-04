@@ -29,8 +29,8 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(savedEntity);
     }
 
-    public Page<Ticket> findAllByUserId(final Long userId, final Pageable pageable) {
-
+    public Page<Ticket> findAllByUserId(final Long userId, final PageRequest pageRequest) {
+        Pageable pageable = pageRequest.toPageableNoSort();
         return ticketRepository.findAllByUserId(userId, pageable)
             .map(this.ticketPersistenceMapper::toDomain);
     }
