@@ -5,6 +5,7 @@ import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.AdminCategoryGetAllResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.UserCategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class CategoryMapper {
             .build();
     }
 
-    public static AdminCategoryGetAllResponse mapToCategoryGetAllResponseDTO(
+    public static AdminCategoryGetAllResponse mapToAdminCategoryGetAllResponseDTO(
         List<Category> parentCategories,
         List<Category> childCategories,
         Map<Long, Boolean> existsGuideMap,
@@ -97,5 +98,32 @@ public class CategoryMapper {
             .build();
 
         return List.of(createChildCategory, deleteChildCategory, updateChildCategory, etcChildCategory);
+    }
+
+    public static UserCategoryGetAllResponse mapToUserCategoryGetAllResponseDTO(List<Category> parentCategories, List<Category> childCategories) {
+        return UserCategoryGetAllResponse.builder()
+            .categories(
+                parentCategories.stream()
+                    .map(category -> UserCategoryGetAllResponse.categories.builder()
+                        .categoryId(encrypt(category.getCategoryId()))
+                        .name(category.getName())
+                        .seq(category.getSeq())
+                        .childCategories(
+                            childCategories.stream()
+                                .filter(childCategory -> childCategory.getParent().getCategoryId().equals(category.getCategoryId()))
+                                .map(childCategory -> UserCategoryGetAllResponse.categories.childCategories.builder()
+                                    .categoryId(encrypt(childCategory.getCategoryId()))
+                                    .name(childCategory.getName())
+                                    .seq(childCategory.getSeq())
+                                    .build()
+                                )
+                                .toList()
+                        )
+                        .build()
+                    )
+                    .toList()
+            )
+            .build();
+
     }
 }

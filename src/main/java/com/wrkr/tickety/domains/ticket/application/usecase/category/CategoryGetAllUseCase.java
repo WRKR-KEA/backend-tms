@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.AdminCategoryGetAllResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.UserCategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
@@ -33,6 +34,19 @@ public class CategoryGetAllUseCase {
         Map<Long, Boolean> existsTemplateMap = templateGetService.existsByCategoryIds(categoryIds);
         List<Category> childCategories = categoryGetService.getChildrenByCategoryIds(categoryIds);
 
-        return CategoryMapper.mapToCategoryGetAllResponseDTO(parentCategories, childCategories, existsGuideMap, existsTemplateMap);
+        return CategoryMapper.mapToAdminCategoryGetAllResponseDTO(parentCategories, childCategories, existsGuideMap, existsTemplateMap);
+    }
+
+    public UserCategoryGetAllResponse userGetAllCategories() {
+        List<Category> parentCategories = categoryGetService.findParents();
+
+        List<Long> categoryIds = parentCategories.stream()
+            .map(Category::getCategoryId)
+            .toList();
+
+        List<Category> childCategories = categoryGetService.getChildrenByCategoryIds(categoryIds);
+
+        return CategoryMapper.mapToUserCategoryGetAllResponseDTO(parentCategories, childCategories);
+
     }
 }
