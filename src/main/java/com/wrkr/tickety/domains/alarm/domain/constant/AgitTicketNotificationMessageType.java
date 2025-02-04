@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.alarm.domain.constant;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum AgitTicketAlarmMessageType {
+public enum AgitTicketNotificationMessageType {
     TICKET_APPROVED("티켓 %s 이 승인되었습니다."),
     TICKET_REJECT("티켓 %s 이 반려되었습니다."),
     TICKET_FINISHED("티켓 %s 이 완료되었습니다."),

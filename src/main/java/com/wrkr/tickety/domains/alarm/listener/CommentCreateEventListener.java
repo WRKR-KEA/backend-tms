@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.alarm.listener;
 
-import com.wrkr.tickety.domains.alarm.domain.service.SendAgitAlarmService;
+import com.wrkr.tickety.domains.alarm.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.event.CommentCreateEvent;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentCreateEventListener {
 
-    private final SendAgitAlarmService sendAgitAlarmService;
+    private final SendAgitNotificationService sendAgitNotificationService;
 
     @Async
     @EventListener
@@ -31,6 +31,6 @@ public class CommentCreateEventListener {
         } else {
             receiver = ticket.getUser();
         }
-        sendAgitAlarmService.sendCommentCreateAgitAlarm(receiver, ticket);
+        sendAgitNotificationService.sendCommentCreateAgitAlarm(receiver, ticket);
     }
 }

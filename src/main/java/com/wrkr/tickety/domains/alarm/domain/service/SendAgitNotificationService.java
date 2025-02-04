@@ -1,8 +1,8 @@
 package com.wrkr.tickety.domains.alarm.domain.service;
 
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitCommentAlarmMessage;
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketAlarmMessageType;
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketDelegateAlarmMessage;
+import com.wrkr.tickety.domains.alarm.domain.constant.AgitCommentNotificationMessage;
+import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketDelegateNotificationMessage;
+import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import java.io.IOException;
@@ -13,31 +13,32 @@ import java.net.http.HttpResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SendAgitAlarmService {
+public class SendAgitNotificationService {
 
-    public void sendTicketStatusChangeAgitAlarm(Member member, Ticket ticket, AgitTicketAlarmMessageType agitTicketAlarmMessageType) {
+    public void sendTicketStatusChangeAgitAlarm(Member member, Ticket ticket, AgitTicketNotificationMessageType agitTicketNotificationMessageType) {
         String agitUrl = member.getAgitUrl();
         String ticketSerialNumber = ticket.getSerialNumber();
-        String message = switch (agitTicketAlarmMessageType) {
-            case TICKET_APPROVED -> AgitTicketAlarmMessageType.TICKET_APPROVED.format(ticketSerialNumber);
-            case TICKET_REJECT -> AgitTicketAlarmMessageType.TICKET_REJECT.format(ticketSerialNumber);
-            case TICKET_FINISHED -> AgitTicketAlarmMessageType.TICKET_FINISHED.format(ticketSerialNumber);
+        String message = switch (agitTicketNotificationMessageType) {
+            case TICKET_APPROVED -> AgitTicketNotificationMessageType.TICKET_APPROVED.format(ticketSerialNumber);
+            case TICKET_REJECT -> AgitTicketNotificationMessageType.TICKET_REJECT.format(ticketSerialNumber);
+            case TICKET_FINISHED -> AgitTicketNotificationMessageType.TICKET_FINISHED.format(ticketSerialNumber);
         };
         requestAgitApi(agitUrl, message);
     }
 
     public void sendCommentCreateAgitAlarm(Member receiver, Ticket ticket) {
-        String ticketSerialNumber = AgitCommentAlarmMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
+        String ticketSerialNumber = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
         String agitUrl = receiver.getAgitUrl();
-        String message = AgitCommentAlarmMessage.COMMENT_UPDATE.format(ticketSerialNumber);
+        String message = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticketSerialNumber);
         requestAgitApi(agitUrl, message);
     }
 
     public void sendTicketDelegateAgitAlarm(Member prevManager, Member newManager, Ticket ticket) {
-        String MessageToUser = AgitTicketDelegateAlarmMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(ticket.getSerialNumber(), newManager.getName());
+        String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(ticket.getSerialNumber(), newManager.getName());
         requestAgitApi(ticket.getUser().getAgitUrl(), MessageToUser);
 
-        String MessageToManager = AgitTicketDelegateAlarmMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(ticket.getSerialNumber(), prevManager.getName());
+        String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(ticket.getSerialNumber(),
+                                                                                                                      prevManager.getName());
         requestAgitApi(newManager.getAgitUrl(), MessageToManager);
 
 

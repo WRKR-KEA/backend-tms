@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 import static com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper.mapToTicketHistory;
 import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.toTicketPkResponse;
 
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketAlarmMessageType;
+import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
@@ -57,7 +57,7 @@ public class TicketApproveUseCase {
             applicationEventPublisher.publishEvent(TicketStatusChangeEvent.builder()
                                                        .ticket(ticket)
                                                        .user(ticket.getUser())
-                                                       .agitTicketAlarmMessageType(AgitTicketAlarmMessageType.TICKET_APPROVED)
+                                                       .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_APPROVED)
                                                        .build());
         });
 

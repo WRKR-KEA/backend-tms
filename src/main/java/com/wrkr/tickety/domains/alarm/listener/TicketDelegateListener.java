@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.alarm.listener;
 
-import com.wrkr.tickety.domains.alarm.domain.service.SendAgitAlarmService;
+import com.wrkr.tickety.domains.alarm.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketDelegateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TicketDelegateListener {
 
-    private final SendAgitAlarmService sendAgitAlarmService;
+    private final SendAgitNotificationService sendAgitNotificationService;
 
     @Async
     @EventListener
@@ -22,7 +22,7 @@ public class TicketDelegateListener {
         Member newManager = ticketDelegateEvent.newManager();
         Ticket ticket = ticketDelegateEvent.ticket();
 
-        sendAgitAlarmService.sendTicketDelegateAgitAlarm(prevManager, newManager, ticket);
+        sendAgitNotificationService.sendTicketDelegateAgitAlarm(prevManager, newManager, ticket);
     }
 
 }

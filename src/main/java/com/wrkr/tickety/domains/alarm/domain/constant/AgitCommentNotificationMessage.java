@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.alarm.domain.constant;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum AgitCommentAlarmMessage {
+public enum AgitCommentNotificationMessage {
     COMMENT_UPDATE("티켓 %s 에 대한 코멘트가 작성되었습니다."),
     ;
 
