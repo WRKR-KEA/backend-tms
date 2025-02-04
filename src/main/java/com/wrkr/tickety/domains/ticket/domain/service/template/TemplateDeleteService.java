@@ -14,8 +14,8 @@ public class TemplateDeleteService {
 
     private final TemplatePersistenceAdapter templatePersistenceAdapter;
 
-    public Template deleteTemplate(Long templateId) {
-        return templatePersistenceAdapter.delete(templateId);
+    public Template deleteTemplate(Template template) {
+        return templatePersistenceAdapter.delete(template);
     }
 
 }

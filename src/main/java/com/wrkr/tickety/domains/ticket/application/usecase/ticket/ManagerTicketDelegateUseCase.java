@@ -17,7 +17,6 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,12 +31,12 @@ public class ManagerTicketDelegateUseCase {
     private final MemberGetService memberGetService;
 
     public TicketPkResponse delegateTicket(Long ticketId, Long currentManagerId, TicketDelegateRequest request) {
-        Optional<Member> delegateManager = memberGetService.byMemberId(PkCrypto.decrypt(request.delegateManagerId()));
+        Member delegateManager = memberGetService.byMemberId(PkCrypto.decrypt(request.delegateManagerId()));
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
         validateTicket(ticket, currentManagerId);
 
-        Ticket delegatedTicket = ticketUpdateService.updateManager(ticket, delegateManager.orElse(null));
+        Ticket delegatedTicket = ticketUpdateService.updateManager(ticket, delegateManager);
 
         TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(delegatedTicket, ModifiedType.MANAGER);
         ticketHistorySaveService.save(ticketHistory);
@@ -57,7 +56,7 @@ public class ManagerTicketDelegateUseCase {
         }
 
         if (!ticket.isDelegatable()) {
-            throw ApplicationException.from(TicketErrorCode.TICKET_STATUS_NOT_IN_PROGRESS);
+            throw ApplicationException.from(TicketErrorCode.TICKET_NOT_DELEGATABLE);
         }
     }
 }

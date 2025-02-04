@@ -7,6 +7,12 @@ spring:
       - swagger.yml
       - crypto.yml
       - mail.yml
+      - redis.yml
+      - jwt.yml
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
 
 server:
   port: ${APPLICATION_PORT:8080}

@@ -12,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 public enum StatisticsType {
     DAILY("daily"),
     MONTHLY("monthly"),
-    YEARLY("yearly");
+    YEARLY("yearly"),
+    TOTAL("total");
 
     private final String uriValue;
 

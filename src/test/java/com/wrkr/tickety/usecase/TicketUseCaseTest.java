@@ -26,10 +26,10 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
+import com.wrkr.tickety.global.common.dto.PageResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -135,8 +135,9 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
-        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
+        given(categoryGetService.getParentCategory(anyLong())).willReturn(category);
+
+        given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
         // when
@@ -146,7 +147,7 @@ public class TicketUseCaseTest {
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
-        verify(categoryGetService).getCategory(anyLong());
+        verify(categoryGetService).getParentCategory(anyLong());
         verify(memberGetService).byMemberId(anyLong());
         verify(ticketSaveService).save(any(Ticket.class));
     }
@@ -160,17 +161,17 @@ public class TicketUseCaseTest {
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
 
         given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(ticketPage);
-        given(memberGetService.byMemberId(anyLong())).willReturn(java.util.Optional.of(user));
+        given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         //when
-        TicketAllGetPagingResponse ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageable);
+        PageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageable);
 
         //then
         assertThat(ticketAllGetPagingResponse).isNotNull();
         assertThat(ticketAllGetPagingResponse.currentPage()).isEqualTo(1);
         assertThat(ticketAllGetPagingResponse.size()).isEqualTo(1);
-        assertThat(ticketAllGetPagingResponse.tickets().get(0).serialNumber()).isEqualTo("#12345678");
+        assertThat(ticketAllGetPagingResponse.elements().getFirst().serialNumber()).isEqualTo("#12345678");
 
         verify(ticketGetService).getTicketsByUserId(anyLong(), any(Pageable.class));
         verify(memberGetService).byMemberId(anyLong());

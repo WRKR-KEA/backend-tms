@@ -15,7 +15,6 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberUpdateService;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +68,7 @@ public class MyPageUseCaseTest {
     @DisplayName("공통 - 마이페이지 회원 정보 조회를 한다")
     void getMyPageInfo() {
         // given
-        given(memberGetService.byMemberId(MEMBER_ID)).willReturn(Optional.of(member));
+        given(memberGetService.byMemberId(MEMBER_ID)).willReturn(member);
 
         // when
         MyPageInfoResponse response = myPageInfoGetUseCase.getMyPageInfo(MEMBER_ID);
@@ -103,7 +102,7 @@ public class MyPageUseCaseTest {
             .isDeleted(false)
             .build();
 
-        given(memberGetService.byMemberId(MEMBER_ID)).willReturn(Optional.of(member));
+        given(memberGetService.byMemberId(MEMBER_ID)).willReturn(member);
         given(memberUpdateService.modifyMemberInfo(member)).willReturn(modifiedMember);
 
         //when

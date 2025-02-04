@@ -27,8 +27,12 @@ public class MemberPersistenceAdapter {
     }
 
     public Optional<Member> findById(final Long memberId) {
-        final Optional<MemberEntity> memberEntity = Optional.ofNullable(this.memberRepository.findById(memberId)
-            .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND)));
+        final Optional<MemberEntity> memberEntity = this.memberRepository.findById(memberId);
+        return memberEntity.map(this.memberPersistenceMapper::toDomain);
+    }
+
+    public Optional<Member> findByNicknameAndIsDeleted(final String nickname) {
+        final Optional<MemberEntity> memberEntity = this.memberRepository.findByNicknameAndIsDeleted(nickname, false);
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
     }
 
