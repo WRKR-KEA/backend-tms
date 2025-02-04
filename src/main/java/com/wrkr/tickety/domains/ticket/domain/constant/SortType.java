@@ -2,8 +2,6 @@ package com.wrkr.tickety.domains.ticket.domain.constant;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.wrkr.tickety.global.exception.ApplicationException;
-import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,16 +9,18 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum SortType {
-    NEWEST("newest"),
-    OLDEST("oldest");
+    NEWEST("최신순"),
+    OLDEST("오래된 순"),
+    UPDATED("업데이트 순"),
+    ;
 
-    private final String uriValue;
+    private final String description;
 
     @JsonCreator
     public static SortType from(String type) {
-        return Arrays.stream(com.wrkr.tickety.domains.ticket.domain.constant.SortType.values())
-            .filter(statisticsType -> statisticsType.uriValue.equalsIgnoreCase(type))
+        return Arrays.stream(values())
+            .filter(statisticsType -> statisticsType.name().equalsIgnoreCase(type))
             .findFirst()
-            .orElseThrow(() -> ApplicationException.from(CommonErrorCode.BAD_REQUEST));
+            .orElse(UPDATED);
     }
 }
