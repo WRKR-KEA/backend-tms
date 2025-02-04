@@ -1,13 +1,15 @@
 package com.wrkr.tickety.domains.ticket.persistence.repository;
 
-import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.persistence.entity.GuideEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GuideRepository extends JpaRepository<GuideEntity, Long> {
 
     Optional<GuideEntity> findByCategory_CategoryId(Long category_id);
+
     Boolean existsByCategory_CategoryId(Long categoryId);
+
+    List<Long> findByCategory_CategoryIdIn(List<Long> categoryIds);
 }

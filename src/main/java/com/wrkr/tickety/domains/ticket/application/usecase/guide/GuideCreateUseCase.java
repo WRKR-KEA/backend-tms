@@ -7,9 +7,7 @@ import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideCreateService;
-import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +22,7 @@ public class GuideCreateUseCase {
 
     public PkResponse createGuide(GuideCreateRequest guideCreateRequest, Long categoryId) {
 
-        Category category = categoryGetService.getCategory(categoryId).orElseThrow(
-            () -> new ApplicationException(CategoryErrorCode.CATEGORY_NOT_EXIST)
-        );
-
+        Category category = categoryGetService.getParentCategory(categoryId);
         Guide guide = Guide.builder()
             .content(guideCreateRequest.content())
             .category(category)
