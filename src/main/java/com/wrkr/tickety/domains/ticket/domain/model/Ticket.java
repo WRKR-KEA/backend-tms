@@ -54,6 +54,7 @@ public class Ticket extends BaseTime {
 
     public void updateManager(Member manager) {
         this.manager = manager;
+        this.isPinned = false;
     }
 
     public boolean isRelatedWith(Member member) {
