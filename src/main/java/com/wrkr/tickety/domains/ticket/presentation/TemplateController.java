@@ -4,7 +4,7 @@ import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.template.AdminTemplateCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.template.AdminTemplateUpdateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.template.AdminTemplateGetResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplateGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplatePKResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.template.TemplateCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.template.TemplateDeleteUseCase;
