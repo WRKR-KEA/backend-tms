@@ -163,7 +163,6 @@ public class TicketMapper {
                 .ticketSerialNumber(ticket.getSerialNumber())
                 .status(ticket.getStatus())
                 .title(ticket.getTitle())
-                .managerNickname(ticket.getManager().getNickname())
                 .userNickname(ticket.getUser().getNickname())
                 .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
                 .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
