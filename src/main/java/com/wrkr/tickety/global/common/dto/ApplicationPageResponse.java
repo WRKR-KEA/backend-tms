@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 import org.springframework.data.domain.Page;
 
-public record PageResponse<T>(
+public record ApplicationPageResponse<T>(
 
     @Schema(description = "페이지 내용")
     List<T> elements,
@@ -23,8 +23,8 @@ public record PageResponse<T>(
     Integer size
 ) {
 
-    public static <T, E> PageResponse<T> of(Page<E> page, Function<E, T> converter) {
-        return new PageResponse<>(
+    public static <T, E> ApplicationPageResponse<T> of(Page<E> page, Function<E, T> converter) {
+        return new ApplicationPageResponse<>(
             page.map(converter).toList(),
             page.getNumber() + 1,
             page.getTotalPages(),

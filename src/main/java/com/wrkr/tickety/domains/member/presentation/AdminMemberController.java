@@ -19,7 +19,8 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -105,17 +105,18 @@ public class AdminMemberController {
         @Parameter(name = "pageable", description = "페이징", example = "{\"page\":1,\"size\":20}")
     })
     @GetMapping
-    public ApplicationResponse<PageResponse<MemberInfoResponse>> getTotalMemberInfo(
+    public ApplicationResponse<ApplicationPageResponse<MemberInfoResponse>> getTotalMemberInfo(
         @AuthenticationPrincipal Member member,
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
+        ApplicationPageRequest pageRequest,
         @RequestParam(required = false) Role role,
-        @RequestParam(required = false) String query,
-        Pageable pageable
+        @RequestParam(required = false) String query
     ) {
         return ApplicationResponse.onSuccess(
             memberInfoSearchUseCase.searchMemberInfo(
+                pageRequest,
                 role,
-                query,
-                pageable
+                query
             )
         );
     }

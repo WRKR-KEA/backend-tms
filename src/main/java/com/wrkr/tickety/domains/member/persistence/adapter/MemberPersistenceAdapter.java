@@ -5,6 +5,7 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.member.persistence.mapper.MemberPersistenceMapper;
 import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,10 +36,12 @@ public class MemberPersistenceAdapter {
     }
 
     public Page<Member> searchMember(
+        final ApplicationPageRequest pageRequest,
         final Role role,
-        final String query,
-        final Pageable pageable
+        final String query
     ) {
+        Pageable pageable = pageRequest.toPageableNoSort();
+
         Page<MemberEntity> memberEntityPage = memberRepository.searchMember(
             role,
             query,

@@ -6,10 +6,10 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -19,18 +19,18 @@ public class MemberInfoSearchUseCase {
 
     private final MemberGetService memberGetService;
 
-    public PageResponse<MemberInfoResponse> searchMemberInfo(
+    public ApplicationPageResponse<MemberInfoResponse> searchMemberInfo(
+        ApplicationPageRequest pageRequest,
         Role role,
-        String query,
-        Pageable pageable
+        String query
     ) {
         Page<Member> memberPage = memberGetService.searchMember(
+            pageRequest,
             role,
-            query,
-            pageable
+            query
         );
 
-        return PageResponse.of(
+        return ApplicationPageResponse.of(
             memberPage,
             MemberMapper::toMemberInfoResponse
         );
