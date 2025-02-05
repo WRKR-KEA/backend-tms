@@ -101,8 +101,8 @@ public class AdminMemberController {
     @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.BAD_REQUEST})
     @Parameters({
         @Parameter(name = "role", description = "회원 역할 (USER | MANAGER | ADMIN)", example = "USER"),
-        @Parameter(description = "검색어 (이메일, 이름, 부서)", example = "alsgudtkwjs@gachon.ac.kr(이메일) or 김가천(이름) or 부서(개발 1팀)"),
-        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
+        @Parameter(name = "query", description = "검색어 (이메일, 이름, 부서)", example = "alsgudtkwjs@gachon.ac.kr(이메일) or 김가천(이름) or 부서(개발 1팀)"),
+        @Parameter(name = "pageable", description = "페이징", example = "{\"page\":1,\"size\":20}")
     })
     @GetMapping
     public ApplicationResponse<PageResponse<MemberInfoResponse>> getTotalMemberInfo(
