@@ -44,7 +44,8 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
                 roleEq(role),
                 containsEmailIgnoreCase(email),
                 containsNameIgnoreCase(name),
-                containsDepartmentIgnoreCase(department)
+                containsDepartmentIgnoreCase(department),
+                isDeletedEq(false)
             );
 
         return PageableExecutionUtils.getPage(
@@ -59,7 +60,7 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
     }
 
     private BooleanExpression containsEmailIgnoreCase(String email) {
-        return email == null || email.isEmpty() ? null : memberEntity.email.containsIgnoreCase(email);
+        return email.isBlank() ? null : memberEntity.email.containsIgnoreCase(email);
     }
 
     private BooleanExpression containsNameIgnoreCase(String name) {
@@ -67,6 +68,10 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
     }
 
     private BooleanExpression containsDepartmentIgnoreCase(String department) {
-        return department == null || department.isEmpty() ? null : memberEntity.department.containsIgnoreCase(department);
+        return department.isBlank() ? null : memberEntity.department.containsIgnoreCase(department);
+    }
+
+    private BooleanExpression isDeletedEq(Boolean isDeleted) {
+        return isDeleted == null ? null : memberEntity.isDeleted.eq(isDeleted);
     }
 }
