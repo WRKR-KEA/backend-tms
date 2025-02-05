@@ -1,9 +1,12 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
+import static com.wrkr.tickety.domains.ticket.exception.StatisticsErrorCode.ILLEGAL_STATISTICS_OPTION;
+
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByStatusResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByStatusUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
+import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,6 +29,7 @@ public class TicketStatisticsController {
 
     @GetMapping("/{statisticsType}/status")
     @Operation(summary = "일간/월간/연간 상태별 요약 조회")
+    @CustomErrorCodes(statisticsErrorCodes = {ILLEGAL_STATISTICS_OPTION})
     public ApplicationResponse<StatisticsByStatusResponse> getStatisticsByStatusDaily(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "통계 타입 (DAILY | MONTHLY | YEARLY)", example = "daily", required = true) @PathVariable String statisticsType,
