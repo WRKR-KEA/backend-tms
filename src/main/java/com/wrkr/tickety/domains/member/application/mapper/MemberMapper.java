@@ -15,15 +15,15 @@ public class MemberMapper {
         String encryptedPassword
     ) {
         return Member.builder()
-            .email(memberCreateRequest.email())
+            .email(memberCreateRequest.getEmail())
             .password(encryptedPassword)
-            .name(memberCreateRequest.name())
-            .nickname(memberCreateRequest.nickname())
-            .department(memberCreateRequest.department())
-            .position(memberCreateRequest.position())
-            .phone(memberCreateRequest.phone())
-            .role(memberCreateRequest.role())
-            .profileImage(memberCreateRequest.profileImage())
+            .name(memberCreateRequest.getName())
+            .nickname(memberCreateRequest.getNickname())
+            .department(memberCreateRequest.getDepartment())
+            .position(memberCreateRequest.getPosition())
+            .phone(memberCreateRequest.getPhone())
+            .role(memberCreateRequest.getRole())
+            .profileImage(memberCreateRequest.getProfileImage())
             .build();
     }
 
