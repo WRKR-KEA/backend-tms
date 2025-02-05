@@ -18,33 +18,40 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class ExcelUtil {
 
-    private static final int headerStartRowToParse = 0; // 헤더가 시작하는 행 인덱스
-    private static final int headerStartRowToRender = 0; // 헤더가 시작하는 행 인덱스 (렌더링용)
-    private static final int bodyStartRowToParse = 1; // 본문 데이터가 시작하는 행 인덱스 (파싱용)
-    private static final int bodyStartRowToRender = 1; // 본문 데이터가 시작하는 행 인덱스
-    private static final int startColToRender = 0; // 데이터가 시작하는 열 인덱스
+    private static final int headerStartRowToParse = 0;
+    private static final int bodyStartRowToParse = 1;
+    private static final int headerStartRowToRender = 0;
+    private static final int bodyStartRowToRender = 1;
+    private static final int startColToRender = 0;
 
     private final ConverterUtil converterUtil;
 
     public <T> List<T> parseExcelToObject(MultipartFile file, Class<T> clazz) {
         /* read workbook & sheet */
-        Workbook workbook = null;
+        Workbook workbook;
         try {
             workbook = WorkbookFactory.create(file.getInputStream());
         } catch (IOException e) {
+            throw new ApplicationException(INTERNAL_SERVER_ERROR);
+        }
+
+        if (workbook == null) {
             throw new ApplicationException(INTERNAL_SERVER_ERROR);
         }
 
@@ -52,7 +59,7 @@ public class ExcelUtil {
 
         /* parse header & body */
         Map<String, Integer> headers = parseHeader(sheet, clazz);
-        return parseBody(headers, sheet, clazz); // 파라미터 채워줘
+        return parseBody(headers, sheet, clazz);
     }
 
     private <T> Map<String, Integer> parseHeader(Sheet sheet, Class<T> clazz) {
@@ -84,16 +91,20 @@ public class ExcelUtil {
     private <T> List<T> parseBody(Map<String, Integer> headers, Sheet sheet, Class<T> clazz) {
         List<T> objects = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
+
         try {
             clazz.getDeclaredConstructor().setAccessible(true);
         } catch (NoSuchMethodException e) {
+            String methodName = getMethodName();
+            log.error("Error in method {}: Failed to access default constructor for class {}: {}",
+                methodName, clazz.getName(), e.getMessage());
             throw new ApplicationException(INTERNAL_SERVER_ERROR);
         }
 
         /* 엑셀의 줄마다 매핑시킬 객체를 만들고 */
         for (int i = bodyStartRowToParse; i <= sheet.getLastRowNum(); i++) {
             try {
-                T object = clazz.getDeclaredConstructor().newInstance(); // 객체 생성
+                T object = clazz.getDeclaredConstructor().newInstance();
 
                 /* 객체의 필드를 순회하며 값을 넣음 */
                 for (Field field : fields) {
@@ -104,23 +115,36 @@ public class ExcelUtil {
                         field.getName() : field.getAnnotation(ExcelColumn.class).headerName();
 
                     /* Value에 해당하는 엑셀 인덱스의 값을 가져올 수 있음 */
-                    Cell cell = sheet.getRow(i).getCell(headers.get(key));
+                    Integer cellIndex = headers.get(key);
+                    Cell cell = (cellIndex != null) ? sheet.getRow(i).getCell(cellIndex) : null;
+
+                    // 비어있는 셀은 건너뜀
+                    if (cell == null || cell.getCellType() == CellType.BLANK || cell.toString().trim().isEmpty()) {
+                        continue;
+                    }
 
                     /* Converter를 활용한 자동 매핑 로직 */
                     try {
-                        field.set(object, converterUtil.convert(cell, field.getType())); // object에 매핑
-                    } catch (IllegalAccessException e) {
+                        field.set(object, converterUtil.convert(cell, field.getType()));
+                    } catch (ConversionFailedException e) {
+                        log.error("Row {}: Failed to convert value '{}' to {} for field '{}'. Error: {}",
+                            i, cell.toString(), field.getType().getSimpleName(), field.getName(), e.getMessage());
                         throw new ApplicationException(INTERNAL_SERVER_ERROR);
                     }
                 }
 
                 /* 완성된 객체를 리스트에 쌓기 */
-                objects.add(object); // object 추가
+                objects.add(object);
             } catch (Exception e) {
+                log.error("Row {}: Exception occurred: {}", i, e.getMessage());
                 throw new ApplicationException(INTERNAL_SERVER_ERROR);
             }
         }
         return objects;
+    }
+
+    private static String getMethodName() {
+        return Thread.currentThread().getStackTrace()[1].getMethodName();
     }
 
     public <T> void renderObjectToExcel(HttpServletResponse response, List<T> data, Class<T> clazz, String filename) {
