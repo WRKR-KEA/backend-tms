@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import static com.wrkr.tickety.global.utils.PkCrypto.encrypt;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
@@ -34,7 +34,8 @@ public class CategoryMapper {
     public static CategoryGetAllResponse mapToCategoryGetAllResponseDTO(
         List<Category> categoryList,
         Map<Long, Boolean> existsGuideMap,
-        Map<Long, Boolean> existsTemplateMap) {
+        Map<Long, Boolean> existsTemplateMap
+    ) {
 
         return CategoryGetAllResponse.builder()
             .categories(

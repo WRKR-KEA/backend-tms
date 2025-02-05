@@ -2,9 +2,9 @@ package com.wrkr.tickety.domains.ticket.presentation;
 
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryNameUpdateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategorySequenceUpdateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryNameUpdateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategorySequenceUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse.CategoryPK;
 import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
@@ -70,7 +70,8 @@ public class AdminCategoryController {
     @Operation(summary = "카테고리 이름 수정", description = "관리자가 카테고리 이름을 수정합니다.")
     @PatchMapping("/admin/categories/{categoryId}")
     public ApplicationResponse<CategoryPK> updateCategoryName(@PathVariable String categoryId,
-        @RequestBody @Valid CategoryNameUpdateRequest request) {
+        @RequestBody @Valid CategoryNameUpdateRequest request
+    ) {
         CategoryPK encryptedCategoryId = categoryUpdateUseCase.updateCategoryName(decrypt(categoryId), request);
         return ApplicationResponse.onSuccess(encryptedCategoryId);
     }
