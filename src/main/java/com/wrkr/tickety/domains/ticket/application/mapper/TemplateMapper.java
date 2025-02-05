@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.template.AdminTemplateCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.template.AdminTemplateGetResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplateGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplatePKResponse;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Template;
