@@ -2,11 +2,9 @@ package com.wrkr.tickety.domains.member.persistence.adapter;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.member.persistence.mapper.MemberPersistenceMapper;
 import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
-import com.wrkr.tickety.global.exception.ApplicationException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,18 +35,14 @@ public class MemberPersistenceAdapter {
     }
 
     public Page<Member> searchMember(
-        final Pageable pageable,
         final Role role,
-        final String email,
-        final String name,
-        final String department) {
-
+        final String query,
+        final Pageable pageable
+    ) {
         Page<MemberEntity> memberEntityPage = memberRepository.searchMember(
-            pageable,
             role,
-            email,
-            name,
-            department
+            query,
+            pageable
         );
 
         return memberEntityPage.map(this.memberPersistenceMapper::toDomain);

@@ -27,8 +27,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -100,31 +100,22 @@ public class AdminMemberController {
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
     @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.BAD_REQUEST})
     @Parameters({
-        @Parameter(name = "page", description = "페이지 번호, 1 이상이어야 합니다.", example = "1", required = true),
-        @Parameter(name = "size", description = "페이지 크기, 10 이상이어야 합니다.", example = "10", required = true),
         @Parameter(name = "role", description = "회원 역할 (USER | MANAGER | ADMIN)", example = "USER"),
-        @Parameter(name = "email", description = "이메일", example = "wrkr.kea@gachon.ac.kr"),
-        @Parameter(name = "name", description = "이름", example = "김가천"),
-        @Parameter(name = "department", description = "부서", example = "개발팀")
+        @Parameter(description = "검색어 (이메일, 이름, 부서)", example = "alsgudtkwjs@gachon.ac.kr(이메일) or 김가천(이름) or 부서(개발 1팀)"),
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
     })
     @GetMapping
     public ApplicationResponse<PageResponse<MemberInfoResponse>> getTotalMemberInfo(
         @AuthenticationPrincipal Member member,
-        @RequestParam(defaultValue = "1") @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.") int page,
-        @RequestParam(defaultValue = "10") @Min(value = 10, message = "페이지 크기는 10 이상이어야 합니다.") int size,
         @RequestParam(required = false) Role role,
-        @RequestParam(required = false) String email,
-        @RequestParam(required = false) String name,
-        @RequestParam(required = false) String department
+        @RequestParam(required = false) String query,
+        Pageable pageable
     ) {
         return ApplicationResponse.onSuccess(
             memberInfoSearchUseCase.searchMemberInfo(
-                page - 1,
-                size,
                 role,
-                email,
-                name,
-                department
+                query,
+                pageable
             )
         );
     }
