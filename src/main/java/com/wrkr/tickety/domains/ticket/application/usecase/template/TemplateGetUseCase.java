@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.template;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.template.AdminTemplateGetResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplateGetResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TemplateMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Template;
 import com.wrkr.tickety.domains.ticket.domain.service.template.TemplateGetService;
@@ -15,7 +15,7 @@ public class TemplateGetUseCase {
 
     private final TemplateGetService templateGetService;
 
-    public AdminTemplateGetResponse getTemplate(Long categoryId) {
+    public TemplateGetResponse getTemplate(Long categoryId) {
         Template template = templateGetService.getTemplateByCategoryId(categoryId);
         return TemplateMapper.mapToAdminTemplateGetResponse(template);
     }

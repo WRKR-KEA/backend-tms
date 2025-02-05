@@ -7,7 +7,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.category.Category
 import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategorySequenceUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse.CategoryPK;
-import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.AdminCategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryDeleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.category.CategoryGetAllUseCase;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Category Controller")
+@Tag(name = "Admin Category Controller")
 @RequestMapping("/api")
 public class AdminCategoryController {
 
@@ -41,11 +41,10 @@ public class AdminCategoryController {
     private final CategoryUpdateUseCase categoryUpdateUseCase;
     private final CategoryDeleteUseCase categoryDeleteUseCase;
 
-    @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXISTS})
     @Operation(summary = "카테고리 전체 조회", description = "관리자가 카테고리를 전체 조회합니다.")
     @GetMapping("/admin/categories")
-    public ApplicationResponse<CategoryGetAllResponse> getAllCategories() {
-        CategoryGetAllResponse categoryList = categoryGetAllUseCase.getAllCategories();
+    public ApplicationResponse<AdminCategoryGetAllResponse> getAllCategories() {
+        AdminCategoryGetAllResponse categoryList = categoryGetAllUseCase.adminGetAllCategories();
         return ApplicationResponse.onSuccess(categoryList);
     }
 

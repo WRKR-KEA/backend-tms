@@ -19,8 +19,8 @@ public class TemplateMapper {
             .build();
     }
 
-    public static AdminTemplateGetResponse mapToAdminTemplateGetResponse(Template template) {
-        return AdminTemplateGetResponse.builder()
+    public static TemplateGetResponse mapToAdminTemplateGetResponse(Template template) {
+        return TemplateGetResponse.builder()
             .templateId(PkCrypto.encrypt(template.getTemplateId()))
             .categoryId(PkCrypto.encrypt(template.getCategory().getCategoryId()))
             .content(template.getContent())
