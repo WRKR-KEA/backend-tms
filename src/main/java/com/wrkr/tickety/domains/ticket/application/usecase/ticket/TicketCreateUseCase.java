@@ -46,7 +46,7 @@ public class TicketCreateUseCase {
 
         ModifiedType modifiedType = ModifiedType.STATUS;
         TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket,
-            modifiedType);
+                                                                             modifiedType);
         ticketHistorySaveService.save(ticketHistory);
 
         return toTicketPkResponse(encrypt(savedTicket.getTicketId()));

@@ -1,9 +1,9 @@
-package com.wrkr.tickety.domains.alarm.domain.service;
+package com.wrkr.tickety.domains.notification.domain.service;
 
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitCommentNotificationMessage;
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketDelegateNotificationMessage;
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.notification.domain.constant.AgitCommentNotificationMessage;
+import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketDelegateNotificationMessage;
+import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import java.time.Duration;
 import lombok.AllArgsConstructor;
@@ -39,7 +39,7 @@ public class SendAgitNotificationService {
 
     public void sendTicketDelegateAgitAlarm(Member prevManager, Member newManager, Ticket ticket) {
         String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(ticket.getSerialNumber(),
-                                                                                                            prevManager.getNickname());
+                                                                                                            newManager.getNickname());
         requestAgitApi(ticket.getUser().getAgitUrl(), MessageToUser);
 
         String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(prevManager.getNickname(),

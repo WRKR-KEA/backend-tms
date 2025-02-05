@@ -37,6 +37,7 @@ public class ManagerTicketDelegateUseCase {
         Member delegateManager = memberGetService.byMemberId(PkCrypto.decrypt(request.delegateManagerId()));
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
+        Member prevManager = ticket.getManager();
         validateTicket(ticket, currentManagerId);
 
         Ticket delegatedTicket = ticketUpdateService.updateManager(ticket, delegateManager);
@@ -45,10 +46,10 @@ public class ManagerTicketDelegateUseCase {
         ticketHistorySaveService.save(ticketHistory);
 
         applicationEventPublisher.publishEvent(TicketDelegateEvent.builder()
-            .ticket(delegatedTicket)
-            .prevManager(ticket.getManager())
-            .newManager(delegateManager)
-            .build());
+                                                   .ticket(delegatedTicket)
+                                                   .prevManager(prevManager)
+                                                   .newManager(delegateManager)
+                                                   .build());
 
         return toTicketPkResponse(PkCrypto.encrypt(delegatedTicket.getTicketId()));
     }

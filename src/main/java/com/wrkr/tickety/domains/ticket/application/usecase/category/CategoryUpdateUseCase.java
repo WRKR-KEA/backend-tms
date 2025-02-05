@@ -2,8 +2,8 @@ package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryNameUpdateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategorySequenceUpdateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryNameUpdateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategorySequenceUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
