@@ -4,7 +4,7 @@ import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.to
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
