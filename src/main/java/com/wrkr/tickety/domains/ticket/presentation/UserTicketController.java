@@ -7,10 +7,12 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketCrea
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.UserTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.common.dto.PageResponse;
@@ -40,6 +42,7 @@ public class UserTicketController {
     private final TicketAllGetUseCase ticketAllGetUseCase;
     private final TicketDetailGetUseCase ticketDetailGetUseCase;
     private final TicketCancelUseCase ticketCancelUseCase;
+    private final TicketGetMainUseCase ticketGetMainUseCase;
 
     @PostMapping
     @Operation(summary = "사용자 티켓 요청", description = "사용자가 티켓을 요청합니다.")
@@ -81,5 +84,11 @@ public class UserTicketController {
         @PathVariable("ticketId") String ticketId
     ) {
         return ApplicationResponse.onSuccess(ticketCancelUseCase.cancelTicket(member.getMemberId(), decrypt(ticketId)));
+    }
+
+    @GetMapping("/main")
+    @Operation(summary = "사용자 메인 페이지 조회", description = "사용자의 메인 페이지를 조회합니다.")
+    public ApplicationResponse<UserTicketMainPageResponse> mainPage(@AuthenticationPrincipal Member member) {
+        return ApplicationResponse.onSuccess(ticketGetMainUseCase.getMain(member.getMemberId()));
     }
 }
