@@ -36,7 +36,8 @@ public class CategoryMapper {
         List<Category> parentCategories,
         List<Category> childCategories,
         Map<Long, Boolean> existsGuideMap,
-        Map<Long, Boolean> existsTemplateMap) {
+        Map<Long, Boolean> existsTemplateMap
+    ) {
 
         return AdminCategoryGetAllResponse.builder()
             .categories(

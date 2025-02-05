@@ -38,13 +38,15 @@ public class MemberPersistenceAdapter {
     public Page<Member> searchMember(
         final ApplicationPageRequest pageRequest,
         final Role role,
-        final String email,
-        final String name,
-        final String department) {
-
+        final String query
+    ) {
         Pageable pageable = pageRequest.toPageableNoSort();
 
-        Page<MemberEntity> memberEntityPage = memberRepository.searchMember(pageable, role, email, name, department);
+        Page<MemberEntity> memberEntityPage = memberRepository.searchMember(
+            role,
+            query,
+            pageable
+        );
 
         return memberEntityPage.map(this.memberPersistenceMapper::toDomain);
     }

@@ -27,16 +27,12 @@ public class MemberGetService {
     public Page<Member> searchMember(
         ApplicationPageRequest pageRequest,
         Role role,
-        String email,
-        String name,
-        String department
+        String query
     ) {
         return memberPersistenceAdapter.searchMember(
             pageRequest,
             role,
-            email,
-            name,
-            department
+            query
         );
     }
 

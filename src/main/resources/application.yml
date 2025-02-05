@@ -43,6 +43,7 @@ logging:
     root: INFO
   structured:
     format:
+      console: ecs
       file: ecs
   file:
     path: ${LOG_FILE_PATH:./logs}
