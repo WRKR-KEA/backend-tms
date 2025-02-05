@@ -13,6 +13,8 @@ import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.UUIDGenerator;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
 import com.wrkr.tickety.infrastructure.email.EmailUtil;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +26,27 @@ public class MemberCreateUseCase {
     private final MemberSaveService memberSaveService;
     private final EmailUtil emailUtil;
 
-    public MemberPkResponse createMember(MemberCreateRequest memberCreateRequest) {
-        String tempPassword = UUIDGenerator.generateUUID().substring(0, 12);
+    public List<MemberPkResponse> createMember(List<MemberCreateRequest> memberCreateRequests) {
+        List<MemberPkResponse> memberPkResponses = new ArrayList<>();
 
-        String encryptedPassword = PasswordEncoderUtil.encodePassword(tempPassword);
-        Member createdMember = memberSaveService.save(MemberMapper.toMember(memberCreateRequest, encryptedPassword));
+        for (MemberCreateRequest memberCreateRequest : memberCreateRequests) {
+            String tempPassword = UUIDGenerator.generateUUID().substring(0, 12);
+            String encryptedPassword = PasswordEncoderUtil.encodePassword(tempPassword);
 
-        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(createdMember.getEmail(), EmailConstants.TEMP_PASSWORD_SUBJECT, null);
-        emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.TYPE_PASSWORD);
+            Member createdMember = memberSaveService.save(MemberMapper.toMember(memberCreateRequest, encryptedPassword));
 
-        return MemberMapper.toMemberPkResponse(PkCrypto.encrypt(createdMember.getMemberId()));
+            EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(
+                createdMember.getEmail(),
+                EmailConstants.TEMP_PASSWORD_SUBJECT,
+                null
+            );
+            emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.TYPE_PASSWORD);
+
+            MemberPkResponse memberPkResponse = MemberMapper.toMemberPkResponse(PkCrypto.encrypt(createdMember.getMemberId()));
+
+            memberPkResponses.add(memberPkResponse);
+        }
+
+        return memberPkResponses;
     }
 }
