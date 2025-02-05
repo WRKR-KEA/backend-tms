@@ -3,10 +3,10 @@ package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 import static com.wrkr.tickety.domains.ticket.application.mapper.TicketHistoryMapper.mapToTicketHistory;
 import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.toTicketPkResponse;
 
-import com.wrkr.tickety.domains.alarm.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
+import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
