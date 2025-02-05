@@ -12,8 +12,8 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUM
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketDelegateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketPinRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;

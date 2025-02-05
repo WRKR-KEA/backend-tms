@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketPinRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -21,10 +21,10 @@ public class ManagerTicketPinUseCase {
 
     public TicketPkResponse pinTicket(TicketPinRequest request) {
         Ticket requestTicket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(request.ticketId()));
-        if(requestTicket.getManager() == null){
+        if (requestTicket.getManager() == null) {
             throw new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_FOUND);
         }
-        if(!requestTicket.getManager().getMemberId().equals(PkCrypto.decrypt(request.managerId()))){
+        if (!requestTicket.getManager().getMemberId().equals(PkCrypto.decrypt(request.managerId()))) {
             throw new ApplicationException(TicketErrorCode.UNAUTHORIZED_ACCESS);
         }
         Ticket pinnedTicket = ticketUpdateService.pinTicket(requestTicket);
