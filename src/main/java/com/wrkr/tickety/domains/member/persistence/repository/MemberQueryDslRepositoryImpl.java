@@ -60,15 +60,15 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
     }
 
     private BooleanExpression containsEmailIgnoreCase(String email) {
-        return email.isBlank() ? null : memberEntity.email.containsIgnoreCase(email);
+        return email == null || email.isBlank() ? null : memberEntity.email.containsIgnoreCase(email);
     }
 
     private BooleanExpression containsNameIgnoreCase(String name) {
-        return name == null || name.isEmpty() ? null : memberEntity.name.containsIgnoreCase(name);
+        return name == null || name.isBlank() ? null : memberEntity.name.containsIgnoreCase(name);
     }
 
     private BooleanExpression containsDepartmentIgnoreCase(String department) {
-        return department.isBlank() ? null : memberEntity.department.containsIgnoreCase(department);
+        return department == null || department.isBlank() ? null : memberEntity.department.containsIgnoreCase(department);
     }
 
     private BooleanExpression isDeletedEq(Boolean isDeleted) {
