@@ -91,11 +91,11 @@ public class ExcelUtil {
     private <T> List<T> parseBody(Map<String, Integer> headers, Sheet sheet, Class<T> clazz) {
         List<T> objects = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
+        String methodName = getMethodName();
 
         try {
             clazz.getDeclaredConstructor().setAccessible(true);
         } catch (NoSuchMethodException e) {
-            String methodName = getMethodName();
             log.error("Error in method {}: Failed to access default constructor for class {}: {}",
                 methodName, clazz.getName(), e.getMessage());
             throw new ApplicationException(INTERNAL_SERVER_ERROR);
