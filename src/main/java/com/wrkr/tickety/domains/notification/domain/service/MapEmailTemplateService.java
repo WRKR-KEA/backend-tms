@@ -24,4 +24,10 @@ public class MapEmailTemplateService {
         context.setVariable("nickname", managerNickname);
         return templateEngine.process(type, context);
     }
+
+    public String setCommentCreateContext(String ticketSerialNumber, String type) {
+        Context context = new Context();
+        context.setVariable("ticketSerialNumber", ticketSerialNumber);
+        return templateEngine.process(type, context);
+    }
 }
