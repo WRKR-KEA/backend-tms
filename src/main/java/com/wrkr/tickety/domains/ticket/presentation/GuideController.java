@@ -62,7 +62,7 @@ public class GuideController {
     public ApplicationResponse<PkResponse> updateGuide(
         @AuthenticationPrincipal Member member,
         @PathVariable String cryptoGuideId,
-        @RequestBody GuideUpdateRequest guideUpdateRequest
+        @ModelAttribute GuideUpdateRequest guideUpdateRequest
     ) {
         PkResponse pkResponse = guideUpdateUseCase.modifyGuide(PkCrypto.decrypt(cryptoGuideId), guideUpdateRequest);
         return ApplicationResponse.onSuccess(pkResponse);
