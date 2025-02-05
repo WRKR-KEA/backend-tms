@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.ticket.application.dto.request.ticket;
+package com.wrkr.tickety.domains.ticket.application.dto.request.Ticket;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
