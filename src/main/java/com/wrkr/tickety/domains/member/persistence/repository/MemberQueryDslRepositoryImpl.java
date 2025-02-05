@@ -22,15 +22,14 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
 
     // TODO: like 쿼리 사용하지 않도록 개선, No offset 페이징도 가능할지 생각해보기, Projection 기반으로 리팩토링
     @Override
-    public Page<MemberEntity> searchMember(Pageable pageable, Role role, String email, String name, String department) {
+    public Page<MemberEntity> searchMember(Role role, String query, Pageable pageable) {
 
         List<MemberEntity> memberEntityList = jpaQueryFactory
             .selectFrom(memberEntity)
             .where(
                 roleEq(role),
-                containsEmailIgnoreCase(email),
-                containsNameIgnoreCase(name),
-                containsDepartmentIgnoreCase(department)
+                emailOrNameOrDepartmentContainsIgnoreCase(query),
+                isDeletedEq(false)
             )
             .orderBy(memberEntity.memberId.desc())
             .offset(pageable.getOffset())
@@ -42,9 +41,7 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
             .from(memberEntity)
             .where(
                 roleEq(role),
-                containsEmailIgnoreCase(email),
-                containsNameIgnoreCase(name),
-                containsDepartmentIgnoreCase(department),
+                emailOrNameOrDepartmentContainsIgnoreCase(query),
                 isDeletedEq(false)
             );
 
@@ -59,16 +56,10 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
         return role == null ? null : memberEntity.role.eq(role);
     }
 
-    private BooleanExpression containsEmailIgnoreCase(String email) {
-        return email == null || email.isBlank() ? null : memberEntity.email.containsIgnoreCase(email);
-    }
-
-    private BooleanExpression containsNameIgnoreCase(String name) {
-        return name == null || name.isBlank() ? null : memberEntity.name.containsIgnoreCase(name);
-    }
-
-    private BooleanExpression containsDepartmentIgnoreCase(String department) {
-        return department == null || department.isBlank() ? null : memberEntity.department.containsIgnoreCase(department);
+    private BooleanExpression emailOrNameOrDepartmentContainsIgnoreCase(String query) {
+        return query == null || query.isBlank() ? null : memberEntity.email.containsIgnoreCase(query)
+            .or(memberEntity.name.containsIgnoreCase(query))
+            .or(memberEntity.department.containsIgnoreCase(query));
     }
 
     private BooleanExpression isDeletedEq(Boolean isDeleted) {

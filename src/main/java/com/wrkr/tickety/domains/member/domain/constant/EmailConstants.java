@@ -9,4 +9,6 @@ public class EmailConstants {
     public static final String TICKET_DELEGATE_TO_USER = "delegateEmailToUser";
     public static final String TICKET_DELEGATE_TO_NEW_MANAGER = "delegateEmailToNewManager";
     public static final String TICKET_DELEGATE_SUBJECT = "[Tickety] 티켓 담당자 변경";
+    public static final String TICKET_COMMENT = "commentCreate";
+    public static final String TICKET_COMMENT_SUBJECT = "[Tickety] 티켓 코멘트 작성";
 }

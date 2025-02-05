@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCate
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.staticstics.StatisticsGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.statistics.StatisticsGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.date.DateUtil;

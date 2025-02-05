@@ -46,10 +46,10 @@ public class ManagerTicketDelegateUseCase {
         ticketHistorySaveService.save(ticketHistory);
 
         applicationEventPublisher.publishEvent(TicketDelegateEvent.builder()
-                                                   .ticket(delegatedTicket)
-                                                   .prevManager(prevManager)
-                                                   .newManager(delegateManager)
-                                                   .build());
+            .ticket(delegatedTicket)
+            .prevManager(prevManager)
+            .newManager(delegateManager)
+            .build());
 
         return toTicketPkResponse(PkCrypto.encrypt(delegatedTicket.getTicketId()));
     }

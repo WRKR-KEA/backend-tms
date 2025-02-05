@@ -41,6 +41,11 @@ public class SendEmailNotificationService {
         sendEmail(emailCreateRequest, text);
     }
 
+    public void sendCommentCreateEmail(EmailCreateRequest emailCreateRequest, Ticket ticket, String type) {
+        String text = mapEmailTemplateService.setCommentCreateContext(ticket.getSerialNumber(), type);
+        sendEmail(emailCreateRequest, text);
+    }
+
     private void sendEmail(EmailCreateRequest emailCreateRequest, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
