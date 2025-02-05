@@ -116,7 +116,7 @@ public class ManagerTicketController {
 
     @Operation(summary = "부서 티켓 목록 엑셀 다운로드(상태별)", description = "부서 내부의 모든 티켓을 조회해서 엑셀 파일로 반환합니다.")
     @GetMapping("/tickets/department/excel")
-    public void getDepartmentAllTicketsExcel(
+    public void getDepartmentAllTicketsExcelDownload(
         HttpServletResponse response,
         @Parameter(description = "검색어 (제목, 담당자, 티켓 번호 대상)", example = "VM")
         @RequestParam(required = false) String query,
@@ -129,6 +129,7 @@ public class ManagerTicketController {
     ) {
         List<DepartmentTicketResponse> allTicketsNoPaging = ticketAllGetToExcelUseCase.getAllTicketsNoPaging(query, status, startDate, endDate);
 
+        // TODO: 파일 이름 생성 정책 정하기
         excelUtil.parseTicketDataToExcelGroupByStatus(response, allTicketsNoPaging, "ticket2025");
     }
 
