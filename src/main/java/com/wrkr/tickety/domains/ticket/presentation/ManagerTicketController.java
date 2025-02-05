@@ -20,9 +20,11 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse
 import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByTicketStatusResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByCategoryUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
@@ -73,6 +75,7 @@ public class ManagerTicketController {
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
     private final ManagerTicketPinUseCase managerTicketPinUseCase;
     private final StatisticsGetUseCase statisticsGetUseCase;
+    private final ManagerGetMainUseCase managerGetMainUseCase;
 
     @PostMapping("/statistics/{statisticsType}")
     @Operation(summary = "카테고리별 통계 조회")
@@ -209,5 +212,11 @@ public class ManagerTicketController {
         return ApplicationResponse.onSuccess(managerTicketPinUseCase.pinTicket(request));
     }
 
+    @Operation(summary = "담당자 메인 페이지 조회", description = "담당자의 메인 페이지를 조회합니다.")
+    @GetMapping("/main")
+    public ApplicationResponse<ManagerTicketMainPageResponse> getMainPage(@AuthenticationPrincipal Member member) {
+        return ApplicationResponse.onSuccess(managerGetMainUseCase.getMain(member.getMemberId()));
+
+    }
 
 }

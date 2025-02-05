@@ -59,4 +59,13 @@ public class TicketHistoryPersistenceAdapter {
             ticketEntity, ModifiedType.STATUS, status);
         return Optional.ofNullable(ticketHistoryPersistenceMapper.toDomain(ticketHistoryEntity));
     }
+
+    public List<TicketHistory> findByTicketsAndChangedStatus(List<Long> ticketIds, TicketStatus ticketStatus) {
+
+        List<TicketHistoryEntity> ticketHistoryEntities = ticketHistoryRepository.findByTicket_ticketIdInAndModifiedAndStatus(ticketIds, ModifiedType.STATUS,
+            ticketStatus);
+        return ticketHistoryEntities.stream()
+            .map(ticketHistoryPersistenceMapper::toDomain)
+            .toList();
+    }
 }
