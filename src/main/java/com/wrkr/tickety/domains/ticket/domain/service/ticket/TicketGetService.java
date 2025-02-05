@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
-import com.wrkr.tickety.global.common.dto.PageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,7 @@ public class TicketGetService {
 
     private final TicketPersistenceAdapter ticketPersistenceAdapter;
 
-    public Page<Ticket> getTicketsByUserId(Long userId, PageRequest pageRequest) {
+    public Page<Ticket> getTicketsByUserId(Long userId, ApplicationPageRequest pageRequest) {
         return ticketPersistenceAdapter.findAllByUserId(userId, pageRequest);
     }
 
@@ -25,11 +25,11 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 
-    public Page<Ticket> getTicketsByManagerFilter(Long managerId, PageRequest pageable, TicketStatus status, String query) {
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, ApplicationPageRequest pageable, TicketStatus status, String query) {
         return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query);
     }
 
-    public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, PageRequest pageable) {
+    public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageable) {
         return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
     }
 }

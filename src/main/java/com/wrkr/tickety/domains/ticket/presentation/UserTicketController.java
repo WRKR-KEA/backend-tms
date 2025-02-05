@@ -13,8 +13,8 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUs
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
-import com.wrkr.tickety.global.common.dto.PageRequest;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -55,10 +55,10 @@ public class UserTicketController {
     @GetMapping
     @Operation(summary = "사용자 요청 전체 티켓 조회", description = "사용자가 요청한 전체 티켓을 조회합니다.")
     @CustomErrorCodes(ticketErrorCodes = {})
-    public ApplicationResponse<PageResponse<TicketAllGetResponse>> getAllTickets(
+    public ApplicationResponse<ApplicationPageResponse<TicketAllGetResponse>> getAllTickets(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
-        PageRequest pageRequest
+        ApplicationPageRequest pageRequest
     ) {
         return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest));
     }

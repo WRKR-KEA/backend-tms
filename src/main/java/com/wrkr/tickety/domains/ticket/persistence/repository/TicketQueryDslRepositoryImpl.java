@@ -9,7 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
-import com.wrkr.tickety.global.common.dto.PageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,7 +27,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, PageRequest pageRequest) {
+    public Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageRequest) {
 
         var orderSpecifiers = getOrderSpecifier(pageRequest.sortType());
 
@@ -65,7 +65,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     public Page<TicketEntity> findByManagerFilters(
         Long managerId,
         TicketStatus status,
-        PageRequest pageRequest,
+        ApplicationPageRequest pageRequest,
         String query
     ) {
         var orderSpecifiers = getOrderSpecifier(pageRequest.sortType());

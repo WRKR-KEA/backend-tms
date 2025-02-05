@@ -5,7 +5,7 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdapter;
-import com.wrkr.tickety.global.common.dto.PageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ public class MemberGetService {
     }
 
     public Page<Member> searchMember(
-        PageRequest pageRequest,
+        ApplicationPageRequest pageRequest,
         Role role,
         String email,
         String name,

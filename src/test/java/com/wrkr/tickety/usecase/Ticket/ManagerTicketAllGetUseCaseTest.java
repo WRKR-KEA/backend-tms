@@ -14,8 +14,8 @@ import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
-import com.wrkr.tickety.global.common.dto.PageRequest;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.List;
@@ -62,21 +62,22 @@ public class ManagerTicketAllGetUseCaseTest {
         int page = 0;
         int size = 10;
         String search = "search";
-        PageRequest pageable = new PageRequest(page, size, SortType.NEWEST);
+        ApplicationPageRequest pageable = new ApplicationPageRequest(page, size, SortType.NEWEST);
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         List<Ticket> tickets = List.of(
             Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).build(),
             Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).build(),
             Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).build()
         );
-        PageRequest pageRequest = new PageRequest(0, 10, SortType.NEWEST);
+        ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest.toPageable(), 3);
         when(memberGetService.byMemberId(managerId)).thenReturn(member);
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
 
         // when
-        PageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable, null,
+        ApplicationPageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable,
+            null,
             search);
 
         // then

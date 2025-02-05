@@ -19,8 +19,8 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
-import com.wrkr.tickety.global.common.dto.PageRequest;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -106,10 +106,10 @@ public class AdminMemberController {
         @Parameter(name = "department", description = "부서", example = "개발팀")
     })
     @GetMapping
-    public ApplicationResponse<PageResponse<MemberInfoResponse>> getTotalMemberInfo(
+    public ApplicationResponse<ApplicationPageResponse<MemberInfoResponse>> getTotalMemberInfo(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
-        PageRequest pageRequest,
+        ApplicationPageRequest pageRequest,
         @RequestParam(required = false) Role role,
         @RequestParam(required = false) String email,
         @RequestParam(required = false) String name,

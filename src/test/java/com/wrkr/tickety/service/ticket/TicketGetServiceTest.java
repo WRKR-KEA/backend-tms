@@ -11,7 +11,7 @@ import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
-import com.wrkr.tickety.global.common.dto.PageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -62,7 +62,7 @@ public class TicketGetServiceTest {
         //given
         List<Ticket> tickets = createTestTickets();
         Long managerId = 1L;
-        PageRequest pageRequest = new PageRequest(0, 10, SortType.NEWEST);
+        ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
         String query = "Test Ticket";
 
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), tickets.size());
@@ -84,7 +84,7 @@ public class TicketGetServiceTest {
         //given
         List<Ticket> tickets = new ArrayList<>();
         Long managerId = 1L;
-        PageRequest pageRequest = new PageRequest(0, 10, SortType.NEWEST);
+        ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
         String query = "Test Ticket";
 
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), 0);
@@ -104,7 +104,7 @@ public class TicketGetServiceTest {
         //given
         List<Ticket> tickets = createTestTickets();
         Long managerId = 1L;
-        PageRequest pageRequest = new PageRequest(0, 10, SortType.NEWEST);
+        ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
         String query = "Test Ticket";
 
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), tickets.size());

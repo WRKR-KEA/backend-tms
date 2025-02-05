@@ -6,7 +6,7 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
-import com.wrkr.tickety.global.common.dto.PageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(savedEntity);
     }
 
-    public Page<Ticket> findAllByUserId(final Long userId, final PageRequest pageRequest) {
+    public Page<Ticket> findAllByUserId(final Long userId, final ApplicationPageRequest pageRequest) {
         Pageable pageable = pageRequest.toPageableNoSort();
         return ticketRepository.findAllByUserId(userId, pageable)
             .map(this.ticketPersistenceMapper::toDomain);
@@ -43,7 +43,7 @@ public class TicketPersistenceAdapter {
     }
 
     public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate,
-        final PageRequest pageRequest) {
+        final ApplicationPageRequest pageRequest) {
         Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageRequest);
         return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
     }
@@ -52,7 +52,7 @@ public class TicketPersistenceAdapter {
         return ticketRepository.findTicketCountByCategoryAndDateRange(categoryId, start, end);
     }
 
-    public Page<Ticket> findAllByManagerFilter(final Long managerId, final PageRequest pageRequest, final TicketStatus status, final String query) {
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final ApplicationPageRequest pageRequest, final TicketStatus status, final String query) {
         return ticketRepository.findByManagerFilters(managerId, status, pageRequest, query).map(this.ticketPersistenceMapper::toDomain);
     }
 }

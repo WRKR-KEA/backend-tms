@@ -33,8 +33,8 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUs
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
-import com.wrkr.tickety.global.common.dto.PageRequest;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -95,7 +95,7 @@ public class ManagerTicketController {
     @Operation(summary = "부서 전체 티켓 조회 및 검색", description = "부서 내부의 모든 티켓을 조회합니다.")
     @GetMapping("/department")
     @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
-    public ApplicationResponse<PageResponse<DepartmentTicketResponse>> getDepartmentTicket(
+    public ApplicationResponse<ApplicationPageResponse<DepartmentTicketResponse>> getDepartmentTicket(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "검색어 (제목, 담당자, 티켓 번호 대상)", example = "VM")
         @RequestParam(required = false) String query,
@@ -106,7 +106,7 @@ public class ManagerTicketController {
         @Parameter(description = "필터링 - 요청일 끝", example = "2025-01-27")
         @RequestParam(required = false) String endDate,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20,\"sortType\":\"UPDATED\"}")
-        PageRequest pageRequest
+        ApplicationPageRequest pageRequest
     ) {
         return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(query, status, startDate, endDate, pageRequest));
     }
@@ -152,16 +152,16 @@ public class ManagerTicketController {
 
     @Operation(summary = "담당자 담당 티켓 목록 요청", description = "담당자의 담당 티켓 목록을 요청합니다.")
     @GetMapping()
-    public ApplicationResponse<PageResponse<ManagerTicketAllGetResponse>> getManagerTickets(
+    public ApplicationResponse<ApplicationPageResponse<ManagerTicketAllGetResponse>> getManagerTickets(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20,\"sortType\":\"NEWEST\"}")
-        PageRequest pageRequest,
+        ApplicationPageRequest pageRequest,
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
         @Parameter(description = "검색어")
         @RequestParam(required = false) String query
     ) {
-        PageResponse<ManagerTicketAllGetResponse> response = managerTicketAllGetUseCase.getManagerTicketList(
+        ApplicationPageResponse<ManagerTicketAllGetResponse> response = managerTicketAllGetUseCase.getManagerTicketList(
             member.getMemberId(), pageRequest, status, query
         );
 
