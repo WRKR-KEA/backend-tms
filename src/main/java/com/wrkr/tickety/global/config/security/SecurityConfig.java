@@ -45,7 +45,8 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_API_ENDPOINTS = {
-        "/api/auth/login"
+        "/api/auth/login",
+        "/api/members/password/reissue"
     };
 
     @Bean
