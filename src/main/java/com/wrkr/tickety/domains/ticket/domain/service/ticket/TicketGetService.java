@@ -5,6 +5,7 @@ import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,9 @@ public class TicketGetService {
 
     public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageable) {
         return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
+    }
+
+    public Long countTicketsCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return ticketPersistenceAdapter.countByCreateAtBetween(startDate, endDate);
     }
 }

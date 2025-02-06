@@ -55,4 +55,8 @@ public class TicketPersistenceAdapter {
     public Page<Ticket> findAllByManagerFilter(final Long managerId, final ApplicationPageRequest pageRequest, final TicketStatus status, final String query) {
         return ticketRepository.findByManagerFilters(managerId, status, pageRequest, query).map(this.ticketPersistenceMapper::toDomain);
     }
+
+    public Long countByCreateAtBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return ticketRepository.countByCreatedAtBetween(startDate, endDate);
+    }
 }
