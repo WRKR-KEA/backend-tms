@@ -42,6 +42,10 @@ public class TicketHistoryGetService {
         );
     }
 
+    public Long getStatisticsByStatus(TicketStatus status, LocalDateTime startDate, LocalDateTime endDate) {
+        return ticketHistoryPersistenceAdapter.countByChangedStatus(status, startDate, endDate);
+    }
+
     public LocalDateTime getStartDate(Ticket ticket) {
         Optional<TicketHistory> ticketHistoryOptional = ticketHistoryPersistenceAdapter.findByTicketAndChangedStatus(ticket, TicketStatus.IN_PROGRESS);
         return ticketHistoryOptional.map(TicketHistory::getCreatedAt).orElse(null);

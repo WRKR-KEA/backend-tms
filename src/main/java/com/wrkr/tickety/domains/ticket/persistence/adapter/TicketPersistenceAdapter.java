@@ -81,4 +81,8 @@ public class TicketPersistenceAdapter {
         return ticketEntities.stream()
             .map(ticketPersistenceMapper::toDomain).toList();
     }
+
+    public Long countByCreateAtBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return ticketRepository.countByCreatedAtBetween(startDate, endDate);
+    }
 }

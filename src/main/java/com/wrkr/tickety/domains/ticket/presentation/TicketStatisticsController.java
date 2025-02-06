@@ -6,8 +6,10 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUM
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByStatusResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByTicketStatusResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByCategoryUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByStatusUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -34,8 +36,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/manager/statistics")
 public class TicketStatisticsController {
 
+    private final StatisticsByStatusUseCase statisticsByStatusUseCase;
     private final StatisticsByCategoryUseCase statisticsByCategoryUseCase;
     private final StatisticsGetUseCase statisticsGetUseCase;
+
+    @GetMapping("/{statisticsType}/status")
+    @Operation(summary = "일간/월간/연간 상태별 요약 조회")
+    @CustomErrorCodes(statisticsErrorCodes = {ILLEGAL_STATISTICS_OPTION})
+    public ApplicationResponse<StatisticsByStatusResponse> getStatisticsByStatusDaily(
+        @AuthenticationPrincipal Member member,
+        @Parameter(description = "통계 타입 (DAILY | MONTHLY | YEARLY)", example = "daily", required = true) @PathVariable String statisticsType,
+        @Parameter(description = "통계를 확인하고자 하는 기준일", example = "2025-01-01") @RequestParam(required = false) String date
+    ) {
+        return ApplicationResponse.onSuccess(statisticsByStatusUseCase.getStatisticsByStatus(StatisticsType.from(statisticsType), date));
+    }
 
     @PostMapping("/{statisticsType}")
     @Operation(summary = "카테고리별 통계 조회")

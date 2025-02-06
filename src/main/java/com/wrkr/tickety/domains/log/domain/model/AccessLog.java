@@ -1,46 +1,33 @@
 package com.wrkr.tickety.domains.log.domain.model;
 
-import jakarta.persistence.*;
+import com.wrkr.tickety.domains.log.domain.constant.ActionType;
+import com.wrkr.tickety.global.model.BaseTime;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-
-@Entity
 @Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
-@Table(name = "access_log")
-public class AccessLog {
+public class AccessLog extends BaseTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accessLogId;
-
-    @Column(nullable = false)
     private String nickname;
-
-    @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
     private String ip;
-
-    @Column(nullable = false, updatable = false)
+    private ActionType action;
     private LocalDateTime accessAt;
+    private Boolean isSuccess;
 
     @Builder
-    public AccessLog(String nickname, String email, String ip) {
+    public AccessLog(Long accessLogId, String nickname, String ip, ActionType action, LocalDateTime accessAt, Boolean isSuccess) {
+        this.accessLogId = accessLogId;
         this.nickname = nickname;
-        this.email = email;
         this.ip = ip;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.accessAt = LocalDateTime.now();
+        this.action = action;
+        this.accessAt = accessAt;
+        this.isSuccess = isSuccess;
     }
 }
