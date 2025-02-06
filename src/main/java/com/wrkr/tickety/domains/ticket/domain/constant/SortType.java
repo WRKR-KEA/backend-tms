@@ -18,6 +18,10 @@ public enum SortType {
 
     @JsonCreator
     public static SortType from(String type) {
+        if (type == null || type.isBlank()) {
+            return UPDATED;
+        }
+
         return Arrays.stream(values())
             .filter(statisticsType -> statisticsType.name().equalsIgnoreCase(type))
             .findFirst()
