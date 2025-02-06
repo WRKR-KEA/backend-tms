@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.persistence.repository;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
-import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
@@ -15,13 +14,5 @@ public interface TicketQueryDslRepository {
 
     List<DepartmentTicketPreResponse> getAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate);
 
-    Page<TicketEntity> findByManagerFilters(
-        @Param("managerId") Long managerId,
-        @Param("status") TicketStatus status,
-        Pageable pageable,
-        @Param("search") String search,
-        @Param("sort") SortType sortType
-    );
-    
     Page<TicketEntity> findByManagerFilters(Long managerId, TicketStatus status, ApplicationPageRequest pageable, String query);
 }

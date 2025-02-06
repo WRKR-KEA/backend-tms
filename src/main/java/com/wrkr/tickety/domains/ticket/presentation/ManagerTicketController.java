@@ -26,8 +26,8 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTick
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetToExcelUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketPinUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetToExcelUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCompleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
@@ -231,3 +231,4 @@ public class ManagerTicketController {
     public ApplicationResponse<TicketPkResponse> pinTicket(@RequestBody TicketPinRequest request) {
         return ApplicationResponse.onSuccess(managerTicketPinUseCase.pinTicket(request));
     }
+}
