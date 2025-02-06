@@ -16,6 +16,7 @@ public class AuthMapper {
             .name(member.getName())
             .role(member.getRole())
             .profileImage(member.getProfileImage())
+            .isTempPassword(member.getIsTempPassword())
             .build();
     }
 }
