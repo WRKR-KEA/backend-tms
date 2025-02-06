@@ -46,8 +46,7 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_API_ENDPOINTS = {
-        "/api/auth/login",
-        "/api/members/password/reissue"
+        "/api/auth/login"
     };
 
     @Bean
@@ -85,7 +84,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000",
+            "http://localhost:8080"
+        ));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
