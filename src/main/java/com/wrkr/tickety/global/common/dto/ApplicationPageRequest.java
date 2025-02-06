@@ -26,7 +26,6 @@ public record ApplicationPageRequest(
     }
 
     public Pageable toPageable() {
-
         Sort sort = switch (this.sortType) {
             case NEWEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case OLDEST -> Sort.by(Sort.Direction.ASC, "createdAt");
