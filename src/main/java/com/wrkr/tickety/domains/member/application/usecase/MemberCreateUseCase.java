@@ -16,11 +16,13 @@ import com.wrkr.tickety.infrastructure.email.EmailUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MemberCreateUseCase {
 
     private final MemberSaveService memberSaveService;
@@ -41,6 +43,9 @@ public class MemberCreateUseCase {
                 null
             );
             emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.TYPE_PASSWORD);
+
+            log.info("**** 회원 등록 됨 ****");
+            log.info("이메일 : {}, 임시 비밀번호 : {}", createdMember.getEmail(), tempPassword);
 
             MemberPkResponse memberPkResponse = MemberMapper.toMemberPkResponse(PkCrypto.encrypt(createdMember.getMemberId()));
 
