@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.wrkr.tickety.domains.attachment.domain.service.GuideAttachmentGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
@@ -65,6 +66,9 @@ public class GuideUseCaseTest {
     @Mock
     private GuideGetService guideGetService;
 
+    @Mock
+    private GuideAttachmentGetService guideAttachmentGetService;
+
     @InjectMocks
     private GuideGetUseCase guideGetUseCase;
 
@@ -104,7 +108,7 @@ public class GuideUseCaseTest {
             .build();
 
         given(guideGetService.getGuideContentByCategory(categoryId)).willReturn(guideDomain);
-        given(guideMapper.guideToGuideResponse(guideDomain)).willReturn(guideResponseByCategory);
+        given(guideMapper.guideToGuideResponse(guideDomain, guideAttachmentGetService)).willReturn(guideResponseByCategory);
 
         // when
         GuideResponse response = guideGetUseCase.getGuide(categoryId);

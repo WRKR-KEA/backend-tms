@@ -75,9 +75,10 @@ public class S3ApiService {
      */
     public Boolean deleteObject(String objectKey) {
         try {
+            String finalObjectKey = objectKey.substring(objectKey.indexOf(bucketName) + bucketName.length() + 1);
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
-                .key(objectKey)
+                .key(finalObjectKey)
                 .build();
 
             s3Client.deleteObject(deleteObjectRequest);
