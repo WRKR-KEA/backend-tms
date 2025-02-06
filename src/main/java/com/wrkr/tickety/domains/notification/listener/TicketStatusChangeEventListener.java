@@ -1,14 +1,14 @@
 package com.wrkr.tickety.domains.notification.listener;
 
-import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
-import com.wrkr.tickety.domains.member.domain.constant.EmailConstants;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
+import com.wrkr.tickety.infrastructure.email.EmailConstants;
+import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

@@ -25,6 +25,11 @@ public class CategoryGetService {
             .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
     }
 
+    public Category getChildrenCategory(Long categoryId) {
+        return categoryPersistenceAdapter.findChildrenCategoryById(categoryId)
+            .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
+    }
+
     public List<Category> getCategories(List<Long> categoryIds) {
         return categoryPersistenceAdapter.findByIds(categoryIds);
     }

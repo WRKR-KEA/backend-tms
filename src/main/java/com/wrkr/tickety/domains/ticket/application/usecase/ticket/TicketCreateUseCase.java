@@ -34,7 +34,7 @@ public class TicketCreateUseCase {
     private final TicketHistorySaveService ticketHistorySaveService;
 
     public TicketPkResponse createTicket(TicketCreateRequest request, Long userId) {
-        Category category = categoryGetService.getParentCategory(decrypt(request.categoryId()));
+        Category category = categoryGetService.getChildrenCategory(decrypt(request.categoryId()));
 
         Member member = UserGetService.byMemberId(userId);
 
@@ -46,7 +46,7 @@ public class TicketCreateUseCase {
 
         ModifiedType modifiedType = ModifiedType.STATUS;
         TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket,
-                                                                             modifiedType);
+            modifiedType);
         ticketHistorySaveService.save(ticketHistory);
 
         return toTicketPkResponse(encrypt(savedTicket.getTicketId()));

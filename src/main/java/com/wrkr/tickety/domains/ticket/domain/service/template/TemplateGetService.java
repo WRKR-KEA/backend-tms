@@ -20,12 +20,12 @@ public class TemplateGetService {
     private final TemplatePersistenceAdapter templatePersistenceAdapter;
 
     public Map<Long, Boolean> existsByCategoryIds(List<Long> categoryIds) {
-        List<Long> existsTemplateIds = templatePersistenceAdapter.existsByCategoryIds(categoryIds);
+        List<Template> existsTemplateIds = templatePersistenceAdapter.existsByCategoryIds(categoryIds);
 
-        return categoryIds.stream()
+        return existsTemplateIds.stream()
             .collect(Collectors.toMap(
-                categoryId -> categoryId,
-                existsTemplateIds::contains
+                template -> template.getCategory().getCategoryId(),
+                template -> true
             ));
     }
 

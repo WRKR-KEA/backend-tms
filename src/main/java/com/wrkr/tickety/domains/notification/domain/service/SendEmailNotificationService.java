@@ -1,10 +1,10 @@
 package com.wrkr.tickety.domains.notification.domain.service;
 
-import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
+import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

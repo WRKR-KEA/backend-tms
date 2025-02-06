@@ -28,12 +28,13 @@ public class GuideGetService {
 
 
     public Map<Long, Boolean> existsByCategoryIds(List<Long> categoryIds) {
-        List<Long> existsGuideIds = guidePersistenceAdapter.existsByCategoryIds(categoryIds);
+        List<Guide> existsGuides = guidePersistenceAdapter.existsByCategoryIds(categoryIds);
 
-        return categoryIds.stream()
+        return existsGuides.stream()
             .collect(Collectors.toMap(
-                categoryId -> categoryId,
-                existsGuideIds::contains
+                guide -> guide.getCategory().getCategoryId(),
+                guide -> true
             ));
+
     }
 }

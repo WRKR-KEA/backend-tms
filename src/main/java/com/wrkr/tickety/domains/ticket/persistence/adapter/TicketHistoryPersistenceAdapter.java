@@ -63,4 +63,13 @@ public class TicketHistoryPersistenceAdapter {
     public Long countByChangedStatus(TicketStatus status, LocalDateTime startDate, LocalDateTime endDate) {
         return ticketHistoryRepository.countByStatusAndCreatedAtBetweenAndModified(status, startDate, endDate, ModifiedType.STATUS);
     }
+
+    public List<TicketHistory> findByTicketsAndChangedStatus(List<Long> ticketIds, TicketStatus ticketStatus) {
+
+        List<TicketHistoryEntity> ticketHistoryEntities = ticketHistoryRepository.findByTicket_ticketIdInAndModifiedAndStatus(ticketIds, ModifiedType.STATUS,
+            ticketStatus);
+        return ticketHistoryEntities.stream()
+            .map(ticketHistoryPersistenceMapper::toDomain)
+            .toList();
+    }
 }

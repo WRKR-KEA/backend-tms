@@ -6,8 +6,12 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAll
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.PinTickets;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.UserTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -16,6 +20,8 @@ import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 
 public class TicketMapper {
@@ -121,4 +127,71 @@ public class TicketMapper {
             .build()
         );
     }
+
+    public static ManagerTicketMainPageResponse toManagerTicketMainPageResponse(List<Ticket> pinTickets, List<Ticket> requestTickets) {
+        return ManagerTicketMainPageResponse.builder()
+            .pinTickets(pinTickets.stream().map(ticket -> PinTickets.builder()
+                .ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+                .ticketSerialNumber(ticket.getSerialNumber())
+                .status(ticket.getStatus())
+                .title(ticket.getTitle())
+                .userNickname(ticket.getUser().getNickname())
+                .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
+                .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+                .build()
+            ).toList())
+            .requestTickets(requestTickets.stream().map(ticket -> ManagerTicketMainPageResponse.requestTickets.builder()
+                .ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+                .ticketSerialNumber(ticket.getSerialNumber())
+                .status(ticket.getStatus())
+                .title(ticket.getTitle())
+                .userNickname(ticket.getUser().getNickname())
+                .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
+                .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+                .build()
+            ).toList())
+            .build();
+    }
+
+    public static DepartmentTicketResponse mapToDepartmentTicketResponse(DepartmentTicketPreResponse departmentTicketPreResponse) {
+        return DepartmentTicketResponse.builder()
+            .ticketId(PkCrypto.encrypt(departmentTicketPreResponse.ticketId()))
+            .ticketSerialNumber(departmentTicketPreResponse.ticketSerialNumber())
+            .status(departmentTicketPreResponse.status())
+            .title(departmentTicketPreResponse.title())
+            .userNickname(departmentTicketPreResponse.userNickname())
+            .managerNickname(departmentTicketPreResponse.managerNickname())
+            .requestedDate(departmentTicketPreResponse.requestedDate().format(DateTimeFormatter.ISO_DATE))
+            .updatedDate(departmentTicketPreResponse.updatedDate().format(DateTimeFormatter.ISO_DATE))
+            .build();
+    }
+
+    public static UserTicketMainPageResponse toUserTicketMainPageResponse(
+        List<Ticket> recentTickets,
+        Map<Long, LocalDateTime> startDatesMap,
+        Map<Long, LocalDateTime> completeDatesMap) {
+
+        return UserTicketMainPageResponse.builder()
+            .recentTickets(recentTickets.stream().map(ticket -> UserTicketMainPageResponse.recentTickets.builder()
+                .ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+                .ticketSerialNumber(ticket.getSerialNumber())
+                .status(ticket.getStatus())
+                .title(ticket.getTitle())
+                .userNickname(ticket.getUser().getNickname())
+                .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
+                .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+                .ticketTimeInfo(UserTicketMainPageResponse.recentTickets.ticketTimeInfo.builder()
+                    .createdAt(ticket.getCreatedAt())
+                    .updatedAt(ticket.getUpdatedAt())
+                    .startedAt(startDatesMap.get(ticket.getTicketId()))
+                    .endedAt(completeDatesMap.get(ticket.getTicketId()))
+                    .build()
+                )
+                .build()
+            ).toList())
+            .build();
+
+    }
+
+
 }

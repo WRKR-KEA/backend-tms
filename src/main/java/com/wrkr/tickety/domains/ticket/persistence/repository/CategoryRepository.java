@@ -22,4 +22,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     List<CategoryEntity> findByIsDeletedFalseAndParentIsNull();
 
     List<CategoryEntity> findByParent_CategoryIdIn(List<Long> categoryIds);
+
+    Optional<CategoryEntity> findByCategoryIdAndIsDeletedFalseAndParentIsNotNull(Long categoryId);
 }
