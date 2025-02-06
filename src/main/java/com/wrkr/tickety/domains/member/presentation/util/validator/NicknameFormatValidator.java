@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class NicknameFormatValidator implements ConstraintValidator<NicknameFormat, String> {
 
-    private static final String NICKNAME_REGEX = "^(?=.*[a-z]{2,})(?=.*\\.[a-z]{2,}).{5,15}$";
+    private static final String NICKNAME_REGEX = "^[a-z]{3,10}\\.[a-z]{1,5}$";
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEX);
 
     @Override
