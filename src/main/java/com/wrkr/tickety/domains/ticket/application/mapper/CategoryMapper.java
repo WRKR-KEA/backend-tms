@@ -38,7 +38,7 @@ public class CategoryMapper {
         Map<Long, Boolean> existsGuideMap,
         Map<Long, Boolean> existsTemplateMap
     ) {
-
+        System.out.println();
         return AdminCategoryGetAllResponse.builder()
             .categories(
                 parentCategories.stream()
@@ -46,8 +46,8 @@ public class CategoryMapper {
                         .categoryId(encrypt(category.getCategoryId()))
                         .name(category.getName())
                         .seq(category.getSeq())
-                        .isExistsGuide(existsGuideMap.get(category.getCategoryId()))
-                        .isExistsTemplate(existsTemplateMap.get(category.getCategoryId()))
+                        .isExistsGuide(existsGuideMap.get(category.getCategoryId()) != null && existsGuideMap.get(category.getCategoryId()))
+                        .isExistsTemplate(existsTemplateMap.get(category.getCategoryId()) != null && existsTemplateMap.get(category.getCategoryId()))
                         .childCategories(
                             childCategories.stream()
                                 .filter(childCategory -> childCategory.getParent().getCategoryId().equals(category.getCategoryId()))
