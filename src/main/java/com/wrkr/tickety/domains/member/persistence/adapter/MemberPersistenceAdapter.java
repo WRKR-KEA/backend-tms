@@ -66,4 +66,10 @@ public class MemberPersistenceAdapter {
             .map(this.memberPersistenceMapper::toDomain)
             .toList();
     }
+
+    public Page<Member> getAllManagersPage(final ApplicationPageRequest pageRequest) {
+        Pageable pageable = pageRequest.toPageableNoSort();
+        Page<MemberEntity> managerPage = this.memberRepository.findByRoleAndIsDeletedFalse(Role.MANAGER, pageable);
+        return managerPage.map(this.memberPersistenceMapper::toDomain);
+    }
 }

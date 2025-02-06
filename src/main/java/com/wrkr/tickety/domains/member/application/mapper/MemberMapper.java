@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.member.application.mapper;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.ManagerGetAllManagerResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.ManagerGetAllManagerResponse.Managers;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.domain.model.Member;
@@ -64,6 +65,17 @@ public class MemberMapper {
                         .build()
                     ).toList()
             )
+            .build();
+    }
+
+    public static Managers toManagerResponse(Member member, Map<Long, Long> inProgressTicketCount) {
+        return Managers.builder()
+            .memberId(PkCrypto.encrypt(member.getMemberId()))
+            .email(member.getEmail())
+            .nickname(member.getNickname())
+            .position(member.getPosition())
+            .phoneNumber(member.getPhone())
+            .ticketAmount(inProgressTicketCount.getOrDefault(member.getMemberId(), 0L))
             .build();
     }
 }

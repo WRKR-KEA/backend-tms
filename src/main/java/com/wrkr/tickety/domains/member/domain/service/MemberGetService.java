@@ -58,4 +58,8 @@ public class MemberGetService {
     public List<Member> getAllManagers() {
         return memberPersistenceAdapter.getAllManagers();
     }
+
+    public Page<Member> getAllManagersPage(ApplicationPageRequest pageRequest) {
+        return memberPersistenceAdapter.getAllManagersPage(pageRequest);
+    }
 }
