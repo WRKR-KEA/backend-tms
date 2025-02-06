@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
@@ -33,6 +34,10 @@ public class TicketGetService {
 
     public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageable) {
         return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
+    }
+
+    public List<DepartmentTicketPreResponse> getDepartmentAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
+        return ticketPersistenceAdapter.findAllTicketsNoPaging(query, status, startDate, endDate);
     }
 
     public Long countTicketsCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {

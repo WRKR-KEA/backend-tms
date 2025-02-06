@@ -6,6 +6,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAll
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
@@ -149,6 +150,19 @@ public class TicketMapper {
                 .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
                 .build()
             ).toList())
+            .build();
+    }
+
+    public static DepartmentTicketResponse mapToDepartmentTicketResponse(DepartmentTicketPreResponse departmentTicketPreResponse) {
+        return DepartmentTicketResponse.builder()
+            .ticketId(PkCrypto.encrypt(departmentTicketPreResponse.ticketId()))
+            .ticketSerialNumber(departmentTicketPreResponse.ticketSerialNumber())
+            .status(departmentTicketPreResponse.status())
+            .title(departmentTicketPreResponse.title())
+            .userNickname(departmentTicketPreResponse.userNickname())
+            .managerNickname(departmentTicketPreResponse.managerNickname())
+            .requestedDate(departmentTicketPreResponse.requestedDate().format(DateTimeFormatter.ISO_DATE))
+            .updatedDate(departmentTicketPreResponse.updatedDate().format(DateTimeFormatter.ISO_DATE))
             .build();
     }
 

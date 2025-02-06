@@ -1,5 +1,7 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
@@ -47,6 +49,11 @@ public class TicketPersistenceAdapter {
         final ApplicationPageRequest pageRequest) {
         Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageRequest);
         return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
+    }
+
+    public List<DepartmentTicketPreResponse> findAllTicketsNoPaging(final String query, final TicketStatus status, final LocalDate startDate,
+        final LocalDate endDate) {
+        return ticketRepository.getAllTicketsNoPaging(query, status, startDate, endDate);
     }
 
     public Long findTicketCountByCategoryAndDateRange(final Long categoryId, final LocalDateTime start, final LocalDateTime end) {

@@ -18,17 +18,23 @@ import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCa
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
+import com.wrkr.tickety.global.annotation.file.FileExtension;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
+import com.wrkr.tickety.global.utils.excel.ExcelUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,17 +59,37 @@ public class AdminMemberController {
     private final MemberInfoUpdateUseCase memberInfoUpdateUseCase;
     private final MemberInfoGetUseCase memberInfoGetUseCase;
     private final MemberInfoSearchUseCase memberInfoSearchUseCase;
+    private final ExcelUtil excelUtil;
 
     // TODO: Image 처리 방식 논의 필요(Multipart or ImageUrl DTO로 바로 받기)
     @Operation(summary = "관리자 - 회원 등록", description = "회원을 등록 시 이메일로 임시 비밀번호를 발급합니다.")
     @CustomErrorCodes(memberErrorCodes = {INVALID_EMAIL_FORMAT, ALREADY_EXIST_EMAIL, INVALID_PHONE_FORMAT, INVALID_ROLE})
     @PostMapping
-    public ApplicationResponse<MemberPkResponse> createMember(
+    public ApplicationResponse<List<MemberPkResponse>> createMember(
         @AuthenticationPrincipal Member member,
         @RequestBody @Valid MemberCreateRequest memberCreateRequest
     ) {
-        MemberPkResponse memberIdDTO = memberCreateUseCase.createMember(memberCreateRequest);
-        return ApplicationResponse.onSuccess(memberIdDTO);
+        List<MemberCreateRequest> memberCreateRequests = new ArrayList<>();
+        memberCreateRequests.add(memberCreateRequest);
+
+        List<MemberPkResponse> memberPkResponses = memberCreateUseCase.createMember(memberCreateRequests);
+
+        return ApplicationResponse.onSuccess(memberPkResponses);
+    }
+
+    // TODO: 비즈니스 로직에서 request 객체 필드 검증 필요, csv 파일도 업로드할 수 있도록 개선 가능
+    @Operation(summary = "관리자 - 회원 등록(엑셀 파일 업로드)", description = "정해진 양식의 엑셀 파일 내용을 읽어 회원을 등록합니다.")
+    @CustomErrorCodes(memberErrorCodes = {INVALID_EMAIL_FORMAT, ALREADY_EXIST_EMAIL, INVALID_PHONE_FORMAT, INVALID_ROLE})
+    @PostMapping(value = "/excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApplicationResponse<List<MemberPkResponse>> createMemberExcelUpload(
+        @AuthenticationPrincipal Member member,
+        @Parameter(description = "엑셀 파일")
+        @RequestParam @FileExtension(acceptedExtensions = {"xls", "xlsx"}) @NotNull(message = "업로드할 파일을 선택해주세요.") MultipartFile file
+    ) {
+        List<MemberCreateRequest> memberCreateRequests = excelUtil.parseExcelToObject(file, MemberCreateRequest.class);
+        List<MemberPkResponse> memberPkResponses = memberCreateUseCase.createMember(memberCreateRequests);
+
+        return ApplicationResponse.onSuccess(memberPkResponses);
     }
 
     @Operation(summary = "관리자 - 회원 정보 수정", description = "회원 정보를 수정합니다.")
@@ -96,7 +123,7 @@ public class AdminMemberController {
         return ApplicationResponse.onSuccess(memberInfoDTO);
     }
 
-    // TODO: ConstraintViolationException 제대로 처리되지 않는 문제 해결 필요, 페이징 공통 응답 클래스 이용
+    // TODO: ConstraintViolationException 제대로 처리되지 않는 문제 해결 필요
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
     @CustomErrorCodes(commonErrorCodes = {CommonErrorCode.BAD_REQUEST})
     @Parameters({
