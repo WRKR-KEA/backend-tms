@@ -7,6 +7,7 @@ import com.wrkr.tickety.domains.attachment.domain.service.S3ApiService;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.CommentRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.domain.event.CommentCreateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
@@ -19,6 +20,7 @@ import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +33,8 @@ public class CommentCreateUseCase {
     private final CommentSaveService commentSaveService;
     private final CommentAttachmentUploadService commentAttachmentUploadService;
     private final S3ApiService s3ApiService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
 
     public PkResponse createComment(Member member, Long ticketId, CommentRequest request) {
 
@@ -65,6 +69,10 @@ public class CommentCreateUseCase {
             commentAttachmentUploadService.saveAll(attachments);
         }
 
+        applicationEventPublisher.publishEvent(CommentCreateEvent.builder()
+                                                   .comment(savedComment)
+                                                   .build());
+      
         return PkResponse.builder()
             .id(PkCrypto.encrypt(savedComment.getCommentId()))
             .build();

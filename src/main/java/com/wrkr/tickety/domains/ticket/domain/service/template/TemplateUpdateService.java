@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.template;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateUpdateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.template.AdminTemplateUpdateRequest;
 import com.wrkr.tickety.domains.ticket.domain.model.Template;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TemplatePersistenceAdapter;
 import lombok.RequiredArgsConstructor;

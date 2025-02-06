@@ -9,7 +9,7 @@ public interface TemplateRepository extends JpaRepository<TemplateEntity, Long> 
 
     Boolean existsByCategory_CategoryId(Long categoryId);
 
-    List<Long> findByCategory_CategoryIdIn(List<Long> categoryIds);
+    List<TemplateEntity> findByCategory_CategoryIdIn(List<Long> categoryIds);
 
     Optional<TemplateEntity> findByCategory_CategoryId(Long categoryId);
 }

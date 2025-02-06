@@ -34,8 +34,9 @@ public class TemplatePersistenceAdapter {
         return templatePersistenceMapper.toDomain(deleteTemplateEntity);
     }
 
-    public List<Long> existsByCategoryIds(List<Long> categoryIds) {
-        return templateRepository.findByCategory_CategoryIdIn(categoryIds);
+    public List<Template> existsByCategoryIds(List<Long> categoryIds) {
+        List<TemplateEntity> templateEntities = templateRepository.findByCategory_CategoryIdIn(categoryIds);
+        return templateEntities.stream().map(this.templatePersistenceMapper::toDomain).toList();
     }
 
     public Boolean existsByCategoryId(Long categoryId) {

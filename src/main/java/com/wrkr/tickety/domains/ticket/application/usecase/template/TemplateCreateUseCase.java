@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.usecase.template;
 
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.Template.AdminTemplateCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.template.AdminTemplateCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.template.TemplatePKResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TemplateMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;

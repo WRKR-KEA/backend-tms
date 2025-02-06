@@ -3,24 +3,26 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.UserTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,6 +42,7 @@ public class UserTicketController {
     private final TicketAllGetUseCase ticketAllGetUseCase;
     private final TicketDetailGetUseCase ticketDetailGetUseCase;
     private final TicketCancelUseCase ticketCancelUseCase;
+    private final TicketGetMainUseCase ticketGetMainUseCase;
 
     @PostMapping
     @Operation(summary = "사용자 티켓 요청", description = "사용자가 티켓을 요청합니다.")
@@ -55,11 +58,12 @@ public class UserTicketController {
     @GetMapping
     @Operation(summary = "사용자 요청 전체 티켓 조회", description = "사용자가 요청한 전체 티켓을 조회합니다.")
     @CustomErrorCodes(ticketErrorCodes = {})
-    public ApplicationResponse<PageResponse<TicketAllGetResponse>> getAllTickets(
+    public ApplicationResponse<ApplicationPageResponse<TicketAllGetResponse>> getAllTickets(
         @AuthenticationPrincipal Member member,
-        Pageable pageable
+        @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
+        ApplicationPageRequest pageRequest
     ) {
-        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageable));
+        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest));
     }
 
     @GetMapping("/{ticketId}")
@@ -81,5 +85,11 @@ public class UserTicketController {
         @PathVariable("ticketId") String ticketId
     ) {
         return ApplicationResponse.onSuccess(ticketCancelUseCase.cancelTicket(member.getMemberId(), decrypt(ticketId)));
+    }
+
+    @GetMapping("/main")
+    @Operation(summary = "사용자 메인 페이지 조회", description = "사용자의 메인 페이지를 조회합니다.")
+    public ApplicationResponse<UserTicketMainPageResponse> mainPage(@AuthenticationPrincipal Member member) {
+        return ApplicationResponse.onSuccess(ticketGetMainUseCase.getMain(member.getMemberId()));
     }
 }

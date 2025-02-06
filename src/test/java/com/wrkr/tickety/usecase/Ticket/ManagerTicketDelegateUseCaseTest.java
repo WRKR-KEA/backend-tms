@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
-import com.wrkr.tickety.domains.ticket.application.dto.request.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
 public class ManagerTicketDelegateUseCaseTest {
@@ -40,6 +41,9 @@ public class ManagerTicketDelegateUseCaseTest {
 
     @Mock
     private TicketHistorySaveService ticketHistorySaveService;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @InjectMocks
     private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;

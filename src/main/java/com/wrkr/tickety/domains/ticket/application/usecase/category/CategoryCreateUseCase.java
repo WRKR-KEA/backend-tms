@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.Category.CategoryCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse.CategoryPK;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;

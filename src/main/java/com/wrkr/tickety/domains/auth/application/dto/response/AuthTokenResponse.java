@@ -21,7 +21,10 @@ public record AuthTokenResponse(
     Role role,
 
     @Schema(description = "프로필 이미지 URL", example = "https://ibb.co/Gt8fycB")
-    String profileImage
+    String profileImage,
+
+    @Schema(description = "임시 비밀번호 여부", example = "false")
+    boolean isTempPassword
 ) {
 
 }

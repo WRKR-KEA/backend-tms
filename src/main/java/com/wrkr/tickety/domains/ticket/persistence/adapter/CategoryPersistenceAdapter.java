@@ -22,6 +22,11 @@ public class CategoryPersistenceAdapter {
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
     }
 
+    public Optional<Category> findChildrenCategoryById(final Long categoryId) {
+        final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findByCategoryIdAndIsDeletedFalseAndParentIsNotNull(categoryId);
+        return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
+    }
+
     public List<Category> findByIsDeletedFalse() {
         final List<CategoryEntity> categoryEntities = categoryRepository.findByIsDeletedFalse();
         return categoryEntities.stream()
@@ -66,5 +71,19 @@ public class CategoryPersistenceAdapter {
 
     public boolean isCategoryNameExists(String name) {
         return this.categoryRepository.existsByNameAndIsDeletedFalse(name);
+    }
+
+    public List<Category> findParents() {
+        final List<CategoryEntity> categoryEntities = this.categoryRepository.findByIsDeletedFalseAndParentIsNull();
+        return categoryEntities.stream()
+            .map(this.categoryPersistenceMapper::toDomain)
+            .toList();
+    }
+
+    public List<Category> getChildrenByCategoryIds(List<Long> categoryIds) {
+        final List<CategoryEntity> categoryEntities = this.categoryRepository.findByParent_CategoryIdIn(categoryIds);
+        return categoryEntities.stream()
+            .map(this.categoryPersistenceMapper::toDomain)
+            .toList();
     }
 }

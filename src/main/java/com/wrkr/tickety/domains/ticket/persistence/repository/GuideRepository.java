@@ -11,5 +11,5 @@ public interface GuideRepository extends JpaRepository<GuideEntity, Long> {
 
     Boolean existsByCategory_CategoryId(Long categoryId);
 
-    List<Long> findByCategory_CategoryIdIn(List<Long> categoryIds);
+    List<GuideEntity> findByCategory_CategoryIdIn(List<Long> categoryIds);
 }

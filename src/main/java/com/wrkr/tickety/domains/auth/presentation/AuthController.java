@@ -35,6 +35,7 @@ public class AuthController {
     private final LogoutUseCase logoutUseCase;
     private final AuthTokenUseCase authTokenUseCase;
 
+    //    @LogClientIp(action = ActionType.LOGIN)
     @PostMapping("/login")
     @CustomErrorCodes(memberErrorCodes = {MEMBER_NOT_FOUND}, authErrorCodes = {INVALID_CREDENTIALS, ACCOUNT_LOCKED})
     @Operation(summary = "로그인", description = "회원이 닉네임과 비밀번호로 로그인을 합니다.")
@@ -44,6 +45,7 @@ public class AuthController {
         return ApplicationResponse.onSuccess(response);
     }
 
+    //    @LogClientIp(action = ActionType.REFRESH)
     @PostMapping("/refresh")
     @CustomErrorCodes(memberErrorCodes = {MEMBER_NOT_FOUND}, authErrorCodes = {INVALID_TOKEN, TOKEN_NOT_FOUND})
     @Operation(summary = "토큰 재발급", description = "리프레시 토큰으로 토큰을 재발급 받습니다.")
@@ -52,6 +54,7 @@ public class AuthController {
         return ApplicationResponse.onSuccess(response);
     }
 
+    //    @LogClientIp(action = ActionType.LOGOUT)
     @DeleteMapping("/logout")
     @CustomErrorCodes(memberErrorCodes = {MEMBER_NOT_FOUND})
     @Operation(summary = "로그아웃", description = "회원이 로그아웃을 합니다. 엑세스 토큰을 삭제해주세요.")

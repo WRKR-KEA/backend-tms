@@ -2,11 +2,11 @@ package com.wrkr.tickety.domains.member.persistence.adapter;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.entity.MemberEntity;
 import com.wrkr.tickety.domains.member.persistence.mapper.MemberPersistenceMapper;
 import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
-import com.wrkr.tickety.global.exception.ApplicationException;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,18 +37,16 @@ public class MemberPersistenceAdapter {
     }
 
     public Page<Member> searchMember(
-        final Pageable pageable,
+        final ApplicationPageRequest pageRequest,
         final Role role,
-        final String email,
-        final String name,
-        final String department) {
+        final String query
+    ) {
+        Pageable pageable = pageRequest.toPageableNoSort();
 
         Page<MemberEntity> memberEntityPage = memberRepository.searchMember(
-            pageable,
             role,
-            email,
-            name,
-            department
+            query,
+            pageable
         );
 
         return memberEntityPage.map(this.memberPersistenceMapper::toDomain);
@@ -60,5 +58,18 @@ public class MemberPersistenceAdapter {
 
     public Boolean existsByNickname(final String nickname) {
         return this.memberRepository.existsByNickname(nickname);
+    }
+
+    public List<Member> getAllManagers() {
+        List<MemberEntity> managers = this.memberRepository.findByRoleAndIsDeletedFalse(Role.MANAGER);
+        return managers.stream()
+            .map(this.memberPersistenceMapper::toDomain)
+            .toList();
+    }
+
+    public Page<Member> getAllManagersPage(final ApplicationPageRequest pageRequest) {
+        Pageable pageable = pageRequest.toPageableNoSort();
+        Page<MemberEntity> managerPage = this.memberRepository.findByRoleAndIsDeletedFalse(Role.MANAGER, pageable);
+        return managerPage.map(this.memberPersistenceMapper::toDomain);
     }
 }

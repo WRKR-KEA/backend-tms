@@ -31,6 +31,7 @@ import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.CategoryPersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -172,22 +173,6 @@ public class GuideUseCaseTest {
         // then
         assertEquals(cryptoCategoryId, response.id());
     }
-
-//    @Test
-//    @DisplayName("존재하지 않는 카테고리로 도움말을 생성하면 예외가 발생한다.")
-//    void testCreateGuideWithNonExistCategory() {
-//        // given
-//        long categoryId = 1L;
-//        GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
-//            .content("test")
-//            .build();
-//        Mockito.when(categoryPersistenceAdapter.findById(categoryId))
-//            .thenReturn(Optional.empty());
-//        // when
-//        ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));
-//        //then
-//        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
-//    }
 
     @Test
     @DisplayName("카테고리에 대한 도움말이 이미 존재할 때 도움말을 생성하면 예외가 발생한다.")
