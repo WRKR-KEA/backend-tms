@@ -79,7 +79,8 @@ public class TicketUseCaseTest {
     private TicketCancelUseCase ticketCancelUseCase;
 
     private Member user;
-    private Category category;
+    private Category parentCategory;
+    private Category childCategory;
     private Ticket ticket;
 
     private static final Long USER_ID = 1L;
@@ -107,8 +108,15 @@ public class TicketUseCaseTest {
             .role(Role.USER)
             .build();
 
-        category = Category.builder()
+        parentCategory = Category.builder()
+            .categoryId(2L)
+            .name("카테고리")
+            .seq(1)
+            .build();
+
+        childCategory = Category.builder()
             .categoryId(TICKET_CATEGORY_ID)
+            .parent(parentCategory)
             .name("카테고리")
             .seq(1)
             .build();
@@ -120,7 +128,7 @@ public class TicketUseCaseTest {
             .content(TICKET_CONTENT)
             .serialNumber(TICKET_SERIAL)
             .status(TicketStatus.REQUEST)
-            .category(category)
+            .category(childCategory)
             .build();
     }
 
@@ -134,7 +142,7 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getParentCategory(anyLong())).willReturn(category);
+        given(categoryGetService.getChildrenCategory(anyLong())).willReturn(childCategory);
 
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
@@ -146,7 +154,7 @@ public class TicketUseCaseTest {
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
-        verify(categoryGetService).getParentCategory(anyLong());
+        verify(categoryGetService).getChildrenCategory(anyLong());
         verify(memberGetService).byMemberId(anyLong());
         verify(ticketSaveService).save(any(Ticket.class));
     }
@@ -202,7 +210,7 @@ public class TicketUseCaseTest {
         // given
         Ticket updatedTicket = Ticket.builder()
             .ticketId(TICKET_ID)
-            .category(category)
+            .category(childCategory)
             .content("티켓 내용")
             .serialNumber("#12345678")
             .title("티켓 제목")
