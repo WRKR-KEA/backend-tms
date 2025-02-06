@@ -6,6 +6,7 @@ spring:
       - mysql.yml
       - swagger.yml
       - crypto.yml
+      - liquibase.yml
       - mail.yml
       - redis.yml
       - jwt.yml
@@ -42,6 +43,7 @@ logging:
     root: INFO
   structured:
     format:
+      console: ecs
       file: ecs
   file:
     path: ${LOG_FILE_PATH:./logs}

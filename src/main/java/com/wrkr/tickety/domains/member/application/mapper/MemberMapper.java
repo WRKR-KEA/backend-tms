@@ -42,7 +42,7 @@ public class MemberMapper {
             .department(member.getDepartment())
             .position(member.getPosition())
             .phone(member.getPhone())
-            .role(member.getRole().getDescription())
+            .role(member.getRole().name())
             .profileImage(member.getProfileImage())
             .build();
     }

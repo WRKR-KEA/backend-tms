@@ -5,11 +5,10 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdapter;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.exception.ApplicationException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,18 +25,14 @@ public class MemberGetService {
     }
 
     public Page<Member> searchMember(
-        Pageable pageable,
+        ApplicationPageRequest pageRequest,
         Role role,
-        String email,
-        String name,
-        String department
+        String query
     ) {
         return memberPersistenceAdapter.searchMember(
-            pageable,
+            pageRequest,
             role,
-            email,
-            name,
-            department
+            query
         );
     }
 

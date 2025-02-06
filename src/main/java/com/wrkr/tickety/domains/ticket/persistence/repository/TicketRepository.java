@@ -13,6 +13,8 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
     @Query("SELECT t FROM TicketEntity t WHERE t.user.memberId = :userId")
     Page<TicketEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("SELECT COUNT(t) FROM TicketEntity t WHERE t.category.categoryId = :categoryId AND t.createdAt >= :date AND t.createdAt < :end")
-    Long findTicketCountByCategoryAndDateRange(Long categoryId, LocalDateTime date, LocalDateTime end);
+    @Query("SELECT COUNT(t) FROM TicketEntity t WHERE t.category.categoryId = :categoryId AND t.createdAt >= :start AND t.createdAt < :end")
+    Long findTicketCountByCategoryAndDateRange(Long categoryId, LocalDateTime start, LocalDateTime end);
+
+    Long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

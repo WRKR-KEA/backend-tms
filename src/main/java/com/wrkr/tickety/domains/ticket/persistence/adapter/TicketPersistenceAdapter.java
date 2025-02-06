@@ -8,6 +8,7 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,8 +32,8 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(savedEntity);
     }
 
-    public Page<Ticket> findAllByUserId(final Long userId, final Pageable pageable) {
-
+    public Page<Ticket> findAllByUserId(final Long userId, final ApplicationPageRequest pageRequest) {
+        Pageable pageable = pageRequest.toPageableNoSort();
         return ticketRepository.findAllByUserId(userId, pageable)
             .map(this.ticketPersistenceMapper::toDomain);
     }
@@ -44,8 +45,9 @@ public class TicketPersistenceAdapter {
         return this.ticketPersistenceMapper.toDomain(ticketEntity);
     }
 
-    public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate, final Pageable pageable) {
-        Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageable);
+    public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate,
+        final ApplicationPageRequest pageRequest) {
+        Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageRequest);
         return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
     }
 
@@ -58,8 +60,11 @@ public class TicketPersistenceAdapter {
         return ticketRepository.findTicketCountByCategoryAndDateRange(categoryId, start, end);
     }
 
-    public Page<Ticket> findAllByManagerFilter(final Long managerId, final Pageable pageable, final TicketStatus status, final String query,
-        final SortType sortType) {
-        return ticketRepository.findByManagerFilters(managerId, status, pageable, query, sortType).map(this.ticketPersistenceMapper::toDomain);
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final ApplicationPageRequest pageRequest, final TicketStatus status, final String query) {
+        return ticketRepository.findByManagerFilters(managerId, status, pageRequest, query).map(this.ticketPersistenceMapper::toDomain);
+    }
+
+    public Long countByCreateAtBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return ticketRepository.countByCreatedAtBetween(startDate, endDate);
     }
 }

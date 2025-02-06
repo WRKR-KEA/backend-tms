@@ -1,17 +1,17 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.category.CategoryGetAllResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.AdminCategoryGetAllResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.category.UserCategoryGetAllResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.template.TemplateGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @UseCase
@@ -23,19 +23,30 @@ public class CategoryGetAllUseCase {
     private final GuideGetService guideGetService;
     private final TemplateGetService templateGetService;
 
-    public List<CategoryGetAllResponse> getAllCategories() {
-        List<Category> categoryList = categoryGetService.byIsDeleted();
-        List<CategoryGetAllResponse> categoryGetAllResponseList = CategoryMapper.mapToCategoryGetAllResponseDTO(categoryList);
+    public AdminCategoryGetAllResponse adminGetAllCategories() {
+        List<Category> parentCategories = categoryGetService.findParents();
 
-        return categoryGetAllResponseList.stream()
-                .map(category -> CategoryGetAllResponse.builder()
-                            .categoryId(category.categoryId())
-                            .name(category.name())
-                            .seq(category.seq())
-                            .isExistsGuide(guideGetService.existsByCategoryId(PkCrypto.decrypt(category.categoryId())))
-                            .isExistsTemplate(templateGetService.existsByCategoryId(PkCrypto.decrypt(category.categoryId())))
-                            .build())
-                .toList();
+        List<Long> categoryIds = parentCategories.stream()
+            .map(Category::getCategoryId)
+            .toList();
+
+        Map<Long, Boolean> existsGuideMap = guideGetService.existsByCategoryIds(categoryIds);
+        Map<Long, Boolean> existsTemplateMap = templateGetService.existsByCategoryIds(categoryIds);
+        List<Category> childCategories = categoryGetService.getChildrenByCategoryIds(categoryIds);
+
+        return CategoryMapper.mapToAdminCategoryGetAllResponseDTO(parentCategories, childCategories, existsGuideMap, existsTemplateMap);
+    }
+
+    public UserCategoryGetAllResponse userGetAllCategories() {
+        List<Category> parentCategories = categoryGetService.findParents();
+
+        List<Long> categoryIds = parentCategories.stream()
+            .map(Category::getCategoryId)
+            .toList();
+
+        List<Category> childCategories = categoryGetService.getChildrenByCategoryIds(categoryIds);
+
+        return CategoryMapper.mapToUserCategoryGetAllResponseDTO(parentCategories, childCategories);
 
     }
 }

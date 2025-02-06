@@ -12,6 +12,7 @@ import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.QTicketEntity;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
@@ -30,7 +30,9 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageRequest) {
+
+        var orderSpecifiers = getOrderSpecifier(pageRequest.sortType());
 
         List<TicketEntity> ticketEntityList = jpaQueryFactory
             .selectFrom(ticketEntity)
@@ -40,9 +42,9 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 createdAtGoe(startDate),
                 createdAtLoe(endDate)
             )
-            .orderBy(ticketEntity.ticketId.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
+            .orderBy(orderSpecifiers)
+            .offset((long) pageRequest.size() * pageRequest.page())
+            .limit(pageRequest.size())
             .fetch();
 
         JPAQuery<Long> countQuery = jpaQueryFactory
@@ -57,7 +59,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
 
         return PageableExecutionUtils.getPage(
             ticketEntityList,
-            pageable,
+            pageRequest.toPageable(),
             countQuery::fetchOne
         );
     }
@@ -94,21 +96,20 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     public Page<TicketEntity> findByManagerFilters(
         Long managerId,
         TicketStatus status,
-        Pageable pageable,
-        String search,
-        SortType sortType
+        ApplicationPageRequest pageRequest,
+        String query
     ) {
-        var orderSpecifiers = getOrderSpecifier(sortType);
+        var orderSpecifiers = getOrderSpecifier(pageRequest.sortType());
 
         List<TicketEntity> ticketEntityList = jpaQueryFactory.selectFrom(ticketEntity)
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
                 statusEq(status),
-                searchEq(search)
+                searchEq(query)
             )
             .orderBy(orderSpecifiers)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
+            .offset((long) pageRequest.size() * pageRequest.page())
+            .limit(pageRequest.size())
             .fetch();
 
         JPAQuery<Long> total = jpaQueryFactory.select(ticketEntity.count())
@@ -116,12 +117,12 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
                 statusEq(status),
-                searchEq(search)
+                searchEq(query)
             );
 
         return PageableExecutionUtils.getPage(
             ticketEntityList,
-            pageable,
+            pageRequest.toPageable(),
             total::fetchOne
         );
     }
@@ -148,9 +149,13 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
         ArrayList<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         orderSpecifiers.add(ticketEntity.isPinned.desc());
         if (sortType != null) {
-            orderSpecifiers.add(sortType == SortType.NEWEST
-                ? ticketEntity.createdAt.desc()
-                : ticketEntity.createdAt.asc());
+            orderSpecifiers.add(
+                switch (sortType) {
+                    case NEWEST -> ticketEntity.createdAt.desc();
+                    case OLDEST -> ticketEntity.createdAt.asc();
+                    case UPDATED -> ticketEntity.updatedAt.desc();
+                }
+            );
         }
         return orderSpecifiers.toArray(new OrderSpecifier[0]);
     }

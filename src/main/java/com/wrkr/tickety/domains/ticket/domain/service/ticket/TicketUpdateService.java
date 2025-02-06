@@ -29,4 +29,9 @@ public class TicketUpdateService {
         ticket.updateManager(manager);
         return ticketPersistenceAdapter.save(ticket);
     }
+
+    public Ticket pinTicket(Ticket ticket) {
+        ticket.pinTicket(ticket);
+        return ticketPersistenceAdapter.save(ticket);
+    }
 }

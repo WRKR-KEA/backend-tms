@@ -10,7 +10,12 @@ public record PasswordUpdateRequest(
     @Schema(description = "재설정할 비밀번호", example = "Admin1234!")
     @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
     @PasswordFormat
-    String password
+    String password,
+
+    @Schema(description = "비밀번호 확인 필드", example = "Admin1234!")
+    @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
+    @PasswordFormat
+    String confirmPassword
 ) {
 
 }

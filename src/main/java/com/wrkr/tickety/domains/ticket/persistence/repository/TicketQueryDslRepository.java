@@ -4,15 +4,14 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.Departmen
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 public interface TicketQueryDslRepository {
 
-    Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageRequest);
 
     List<DepartmentTicketPreResponse> getAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate);
 
@@ -23,4 +22,6 @@ public interface TicketQueryDslRepository {
         @Param("search") String search,
         @Param("sort") SortType sortType
     );
+    
+    Page<TicketEntity> findByManagerFilters(Long managerId, TicketStatus status, ApplicationPageRequest pageable, String query);
 }
