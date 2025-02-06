@@ -9,12 +9,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @TestConfiguration
 @EntityScan(basePackages = {
+    "com.wrkr.tickety.domains.log.persistence.entity",
     "com.wrkr.tickety.domains.ticket.persistence.entity",
     "com.wrkr.tickety.domains.member.persistence.entity",
     "com.wrkr.tickety.global.entity"
 })
 @EnableJpaAuditing
 public class TestConfig {
+
     @Bean
     public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
         return new JPAQueryFactory(entityManager);
