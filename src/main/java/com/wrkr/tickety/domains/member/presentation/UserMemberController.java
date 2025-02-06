@@ -33,7 +33,8 @@ public class UserMemberController {
         @AuthenticationPrincipal Member member,
         @RequestBody @Valid PasswordUpdateRequest passwordUpdateRequest
     ) {
-        MemberPkResponse memberPkResponse = passwordUpdateUseCase.updatePassword(member.getMemberId(), passwordUpdateRequest.password());
+        MemberPkResponse memberPkResponse = passwordUpdateUseCase.updatePassword(member.getMemberId(), passwordUpdateRequest.password(),
+            passwordUpdateRequest.confirmPassword());
         return ApplicationResponse.onSuccess(memberPkResponse);
     }
 }
