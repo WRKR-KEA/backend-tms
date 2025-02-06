@@ -22,6 +22,11 @@ public class CategoryPersistenceAdapter {
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
     }
 
+    public Optional<Category> findChildrenCategoryById(final Long categoryId) {
+        final Optional<CategoryEntity> categoryEntity = this.categoryRepository.findByCategoryIdAndIsDeletedFalseAndParentIsNotNull(categoryId);
+        return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
+    }
+
     public List<Category> findByIsDeletedFalse() {
         final List<CategoryEntity> categoryEntities = categoryRepository.findByIsDeletedFalse();
         return categoryEntities.stream()
