@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verify;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
-import com.wrkr.tickety.domains.ticket.application.dto.request.Ticket.TicketCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
@@ -26,7 +26,8 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
-import com.wrkr.tickety.global.common.dto.PageResponse;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,8 +41,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class TicketUseCaseTest {
@@ -156,16 +155,16 @@ public class TicketUseCaseTest {
     @DisplayName("사용자가 요청했던 티켓들에 페이지네이션을 적용해서 전체 조회한다")
     void getTickets() {
         // given
-        Pageable pageable = PageRequest.of(0, 10);
+        ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, null);
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
 
-        given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(ticketPage);
+        given(ticketGetService.getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class))).willReturn(ticketPage);
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         //when
-        PageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageable);
+        ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest);
 
         //then
         assertThat(ticketAllGetPagingResponse).isNotNull();
@@ -173,7 +172,7 @@ public class TicketUseCaseTest {
         assertThat(ticketAllGetPagingResponse.size()).isEqualTo(1);
         assertThat(ticketAllGetPagingResponse.elements().getFirst().serialNumber()).isEqualTo("#12345678");
 
-        verify(ticketGetService).getTicketsByUserId(anyLong(), any(Pageable.class));
+        verify(ticketGetService).getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class));
         verify(memberGetService).byMemberId(anyLong());
     }
 
