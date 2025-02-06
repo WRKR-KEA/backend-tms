@@ -25,7 +25,6 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
     List<TicketEntity> findTop10ByUser_memberIdOrderByUpdatedAtDesc(Long userId);
 
     List<TicketEntity> findByManager_memberIdInAndStatus(List<Long> managerIds, TicketStatus ticketStatus);
-    Long findTicketCountByCategoryAndDateRange(Long categoryId, LocalDateTime start, LocalDateTime end);
 
     Long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
