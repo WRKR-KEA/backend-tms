@@ -22,7 +22,7 @@ public record ApplicationPageRequest(
     public ApplicationPageRequest(Integer page, Integer size, SortType sortType) {
         this.page = page == null ? 0 : Math.max(0, page - 1);
         this.size = size == null ? 20 : Math.max(10, size);
-        this.sortType = sortType;
+        this.sortType = sortType == null ? SortType.UPDATED : sortType;
     }
 
     public Pageable toPageable() {
