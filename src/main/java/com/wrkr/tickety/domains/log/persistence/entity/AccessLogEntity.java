@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.log.persistence.entity;
 
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +33,9 @@ public class AccessLogEntity extends BaseTimeEntity {
     @Column
     private String nickname;
 
+    @Column
+    private Role role;
+
     @Column(nullable = false)
     private String ip;
 
@@ -45,9 +49,10 @@ public class AccessLogEntity extends BaseTimeEntity {
     private Boolean isSuccess;
 
     @Builder
-    public AccessLogEntity(Long accessLogId, String nickname, String ip, ActionType action, LocalDateTime accessAt, Boolean isSuccess) {
+    public AccessLogEntity(Long accessLogId, String nickname, Role role, String ip, ActionType action, LocalDateTime accessAt, Boolean isSuccess) {
         this.accessLogId = accessLogId;
         this.nickname = nickname;
+        this.role = role;
         this.ip = ip;
         this.action = action;
         this.accessAt = accessAt;
