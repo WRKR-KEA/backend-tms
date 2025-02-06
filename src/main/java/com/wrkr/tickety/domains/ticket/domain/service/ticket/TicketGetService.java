@@ -43,4 +43,21 @@ public class TicketGetService {
     public Long countTicketsCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return ticketPersistenceAdapter.countByCreateAtBetween(startDate, endDate);
     }
+
+    public List<Ticket> getPinTickets(Long managerId) {
+        return ticketPersistenceAdapter.findAllByManagerAndIsPinned(managerId);
+    }
+
+    public List<Ticket> getRequestTickets() {
+        return ticketPersistenceAdapter.findRequests();
+    }
+
+    public List<Ticket> getMyRecentTickets(Long userId) {
+        return ticketPersistenceAdapter.findRecentsByUserId(userId);
+    }
+
+    public List<Ticket> getManagersInProgressTickets(List<Long> managerIds) {
+        return ticketPersistenceAdapter.findManagersInProgressTickets(managerIds);
+    }
 }
+

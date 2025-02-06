@@ -64,6 +64,31 @@ public class TicketPersistenceAdapter {
         return ticketRepository.findByManagerFilters(managerId, status, pageRequest, query).map(this.ticketPersistenceMapper::toDomain);
     }
 
+    public List<Ticket> findAllByManagerAndIsPinned(Long managerId) {
+        List<TicketEntity> ticketEntities = ticketRepository.findAllByManager_memberIdAndIsPinnedTrue(managerId);
+        return ticketEntities.stream()
+            .map(ticketPersistenceMapper::toDomain).toList();
+    }
+
+    public List<Ticket> findRequests() {
+        List<TicketEntity> ticketEntities = ticketRepository.findTop10ByStatusOrderByCreatedAtDesc(TicketStatus.REQUEST);
+        return ticketEntities.stream()
+            .map(ticketPersistenceMapper::toDomain).toList();
+
+    }
+
+    public List<Ticket> findRecentsByUserId(Long userId) {
+        List<TicketEntity> ticketEntities = ticketRepository.findTop10ByUser_memberIdOrderByUpdatedAtDesc(userId);
+        return ticketEntities.stream()
+            .map(ticketPersistenceMapper::toDomain).toList();
+    }
+
+    public List<Ticket> findManagersInProgressTickets(List<Long> managerIds) {
+        List<TicketEntity> ticketEntities = ticketRepository.findByManager_memberIdInAndStatus(managerIds, TicketStatus.IN_PROGRESS);
+        return ticketEntities.stream()
+            .map(ticketPersistenceMapper::toDomain).toList();
+    }
+
     public Long countByCreateAtBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return ticketRepository.countByCreatedAtBetween(startDate, endDate);
     }

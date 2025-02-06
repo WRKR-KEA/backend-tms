@@ -55,4 +55,12 @@ public class TicketHistoryGetService {
         Optional<TicketHistory> ticketHistoryOptional = ticketHistoryPersistenceAdapter.findByTicketAndChangedStatus(ticket, TicketStatus.COMPLETE);
         return ticketHistoryOptional.map(TicketHistory::getCreatedAt).orElse(null);
     }
+
+    public List<TicketHistory> getStartDates(List<Long> ticketIds) {
+        return ticketHistoryPersistenceAdapter.findByTicketsAndChangedStatus(ticketIds, TicketStatus.IN_PROGRESS);
+    }
+
+    public List<TicketHistory> getCompleteDates(List<Long> ticketIds) {
+        return ticketHistoryPersistenceAdapter.findByTicketsAndChangedStatus(ticketIds, TicketStatus.COMPLETE);
+    }
 }
