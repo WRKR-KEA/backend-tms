@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
 import com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil;
-import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
@@ -12,6 +11,7 @@ import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.UUIDGenerator;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
+import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import com.wrkr.tickety.infrastructure.email.EmailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;

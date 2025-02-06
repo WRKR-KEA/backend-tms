@@ -1,6 +1,5 @@
 package com.wrkr.tickety.infrastructure.email;
 
-import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import jakarta.mail.MessagingException;
