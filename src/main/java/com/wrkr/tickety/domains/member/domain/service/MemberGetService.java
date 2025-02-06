@@ -7,6 +7,7 @@ import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdapter;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,9 @@ public class MemberGetService {
     public Member getMemberByNickname(String nickname) {
         return memberPersistenceAdapter.findByNicknameAndIsDeleted(nickname)
             .orElseThrow(() -> ApplicationException.from(AuthErrorCode.INVALID_CREDENTIALS));
+    }
+
+    public List<Member> getAllManagers() {
+        return memberPersistenceAdapter.getAllManagers();
     }
 }

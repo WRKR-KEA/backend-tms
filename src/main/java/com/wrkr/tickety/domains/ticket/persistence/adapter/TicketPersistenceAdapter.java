@@ -75,4 +75,10 @@ public class TicketPersistenceAdapter {
         return ticketEntities.stream()
             .map(ticketPersistenceMapper::toDomain).toList();
     }
+
+    public List<Ticket> findManagersInProgressTickets(List<Long> managerIds) {
+        List<TicketEntity> ticketEntities = ticketRepository.findByManager_memberIdInAndStatus(managerIds, TicketStatus.IN_PROGRESS);
+        return ticketEntities.stream()
+            .map(ticketPersistenceMapper::toDomain).toList();
+    }
 }

@@ -45,4 +45,9 @@ public class TicketGetService {
     public List<Ticket> getMyRecentTickets(Long userId) {
         return ticketPersistenceAdapter.findRecentsByUserId(userId);
     }
+
+    public List<Ticket> getManagersInProgressTickets(List<Long> managerIds) {
+        return ticketPersistenceAdapter.findManagersInProgressTickets(managerIds);
+    }
 }
+

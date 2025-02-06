@@ -23,4 +23,6 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
     List<TicketEntity> findTop10ByStatusOrderByCreatedAtDesc(TicketStatus status);
 
     List<TicketEntity> findTop10ByUser_memberIdOrderByUpdatedAtDesc(Long userId);
+
+    List<TicketEntity> findByManager_memberIdInAndStatus(List<Long> managerIds, TicketStatus ticketStatus);
 }
