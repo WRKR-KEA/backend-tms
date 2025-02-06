@@ -45,10 +45,13 @@ public class GuideUpdateUseCase {
         // 3️⃣ 새로운 파일 업로드 (만약 새 파일이 존재하는 경우)
         if (guideUpdateRequest.attachments() != null && !guideUpdateRequest.attachments().isEmpty()) {
             List<GuideAttachment> newAttachments = guideUpdateRequest.attachments().stream()
+                .filter(file -> !file.isEmpty())
                 .map(file -> saveGuideAttachment(guide, file))
                 .collect(Collectors.toList());
 
-            guideAttachmentUploadService.saveAll(newAttachments);
+            if (!newAttachments.isEmpty()) {
+                guideAttachmentUploadService.saveAll(newAttachments);
+            }
         }
 
         return guideMapper.guideIdToPkResponse(guide);
