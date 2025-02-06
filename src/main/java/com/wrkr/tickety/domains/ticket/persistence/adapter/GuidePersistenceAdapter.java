@@ -40,7 +40,8 @@ public class GuidePersistenceAdapter {
         guideRepository.deleteById(guideId);
     }
 
-    public List<Long> existsByCategoryIds(List<Long> categoryIds) {
-        return this.guideRepository.findByCategory_CategoryIdIn(categoryIds);
+    public List<Guide> existsByCategoryIds(List<Long> categoryIds) {
+        final List<GuideEntity> guideEntities = this.guideRepository.findByCategory_CategoryIdIn(categoryIds);
+        return guideEntities.stream().map(this.guidePersistenceMapper::toDomain).toList();
     }
 }
