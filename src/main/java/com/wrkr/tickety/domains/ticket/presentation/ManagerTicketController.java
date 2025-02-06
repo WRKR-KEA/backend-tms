@@ -27,6 +27,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketA
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDetailUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketPinUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetToExcelUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCompleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
@@ -37,10 +38,12 @@ import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.global.utils.excel.ExcelUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +73,8 @@ public class ManagerTicketController {
     private final ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
     private final ManagerTicketPinUseCase managerTicketPinUseCase;
     private final StatisticsGetUseCase statisticsGetUseCase;
+    private final TicketAllGetToExcelUseCase ticketAllGetToExcelUseCase;
+    private final ExcelUtil excelUtil;
     private final StatisticsByCategoryUseCase statisticsByCategoryUseCase;
 
     @PostMapping("/statistics/{statisticsType}")
@@ -109,6 +114,25 @@ public class ManagerTicketController {
         ApplicationPageRequest pageRequest
     ) {
         return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(query, status, startDate, endDate, pageRequest));
+    }
+
+    @Operation(summary = "부서 티켓 목록 엑셀 다운로드(상태별)", description = "부서 내부의 모든 티켓을 조회해서 엑셀 파일로 반환합니다.")
+    @GetMapping("/tickets/department/excel")
+    public void getDepartmentAllTicketsExcelDownload(
+        HttpServletResponse response,
+        @Parameter(description = "검색어 (제목, 담당자, 티켓 번호 대상)", example = "VM")
+        @RequestParam(required = false) String query,
+        @Parameter(description = "필터링 - 티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
+        @RequestParam(required = false) String status,
+        @Parameter(description = "필터링 - 요청일 시작", example = "2025-01-27")
+        @RequestParam(required = false) String startDate,
+        @Parameter(description = "필터링 - 요청일 끝", example = "2025-01-27")
+        @RequestParam(required = false) String endDate
+    ) {
+        List<DepartmentTicketResponse> allTicketsNoPaging = ticketAllGetToExcelUseCase.getAllTicketsNoPaging(query, status, startDate, endDate);
+
+        // TODO: 파일 이름 생성 정책 정하기
+        excelUtil.parseTicketDataToExcelGroupByStatus(response, allTicketsNoPaging, "ticket2025");
     }
 
     @PatchMapping("/approve")

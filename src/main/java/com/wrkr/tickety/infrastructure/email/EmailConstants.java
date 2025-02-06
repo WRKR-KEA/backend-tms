@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.member.domain.constant;
+package com.wrkr.tickety.infrastructure.email;
 
 public class EmailConstants {
 

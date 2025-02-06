@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.notification.listener;
 
 import com.wrkr.tickety.domains.member.application.dto.request.EmailCreateRequest;
-import com.wrkr.tickety.domains.member.domain.constant.EmailConstants;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
@@ -9,6 +8,7 @@ import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificatio
 import com.wrkr.tickety.domains.ticket.domain.event.CommentCreateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
+import com.wrkr.tickety.infrastructure.email.EmailConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
