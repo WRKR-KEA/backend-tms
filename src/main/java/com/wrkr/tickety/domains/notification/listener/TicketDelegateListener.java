@@ -3,6 +3,7 @@ package com.wrkr.tickety.domains.notification.listener;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
+import com.wrkr.tickety.domains.notification.domain.service.SendApplicationNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketDelegateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -21,6 +22,7 @@ public class TicketDelegateListener {
 
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
+    private final SendApplicationNotificationService sendApplicationNotificationService;
 
     @Async
     @EventListener
@@ -44,5 +46,7 @@ public class TicketDelegateListener {
         sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(
             emailCreateRequestToNewManager, ticket, prevManager, EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER
         );
+
+        sendApplicationNotificationService.sendTicketDelegateApplicationNotification(prevManager, newManager, ticket);
     }
 }
