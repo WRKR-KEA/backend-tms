@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
-import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
@@ -26,7 +25,6 @@ public class TicketPersistenceAdapter {
     private final TicketPersistenceMapper ticketPersistenceMapper;
 
     public Ticket save(final Ticket ticket) {
-
         TicketEntity ticketEntity = this.ticketPersistenceMapper.toEntity(ticket);
         TicketEntity savedEntity = this.ticketRepository.save(ticketEntity);
         return this.ticketPersistenceMapper.toDomain(savedEntity);
@@ -39,7 +37,6 @@ public class TicketPersistenceAdapter {
     }
 
     public Ticket findById(final Long ticketId) {
-
         final TicketEntity ticketEntity = this.ticketRepository.findById(ticketId)
             .orElseThrow(() -> ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND));
         return this.ticketPersistenceMapper.toDomain(ticketEntity);
@@ -51,8 +48,9 @@ public class TicketPersistenceAdapter {
         return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
     }
 
-    public List<DepartmentTicketPreResponse> findAllTicketsNoPaging(final String query, final TicketStatus status, final LocalDate startDate,
-        final LocalDate endDate) {
+    public List<DepartmentTicketPreResponse> findAllTicketsNoPaging(
+        final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate
+    ) {
         return ticketRepository.getAllTicketsNoPaging(query, status, startDate, endDate);
     }
 

@@ -5,7 +5,7 @@ import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.to
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.IN_PROGRESS;
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.REJECT;
 
-import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
+import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
@@ -41,10 +41,10 @@ public class TicketRejectUseCase {
         updateTicketHistory(rejectedTicket);
 
         applicationEventPublisher.publishEvent(TicketStatusChangeEvent.builder()
-                                                   .ticket(rejectedTicket)
-                                                   .user(rejectedTicket.getUser())
-                                                   .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_REJECT)
-                                                   .build());
+            .ticket(rejectedTicket)
+            .user(rejectedTicket.getUser())
+            .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_REJECT)
+            .build());
 
         return toTicketPkResponse(PkCrypto.encrypt(rejectedTicket.getTicketId()));
     }

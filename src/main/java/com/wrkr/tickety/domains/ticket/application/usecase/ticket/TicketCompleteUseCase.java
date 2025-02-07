@@ -5,7 +5,7 @@ import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.to
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.COMPLETE;
 import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.IN_PROGRESS;
 
-import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
+import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
@@ -41,10 +41,10 @@ public class TicketCompleteUseCase {
         updateTicketHistory(completedTicket);
 
         applicationEventPublisher.publishEvent(TicketStatusChangeEvent.builder()
-                                                   .ticket(completedTicket)
-                                                   .user(completedTicket.getUser())
-                                                   .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_FINISHED)
-                                                   .build());
+            .ticket(completedTicket)
+            .user(completedTicket.getUser())
+            .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_FINISHED)
+            .build());
 
         return toTicketPkResponse(PkCrypto.encrypt(completedTicket.getTicketId()));
     }

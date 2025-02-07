@@ -31,19 +31,18 @@ public class TicketDelegateListener {
 
         sendAgitNotificationService.sendTicketDelegateAgitAlarm(prevManager, newManager, ticket);
 
-        EmailCreateRequest emailCreateRequestToUser = EmailMapper.toEmailCreateRequest(ticket.getUser().getEmail(),
-            EmailConstants.TICKET_DELEGATE_SUBJECT,
-            null);
+        EmailCreateRequest emailCreateRequestToUser = EmailMapper.toEmailCreateRequest(
+            ticket.getUser().getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
+        );
 
         sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(emailCreateRequestToUser, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER);
 
-        EmailCreateRequest emailCreateRequestToNewManager = EmailMapper.toEmailCreateRequest(newManager.getEmail(),
-            EmailConstants.TICKET_DELEGATE_SUBJECT,
-            null);
+        EmailCreateRequest emailCreateRequestToNewManager = EmailMapper.toEmailCreateRequest(
+            newManager.getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
+        );
 
-        sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(emailCreateRequestToNewManager, ticket, prevManager,
-            EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER);
-
+        sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(
+            emailCreateRequestToNewManager, ticket, prevManager, EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER
+        );
     }
-
 }

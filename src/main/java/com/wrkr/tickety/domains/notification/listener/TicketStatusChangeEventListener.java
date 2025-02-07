@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.notification.listener;
 
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
+import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
