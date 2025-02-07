@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
+import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
@@ -19,15 +20,32 @@ public class ManagerTicketPinUseCase {
     private final TicketGetService ticketGetService;
     private final TicketUpdateService ticketUpdateService;
 
-    public TicketPkResponse pinTicket(TicketPinRequest request) {
+    public TicketPkResponse pinTicket(Member member, TicketPinRequest request) {
+        checkPinTicketCountsOverTen(member.getMemberId());
+
         Ticket requestTicket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(request.ticketId()));
-        if (requestTicket.getManager() == null) {
+        Ticket pinnedTicket = ticketUpdateService.pinTicket(requestTicket);
+
+        checkStatusRequested(pinnedTicket);
+        checkTicketManager(pinnedTicket, member);
+        return TicketMapper.toTicketPkResponse(PkCrypto.encrypt(pinnedTicket.getTicketId()));
+    }
+
+    private void checkPinTicketCountsOverTen(Long managerId) {
+        if (ticketGetService.countPinTickets(managerId) >= 10) {
+            throw new ApplicationException(TicketErrorCode.TICKET_PIN_COUNT_OVER);
+        }
+    }
+
+    private void checkStatusRequested(Ticket ticket) {
+        if (ticket.getManager() == null) {
             throw new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_FOUND);
         }
-        if (!requestTicket.getManager().getMemberId().equals(PkCrypto.decrypt(request.managerId()))) {
-            throw new ApplicationException(TicketErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    private void checkTicketManager(Ticket ticket, Member member) {
+        if (!ticket.getManager().getMemberId().equals(member.getMemberId())) {
+            throw new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH);
         }
-        Ticket pinnedTicket = ticketUpdateService.pinTicket(requestTicket);
-        return TicketMapper.toTicketPkResponse(PkCrypto.encrypt(pinnedTicket.getTicketId()));
     }
 }

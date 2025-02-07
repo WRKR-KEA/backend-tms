@@ -8,6 +8,7 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_N
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_DELEGATABLE;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_FOUND;
 import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_NOT_REJECTABLE;
+import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_PIN_COUNT_OVER;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
@@ -229,10 +230,12 @@ public class ManagerTicketController {
     }
 
     @Operation(summary = "해당 티켓 상단 고정", description = "해당 티켓을 상단 고정합니다.")
-    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH})
+    @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_PIN_COUNT_OVER})
     @PatchMapping("/pin")
-    public ApplicationResponse<TicketPkResponse> pinTicket(@RequestBody TicketPinRequest request) {
-        return ApplicationResponse.onSuccess(managerTicketPinUseCase.pinTicket(request));
+    public ApplicationResponse<TicketPkResponse> pinTicket(
+        @AuthenticationPrincipal Member member,
+        @RequestBody TicketPinRequest request) {
+        return ApplicationResponse.onSuccess(managerTicketPinUseCase.pinTicket(member, request));
     }
 
     @Operation(summary = "담당자 메인 페이지 조회", description = "담당자의 메인 페이지를 조회합니다.")
