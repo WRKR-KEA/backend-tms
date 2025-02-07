@@ -31,7 +31,10 @@ public class NotificationEntity extends BaseTimeEntity {
     private Long notificationId;
 
     @Column(nullable = false)
-    private Long receiverId;
+    private Long memberId;
+
+    @Column(nullable = false)
+    private String profileImage;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -45,9 +48,10 @@ public class NotificationEntity extends BaseTimeEntity {
     private Boolean isRead;
 
     @Builder
-    public NotificationEntity(Long notificationId, Long receiverId, NotificationType type, String content, Boolean isRead) {
+    public NotificationEntity(Long notificationId, Long memberId, String profileImage, NotificationType type, String content, Boolean isRead) {
         this.notificationId = notificationId;
-        this.receiverId = receiverId;
+        this.memberId = memberId;
+        this.profileImage = profileImage;
         this.type = type;
         this.content = content;
         this.isRead = isRead;

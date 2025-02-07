@@ -14,17 +14,23 @@ import lombok.experimental.SuperBuilder;
 public class Notification extends BaseTime {
 
     private Long notificationId;
-    private Long receiverId;
+    private Long memberId;
+    private String profileImage;
     private NotificationType type;
     private String content;
     private Boolean isRead;
 
     @Builder
-    public Notification(Long notificationId, Long receiverId, NotificationType type, String content, Boolean isRead) {
+    public Notification(Long notificationId, Long memberId, String profileImage, NotificationType type, String content, Boolean isRead) {
         this.notificationId = notificationId;
-        this.receiverId = receiverId;
+        this.memberId = memberId;
+        this.profileImage = profileImage;
         this.type = type;
         this.content = content;
         this.isRead = isRead;
+    }
+
+    public void readNotification() {
+        this.isRead = true;
     }
 }
