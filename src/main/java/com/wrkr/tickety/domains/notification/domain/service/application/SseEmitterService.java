@@ -1,7 +1,8 @@
-package com.wrkr.tickety.domains.notification.domain.service;
+package com.wrkr.tickety.domains.notification.domain.service.application;
 
 import static com.wrkr.tickety.domains.notification.application.mapper.NotificationMapper.toNotification;
 
+import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.tickety.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.model.Notification;
 import com.wrkr.tickety.domains.notification.persistence.adapter.NotificationPersistenceAdapter;
@@ -42,9 +43,11 @@ public class SseEmitterService {
         return emitter;
     }
 
-    public void send(Long receiverId, NotificationType notificationType, String content) {
-        Notification notification = notificationPersistenceAdapter.save(toNotification(receiverId, notificationType, content));
-        String memberId = String.valueOf(receiverId);
+    public void send(Member member, NotificationType notificationType, String content) {
+        Notification notification = notificationPersistenceAdapter.save(
+            toNotification(member.getMemberId(), member.getProfileImage(), notificationType, content)
+        );
+        String memberId = String.valueOf(member.getMemberId());
 
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterStartWithByMemberId(memberId);
         sseEmitters.forEach(
