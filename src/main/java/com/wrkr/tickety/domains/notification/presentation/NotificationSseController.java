@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.notification.presentation;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.notification.domain.service.SseEmitterService;
+import com.wrkr.tickety.domains.notification.domain.service.application.SseEmitterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

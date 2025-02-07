@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.notification.domain.service;
+package com.wrkr.tickety.domains.notification.domain.service.application;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitCommentNotificationMessage;
@@ -24,23 +24,23 @@ public class SendApplicationNotificationService {
             case TICKET_REJECT -> AgitTicketNotificationMessageType.TICKET_REJECT.format(ticketSerialNumber);
             case TICKET_FINISHED -> AgitTicketNotificationMessageType.TICKET_FINISHED.format(ticketSerialNumber);
         };
-        sseEmitterService.send(member.getMemberId(), NotificationType.TICKET, message);
+        sseEmitterService.send(member, NotificationType.TICKET, message);
     }
 
     public void sendCommentApplicationNotification(Member receiver, Ticket ticket) {
         String message = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
-        sseEmitterService.send(receiver.getMemberId(), NotificationType.COMMENT, message);
+        sseEmitterService.send(receiver, NotificationType.COMMENT, message);
     }
 
     public void sendTicketDelegateApplicationNotification(Member prevManager, Member newManager, Ticket ticket) {
         String userMessage = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
         );
-        sseEmitterService.send(ticket.getUser().getMemberId(), NotificationType.COMMENT, userMessage);
+        sseEmitterService.send(ticket.getUser(), NotificationType.COMMENT, userMessage);
 
         String managerMessage = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(
             prevManager.getNickname(), ticket.getSerialNumber()
         );
-        sseEmitterService.send(newManager.getMemberId(), NotificationType.COMMENT, managerMessage);
+        sseEmitterService.send(newManager, NotificationType.COMMENT, managerMessage);
     }
 }
