@@ -8,6 +8,7 @@ import com.wrkr.tickety.domains.ticket.persistence.mapper.CommentPersistenceMapp
 import com.wrkr.tickety.domains.ticket.persistence.mapper.TicketPersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.CommentRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -33,4 +34,8 @@ public class CommentPersistenceAdapter {
             .toList();
     }
 
+    public Optional<Comment> findById(Long commentId) {
+        return commentRepository.findById(commentId)
+            .map(this.commentPersistenceMapper::toDomain);
+    }
 }

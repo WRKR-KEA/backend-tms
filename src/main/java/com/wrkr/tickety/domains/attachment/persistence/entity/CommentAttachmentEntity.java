@@ -1,9 +1,16 @@
 package com.wrkr.tickety.domains.attachment.persistence.entity;
 
-import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.persistence.entity.CommentEntity;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +31,7 @@ public class CommentAttachmentEntity extends BaseTimeEntity {
     private Long attachmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", nullable = false)
+    @JoinColumn(name = "comment_id")
     private CommentEntity comment;
 
     @Column(nullable = false)

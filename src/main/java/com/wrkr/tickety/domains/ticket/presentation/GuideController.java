@@ -21,10 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -49,8 +49,9 @@ public class GuideController {
     @Operation(summary = "도움말 생성")
     @Parameter(name = "cryptoCategoryId", description = "암호화된 카테고리 키", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true, in = ParameterIn.PATH)
     @PostMapping("/api/admin/guide/{cryptoCategoryId}")
-    public ApplicationResponse<PkResponse> createGuide(@RequestBody GuideCreateRequest guideCreateRequest, @PathVariable String cryptoCategoryId) {
+    public ApplicationResponse<PkResponse> createGuide(@ModelAttribute GuideCreateRequest guideCreateRequest, @PathVariable String cryptoCategoryId) {
         PkResponse pkResponse = guideCreateUseCase.createGuide(guideCreateRequest, PkCrypto.decrypt(cryptoCategoryId));
+
         return ApplicationResponse.onSuccess(pkResponse);
     }
 
@@ -61,7 +62,7 @@ public class GuideController {
     public ApplicationResponse<PkResponse> updateGuide(
         @AuthenticationPrincipal Member member,
         @PathVariable String cryptoGuideId,
-        @RequestBody GuideUpdateRequest guideUpdateRequest
+        @ModelAttribute GuideUpdateRequest guideUpdateRequest
     ) {
         PkResponse pkResponse = guideUpdateUseCase.modifyGuide(PkCrypto.decrypt(cryptoGuideId), guideUpdateRequest);
         return ApplicationResponse.onSuccess(pkResponse);

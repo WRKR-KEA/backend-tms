@@ -33,10 +33,13 @@ public record CommentResponse(
         String memberId,
 
         @Schema(description = "코멘트 전송자가 회원일 경우, 회원 이름", nullable = true, example = "김철수")
-        String name,
+        String nickname,
 
         @Schema(description = "코멘트 내용", example = "이슈 다시 확인해주세요.")
-        String content
+        String content,
+
+        @Schema(description = "코멘트 첨부파일 목록")
+        List<String> attachments
     ) {
 
     }

@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.comment;
 
+import com.wrkr.tickety.domains.attachment.domain.service.CommentAttachmentGetService;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CommentMapper;
@@ -21,17 +22,18 @@ public class CommentGetUseCase {
 
     private final TicketGetService ticketGetService;
     private final CommentGetService commentGetService;
+    private final CommentAttachmentGetService commentAttachmentGetService;
 
     public CommentResponse getComment(Member member, Long ticketId) {
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
-        if (ticket.isAccessibleBy(member)) {
+        if (!ticket.isAccessibleBy(member)) {
             throw ApplicationException.from(TicketErrorCode.UNAUTHORIZED_ACCESS);
         }
 
         List<Comment> comments = commentGetService.getCommentsByTicket(ticket);
 
-        return CommentMapper.toCommentResponse(ticketId, comments);
+        return CommentMapper.toCommentResponse(ticketId, comments, commentAttachmentGetService);
     }
 }
