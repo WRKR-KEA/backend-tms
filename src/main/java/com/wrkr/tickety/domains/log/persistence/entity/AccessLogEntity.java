@@ -5,6 +5,8 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,12 +36,14 @@ public class AccessLogEntity extends BaseTimeEntity {
     private String nickname;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(nullable = false)
     private String ip;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ActionType action;
 
     @Column(nullable = false, updatable = false)

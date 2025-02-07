@@ -1,14 +1,17 @@
 package com.wrkr.tickety.domains.log.persistence.repository;
 
 import static com.wrkr.tickety.domains.log.persistence.entity.QAccessLogEntity.accessLogEntity;
-import static com.wrkr.tickety.domains.member.persistence.entity.QMemberEntity.memberEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
 import com.wrkr.tickety.domains.log.persistence.entity.AccessLogEntity;
+import com.wrkr.tickety.domains.log.persistence.entity.QAccessLogEntity;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,13 +26,15 @@ public class AccessLogQueryDslRepositoryImpl implements AccessLogQueryDslReposit
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<AccessLogEntity> searchAccessLogs(Pageable pageable, Role role, String query, ActionType action) {
+    public Page<AccessLogEntity> searchAccessLogs(Pageable pageable, Role role, String query, ActionType action, LocalDate startDate, LocalDate endDate) {
         List<AccessLogEntity> accessLogEntities = jpaQueryFactory
             .selectFrom(accessLogEntity)
             .where(
                 roleEq(role),
                 nicknameOrIpContainsIgnoreCase(query),
-                actionEq(action)
+                actionEq(action),
+                accessAtGoe(startDate),
+                accessAtLoe(endDate)
             )
             .orderBy(accessLogEntity.accessLogId.desc())
             .offset(pageable.getOffset())
@@ -42,7 +47,9 @@ public class AccessLogQueryDslRepositoryImpl implements AccessLogQueryDslReposit
             .where(
                 roleEq(role),
                 nicknameOrIpContainsIgnoreCase(query),
-                actionEq(action)
+                actionEq(action),
+                accessAtGoe(startDate),
+                accessAtLoe(endDate)
             );
 
         return PageableExecutionUtils.getPage(
@@ -52,8 +59,25 @@ public class AccessLogQueryDslRepositoryImpl implements AccessLogQueryDslReposit
         );
     }
 
+    @Override
+    public List<AccessLogEntity> findAllAccessLogs(Role role, String query, ActionType action, LocalDate startDate, LocalDate endDate) {
+        QAccessLogEntity al = accessLogEntity;
+
+        return jpaQueryFactory
+            .selectFrom(al)
+            .where(
+                roleEq(role),
+                nicknameOrIpContainsIgnoreCase(query),
+                actionEq(action),
+                accessAtGoe(startDate),
+                accessAtLoe(endDate)
+            )
+            .orderBy(accessLogEntity.accessLogId.desc())
+            .fetch();
+    }
+
     private BooleanExpression roleEq(Role role) {
-        return role == null ? null : memberEntity.role.eq(role);
+        return role == null ? null : accessLogEntity.role.eq(role);
     }
 
     private BooleanExpression nicknameOrIpContainsIgnoreCase(String query) {
@@ -65,5 +89,13 @@ public class AccessLogQueryDslRepositoryImpl implements AccessLogQueryDslReposit
 
     private BooleanExpression actionEq(ActionType action) {
         return action == null ? null : accessLogEntity.action.eq(action);
+    }
+
+    private BooleanExpression accessAtGoe(LocalDate startDate) {
+        return startDate == null ? null : accessLogEntity.accessAt.goe(LocalDateTime.of(startDate, LocalTime.MIN));
+    }
+
+    private BooleanExpression accessAtLoe(LocalDate endDate) {
+        return endDate == null ? null : accessLogEntity.accessAt.loe(LocalDateTime.of(endDate, LocalTime.MAX));
     }
 }
