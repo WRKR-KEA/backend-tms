@@ -183,7 +183,7 @@ public class TicketMapper {
                 .status(ticket.getStatus())
                 .title(ticket.getTitle())
                 .userNickname(ticket.getUser().getNickname())
-                .managerNickname(ticket.getManager().getNickname() == null ? null : ticket.getManager().getNickname())
+                .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
                 .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
                 .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
                 .ticketTimeInfo(UserTicketMainPageResponse.recentTickets.ticketTimeInfo.builder()
