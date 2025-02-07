@@ -3,7 +3,6 @@ package com.wrkr.tickety.domains.log.application.mapper;
 import com.wrkr.tickety.domains.log.application.dto.response.AccessLogSearchResponse;
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
 import com.wrkr.tickety.domains.log.domain.model.AccessLog;
-import com.wrkr.tickety.global.utils.PkCrypto;
 
 public class LogMapper {
 
@@ -22,7 +21,7 @@ public class LogMapper {
 
     public static AccessLogSearchResponse toAccessLogSearchResponse(AccessLog accessLog) {
         return AccessLogSearchResponse.builder()
-            .accessLogId(PkCrypto.encrypt(accessLog.getAccessLogId()))
+            .accessLogId(String.valueOf(accessLog.getAccessLogId()))
             .nickname(accessLog.getNickname())
             .role(accessLog.getRole())
             .ip(accessLog.getIp())
