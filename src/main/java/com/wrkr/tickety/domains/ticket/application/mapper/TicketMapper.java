@@ -68,17 +68,20 @@ public class TicketMapper {
             .build();
     }
 
-    public static TicketDetailGetResponse toTicketDetailGetResponse(Ticket ticket, LocalDateTime firstManagerChangeDate) {
+    public static TicketDetailGetResponse toTicketDetailGetResponse(Ticket ticket, LocalDateTime startDate, LocalDateTime completeDate) {
         return TicketDetailGetResponse.builder()
             .id(PkCrypto.encrypt(ticket.getTicketId()))
+            .ticketSerialNumber(ticket.getSerialNumber())
             .title(ticket.getTitle())
             .content(ticket.getContent())
+            .category(ticket.getCategory().getParent().getName() + " " + ticket.getCategory().getName())
             .status(ticket.getStatus())
-            .userName(ticket.getUser().getName())
-            .managerName(ticket.getManager() != null ? ticket.getManager().getName() : null)
+            .userNickname(ticket.getUser().getNickname())
+            .managerNickname(ticket.getManager() != null ? ticket.getManager().getNickname() : null)
             .createdAt(ticket.getCreatedAt())
             .updatedAt(ticket.getUpdatedAt())
-            .startedAt(firstManagerChangeDate)
+            .startedAt(startDate)
+            .completedAt(completeDate)
             .build();
     }
 
