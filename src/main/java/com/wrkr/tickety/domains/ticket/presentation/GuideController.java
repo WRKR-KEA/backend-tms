@@ -16,16 +16,21 @@ import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,9 +53,23 @@ public class GuideController {
 
     @Operation(summary = "도움말 생성")
     @Parameter(name = "cryptoCategoryId", description = "암호화된 카테고리 키", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true, in = ParameterIn.PATH)
-    @PostMapping("/api/admin/guide/{cryptoCategoryId}")
-    public ApplicationResponse<PkResponse> createGuide(@ModelAttribute GuideCreateRequest guideCreateRequest, @PathVariable String cryptoCategoryId) {
-        PkResponse pkResponse = guideCreateUseCase.createGuide(guideCreateRequest, PkCrypto.decrypt(cryptoCategoryId));
+    @Parameter(name = "attachments", description = "첨부파일")
+    @PostMapping(value = "/api/admin/guide/{cryptoCategoryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Parameter(
+        name = "guideCreateRequest",
+        description = "도움말 생성 요청 데이터",
+        required = true,
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = GuideCreateRequest.class)
+        )
+    )
+    public ApplicationResponse<PkResponse> createGuide(
+        @RequestPart("guideCreateRequest") GuideCreateRequest guideCreateRequest,
+        @PathVariable String cryptoCategoryId,
+        @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
+    ) {
+        PkResponse pkResponse = guideCreateUseCase.createGuide(guideCreateRequest, PkCrypto.decrypt(cryptoCategoryId), attachments);
 
         return ApplicationResponse.onSuccess(pkResponse);
     }
@@ -58,13 +77,24 @@ public class GuideController {
     @Operation(summary = "도움말 수정")
     @Parameter(name = "cryptoCategoryId", description = "암호화된 도움말 키", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true, in = ParameterIn.PATH)
     @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
-    @PatchMapping("/api/admin/guide/{cryptoGuideId}")
+    @Parameter(
+        name = "guideCreateRequest",
+        description = "도움말 수정 요청 데이터",
+        required = true,
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = GuideCreateRequest.class)
+        )
+    )
+    @Parameter(name = "attachments", description = "첨부파일")
+    @PatchMapping(value = "/api/admin/guide/{cryptoGuideId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApplicationResponse<PkResponse> updateGuide(
         @AuthenticationPrincipal Member member,
         @PathVariable String cryptoGuideId,
-        @ModelAttribute GuideUpdateRequest guideUpdateRequest
+        @RequestPart GuideUpdateRequest guideUpdateRequest,
+        @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
     ) {
-        PkResponse pkResponse = guideUpdateUseCase.modifyGuide(PkCrypto.decrypt(cryptoGuideId), guideUpdateRequest);
+        PkResponse pkResponse = guideUpdateUseCase.modifyGuide(PkCrypto.decrypt(cryptoGuideId), guideUpdateRequest, attachments);
         return ApplicationResponse.onSuccess(pkResponse);
     }
 

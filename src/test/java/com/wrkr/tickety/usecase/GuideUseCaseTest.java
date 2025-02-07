@@ -10,6 +10,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.wrkr.tickety.domains.attachment.domain.service.GuideAttachmentGetService;
+import com.wrkr.tickety.domains.attachment.domain.service.GuideAttachmentUploadService;
+import com.wrkr.tickety.domains.attachment.domain.service.S3ApiService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
@@ -31,7 +33,9 @@ import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.CategoryPersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +45,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -69,6 +75,12 @@ public class GuideUseCaseTest {
 
     @Mock
     private GuideAttachmentGetService guideAttachmentGetService;
+
+    @Mock
+    private S3ApiService s3ApiService;
+
+    @Mock
+    private GuideAttachmentUploadService guideAttachmentUploadService;
 
     @InjectMocks
     private GuideGetUseCase guideGetUseCase;
@@ -162,13 +174,25 @@ public class GuideUseCaseTest {
             .content("test")
             .build();
 
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+        String url = "this is file url";
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
+
+        given(s3ApiService.uploadGuideFile(file)).willReturn(url);
         given(categoryGetService.getParentCategory(categoryId)).willReturn(category);
         given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
         given(guideMapper.guideIdToPkResponse(guide)).willReturn(
             PkResponse.builder().id(cryptoCategoryId).build());
 
         // when
-        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, categoryId);
+        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, categoryId, attachments);
 
         // then
         assertEquals(cryptoCategoryId, response.id());
@@ -188,10 +212,20 @@ public class GuideUseCaseTest {
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
             .content("test")
             .build();
+
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
         when(categoryGetService.getParentCategory(categoryId)).thenReturn(category);
         when(guideCreateService.createGuide(any(Guide.class))).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_ALREADY_EXIST));
         // when
-        ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));
+        ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId, attachments));
         //then
         assertEquals(GuideErrorCode.GUIDE_ALREADY_EXIST, e.getCode());
     }
