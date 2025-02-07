@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -17,7 +18,7 @@ public record TicketDetailGetResponse(
     String content,
 
     @Schema(description = "티켓 상태", example = "요청")
-    String status,
+    TicketStatus status,
 
     @Schema(description = "요청자", example = "라이언")
     String userName,
