@@ -23,7 +23,7 @@ public record TicketDetailGetResponse(
     @Schema(description = "업무", example = "VM 추가")
     String category,
 
-    @Schema(description = "티켓 상태", example = "요청")
+    @Schema(description = "티켓 상태", example = "REQUEST")
     TicketStatus status,
 
     @Schema(description = "요청자", example = "라이언")

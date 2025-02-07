@@ -20,7 +20,7 @@ public record TicketAllGetResponse(
     @Schema(description = "티켓 제목", example = "티켓 제목")
     String title,
 
-    @Schema(description = "티켓 상태", example = "요청")
+    @Schema(description = "티켓 상태", example = "REQUEST")
     TicketStatus status,
 
     @Schema(description = "요청일", example = "2021.08.01")
