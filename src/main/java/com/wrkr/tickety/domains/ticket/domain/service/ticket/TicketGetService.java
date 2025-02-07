@@ -44,6 +44,10 @@ public class TicketGetService {
         return ticketPersistenceAdapter.countByCreateAtBetween(startDate, endDate);
     }
 
+    public Long countPinTickets(Long managerId) {
+        return ticketPersistenceAdapter.countByManagerAndIsPinned(managerId);
+    }
+
     public List<Ticket> getPinTickets(Long managerId) {
         return ticketPersistenceAdapter.findAllByManagerAndIsPinned(managerId);
     }

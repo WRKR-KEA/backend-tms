@@ -90,4 +90,8 @@ public class TicketPersistenceAdapter {
     public Long countByCreateAtBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return ticketRepository.countByCreatedAtBetween(startDate, endDate);
     }
+
+    public Long countByManagerAndIsPinned(Long managerId) {
+        return ticketRepository.countByManager_memberIdAndIsPinnedTrue(managerId);
+    }
 }
