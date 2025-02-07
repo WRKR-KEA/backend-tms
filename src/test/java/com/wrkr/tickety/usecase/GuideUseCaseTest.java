@@ -244,13 +244,23 @@ public class GuideUseCaseTest {
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
             .content("수정된 도움말")
             .build();
+
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
         given(guideUpdateService.updateGuide(guideId, guideUpdateRequest)).willReturn(
             guideDomain);
         given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(
             new PkResponse(cryptoGuideId));
 
         // when
-        PkResponse response = guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest);
+        PkResponse response = guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest, attachments);
 
         // then
         assertEquals(cryptoGuideId, response.id());
@@ -264,9 +274,18 @@ public class GuideUseCaseTest {
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
             .content("수정된 도움말")
             .build();
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
         when(guideUpdateService.updateGuide(guideId, guideUpdateRequest)).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
         // when
-        ApplicationException e = assertThrows(ApplicationException.class, () -> guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest));
+        ApplicationException e = assertThrows(ApplicationException.class, () -> guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest, attachments));
         //then
         assertEquals(GuideErrorCode.GUIDE_NOT_EXIST, e.getCode());
     }
