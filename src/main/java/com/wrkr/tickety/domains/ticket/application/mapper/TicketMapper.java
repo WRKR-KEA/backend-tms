@@ -90,8 +90,8 @@ public class TicketMapper {
             .id(PkCrypto.encrypt(ticket.getTicketId()))
             .serialNumber(ticket.getSerialNumber())
             .title(ticket.getTitle())
-            .status(ticket.getStatus().getDescription())
-            .requesterName(ticket.getUser().getName())
+            .status(ticket.getStatus())
+            .requesterNickname(ticket.getUser().getNickname())
             .createdAt(ticket.getCreatedAt())
             .updatedAt(ticket.getUpdatedAt())
             .isPinned(ticket.getIsPinned())
@@ -173,7 +173,8 @@ public class TicketMapper {
     public static UserTicketMainPageResponse toUserTicketMainPageResponse(
         List<Ticket> recentTickets,
         Map<Long, LocalDateTime> startDatesMap,
-        Map<Long, LocalDateTime> completeDatesMap) {
+        Map<Long, LocalDateTime> completeDatesMap
+    ) {
 
         return UserTicketMainPageResponse.builder()
             .recentTickets(recentTickets.stream().map(ticket -> UserTicketMainPageResponse.recentTickets.builder()
@@ -186,11 +187,11 @@ public class TicketMapper {
                 .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
                 .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
                 .ticketTimeInfo(UserTicketMainPageResponse.recentTickets.ticketTimeInfo.builder()
-                    .createdAt(ticket.getCreatedAt())
-                    .updatedAt(ticket.getUpdatedAt())
-                    .startedAt(startDatesMap.get(ticket.getTicketId()))
-                    .endedAt(completeDatesMap.get(ticket.getTicketId()))
-                    .build()
+                                    .createdAt(ticket.getCreatedAt())
+                                    .updatedAt(ticket.getUpdatedAt())
+                                    .startedAt(startDatesMap.get(ticket.getTicketId()))
+                                    .endedAt(completeDatesMap.get(ticket.getTicketId()))
+                                    .build()
                 )
                 .build()
             ).toList())

@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response;
 
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -17,11 +18,11 @@ public record ManagerTicketAllGetResponse(
     @Schema(description = "티켓 제목", example = "티켓 제목")
     String title,
 
-    @Schema(description = "티켓 상태", example = "요청")
-    String status,
+    @Schema(description = "티켓 상태", example = "IN_PROGRESS")
+    TicketStatus status,
 
-    @Schema(description = "요청자 이름", example = "홍길동")
-    String requesterName,
+    @Schema(description = "요청자 닉네임", example = "홍길동")
+    String requesterNickname,
 
     @Schema(description = "요청일", example = "2021.08.01")
     LocalDateTime createdAt,
