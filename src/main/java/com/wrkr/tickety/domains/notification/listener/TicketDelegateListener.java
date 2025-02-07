@@ -5,6 +5,7 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketDelegateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
@@ -23,6 +24,7 @@ public class TicketDelegateListener {
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
+    private final KakaoworkMessageService kakaoworkMessageService;
 
     @Async
     @EventListener
@@ -48,5 +50,6 @@ public class TicketDelegateListener {
         );
 
         sendApplicationNotificationService.sendTicketDelegateApplicationNotification(prevManager, newManager, ticket);
+        kakaoworkMessageService.sendTicketDelegateKakaoworkAlarm(prevManager, newManager, ticket);
     }
 }
