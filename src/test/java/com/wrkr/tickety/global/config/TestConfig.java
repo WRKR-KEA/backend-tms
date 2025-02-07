@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @TestConfiguration
 @EntityScan(basePackages = {
-    "**.entity",
+    "**.entity"
 })
 @EnableJpaAuditing
 public class TestConfig {

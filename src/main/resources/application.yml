@@ -10,6 +10,7 @@ spring:
       - mail.yml
       - redis.yml
       - jwt.yml
+      - s3.yml
   data:
     web:
       pageable:

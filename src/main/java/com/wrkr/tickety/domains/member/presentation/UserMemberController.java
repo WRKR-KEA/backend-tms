@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.member.presentation;
 
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_PASSWORD_FORMAT;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.UNMATCHED_PASSWORD;
 
 import com.wrkr.tickety.domains.member.application.dto.request.PasswordUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
@@ -27,7 +28,7 @@ public class UserMemberController {
     private final PasswordUpdateUseCase passwordUpdateUseCase;
 
     @Operation(summary = "비밀번호 재설정", description = "사용자 또는 담당자가 비밀번호 재설정을 진행합니다.")
-    @CustomErrorCodes(memberErrorCodes = {INVALID_PASSWORD_FORMAT})
+    @CustomErrorCodes(memberErrorCodes = {INVALID_PASSWORD_FORMAT, UNMATCHED_PASSWORD})
     @PatchMapping("/password")
     public ApplicationResponse<MemberPkResponse> updatePassword(
         @AuthenticationPrincipal Member member,
