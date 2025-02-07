@@ -12,7 +12,7 @@ public record ManagerTicketMainPageResponse(
     @Schema(description = "고정된 티켓 목록")
     List<PinTickets> pinTickets,
 
-    @Schema(description = "용청된 티켓 목록")
+    @Schema(description = "요청된 티켓 목록")
     List<requestTickets> requestTickets
 
 ) {
@@ -33,6 +33,9 @@ public record ManagerTicketMainPageResponse(
 
         @Schema(description = "사용자 닉네임", example = "request.er")
         String userNickname,
+
+        @Schema(description = "담당자 닉네임", example = "manage.r")
+        String managerNickname,
 
         @Schema(description = "요청일", example = "2021-01-01")
         String requestedDate,
@@ -56,9 +59,6 @@ public record ManagerTicketMainPageResponse(
 
         @Schema(description = "티켓 제목", example = "VM 생성 요청")
         String title,
-
-        @Schema(description = "담당자 닉네임", example = "manage.r")
-        String managerNickname,
 
         @Schema(description = "사용자 닉네임", example = "request.er")
         String userNickname,
