@@ -98,13 +98,13 @@ public class AdminMemberController {
 
     @Operation(summary = "관리자 - 회원 등록 엑셀 양식 다운로드", description = "회원 등록에 필요한 정해진 양식의 엑셀 파일을 다운로드합니다.")
     @CustomErrorCodes(memberErrorCodes = {INVALID_EMAIL_FORMAT, ALREADY_EXIST_EMAIL, INVALID_PHONE_FORMAT, INVALID_ROLE})
-    @PostMapping(value = "/excel/example", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping(value = "/excel/example")
     public void createMemberExcelExampleDownload(
         HttpServletResponse response,
         @AuthenticationPrincipal Member member
     ) {
         List<MemberCreateRequest> memberInfoExamples = excelExampleCreateUseCase.createMemberInfoExample();
-        excelUtil.renderObjectToExcel(response, memberInfoExamples, MemberCreateRequest.class, "회원 등록 예시 파일");
+        excelUtil.renderObjectToExcel(response, memberInfoExamples, MemberCreateRequest.class, "member_info_example");
     }
 
     @Operation(summary = "관리자 - 회원 정보 수정", description = "회원 정보를 수정합니다.")
