@@ -9,10 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @TestConfiguration
 @EntityScan(basePackages = {
-    "com.wrkr.tickety.domains.log.persistence.entity",
-    "com.wrkr.tickety.domains.ticket.persistence.entity",
-    "com.wrkr.tickety.domains.member.persistence.entity",
-    "com.wrkr.tickety.global.entity"
+    "**.entity",
 })
 @EnableJpaAuditing
 public class TestConfig {
