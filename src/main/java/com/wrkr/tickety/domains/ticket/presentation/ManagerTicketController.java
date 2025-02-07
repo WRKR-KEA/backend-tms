@@ -120,7 +120,7 @@ public class ManagerTicketController {
     }
 
     @Operation(summary = "부서 티켓 목록 엑셀 다운로드(상태별)", description = "부서 내부의 모든 티켓을 조회해서 엑셀 파일로 반환합니다.")
-    @GetMapping("/tickets/department/excel")
+    @GetMapping("/department/excel")
     public void getDepartmentAllTicketsExcelDownload(
         HttpServletResponse response,
         @Parameter(description = "검색어 (제목, 담당자, 티켓 번호 대상)", example = "VM")
