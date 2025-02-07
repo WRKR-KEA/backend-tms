@@ -11,6 +11,7 @@ import com.wrkr.tickety.domains.member.application.dto.request.MemberDeleteReque
 import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
+import com.wrkr.tickety.domains.member.application.usecase.ExcelExampleCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoGetUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCase;
@@ -29,6 +30,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ public class AdminMemberController {
     private final MemberInfoUpdateUseCase memberInfoUpdateUseCase;
     private final MemberInfoGetUseCase memberInfoGetUseCase;
     private final MemberInfoSearchUseCase memberInfoSearchUseCase;
+    private final ExcelExampleCreateUseCase excelExampleCreateUseCase;
     private final ExcelUtil excelUtil;
 
     // TODO: Image 처리 방식 논의 필요(Multipart or ImageUrl DTO로 바로 받기)
@@ -90,6 +93,18 @@ public class AdminMemberController {
         List<MemberPkResponse> memberPkResponses = memberCreateUseCase.createMember(memberCreateRequests);
 
         return ApplicationResponse.onSuccess(memberPkResponses);
+    }
+
+
+    @Operation(summary = "관리자 - 회원 등록 엑셀 양식 다운로드", description = "회원 등록에 필요한 정해진 양식의 엑셀 파일을 다운로드합니다.")
+    @CustomErrorCodes(memberErrorCodes = {INVALID_EMAIL_FORMAT, ALREADY_EXIST_EMAIL, INVALID_PHONE_FORMAT, INVALID_ROLE})
+    @PostMapping(value = "/excel/example", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void createMemberExcelExampleDownload(
+        HttpServletResponse response,
+        @AuthenticationPrincipal Member member
+    ) {
+        List<MemberCreateRequest> memberInfoExamples = excelExampleCreateUseCase.createMemberInfoExample();
+        excelUtil.renderObjectToExcel(response, memberInfoExamples, MemberCreateRequest.class, "회원 등록 예시 파일");
     }
 
     @Operation(summary = "관리자 - 회원 정보 수정", description = "회원 정보를 수정합니다.")
