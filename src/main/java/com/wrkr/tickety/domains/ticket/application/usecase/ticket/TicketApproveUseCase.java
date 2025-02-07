@@ -6,7 +6,7 @@ import static com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper.to
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
-import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
+import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.ModifiedType;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
@@ -55,10 +55,10 @@ public class TicketApproveUseCase {
 
         approvedTickets.forEach(ticket -> {
             applicationEventPublisher.publishEvent(TicketStatusChangeEvent.builder()
-                                                       .ticket(ticket)
-                                                       .user(ticket.getUser())
-                                                       .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_APPROVED)
-                                                       .build());
+                .ticket(ticket)
+                .user(ticket.getUser())
+                .agitTicketNotificationMessageType(AgitTicketNotificationMessageType.TICKET_APPROVED)
+                .build());
         });
 
         return response;

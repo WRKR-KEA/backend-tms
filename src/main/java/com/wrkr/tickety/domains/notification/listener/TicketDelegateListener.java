@@ -3,6 +3,7 @@ package com.wrkr.tickety.domains.notification.listener;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
+import com.wrkr.tickety.domains.notification.domain.service.SendApplicationNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketDelegateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -21,6 +22,7 @@ public class TicketDelegateListener {
 
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
+    private final SendApplicationNotificationService sendApplicationNotificationService;
 
     @Async
     @EventListener
@@ -31,19 +33,20 @@ public class TicketDelegateListener {
 
         sendAgitNotificationService.sendTicketDelegateAgitAlarm(prevManager, newManager, ticket);
 
-        EmailCreateRequest emailCreateRequestToUser = EmailMapper.toEmailCreateRequest(ticket.getUser().getEmail(),
-            EmailConstants.TICKET_DELEGATE_SUBJECT,
-            null);
+        EmailCreateRequest emailCreateRequestToUser = EmailMapper.toEmailCreateRequest(
+            ticket.getUser().getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
+        );
 
         sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(emailCreateRequestToUser, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER);
 
-        EmailCreateRequest emailCreateRequestToNewManager = EmailMapper.toEmailCreateRequest(newManager.getEmail(),
-            EmailConstants.TICKET_DELEGATE_SUBJECT,
-            null);
+        EmailCreateRequest emailCreateRequestToNewManager = EmailMapper.toEmailCreateRequest(
+            newManager.getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
+        );
 
-        sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(emailCreateRequestToNewManager, ticket, prevManager,
-            EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER);
+        sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(
+            emailCreateRequestToNewManager, ticket, prevManager, EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER
+        );
 
+        sendApplicationNotificationService.sendTicketDelegateApplicationNotification(prevManager, newManager, ticket);
     }
-
 }

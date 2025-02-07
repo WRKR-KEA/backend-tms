@@ -1,12 +1,12 @@
 package com.wrkr.tickety.domains.notification.domain.service;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.notification.domain.constant.AgitCommentNotificationMessage;
-import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketDelegateNotificationMessage;
-import com.wrkr.tickety.domains.notification.domain.constant.AgitTicketNotificationMessageType;
+import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitCommentNotificationMessage;
+import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketDelegateNotificationMessage;
+import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import java.time.Duration;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SendAgitNotificationService {
 
     private final WebClient webClient;
@@ -33,21 +33,19 @@ public class SendAgitNotificationService {
     public void sendCommentCreateAgitAlarm(Member receiver, Ticket ticket) {
         String ticketSerialNumber = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
         String agitUrl = receiver.getAgitUrl();
-        String message = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticketSerialNumber);
-        requestAgitApi(agitUrl, message);
+        requestAgitApi(agitUrl, ticketSerialNumber);
     }
 
     public void sendTicketDelegateAgitAlarm(Member prevManager, Member newManager, Ticket ticket) {
-        String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(ticket.getSerialNumber(),
-                                                                                                            newManager.getNickname());
+        String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
+            ticket.getSerialNumber(), newManager.getNickname()
+        );
         requestAgitApi(ticket.getUser().getAgitUrl(), MessageToUser);
 
-        String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(prevManager.getNickname(),
-                                                                                                                      ticket.getSerialNumber()
+        String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(
+            prevManager.getNickname(), ticket.getSerialNumber()
         );
         requestAgitApi(newManager.getAgitUrl(), MessageToManager);
-
-
     }
 
     /**
@@ -63,8 +61,7 @@ public class SendAgitNotificationService {
             .retrieve()
             .toBodilessEntity()
             .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1))
-                           .filter(throwable -> !(throwable instanceof InterruptedException)))
+                .filter(throwable -> !(throwable instanceof InterruptedException)))
             .block();
     }
-
 }

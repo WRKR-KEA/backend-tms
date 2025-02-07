@@ -4,6 +4,7 @@ spring:
       - crypto.yml
       - mail.yml
       - swagger.yml
+      - s3.yml
       - optional:classpath:env.properties
 
   datasource:
