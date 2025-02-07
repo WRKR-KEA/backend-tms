@@ -5,6 +5,7 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
 import com.wrkr.tickety.domains.ticket.domain.event.CommentCreateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -24,6 +25,7 @@ public class CommentCreateEventListener {
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
+    private final KakaoworkMessageService kakaoworkMessageService;
 
     @Async
     @EventListener
@@ -46,5 +48,6 @@ public class CommentCreateEventListener {
             .build();
         sendEmailNotificationService.sendCommentCreateEmail(emailCreateRequest, ticket, EmailConstants.TICKET_COMMENT);
         sendApplicationNotificationService.sendCommentApplicationNotification(receiver, ticket);
+        kakaoworkMessageService.sendCommentCreateKakaoworkAlarm(receiver, ticket);
     }
 }
