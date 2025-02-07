@@ -29,7 +29,7 @@ public class GuideCreateUseCase {
     private final GuideMapper guideMapper;
     private final S3ApiService s3ApiService;
 
-    public PkResponse createGuide(GuideCreateRequest guideCreateRequest, Long categoryId) {
+    public PkResponse createGuide(GuideCreateRequest guideCreateRequest, Long categoryId, List<MultipartFile> guideAttachments) {
 
         Category category = categoryGetService.getParentCategory(categoryId);
         Guide guide = Guide.builder()
@@ -38,17 +38,16 @@ public class GuideCreateUseCase {
             .build();
 
         Guide savedGuide = guideCreateService.createGuide(guide);
-
-        if (guideCreateRequest.attachments() != null && !guideCreateRequest.attachments().isEmpty()) {
-            List<GuideAttachment> attachments = new ArrayList<>();
-
-            for (MultipartFile file : guideCreateRequest.attachments()) {
-                String fileUrl = s3ApiService.uploadGuideFile(file);
-                GuideAttachment attachment = GuideAttachmentMapper.toGuideAttachmentDomain(savedGuide, fileUrl,
-                    file.getOriginalFilename(), file.getSize());
-
-                attachments.add(attachment);
-            }
+        List<GuideAttachment> attachments;
+        if (guideAttachments != null && !guideAttachments.isEmpty()) {
+            attachments = new ArrayList<>();
+            guideAttachments.forEach(attachmentFile -> {
+                String fileUrl = s3ApiService.uploadGuideFile(attachmentFile);
+                GuideAttachment guideAttachment = GuideAttachmentMapper.toGuideAttachmentDomain(savedGuide, fileUrl,
+                                                                                                attachmentFile.getOriginalFilename(),
+                                                                                                attachmentFile.getSize());
+                attachments.add(guideAttachment);
+            });
 
             guideAttachmentUploadService.saveAll(attachments);
         }

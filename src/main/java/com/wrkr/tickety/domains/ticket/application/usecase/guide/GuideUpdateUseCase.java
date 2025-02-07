@@ -13,7 +13,6 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +29,7 @@ public class GuideUpdateUseCase {
     private final GuideMapper guideMapper;
     private final S3ApiService s3ApiService;
 
-    public PkResponse modifyGuide(Long cryptoGuideId, GuideUpdateRequest guideUpdateRequest) {
+    public PkResponse modifyGuide(Long cryptoGuideId, GuideUpdateRequest guideUpdateRequest, List<MultipartFile> guideAttachments) {
         Guide guide = guideService.updateGuide(cryptoGuideId, guideUpdateRequest);
 
         // 1️⃣ 기존 첨부파일 가져오기
@@ -43,11 +42,11 @@ public class GuideUpdateUseCase {
         });
 
         // 3️⃣ 새로운 파일 업로드 (만약 새 파일이 존재하는 경우)
-        if (guideUpdateRequest.attachments() != null && !guideUpdateRequest.attachments().isEmpty()) {
-            List<GuideAttachment> newAttachments = guideUpdateRequest.attachments().stream()
+        if (guideAttachments != null && !guideAttachments.isEmpty()) {
+            List<GuideAttachment> newAttachments = guideAttachments.stream()
                 .filter(file -> !file.isEmpty())
                 .map(file -> saveGuideAttachment(guide, file))
-                .collect(Collectors.toList());
+                .toList();
 
             if (!newAttachments.isEmpty()) {
                 guideAttachmentUploadService.saveAll(newAttachments);
