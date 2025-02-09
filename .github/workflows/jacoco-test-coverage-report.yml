@@ -50,6 +50,8 @@ jobs:
           S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
           S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+          KAKAOWORK_APP_KEY=${{ secrets.KAKAOWORK_APP_KEY }}
+          KAKAOWORK_BASE_URL=${{ secrets.KAKAOWORK_BASE_URL }}
           EOF
           
           cat ./src/test/resources/env.properties
