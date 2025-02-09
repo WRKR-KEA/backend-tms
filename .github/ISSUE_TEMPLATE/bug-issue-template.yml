@@ -1,4 +1,4 @@
-name: 'Bug 이슈 생성'
+name: '[Develop] Bug 이슈 생성'
 description: '오류에 대한 Bug 이슈를 생성합니다.'
 labels: [order]
 title: '이슈 이름을 작성해주세요!'
