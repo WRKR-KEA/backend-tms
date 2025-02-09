@@ -5,6 +5,7 @@ spring:
       - mail.yml
       - swagger.yml
       - s3.yml
+      - kakaowork.yml
       - optional:classpath:env.properties
 
   datasource:
