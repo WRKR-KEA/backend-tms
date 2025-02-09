@@ -1,0 +1,4 @@
+kakaowork:
+  api:
+    base-url: ${KAKAOWORK_BASE_URL}
+    app-key: ${KAKAOWORK_APP_KEY}

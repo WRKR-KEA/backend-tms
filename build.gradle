@@ -1,0 +1,299 @@
+import org.hidetake.gradle.swagger.generator.GenerateSwaggerUI
+
+buildscript {
+    ext {
+        restdocsApiSpecVersion = '0.17.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.epages.restdocs-api-spec' version "${restdocsApiSpecVersion}"
+    id 'org.hidetake.swagger.generator' version '2.18.2'
+    id 'jacoco'
+}
+
+group = 'com.wrkr'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+swaggerSources {
+    sample {
+        setInputFile(file("${project.buildDir}/api-spec/openapi3.yaml"))
+    }
+}
+
+openapi3 {
+    servers = [
+            { url = "http://localhost:8080" }
+    ]
+    title = "Tickety API 명세서"
+    description = "Tickety API Docs"
+    version = "0.0.1"
+    format = "yaml"
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+dependencies {
+    // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Query DSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Devtools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    //Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //thymeleaf(for email service)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    // MySQL
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Configuration Processor
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Lombok
+    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'com.h2database:h2'
+
+    // Webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+    // RestDocs
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    // openAPI3
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:' + restdocsApiSpecVersion
+
+    // SwaggerUI
+    swaggerUI 'org.webjars:swagger-ui:4.11.1'
+
+    // POI(Excel)
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    // Liquibase
+    implementation 'org.liquibase:liquibase-core'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // S3 client
+    implementation platform('software.amazon.awssdk:bom:2.23.7')
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    jvmArgs '-Xshare:off'
+}
+
+// doFrist를 통한 Header 설정
+tasks.withType(GenerateSwaggerUI) {
+    dependsOn 'openapi3'
+    doFirst {
+        def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
+
+        def securitySchemesContent = "  securitySchemes:\n" +       \
+                                           "    APIKey:\n" +       \
+                                           "      type: apiKey\n" +       \
+                                           "      name: Authorization\n" +       \
+                                           "      in: header\n" +      \
+                                           "security:\n" +
+                "  - APIKey: []  # Apply the security scheme here"
+
+        swaggerUIFile.append securitySchemesContent
+    }
+}
+
+// 생성된 openapi3 스펙을 기반으로 SwaggerUISample 생성 및 static/docs 패키지에 복사
+bootJar {
+    dependsOn generateSwaggerUISample
+    from("${generateSwaggerUISample.outputDir}") {
+        into 'static/docs'
+    }
+}
+
+def QDomains = []
+for (qPattern in '*.QA'..'*.QZ') { // qPattern = '*.QA', '*.QB', ... '*.QZ'
+    QDomains.add(qPattern + '*')
+}
+
+def jacocoExcludePatterns = [
+        "**/*Application*",
+        "**/*Config*",
+        "**/*Exception*",
+        "**/*Request*",
+        "**/*Response*",
+        "**/*Dto*",
+        "**/*Interceptor*",
+        "**/*Filter*",
+        "**/*Resolver*",
+        "**/*Entity*",
+        "**/test/**",
+        "**/resources/**",
+        '**.global.**',
+        '**.entity.**',
+        '**.persistence.**',
+        "**.*Application*",
+        '**.presentation.**',
+        '**.exception.**',
+        '**.domain.model.**',
+        "**.dto.**",
+        "**.mapper.**",
+        "**.repository.**",
+        "**.adapter.**"
+]
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            // rule 활성화
+            enabled = true
+
+            // 클래스 단위로 룰 체크
+            element = 'CLASS'
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            excludes = jacocoExcludePatterns + QDomains
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
+
+def jacocoDir = layout.buildDirectory.dir("reports/")
+
+jacocoTestReport {
+    // 테스트가 수행되어야만 report 생성
+    dependsOn test
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(true)
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: jacocoExcludePatterns + QDomains) // Querydsl 관련 제거
+                })
+        )
+    }
+
+    finalizedBy jacocoTestCoverageVerification
+}
+
+// QueryDSL Q파일 저장 위치
+def querydslSrcDir = 'build/generated'
+
+clean {
+    delete file(querydslSrcDir)
+}
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory = file(querydslSrcDir)
+}
+
+// release version & tag
+tasks.register('updateVersion') {
+    doFirst {
+        def currentVersion = ''
+        def ymlFile = file('src/main/resources/application.yml')
+        ymlFile.text.split('\n').each {
+            if (it.startsWith('version: ')) {
+                currentVersion = it.split(' ')[1]
+            }
+        }
+
+        def increment = project.properties['increment']
+        def newVersion = ''
+        switch (increment) {
+            case 'major':
+                newVersion = "${(currentVersion.split("\\.")[0].toInteger() + 1)}.0.0"
+                break
+            case 'minor':
+                newVersion = "${currentVersion.split("\\.")[0]}.${(currentVersion.split("\\.")[1].toInteger() + 1)}.0"
+                break
+            case 'patch':
+                newVersion = "${currentVersion.split("\\.")[0]}.${currentVersion.split("\\.")[1]}.${(currentVersion.split("\\.")[2].toInteger() + 1)}"
+                break
+            default:
+                println "No increment specified"
+                return
+        }
+
+        ymlFile.text = ymlFile.text.replace("version: $currentVersion", "version: $newVersion")
+        def gradleFile = file('build.gradle')
+        gradleFile.text = gradleFile.text.replace("version = '${project.version}'", "version = '$newVersion-SNAPSHOT'")
+    }
+}

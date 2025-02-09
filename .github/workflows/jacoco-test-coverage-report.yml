@@ -1,0 +1,72 @@
+name: Report Jacoco Test Coverage
+
+on:
+  pull_request:
+    branches: [ "develop" ]
+    types: [ opened, synchronize, reopened ]
+
+permissions: write-all
+
+jobs:
+  test_and_report:
+    name: Test and Generate Jacoco Test Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        shell: bash
+        run: chmod +x gradlew
+
+      - name: Inject secret into env.properties
+        run: |
+          cat <<EOF > ./src/test/resources/env.properties
+          PK_CRYPTO_ALGORITHM=${{ secrets.PK_CRYPTO_ALGORITHM }}
+          PK_CRYPTO_SECRET=${{ secrets.PK_CRYPTO_SECRET }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}
+          JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          S3_ENDPOINT=${{ secrets.S3_ENDPOINT }}
+          S3_REGION=${{ secrets.S3_REGION }}
+          S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
+          S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+          KAKAOWORK_APP_KEY=${{ secrets.KAKAOWORK_APP_KEY }}
+          KAKAOWORK_BASE_URL=${{ secrets.KAKAOWORK_BASE_URL }}
+          EOF
+          
+          cat ./src/test/resources/env.properties
+
+      - name: Run Tests and Generate Coverage
+        shell: bash
+        run: |
+          ./gradlew clean test jacocoTestReport
+
+      - name: Test Coverage Report
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          title: Test Coverage Report
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 30
+          min-coverage-changed-files: 50
