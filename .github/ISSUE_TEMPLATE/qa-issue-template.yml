@@ -1,0 +1,33 @@
+name: '[QA] BugFix 이슈 생성'
+description: '오류에 대한 Bug 이슈를 생성합니다.'
+labels: [ order ]
+title: '이슈 이름을 작성해주세요!'
+body:
+  - type: input
+    id: parentKey
+    attributes:
+      label: '🏷️ (QA) BugFix 상위 작업 Ticket Number'
+      description: '상위 작업의 Ticket Number를 기입해주세요!'
+      placeholder: 'WRKR-00'
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: '💬 상세 내용 (Description)'
+      description: '이슈에 대해서 설명해주세요!'
+      value: |
+        - About Details
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: '☑️ 하위 작업목록 (SubTasks)'
+      description: '해당 이슈에 대해 필요한 작업목록을 작성해주세요!'
+      value: |
+        - [ ] 버그 수정
+    validations:
+      required: true
