@@ -11,8 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Entity
 @Getter
@@ -43,9 +42,6 @@ public class CategoryEntity extends BaseTimeEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CategoryEntity> children = new ArrayList<>();
-
     @Builder
     public CategoryEntity(
             Long categoryId,
@@ -53,8 +49,7 @@ public class CategoryEntity extends BaseTimeEntity {
             String name,
             Integer seq,
             Boolean isDeleted,
-            LocalDateTime deletedAt,
-            List<CategoryEntity> children
+            LocalDateTime deletedAt
     ) {
         this.categoryId = categoryId;
         this.parent = parent;
@@ -62,6 +57,5 @@ public class CategoryEntity extends BaseTimeEntity {
         this.seq = seq;
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
-        this.children = children != null ? children : new ArrayList<>();
     }
 }

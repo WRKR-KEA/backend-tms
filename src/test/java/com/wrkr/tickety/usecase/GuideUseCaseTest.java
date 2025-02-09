@@ -9,6 +9,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.wrkr.tickety.domains.attachment.domain.service.GuideAttachmentGetService;
+import com.wrkr.tickety.domains.attachment.domain.service.GuideAttachmentUploadService;
+import com.wrkr.tickety.domains.attachment.domain.service.S3ApiService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
@@ -27,9 +30,12 @@ import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
+import com.wrkr.tickety.domains.ticket.persistence.adapter.CategoryPersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +45,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,6 +54,9 @@ public class GuideUseCaseTest {
 
     @Mock
     private GuideMapper guideMapper;
+
+    @Mock
+    private CategoryPersistenceAdapter categoryPersistenceAdapter;
 
     @Mock
     private GuideUpdateService guideUpdateService;
@@ -61,6 +72,15 @@ public class GuideUseCaseTest {
 
     @Mock
     private GuideGetService guideGetService;
+
+    @Mock
+    private GuideAttachmentGetService guideAttachmentGetService;
+
+    @Mock
+    private S3ApiService s3ApiService;
+
+    @Mock
+    private GuideAttachmentUploadService guideAttachmentUploadService;
 
     @InjectMocks
     private GuideGetUseCase guideGetUseCase;
@@ -101,7 +121,7 @@ public class GuideUseCaseTest {
             .build();
 
         given(guideGetService.getGuideContentByCategory(categoryId)).willReturn(guideDomain);
-        given(guideMapper.guideToGuideResponse(guideDomain)).willReturn(guideResponseByCategory);
+        given(guideMapper.guideToGuideResponse(guideDomain, guideAttachmentGetService)).willReturn(guideResponseByCategory);
 
         // when
         GuideResponse response = guideGetUseCase.getGuide(categoryId);
@@ -117,11 +137,11 @@ public class GuideUseCaseTest {
     void testGetGuideWithNonExistCategory() {
         // given
         Long categoryId = 1L;
-        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXIST));
+        when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
         // when
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideGetUseCase.getGuide(categoryId));
         //then
-        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
+        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXISTS, e.getCode());
 
     }
 
@@ -154,31 +174,28 @@ public class GuideUseCaseTest {
             .content("test")
             .build();
 
-        given(categoryGetService.getCategory(categoryId)).willReturn(Optional.ofNullable(category));
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+        String url = "this is file url";
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
+
+        given(s3ApiService.uploadGuideFile(file)).willReturn(url);
+        given(categoryGetService.getParentCategory(categoryId)).willReturn(category);
         given(guideCreateService.createGuide(any(Guide.class))).willReturn(guide);
         given(guideMapper.guideIdToPkResponse(guide)).willReturn(
             PkResponse.builder().id(cryptoCategoryId).build());
 
         // when
-        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, categoryId);
+        PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, categoryId, attachments);
 
         // then
         assertEquals(cryptoCategoryId, response.id());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 카테고리로 도움말을 생성하면 예외가 발생한다.")
-    void testCreateGuideWithNonExistCategory() {
-        // given
-        long categoryId = 1L;
-        GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
-            .content("test")
-            .build();
-        when(categoryGetService.getCategory(categoryId)).thenReturn(Optional.empty());
-        // when
-        ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));
-        //then
-        assertEquals(CategoryErrorCode.CATEGORY_NOT_EXIST, e.getCode());
     }
 
     @Test
@@ -195,10 +212,20 @@ public class GuideUseCaseTest {
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
             .content("test")
             .build();
-        when(categoryGetService.getCategory(categoryId)).thenReturn(Optional.of(category));
+
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
+        when(categoryGetService.getParentCategory(categoryId)).thenReturn(category);
         when(guideCreateService.createGuide(any(Guide.class))).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_ALREADY_EXIST));
         // when
-        ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId));
+        ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId, attachments));
         //then
         assertEquals(GuideErrorCode.GUIDE_ALREADY_EXIST, e.getCode());
     }
@@ -217,13 +244,23 @@ public class GuideUseCaseTest {
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
             .content("수정된 도움말")
             .build();
+
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
         given(guideUpdateService.updateGuide(guideId, guideUpdateRequest)).willReturn(
             guideDomain);
         given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(
             new PkResponse(cryptoGuideId));
 
         // when
-        PkResponse response = guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest);
+        PkResponse response = guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest, attachments);
 
         // then
         assertEquals(cryptoGuideId, response.id());
@@ -237,9 +274,18 @@ public class GuideUseCaseTest {
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
             .content("수정된 도움말")
             .build();
+        MockMultipartFile file = new MockMultipartFile(
+            "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
+            "test.txt",     // 파일명
+            "text/plain",   // MIME 타입
+            "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
+        );
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        attachments.add(file);
         when(guideUpdateService.updateGuide(guideId, guideUpdateRequest)).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
         // when
-        ApplicationException e = assertThrows(ApplicationException.class, () -> guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest));
+        ApplicationException e = assertThrows(ApplicationException.class, () -> guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest, attachments));
         //then
         assertEquals(GuideErrorCode.GUIDE_NOT_EXIST, e.getCode());
     }

@@ -4,6 +4,9 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.GuidePersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,8 +26,15 @@ public class GuideGetService {
         return guide;
     }
 
-    public Boolean existsByCategoryId(Long categoryId) {
-        return guidePersistenceAdapter.existsByCategoryId(categoryId);
-    }
 
+    public Map<Long, Boolean> existsByCategoryIds(List<Long> categoryIds) {
+        List<Guide> existsGuides = guidePersistenceAdapter.existsByCategoryIds(categoryIds);
+
+        return existsGuides.stream()
+            .collect(Collectors.toMap(
+                guide -> guide.getCategory().getCategoryId(),
+                guide -> true
+            ));
+
+    }
 }

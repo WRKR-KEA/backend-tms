@@ -9,8 +9,8 @@ import static org.mockito.Mockito.verify;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
-import com.wrkr.tickety.domains.ticket.application.dto.request.TicketCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetPagingResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketCreateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
@@ -26,10 +26,11 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,8 +41,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class TicketUseCaseTest {
@@ -80,7 +79,8 @@ public class TicketUseCaseTest {
     private TicketCancelUseCase ticketCancelUseCase;
 
     private Member user;
-    private Category category;
+    private Category parentCategory;
+    private Category childCategory;
     private Ticket ticket;
 
     private static final Long USER_ID = 1L;
@@ -108,8 +108,15 @@ public class TicketUseCaseTest {
             .role(Role.USER)
             .build();
 
-        category = Category.builder()
+        parentCategory = Category.builder()
+            .categoryId(2L)
+            .name("카테고리")
+            .seq(1)
+            .build();
+
+        childCategory = Category.builder()
             .categoryId(TICKET_CATEGORY_ID)
+            .parent(parentCategory)
             .name("카테고리")
             .seq(1)
             .build();
@@ -121,7 +128,7 @@ public class TicketUseCaseTest {
             .content(TICKET_CONTENT)
             .serialNumber(TICKET_SERIAL)
             .status(TicketStatus.REQUEST)
-            .category(category)
+            .category(childCategory)
             .build();
     }
 
@@ -135,7 +142,7 @@ public class TicketUseCaseTest {
             .categoryId(PkCrypto.encrypt(TICKET_CATEGORY_ID))
             .build();
 
-        given(categoryGetService.getCategory(anyLong())).willReturn(Optional.ofNullable(category));
+        given(categoryGetService.getChildrenCategory(anyLong())).willReturn(childCategory);
 
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
@@ -147,7 +154,7 @@ public class TicketUseCaseTest {
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
-        verify(categoryGetService).getCategory(anyLong());
+        verify(categoryGetService).getChildrenCategory(anyLong());
         verify(memberGetService).byMemberId(anyLong());
         verify(ticketSaveService).save(any(Ticket.class));
     }
@@ -156,24 +163,24 @@ public class TicketUseCaseTest {
     @DisplayName("사용자가 요청했던 티켓들에 페이지네이션을 적용해서 전체 조회한다")
     void getTickets() {
         // given
-        Pageable pageable = PageRequest.of(0, 10);
+        ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, null);
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
 
-        given(ticketGetService.getTicketsByUserId(anyLong(), any(Pageable.class))).willReturn(ticketPage);
+        given(ticketGetService.getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class))).willReturn(ticketPage);
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         //when
-        TicketAllGetPagingResponse ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageable);
+        ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest);
 
         //then
         assertThat(ticketAllGetPagingResponse).isNotNull();
         assertThat(ticketAllGetPagingResponse.currentPage()).isEqualTo(1);
         assertThat(ticketAllGetPagingResponse.size()).isEqualTo(1);
-        assertThat(ticketAllGetPagingResponse.tickets().get(0).serialNumber()).isEqualTo("#12345678");
+        assertThat(ticketAllGetPagingResponse.elements().getFirst().serialNumber()).isEqualTo("#12345678");
 
-        verify(ticketGetService).getTicketsByUserId(anyLong(), any(Pageable.class));
+        verify(ticketGetService).getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class));
         verify(memberGetService).byMemberId(anyLong());
     }
 
@@ -203,7 +210,7 @@ public class TicketUseCaseTest {
         // given
         Ticket updatedTicket = Ticket.builder()
             .ticketId(TICKET_ID)
-            .category(category)
+            .category(childCategory)
             .content("티켓 내용")
             .serialNumber("#12345678")
             .title("티켓 제목")

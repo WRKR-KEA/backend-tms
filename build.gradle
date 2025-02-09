@@ -118,6 +118,9 @@ dependencies {
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
+    // Liquibase
+    implementation 'org.liquibase:liquibase-core'
+
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
@@ -128,6 +131,11 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // S3 client
+    implementation platform('software.amazon.awssdk:bom:2.23.7')
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
 }
 
 tasks.named('test') {

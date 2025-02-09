@@ -6,9 +6,16 @@ spring:
       - mysql.yml
       - swagger.yml
       - crypto.yml
+      - liquibase.yml
       - mail.yml
       - redis.yml
       - jwt.yml
+      - s3.yml
+      - kakaowork.yml
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
 
 server:
   port: ${APPLICATION_PORT:8080}
@@ -38,6 +45,7 @@ logging:
     root: INFO
   structured:
     format:
+      console: ecs
       file: ecs
   file:
     path: ${LOG_FILE_PATH:./logs}

@@ -4,10 +4,10 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.persistence.entity.GuideEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.GuidePersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.GuideRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,5 +38,10 @@ public class GuidePersistenceAdapter {
 
     public void deleteById(final Long guideId) {
         guideRepository.deleteById(guideId);
+    }
+
+    public List<Guide> existsByCategoryIds(List<Long> categoryIds) {
+        final List<GuideEntity> guideEntities = this.guideRepository.findByCategory_CategoryIdIn(categoryIds);
+        return guideEntities.stream().map(this.guidePersistenceMapper::toDomain).toList();
     }
 }

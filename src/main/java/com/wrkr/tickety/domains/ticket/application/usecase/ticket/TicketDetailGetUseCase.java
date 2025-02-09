@@ -30,7 +30,8 @@ public class TicketDetailGetUseCase {
 
         LocalDateTime firstManagerChangeDate = ticketHistoryGetService.getFirstManagerChangeDate(
             ticket.getTicketId());
+        LocalDateTime completeDate = ticketHistoryGetService.getCompleteDate(ticket);
 
-        return TicketMapper.toTicketDetailGetResponse(ticket, firstManagerChangeDate);
+        return TicketMapper.toTicketDetailGetResponse(ticket, firstManagerChangeDate, completeDate);
     }
 }

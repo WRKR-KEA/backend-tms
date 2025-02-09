@@ -2,11 +2,10 @@ package com.wrkr.tickety.domains.ticket.domain.service.category;
 
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.CategoryPersistenceAdapter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -20,7 +19,7 @@ public class CategoryCreateService {
         return categoryPersistenceAdapter.save(category);
     }
 
-    public void initChildren(List<Category> children){
+    public void initChildren(List<Category> children) {
         categoryPersistenceAdapter.saveAll(children);
     }
 

@@ -16,9 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,7 +36,7 @@ public class CommentController {
     public ApplicationResponse<PkResponse> createComment(
         @AuthenticationPrincipal Member member,
         @PathVariable String ticketId,
-        @RequestBody CommentRequest request
+        @ModelAttribute CommentRequest request
     ) {
         return ApplicationResponse.onSuccess(commentCreateUseCase.createComment(member, PkCrypto.decrypt(ticketId), request));
     }

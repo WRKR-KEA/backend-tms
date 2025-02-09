@@ -41,11 +41,13 @@ public class SecurityConfig {
         "/swagger-resources/**",
         "/swagger-ui.html/**",
         "/swagger-ui/**",
-        "/api/tickety-tms/**"
+        "/api/tickety-tms/**",
+        "/backend/api/tickety-tms/**"
     };
 
     private static final String[] PUBLIC_API_ENDPOINTS = {
-        "/api/auth/login"
+        "/api/auth/login",
+        "/api/members/password/reissue"
     };
 
     @Bean

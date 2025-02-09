@@ -1,8 +1,13 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.comment;
 
+import com.wrkr.tickety.domains.attachment.application.mapper.CommentAttachmentMapper;
+import com.wrkr.tickety.domains.attachment.domain.model.CommentAttachment;
+import com.wrkr.tickety.domains.attachment.domain.service.CommentAttachmentUploadService;
+import com.wrkr.tickety.domains.attachment.domain.service.S3ApiService;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.CommentRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
+import com.wrkr.tickety.domains.ticket.domain.event.CommentCreateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
@@ -12,8 +17,12 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @UseCase
 @Transactional
@@ -22,6 +31,10 @@ public class CommentCreateUseCase {
 
     private final TicketGetService ticketGetService;
     private final CommentSaveService commentSaveService;
+    private final CommentAttachmentUploadService commentAttachmentUploadService;
+    private final S3ApiService s3ApiService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
 
     public PkResponse createComment(Member member, Long ticketId, CommentRequest request) {
 
@@ -42,6 +55,24 @@ public class CommentCreateUseCase {
 
         Comment savedComment = commentSaveService.saveComment(comment);
 
+        if (request.attachments() != null && !request.attachments().isEmpty()) {
+            List<CommentAttachment> attachments = new ArrayList<>();
+
+            for (MultipartFile file : request.attachments()) {
+                String fileUrl = s3ApiService.uploadCommentFile(file);
+                CommentAttachment attachment = CommentAttachmentMapper.toCommentAttachmentDomain(savedComment, fileUrl, file.getOriginalFilename(),
+                    file.getSize());
+
+                attachments.add(attachment);
+            }
+
+            commentAttachmentUploadService.saveAll(attachments);
+        }
+
+        applicationEventPublisher.publishEvent(CommentCreateEvent.builder()
+                                                   .comment(savedComment)
+                                                   .build());
+      
         return PkResponse.builder()
             .id(PkCrypto.encrypt(savedComment.getCommentId()))
             .build();

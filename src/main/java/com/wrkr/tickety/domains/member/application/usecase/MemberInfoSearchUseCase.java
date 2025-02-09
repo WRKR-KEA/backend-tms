@@ -1,17 +1,15 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
-import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPagingResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import java.util.List;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -21,32 +19,20 @@ public class MemberInfoSearchUseCase {
 
     private final MemberGetService memberGetService;
 
-    public MemberInfoPagingResponse searchMemberInfo(
-        int page,
-        int size,
+    public ApplicationPageResponse<MemberInfoResponse> searchMemberInfo(
+        ApplicationPageRequest pageRequest,
         Role role,
-        String email,
-        String name,
-        String department
+        String query
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-
         Page<Member> memberPage = memberGetService.searchMember(
-            pageable,
+            pageRequest,
             role,
-            email,
-            name,
-            department
+            query
         );
 
-        List<MemberInfoResponse> memberInfoResponses = MemberMapper.toMemberInfoResponses(memberPage.getContent());
-
-        return MemberMapper.toMemberInfoPagingResponse(
-            memberInfoResponses,
-            memberPage.getNumber() + 1,
-            memberPage.getTotalPages(),
-            memberPage.getTotalElements(),
-            memberPage.getSize()
+        return ApplicationPageResponse.of(
+            memberPage,
+            MemberMapper::toMemberInfoResponse
         );
     }
 }

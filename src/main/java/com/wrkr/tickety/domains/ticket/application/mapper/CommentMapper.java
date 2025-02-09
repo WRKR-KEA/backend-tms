@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.mapper;
 
+import com.wrkr.tickety.domains.attachment.domain.service.CommentAttachmentGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse.CommentDto;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
@@ -13,7 +14,7 @@ public class CommentMapper {
         throw new IllegalArgumentException();
     }
 
-    public static CommentResponse toCommentResponse(Long ticketId, List<Comment> comments) {
+    public static CommentResponse toCommentResponse(Long ticketId, List<Comment> comments, CommentAttachmentGetService commentAttachmentGetService) {
         List<CommentDto> commentDTOList = new ArrayList<>();
         for (Comment comment : comments) {
             commentDTOList.add(CommentDto.builder()
@@ -21,8 +22,9 @@ public class CommentMapper {
                 .commentId(PkCrypto.encrypt(comment.getCommentId()))
                 .createdAt(comment.getCreatedAt())
                 .memberId(PkCrypto.encrypt(comment.getMember().getMemberId()))
-                .name(comment.getMember().getName())
+                .nickname(comment.getMember().getName())
                 .content(comment.getContent())
+                .attachments(commentAttachmentGetService.getAttachmentsByCommentId(comment.getCommentId()))
                 .build());
         }
 
