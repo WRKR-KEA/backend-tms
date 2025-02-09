@@ -1,0 +1,3 @@
+crypto:
+  algorithm: ${PK_CRYPTO_ALGORITHM}
+  secret: ${PK_CRYPTO_SECRET}
