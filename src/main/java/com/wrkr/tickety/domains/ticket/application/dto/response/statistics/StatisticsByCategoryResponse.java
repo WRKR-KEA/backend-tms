@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record StatisticsByCategoryResponse(
+    
     @Schema(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12")
     String date,
     @Schema(description = "부모 카테고리 id", example = "Bqs3C822lkMNdWlmE-szUw", nullable = true)

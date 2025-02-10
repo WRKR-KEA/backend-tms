@@ -20,7 +20,7 @@ public class StatisticsGetService {
     public List<Long> getTicketCountByCategoryList(List<Category> categoryList, TimePeriod timePeriod) {
         return categoryList.stream().map(
             category -> ticketPersistenceAdapter.findTicketCountByCategoryAndDateRange(category.getCategoryId(), timePeriod.getStartDateTime(),
-                                                                                       timePeriod.getEndDateTime())).toList();
+                timePeriod.getEndDateTime())).toList();
     }
 
     public List<Long> getTicketCountByParentCategoryList(List<Category> categoryList, TimePeriod timePeriod) {
@@ -29,8 +29,9 @@ public class StatisticsGetService {
             Category category = categoryList.get(i);
             List<Category> children = categoryPersistenceAdapter.findChildren(category.getCategoryId());
             long count = children.stream().mapToLong(
-                child -> ticketPersistenceAdapter.findTicketCountByCategoryAndDateRange(child.getCategoryId(), timePeriod.getStartDateTime(),
-                                                                                        timePeriod.getEndDateTime())).sum();
+                child -> ticketPersistenceAdapter.findTicketCountByCategoryAndDateRange(
+                    child.getCategoryId(), timePeriod.getStartDateTime(), timePeriod.getEndDateTime())
+            ).sum();
             ticketCountList.add(count);
         });
         return ticketCountList;
