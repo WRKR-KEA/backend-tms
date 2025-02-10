@@ -30,7 +30,7 @@ public class StatisticsByParentCategoryUseCase {
         List<Category> parentCategoryList = categoryGetService.findParents();
         TimePeriod timePeriod = DateUtil.extractTimePeriod(date, type);
 
-        List<Long> ticketCountByCategoryList = statisticsGetService.getTicketCountByCategoryList(parentCategoryList, timePeriod);
+        List<Long> ticketCountByCategoryList = statisticsGetService.getTicketCountByParentCategoryList(parentCategoryList, timePeriod);
         List<TicketCount> ticketCountList = TicketCount.from(ticketCountByCategoryList, parentCategoryList);
 
         StatisticData statisticData = StatisticData.builder()
