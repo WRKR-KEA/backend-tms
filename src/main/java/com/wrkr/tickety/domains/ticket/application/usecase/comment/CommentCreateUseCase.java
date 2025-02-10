@@ -17,6 +17,7 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.global.utils.attachment.FileValidationUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,8 @@ public class CommentCreateUseCase {
         Comment savedComment = commentSaveService.saveComment(comment);
 
         if (commentAttachments != null && !commentAttachments.isEmpty()) {
+            FileValidationUtil.validateFiles(commentAttachments);
+
             List<CommentAttachment> attachments = new ArrayList<>();
 
             for (MultipartFile file : commentAttachments) {
