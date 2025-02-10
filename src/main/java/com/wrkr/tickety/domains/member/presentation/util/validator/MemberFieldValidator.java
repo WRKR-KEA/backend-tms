@@ -5,16 +5,13 @@ import static com.wrkr.tickety.domains.member.domain.constant.RegexConstants.NIC
 import static com.wrkr.tickety.domains.member.domain.constant.RegexConstants.PHONE_NUMBER_REGEX;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_EMAIL;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_NICKNAME;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.DEPARTMENT_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EMAIL_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_EMAIL_FORMAT;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NICKNAME_FORMAT;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_PHONE_FORMAT;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_DEPARTMENT;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_EMAIL;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NAME;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NICKNAME;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_PHONE;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_POSITION;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_ROLE;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.NAME_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.NICKNAME_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.PHONE_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.POSITION_IS_BLANK;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
@@ -52,12 +49,9 @@ public class MemberFieldValidator {
     }
 
     public void validateEmail(String email) {
-        if (email == null || email.isBlank()) {
-            throw ApplicationException.from(EMAIL_IS_BLANK);
-        }
-
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw ApplicationException.from(INVALID_EMAIL_FORMAT);
+        if (email == null || email.isBlank()
+            || !EMAIL_PATTERN.matcher(email).matches()) {
+            throw ApplicationException.from(INVALID_EMAIL);
         }
 
         if (memberGetService.existsByEmail(email)) {
@@ -67,17 +61,14 @@ public class MemberFieldValidator {
 
     public void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw ApplicationException.from(NAME_IS_BLANK);
+            throw ApplicationException.from(INVALID_NAME);
         }
     }
 
     public void validateNickname(String nickname) {
-        if (nickname == null || nickname.isBlank()) {
-            throw ApplicationException.from(NICKNAME_IS_BLANK);
-        }
-
-        if (!NICKNAME_PATTERN.matcher(nickname).matches()) {
-            throw ApplicationException.from(INVALID_NICKNAME_FORMAT);
+        if (nickname == null || nickname.isBlank()
+            || !NICKNAME_PATTERN.matcher(nickname).matches()) {
+            throw ApplicationException.from(INVALID_NICKNAME);
         }
 
         if (memberGetService.existsByNickname(nickname)) {
@@ -87,23 +78,20 @@ public class MemberFieldValidator {
 
     public void validateDepartment(String department) {
         if (department == null || department.isBlank()) {
-            throw ApplicationException.from(DEPARTMENT_IS_BLANK);
+            throw ApplicationException.from(INVALID_DEPARTMENT);
         }
     }
 
     public void validatePosition(String position) {
         if (position == null || position.isBlank()) {
-            throw ApplicationException.from(POSITION_IS_BLANK);
+            throw ApplicationException.from(INVALID_POSITION);
         }
     }
 
     public void validatePhone(String phone) {
-        if (phone == null || phone.isBlank()) {
-            throw ApplicationException.from(PHONE_IS_BLANK);
-        }
-
-        if (!PHONE_NUMBER_PATTERN.matcher(phone).matches()) {
-            throw ApplicationException.from(INVALID_PHONE_FORMAT);
+        if (phone == null || phone.isBlank()
+            || !PHONE_NUMBER_PATTERN.matcher(phone).matches()) {
+            throw ApplicationException.from(INVALID_PHONE);
         }
     }
 

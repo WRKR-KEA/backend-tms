@@ -22,7 +22,7 @@ public class NicknameFormatValidator implements ConstraintValidator<NicknameForm
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(MemberErrorCode.INVALID_NICKNAME_FORMAT.getMessage()).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(MemberErrorCode.INVALID_NICKNAME.getMessage()).addConstraintViolation();
         }
 
         return true;
