@@ -1,13 +1,12 @@
-package com.wrkr.tickety.domains.member.application.dto.response;
+package com.wrkr.tickety.domains.member.application.dto.request;
 
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-@Schema(description = "회원 상세 정보 DTO")
+@Schema(description = "회원 정보 수정 DTO")
 @Builder
-public record MemberInfoResponse(
-    @Schema(description = "Member PK", example = "Bqs3C822lkMNdWlmE-szUw")
-    String memberId,
+public record MemberInfoUpdateRequest(
 
     @Schema(description = "이메일", example = "wrkr@gachon.ac.kr")
     String email,
@@ -15,7 +14,7 @@ public record MemberInfoResponse(
     @Schema(description = "이름", example = "김가천")
     String name,
 
-    @Schema(description = "닉네임", example = "gachon.kim")
+    @Schema(description = "닉네임", example = "gachon.km")
     String nickname,
 
     @Schema(description = "부서", example = "백엔드 개발팀")
@@ -28,12 +27,9 @@ public record MemberInfoResponse(
     String phone,
 
     @Schema(description = "권한", example = "사용자")
-    String role,
+    Role role,
 
-    @Schema(description = "프로필 이미지 URL", example = "https://ibb.co/Gt8fycB")
-    String profileImage,
-
-    @Schema(description = "아지트 URL", example = "https://example.com/agit")
+    @Schema(description = "아지트 URL", example = "https://ibb.co/Gt8fycB")
     String agitUrl
 ) {
 
