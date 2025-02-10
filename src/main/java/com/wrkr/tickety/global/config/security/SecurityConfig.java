@@ -87,7 +87,9 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
-            "http://localhost:8080"
+            "http://localhost:8080",
+            "http://172.16.211.116:3000",
+            "http://172.16.211.53:8080"
         ));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));
