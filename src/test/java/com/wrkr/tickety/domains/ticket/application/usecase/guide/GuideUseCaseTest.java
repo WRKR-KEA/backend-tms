@@ -1,4 +1,4 @@
-package com.wrkr.tickety.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.guide;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,10 +17,6 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateReques
 import com.wrkr.tickety.domains.ticket.application.dto.response.GuideResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.GuideMapper;
-import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideCreateUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideDeleteUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideGetUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.guide.GuideUpdateUseCase;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
@@ -107,7 +103,7 @@ public class GuideUseCaseTest {
     @Test
     @DisplayName("카테고리id를 이용해 도움말을 조회한다.")
     void testGetGuide() throws ApplicationException {
-        // given
+        // Given
         Long categoryId = 1L;
 
         Guide guideDomain = Guide.builder()
@@ -123,10 +119,10 @@ public class GuideUseCaseTest {
         given(guideGetService.getGuideContentByCategory(categoryId)).willReturn(guideDomain);
         given(guideMapper.guideToGuideResponse(guideDomain, guideAttachmentGetService)).willReturn(guideResponseByCategory);
 
-        // when
+        // When
         GuideResponse response = guideGetUseCase.getGuide(categoryId);
 
-        // then
+        // Then
         assertNotNull(response.guideId());
         assertEquals("W1NMMfAHGTnNGLdRL3lvcw==", response.guideId());
         assertEquals(guideDomain.getContent(), response.content());
@@ -135,12 +131,12 @@ public class GuideUseCaseTest {
     @Test
     @DisplayName("존재하지 않는 카테고리id로 도움말을 조회하면 예외가 발생한다.")
     void testGetGuideWithNonExistCategory() {
-        // given
+        // Given
         Long categoryId = 1L;
         when(guideGetService.getGuideContentByCategory(categoryId)).thenThrow(ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
-        // when
+        // When
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideGetUseCase.getGuide(categoryId));
-        //then
+        // Then
         assertEquals(CategoryErrorCode.CATEGORY_NOT_EXISTS, e.getCode());
 
     }
@@ -148,7 +144,7 @@ public class GuideUseCaseTest {
     @Test
     @DisplayName("도움말을 생성한다.")
     void createGuideTest() {
-        // given
+        // Given
         long parentId = 1L;
         long categoryId = 2L;
         String cryptoCategoryId = pkCrypto.encryptValue(categoryId);
@@ -191,17 +187,17 @@ public class GuideUseCaseTest {
         given(guideMapper.guideIdToPkResponse(guide)).willReturn(
             PkResponse.builder().id(cryptoCategoryId).build());
 
-        // when
+        // When
         PkResponse response = guideCreateUseCase.createGuide(guideCreateRequest, categoryId, attachments);
 
-        // then
+        // Then
         assertEquals(cryptoCategoryId, response.id());
     }
 
     @Test
     @DisplayName("카테고리에 대한 도움말이 이미 존재할 때 도움말을 생성하면 예외가 발생한다.")
     void testCreateGuideWithExistingGuide() {
-        // given
+        // Given
         long categoryId = 1L;
         Category category = Category.builder()
             .categoryId(categoryId)
@@ -224,16 +220,16 @@ public class GuideUseCaseTest {
         attachments.add(file);
         when(categoryGetService.getParentCategory(categoryId)).thenReturn(category);
         when(guideCreateService.createGuide(any(Guide.class))).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_ALREADY_EXIST));
-        // when
+        // When
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideCreateUseCase.createGuide(guideCreateRequest, categoryId, attachments));
-        //then
+        // Then
         assertEquals(GuideErrorCode.GUIDE_ALREADY_EXIST, e.getCode());
     }
 
     @Test
     @DisplayName("도움말의 내용을 수정한다.")
     void updateGuideTest() {
-        // given
+        // Given
         long guideId = 1L;
         String cryptoGuideId = pkCrypto.encryptValue(guideId);
         Guide guideDomain = Guide.builder()
@@ -259,17 +255,17 @@ public class GuideUseCaseTest {
         given(guideMapper.guideIdToPkResponse(guideDomain)).willReturn(
             new PkResponse(cryptoGuideId));
 
-        // when
+        // When
         PkResponse response = guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest, attachments);
 
-        // then
+        // Then
         assertEquals(cryptoGuideId, response.id());
     }
 
     @Test
     @DisplayName("존재하지 않는 도움말을 수정하면 예외가 발생한다.")
     void testUpdateGuideWithNonExistGuide() {
-        // given
+        // Given
         long guideId = 1L;
         GuideUpdateRequest guideUpdateRequest = GuideUpdateRequest.builder()
             .content("수정된 도움말")
@@ -284,34 +280,34 @@ public class GuideUseCaseTest {
         List<MultipartFile> attachments = new ArrayList<>();
         attachments.add(file);
         when(guideUpdateService.updateGuide(guideId, guideUpdateRequest)).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
-        // when
+        // When
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideUpdateUseCase.modifyGuide(guideId, guideUpdateRequest, attachments));
-        //then
+        // Then
         assertEquals(GuideErrorCode.GUIDE_NOT_EXIST, e.getCode());
     }
 
     @Test
     @DisplayName("도움말을 삭제한다.")
     void deleteGuideTestInUseCase() {
-        // given
+        // Given
         Long guideId = 1L;
 
-        // when
+        // When
         guideDeleteUseCase.deleteGuide(guideId);
 
-        // then
+        // Then
         verify(guideDeleteService, times(1)).deleteGuide(guideId);
     }
 
     @Test
     @DisplayName("존재하지 않는 도움말을 삭제하면 예외가 발생한다.")
     void testDeleteGuideWithNonExistGuide() {
-        // given
+        // Given
         Long guideId = 1L;
         when(guideDeleteService.deleteGuide(guideId)).thenThrow(ApplicationException.from(GuideErrorCode.GUIDE_NOT_EXIST));
-        // when
+        // When
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideDeleteUseCase.deleteGuide(guideId));
-        //then
+        // Then
         assertEquals(GuideErrorCode.GUIDE_NOT_EXIST, e.getCode());
     }
 }
