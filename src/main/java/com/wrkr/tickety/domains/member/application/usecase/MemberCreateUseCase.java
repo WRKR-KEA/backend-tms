@@ -9,7 +9,7 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import com.wrkr.tickety.global.utils.UUIDGenerator;
+import com.wrkr.tickety.global.utils.RandomCodeGenerator;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
 import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import com.wrkr.tickety.infrastructure.email.EmailUtil;
@@ -32,7 +32,7 @@ public class MemberCreateUseCase {
         List<MemberPkResponse> memberPkResponses = new ArrayList<>();
 
         for (MemberCreateRequest memberCreateRequest : memberCreateRequests) {
-            String tempPassword = UUIDGenerator.generateUUID().substring(0, 12);
+            String tempPassword = RandomCodeGenerator.generateUUID().substring(0, 12);
             String encryptedPassword = PasswordEncoderUtil.encodePassword(tempPassword);
 
             Member createdMember = memberSaveService.save(MemberMapper.toMember(memberCreateRequest, encryptedPassword));
@@ -42,7 +42,7 @@ public class MemberCreateUseCase {
                 EmailConstants.TEMP_PASSWORD_SUBJECT,
                 null
             );
-            emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.TYPE_PASSWORD);
+            emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.FILENAME_PASSWORD);
 
             log.info("**** 회원 등록 됨 ****");
             log.info("이메일 : {}, 임시 비밀번호 : {}", createdMember.getEmail(), tempPassword);
