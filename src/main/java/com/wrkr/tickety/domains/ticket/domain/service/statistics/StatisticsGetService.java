@@ -1,7 +1,9 @@
 package com.wrkr.tickety.domains.ticket.domain.service.statistics;
 
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
-import java.time.LocalDateTime;
+import com.wrkr.tickety.global.utils.date.TimePeriod;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +13,12 @@ public class StatisticsGetService {
 
     private final TicketPersistenceAdapter ticketPersistenceAdapter;
 
-    public Long getStatisticsByCategoryAndDateRange(Long categoryId, LocalDateTime startOfMonth, LocalDateTime startOfNextMonth) {
-        return ticketPersistenceAdapter.findTicketCountByCategoryAndDateRange(categoryId, startOfMonth, startOfNextMonth);
+    public List<Long> getTicketCountByCategoryList(List<Category> categoryList, TimePeriod timePeriod) {
+        return categoryList.stream().map(category ->
+                                             ticketPersistenceAdapter.findTicketCountByCategoryAndDateRange(category.getCategoryId(),
+                                                                                                            timePeriod.getStartDateTime(),
+                                                                                                            timePeriod.getEndDateTime())
+        ).toList();
     }
 
 }
