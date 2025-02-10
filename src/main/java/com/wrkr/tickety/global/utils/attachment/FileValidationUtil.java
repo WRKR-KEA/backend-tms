@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileValidationUtil {
 
-    private static final int MAX_FILE_COUNT = 10;
+    private static final int MAX_FILE_COUNT = 5;
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
         "jpg", "jpeg", "png", "pdf", "xls", "xlsx"
