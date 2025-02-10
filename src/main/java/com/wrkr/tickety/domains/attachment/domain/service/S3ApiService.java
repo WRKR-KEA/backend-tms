@@ -66,6 +66,26 @@ public class S3ApiService {
         }
     }
 
+    public String uploadMemberProfileImage(MultipartFile file) {
+        String objectKey = "attachments/member/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+        try {
+            s3Client.putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .contentType(file.getContentType())
+                    .build(),
+                RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+            );
+
+            return s3Client.utilities().getUrl(builder ->
+                builder.bucket(bucketName).key(objectKey).build()
+            ).toString();
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드 실패", e);
+        }
+    }
 
     /**
      * S3에서 파일 삭제
@@ -88,5 +108,10 @@ public class S3ApiService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Boolean deleteProfileImage(String profileImageUrl) {
+        String objectKey = profileImageUrl.substring(profileImageUrl.indexOf(bucketName) + bucketName.length() + 1);
+        return deleteObject(objectKey);
     }
 }
