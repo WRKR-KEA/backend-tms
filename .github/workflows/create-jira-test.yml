@@ -64,7 +64,7 @@ jobs:
           fields: |
             {
               "parent": {
-                "key": "${{ steps.issue-parser.outputs.issueparser__test___ticket_number }}"
+                "key": "${{ steps.issue-parser.outputs.issueparser__qa_test___ticket_number }}"
               }
             }
       - name: Checkout release code
