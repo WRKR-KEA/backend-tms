@@ -14,12 +14,16 @@ import com.wrkr.tickety.infrastructure.email.EmailUtil;
 import com.wrkr.tickety.infrastructure.redis.RedisService;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @UseCase
 @RequiredArgsConstructor
 @Transactional
 public class VerificationCodeCreateUseCase {
+
+    private static final String VERIFICATION_CODE_PREFIX = "verification-code-";
 
     private final MemberGetService memberGetService;
     private final RedisService redisService;
@@ -30,14 +34,18 @@ public class VerificationCodeCreateUseCase {
 
         // 인증 코드 이미 존재하면 삭제
         String encryptedMemberId = PkCrypto.encrypt(findMember.getMemberId());
-        redisService.deleteValues(encryptedMemberId);
+        redisService.deleteValues(VERIFICATION_CODE_PREFIX + encryptedMemberId);
 
         String randomCode = RandomCodeGenerator.generateRandomCode();
         EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(findMember.getEmail(), EmailConstants.VERIFICATION_CODE_SUBJECT, null);
 
-        redisService.setValues(encryptedMemberId, randomCode, Duration.ofMinutes(5));
+        redisService.setValues(VERIFICATION_CODE_PREFIX + encryptedMemberId, randomCode, Duration.ofMinutes(5));
 
         emailUtil.sendMail(emailCreateRequest, randomCode, EmailConstants.FILENAME_VERIFICATION_CODE);
+
+        // TODO: 릴리즈 하기 전에 삭제
+        log.info("**** 인증 번호 생성 ****");
+        log.info("아이디: {}, 인증 번호 : {}", findMember.getNickname(), randomCode);
 
         return MemberMapper.toMemberPkResponse(encryptedMemberId);
     }

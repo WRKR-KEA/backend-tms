@@ -18,12 +18,16 @@ import com.wrkr.tickety.infrastructure.email.EmailUtil;
 import com.wrkr.tickety.infrastructure.redis.RedisService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @UseCase
 @RequiredArgsConstructor
 @Transactional
 public class PasswordReissueUseCase {
+
+    private static final String VERIFICATION_CODE_PREFIX = "verification-code-";
 
     private final MemberGetService memberGetService;
     private final MemberSaveService memberSaveService;
@@ -31,7 +35,7 @@ public class PasswordReissueUseCase {
     private final EmailUtil emailUtil;
 
     public MemberPkResponse reissuePassword(String encryptedMemberId, String verificationCodeReq) {
-        validateVerificationCode(verificationCodeReq, redisService.getValues(encryptedMemberId));
+        validateVerificationCode(verificationCodeReq, redisService.getValues(VERIFICATION_CODE_PREFIX + encryptedMemberId));
 
         Long decryptedMemberId = PkCrypto.decrypt(encryptedMemberId);
         Member findMember = memberGetService.byMemberId(decryptedMemberId);
@@ -49,7 +53,11 @@ public class PasswordReissueUseCase {
         EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(findMember.getEmail(), EmailConstants.REISSUE_PASSWORD_SUBJECT, null);
         emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.FILENAME_PASSWORD);
 
-        redisService.deleteValues(encryptedMemberId);
+        redisService.deleteValues(VERIFICATION_CODE_PREFIX + decryptedMemberId);
+
+        // TODO: 릴리즈 하기 전에 삭제
+        log.info("**** 재발급된 비밀번호 ****");
+        log.info("아이디: {}, 비밀번호 : {}", findMember.getNickname(), tempPassword);
 
         return MemberMapper.toMemberPkResponse(PkCrypto.encrypt(modifiedMember.getMemberId()));
     }
