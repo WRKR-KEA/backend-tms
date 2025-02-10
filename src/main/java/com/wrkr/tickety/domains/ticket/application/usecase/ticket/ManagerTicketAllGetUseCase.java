@@ -19,10 +19,10 @@ public class ManagerTicketAllGetUseCase {
     private final MemberGetService memberGetService;
     private final TicketGetService ticketGetService;
 
-    public ApplicationPageResponse<ManagerTicketAllGetResponse> getManagerTicketList(Long managerId, ApplicationPageRequest pageRequest, TicketStatus status,
-        String query) {
+    public ApplicationPageResponse<ManagerTicketAllGetResponse> getManagerTicketList(
+        Long managerId, ApplicationPageRequest pageRequest, TicketStatus status, String query
+    ) {
         memberGetService.byMemberId(managerId);
-
         Page<Ticket> ticketsPage = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, status, query);
 
         return ApplicationPageResponse.of(ticketsPage, TicketMapper::toManagerTicketAllGetResponse);

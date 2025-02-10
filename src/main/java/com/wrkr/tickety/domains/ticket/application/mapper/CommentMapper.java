@@ -17,15 +17,24 @@ public class CommentMapper {
     public static CommentResponse toCommentResponse(Long ticketId, List<Comment> comments, CommentAttachmentGetService commentAttachmentGetService) {
         List<CommentDto> commentDTOList = new ArrayList<>();
         for (Comment comment : comments) {
-            commentDTOList.add(CommentDto.builder()
-                .memberId(comment.getMember() == null ? "SYSTEM" : comment.getMember().getRole().toString())
-                .commentId(PkCrypto.encrypt(comment.getCommentId()))
-                .createdAt(comment.getCreatedAt())
-                .memberId(PkCrypto.encrypt(comment.getMember().getMemberId()))
-                .nickname(comment.getMember().getName())
-                .content(comment.getContent())
-                .attachments(commentAttachmentGetService.getAttachmentsByCommentId(comment.getCommentId()))
-                .build());
+            if (comment.getMember() == null) {
+                commentDTOList.add(CommentDto.builder()
+                                       .type("SYSTEM")
+                                       .commentId(PkCrypto.encrypt(comment.getCommentId()))
+                                       .createdAt(comment.getCreatedAt())
+                                       .content(comment.getContent())
+                                       .build());
+            } else {
+                commentDTOList.add(CommentDto.builder()
+                                       .type(comment.getMember().getRole().toString())
+                                       .commentId(PkCrypto.encrypt(comment.getCommentId()))
+                                       .createdAt(comment.getCreatedAt())
+                                       .memberId(PkCrypto.encrypt(comment.getMember().getMemberId()))
+                                       .nickname(comment.getMember().getName())
+                                       .content(comment.getContent())
+                                       .attachments(commentAttachmentGetService.getAttachmentsByCommentId(comment.getCommentId()))
+                                       .build());
+            }
         }
 
         return CommentResponse.builder()

@@ -26,6 +26,10 @@ server:
     threads:
       max: 200
       min-spare: 20
+  error:
+    include-stacktrace: on_param
+    include-message: always
+    path: /error
 
 ---
 spring.config.activate.on-profile: local

@@ -17,6 +17,7 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.global.utils.attachment.FileValidationUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class CommentCreateUseCase {
     private final ApplicationEventPublisher applicationEventPublisher;
 
 
-    public PkResponse createComment(Member member, Long ticketId, CommentRequest request) {
+    public PkResponse createComment(Member member, Long ticketId, CommentRequest request, List<MultipartFile> commentAttachments) {
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
@@ -55,10 +56,12 @@ public class CommentCreateUseCase {
 
         Comment savedComment = commentSaveService.saveComment(comment);
 
-        if (request.attachments() != null && !request.attachments().isEmpty()) {
+        if (commentAttachments != null && !commentAttachments.isEmpty()) {
+            FileValidationUtil.validateFiles(commentAttachments);
+
             List<CommentAttachment> attachments = new ArrayList<>();
 
-            for (MultipartFile file : request.attachments()) {
+            for (MultipartFile file : commentAttachments) {
                 String fileUrl = s3ApiService.uploadCommentFile(file);
                 CommentAttachment attachment = CommentAttachmentMapper.toCommentAttachmentDomain(savedComment, fileUrl, file.getOriginalFilename(),
                     file.getSize());
@@ -70,9 +73,9 @@ public class CommentCreateUseCase {
         }
 
         applicationEventPublisher.publishEvent(CommentCreateEvent.builder()
-                                                   .comment(savedComment)
-                                                   .build());
-      
+            .comment(savedComment)
+            .build());
+
         return PkResponse.builder()
             .id(PkCrypto.encrypt(savedComment.getCommentId()))
             .build();

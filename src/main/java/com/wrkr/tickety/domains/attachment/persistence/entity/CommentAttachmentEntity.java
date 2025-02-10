@@ -34,7 +34,7 @@ public class CommentAttachmentEntity extends BaseTimeEntity {
     @JoinColumn(name = "comment_id")
     private CommentEntity comment;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String fileUrl;
 
     @Column(nullable = false)
@@ -45,11 +45,11 @@ public class CommentAttachmentEntity extends BaseTimeEntity {
 
     @Builder
     public CommentAttachmentEntity(
-            Long attachmentId,
-            CommentEntity comment,
-            String fileUrl,
-            String fileName,
-            Long fileSize
+        Long attachmentId,
+        CommentEntity comment,
+        String fileUrl,
+        String fileName,
+        Long fileSize
     ) {
         this.attachmentId = attachmentId;
         this.comment = comment;
