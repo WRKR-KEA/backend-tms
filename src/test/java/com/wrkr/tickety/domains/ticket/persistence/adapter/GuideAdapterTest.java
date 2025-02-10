@@ -1,11 +1,10 @@
-package com.wrkr.tickety.adapter;
+package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
-import com.wrkr.tickety.domains.ticket.persistence.adapter.GuidePersistenceAdapter;
 import com.wrkr.tickety.domains.ticket.persistence.entity.GuideEntity;
 import com.wrkr.tickety.domains.ticket.persistence.mapper.GuidePersistenceMapper;
 import com.wrkr.tickety.domains.ticket.persistence.repository.GuideRepository;
@@ -31,7 +30,7 @@ public class GuideAdapterTest {
     @Test
     @DisplayName("도움말을 저장한다.")
     void saveTest() {
-        //given
+        // Given
         GuideEntity guideEntity = GuideEntity.builder()
             .guideId(1L)
             .build();
@@ -41,16 +40,16 @@ public class GuideAdapterTest {
         when(guidePersistenceMapper.toEntity(guide)).thenReturn(guideEntity);
         when(guideRepository.save(guideEntity)).thenReturn(guideEntity);
         when(guidePersistenceMapper.toDomain(guideEntity)).thenReturn(guide);
-        //when
+        // When
         Guide savedGuide = guidePersistenceAdapter.save(guide);
-        //then
+        // Then
         assertEquals(guide, savedGuide);
     }
 
     @Test
     @DisplayName("도움말을 id를 통해 찾는다.")
     void findByIdTest() {
-        //given
+        // Given
         GuideEntity guideEntity = GuideEntity.builder()
             .guideId(1L)
             .build();
@@ -59,16 +58,16 @@ public class GuideAdapterTest {
             .build();
         when(guideRepository.findById(1L)).thenReturn(java.util.Optional.of(guideEntity));
         when(guidePersistenceMapper.toDomain(guideEntity)).thenReturn(guide);
-        //when
+        // When
         Guide foundGuide = guidePersistenceAdapter.findById(1L).get();
-        //then
+        // Then
         assertEquals(guide, foundGuide);
     }
 
     @Test
     @DisplayName("도움말을 카테고리 id를 통해 찾는다.")
     void findByCategoryIdTest() {
-        //given
+        // Given
         GuideEntity guideEntity = GuideEntity.builder()
             .guideId(1L)
             .build();
@@ -77,31 +76,31 @@ public class GuideAdapterTest {
             .build();
         when(guideRepository.findByCategory_CategoryId(1L)).thenReturn(java.util.Optional.of(guideEntity));
         when(guidePersistenceMapper.toDomain(guideEntity)).thenReturn(guide);
-        //when
+        // When
         Guide foundGuide = guidePersistenceAdapter.findByCategoryId(1L).get();
-        //then
+        // Then
         assertEquals(guide, foundGuide);
     }
 
     @Test
     @DisplayName("카테고리 id로 도움말이 존재하는지 확인한다.")
     void existsByCategoryIdTest() {
-        //given
+        // Given
         when(guideRepository.existsByCategory_CategoryId(1L)).thenReturn(true);
-        //when
+        // When
         Boolean exists = guidePersistenceAdapter.existsByCategoryId(1L);
-        //then
+        // Then
         assertEquals(true, exists);
     }
 
     @Test
     @DisplayName("도움말을 id를 통해 삭제한다.")
     void deleteByIdTest() {
-        //given
+        // Given
         Long guideId = 1L;
-        //when
+        // When
         guidePersistenceAdapter.deleteById(guideId);
-        //then
+        // Then
         verify(guideRepository).deleteById(guideId);
     }
 }

@@ -1,4 +1,4 @@
-package com.wrkr.tickety.usecase;
+package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,10 +13,6 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketCrea
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -135,7 +131,7 @@ public class TicketUseCaseTest {
     @Test
     @DisplayName("사용자가 요청한 티켓이 저장되면 저장된 티켓 정보를 검증한다")
     void createTicket() {
-        // given
+        // Given
         TicketCreateRequest ticketCreateRequest = TicketCreateRequest.builder()
             .title("티켓 제목")
             .content("티켓 내용")
@@ -147,10 +143,10 @@ public class TicketUseCaseTest {
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
 
-        // when
+        // When
         TicketPkResponse pkResponse = ticketCreateUseCase.createTicket(ticketCreateRequest, USER_ID);
 
-        // then
+        // Then
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 
@@ -162,7 +158,7 @@ public class TicketUseCaseTest {
     @Test
     @DisplayName("사용자가 요청했던 티켓들에 페이지네이션을 적용해서 전체 조회한다")
     void getTickets() {
-        // given
+        // Given
         ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, null);
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
@@ -171,10 +167,10 @@ public class TicketUseCaseTest {
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
-        //when
+        // When
         ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest);
 
-        //then
+        // Then
         assertThat(ticketAllGetPagingResponse).isNotNull();
         assertThat(ticketAllGetPagingResponse.currentPage()).isEqualTo(1);
         assertThat(ticketAllGetPagingResponse.size()).isEqualTo(1);
@@ -187,14 +183,14 @@ public class TicketUseCaseTest {
     @Test
     @DisplayName("사용자가 요청한 특정 티켓을 조회한다")
     void getTicket() {
-        // given
+        // Given
         given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
-        // when
+        // When
         TicketDetailGetResponse response = ticketDetailGetUseCase.getTicket(USER_ID, TICKET_ID);
 
-        // then
+        // Then
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(PkCrypto.encrypt(1L));
         assertThat(response.title()).isEqualTo("티켓 제목");
@@ -207,7 +203,7 @@ public class TicketUseCaseTest {
     @Test
     @DisplayName("사용자가 요청했던 특정 티켓을 취소한다")
     void cancelTicket() {
-        // given
+        // Given
         Ticket updatedTicket = Ticket.builder()
             .ticketId(TICKET_ID)
             .category(childCategory)
@@ -221,10 +217,10 @@ public class TicketUseCaseTest {
         given(ticketGetService.getTicketByTicketId(anyLong())).willReturn(ticket);
         given(ticketUpdateService.updateStatus(any(Ticket.class), any(TicketStatus.class))).willReturn(updatedTicket);
 
-        // when
+        // When
         TicketPkResponse pkResponse = ticketCancelUseCase.cancelTicket(USER_ID, TICKET_ID);
 
-        // then
+        // Then
         assertThat(pkResponse).isNotNull();
         assertThat(pkResponse.ticketId()).isEqualTo(PkCrypto.encrypt(1L));
 

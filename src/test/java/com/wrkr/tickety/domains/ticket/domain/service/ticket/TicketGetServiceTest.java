@@ -1,4 +1,4 @@
-package com.wrkr.tickety.service.ticket;
+package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,7 +9,6 @@ import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
-import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class TicketGetServiceTest {
     @Test
     @DisplayName("담당자가 설정한 필터로 담당자의 티켓 티켓 리스트를 조회한다.")
     void getTicketByManagerFilter() {
-        //given
+        // Given
         List<Ticket> tickets = createTestTickets();
         Long managerId = 1L;
         ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
@@ -67,10 +66,10 @@ public class TicketGetServiceTest {
 
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), tickets.size());
 
-        //when
+        // When
         when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query)).thenReturn(ticketPage);
 
-        //then
+        // Then
         Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query);
         assertThat(result.getContent()).isEqualTo(ticketPage.getContent());
         assertThat(result.getTotalElements()).isEqualTo(ticketPage.getTotalElements());
@@ -81,7 +80,7 @@ public class TicketGetServiceTest {
     @Test
     @DisplayName("담당자가 설정한 필터로 담당자의 티켓 티켓 리스트를 조회한다.정보가 없는 경우를 테스트한다.")
     void getTicketByManagerFilterWithoutContent() {
-        //given
+        // Given
         List<Ticket> tickets = new ArrayList<>();
         Long managerId = 1L;
         ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
@@ -89,10 +88,10 @@ public class TicketGetServiceTest {
 
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), 0);
 
-        //when
+        // When
         when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query)).thenReturn(ticketPage);
 
-        //then
+        // Then
         Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query);
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isEqualTo(0);
@@ -101,7 +100,7 @@ public class TicketGetServiceTest {
     @Test
     @DisplayName("담당자가 설정한 필터로 담당자의 티켓 티켓 리스트를 조회한다.페이지가 여러개일 경우를 테스트한다.")
     void getTicketByManagerFilterWithMultiplePages() {
-        //given
+        // Given
         List<Ticket> tickets = createTestTickets();
         Long managerId = 1L;
         ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
@@ -109,10 +108,10 @@ public class TicketGetServiceTest {
 
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), tickets.size());
 
-        //when
+        // When
         when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query)).thenReturn(ticketPage);
 
-        //then
+        // Then
         Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query);
         assertThat(result.getContent()).isEqualTo(ticketPage.getContent());
         assertThat(result.getTotalElements()).isEqualTo(ticketPage.getTotalElements());

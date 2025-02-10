@@ -1,4 +1,4 @@
-package com.wrkr.tickety.service;
+package com.wrkr.tickety.domains.ticket.domain.service.guide;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,10 +8,6 @@ import static org.mockito.Mockito.when;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateRequest;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
-import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideCreateService;
-import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideDeleteService;
-import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.domains.ticket.exception.GuideErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.GuidePersistenceAdapter;
 import com.wrkr.tickety.global.exception.ApplicationException;
@@ -57,14 +53,14 @@ public class GuideServiceTest {
     @Test
     @DisplayName("도움말을 생성한다.")
     void createGuide() {
-        // given
+        // Given
         Guide guide = Guide.builder()
             .category(Category.builder().categoryId(1L).build())
             .build();
-        // when
+        // When
         when(guidePersistenceAdapter.existsByCategoryId(guide.getCategory().getCategoryId())).thenReturn(false);
         when(guidePersistenceAdapter.save(guide)).thenReturn(guide);
-        // then
+        // Then
         Guide createdGuide = guideCreateService.createGuide(guide);
 
         assertEquals(guide, createdGuide);
@@ -73,53 +69,53 @@ public class GuideServiceTest {
     @Test
     @DisplayName("이미 도움말이 존재하는 카테고리에 도움말을 생성하려고 하면 예외가 발생한다.")
     void createGuideWithAlreadyExistCategory() {
-        // given
+        // Given
         Guide guide = Guide.builder()
             .category(Category.builder().categoryId(1L).build())
             .build();
-        // when
+        // When
         when(guidePersistenceAdapter.existsByCategoryId(guide.getCategory().getCategoryId())).thenReturn(true);
-        // then
+        // Then
         assertThrows(ApplicationException.class, () -> guideCreateService.createGuide(guide));
     }
 
     @Test
     @DisplayName("도움말을 삭제한다.")
     void deleteGuide() {
-        // given
+        // Given
         Long guideId = 1L;
         Guide guide = Guide.builder()
             .guideId(guideId)
             .build();
-        // when
+        // When
         when(guidePersistenceAdapter.findById(guideId)).thenReturn(Optional.ofNullable(guide));
         guideDeleteService.deleteGuide(guideId);
-        // then
+        // Then
         verify(guidePersistenceAdapter).deleteById(guide.getGuideId());
     }
 
     @Test
     @DisplayName("존재하지 않는 도움말을 삭제하려고 하면 예외가 발생한다.")
     void deleteGuideWithNotExistGuide() {
-        // given
+        // Given
         Long guideId = 1L;
-        // when
+        // When
         when(guidePersistenceAdapter.findById(guideId)).thenReturn(Optional.empty());
-        // then
+        // Then
         assertThrows(ApplicationException.class, () -> guideDeleteService.deleteGuide(guideId));
     }
 
     @Test
     @DisplayName("도움말을 조회한다.")
     void getGuide() {
-        // given
+        // Given
         Long categoryId = 1L;
         Guide guide = Guide.builder()
             .category(Category.builder().categoryId(categoryId).build())
             .build();
-        // when
+        // When
         when(guidePersistenceAdapter.findByCategoryId(categoryId)).thenReturn(Optional.ofNullable(guide));
-        // then
+        // Then
         Guide foundGuide = guideGetService.getGuideContentByCategory(categoryId);
 
         assertEquals(guide, foundGuide);
@@ -128,18 +124,18 @@ public class GuideServiceTest {
     @Test
     @DisplayName("존재하지 않는 도움말을 조회하려고 하면 예외가 발생한다.")
     void getGuideWithNotExistGuide() {
-        // given
+        // Given
         Long categoryId = 1L;
-        // when
+        // When
         when(guidePersistenceAdapter.findByCategoryId(categoryId)).thenReturn(Optional.empty());
-        // then
+        // Then
         assertThrows(ApplicationException.class, () -> guideGetService.getGuideContentByCategory(categoryId));
     }
 
     @Test
     @DisplayName("도움말을 수정한다.")
     void updateGuide() {
-        // given
+        // Given
         Long guideId = 1L;
         Guide guide = Guide.builder()
             .guideId(guideId)
@@ -149,10 +145,10 @@ public class GuideServiceTest {
             .guideId(guideId)
             .content("updated content")
             .build();
-        // when
+        // When
         when(guidePersistenceAdapter.findById(guideId)).thenReturn(Optional.ofNullable(guide));
         when(guidePersistenceAdapter.save(guide)).thenReturn(guide);
-        // then
+        // Then
         Guide updatedGuide = guideUpdateService.updateGuide(guideId,
             GuideUpdateRequest.builder().content("updated content").build()
         );
@@ -164,11 +160,11 @@ public class GuideServiceTest {
     @Test
     @DisplayName("존재하지 않는 도움말을 수정하려고 하면 예외가 발생한다.")
     void updateGuideWithNotExistGuide() {
-        // given
+        // Given
         Long guideId = 1L;
-        // when
+        // When
         when(guidePersistenceAdapter.findById(guideId)).thenReturn(Optional.empty());
-        // then
+        // Then
         ApplicationException e = assertThrows(ApplicationException.class, () -> guideUpdateService.updateGuide(guideId,
             GuideUpdateRequest.builder().content("updated content").build()
         ));
