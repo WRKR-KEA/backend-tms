@@ -16,7 +16,6 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +46,9 @@ public class ManagerTicketDelegateUseCaseTest {
     @InjectMocks
     private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
 
+    @Mock
+    private PkCrypto pkCrypto;
+
     private static final Long USER_ID = 1L;
     private static final Long MANAGER_ID = 2L;
     private static final Long TICKET_ID = 1L;
@@ -58,12 +60,6 @@ public class ManagerTicketDelegateUseCaseTest {
     private Member user;
     private Category category;
     private Ticket ticket;
-
-    @BeforeAll
-    static void init() {
-        PkCrypto pkCrypto = new PkCrypto("TEST", "TESTSECRETKEY");
-        pkCrypto.init();
-    }
 
     @BeforeEach
     void setUp() {

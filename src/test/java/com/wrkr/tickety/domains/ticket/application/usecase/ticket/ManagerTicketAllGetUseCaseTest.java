@@ -44,7 +44,7 @@ public class ManagerTicketAllGetUseCaseTest {
     private TicketGetService ticketGetService;
 
     @Mock
-    private PkCrypto pkCrypto; // Mock 객체 생성
+    private PkCrypto pkCrypto;
 
     @BeforeEach
     void setUp() {
