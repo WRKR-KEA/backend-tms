@@ -7,18 +7,18 @@ import static com.wrkr.tickety.domains.ticket.exception.TicketErrorCode.TICKET_N
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 
-import com.wrkr.tickety.common.UnitTest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
+import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,21 +26,36 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Spy;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 @ExtendWith(MockitoExtension.class)
-public class ManagerTicketDelegateUseCaseTest extends UnitTest {
+@RecordApplicationEvents
+public class ManagerTicketDelegateUseCaseTest {
 
-    @Spy
-    private final ManagerTicketDelegateUseCase sut = new ManagerTicketDelegateUseCase(
-        ticketGetService,
-        ticketUpdateService,
-        ticketHistorySaveService,
-        memberGetService,
-        applicationEventPublisher
-    );
+    @Mock
+    private MemberGetService memberGetService;
 
+    @Mock
+    private TicketUpdateService ticketUpdateService;
+
+    @Mock
+    private TicketGetService ticketGetService;
+
+    @Mock
+    private TicketHistorySaveService ticketHistorySaveService;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @InjectMocks
+    private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
+
+    @Mock
+    private PkCrypto pkCrypto;
 
     private static final Long USER_ID = 1L;
     private static final Long MANAGER_ID = 2L;
@@ -56,7 +71,7 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
 
     @BeforeAll
     static void init() {
-        PkCrypto pkCrypto = new PkCrypto("TEST", "TESTSECRETKEY");
+        PkCrypto pkCrypto = new PkCrypto("AES", "1234567890123456");
         pkCrypto.init();
     }
 
@@ -114,7 +129,7 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
             .ticketId(PkCrypto.encrypt(TICKET_ID))
             .build();
 
-        doReturn(mockResponse).when(sut).delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
+        //doReturn(mockResponse).when(managerTicketDelegateUseCase).delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
 
         Member delegateManager = Member.builder()
             .memberId(delegateManagerId)
@@ -142,14 +157,12 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 
         // When
-        TicketPkResponse response = sut.delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
+        TicketPkResponse response = managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
 
         // Then
         assertThat(response).isNotNull();
         assertThat(response.ticketId()).isEqualTo(PkCrypto.encrypt(TICKET_ID));
         assertThat(updatedTicket.getManager()).isEqualTo(delegateManager);
-
-        verify(sut).delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
     }
 
     @Test
@@ -161,16 +174,14 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
             .delegateManagerId(PkCrypto.encrypt(delegateManagerId))
             .build();
 
-        doThrow(ApplicationException.from(TICKET_NOT_FOUND)).when(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
+        //doThrow(ApplicationException.from(TICKET_NOT_FOUND)).when(managerTicketDelegateUseCase).delegateTicket(TICKET_ID, MANAGER_ID, request);
 
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willThrow(ApplicationException.from(TICKET_NOT_FOUND));
 
         // When & Then
-        assertThatThrownBy(() -> sut.delegateTicket(TICKET_ID, MANAGER_ID, request))
+        assertThatThrownBy(() -> managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, request))
             .isInstanceOf(ApplicationException.class)
             .hasMessage(TICKET_NOT_FOUND.getMessage());
-
-        verify(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
     }
 
     @Test
@@ -185,16 +196,14 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
         Member otherManager = Member.builder().memberId(999L).build(); // 현재 관리자가 아님
         Ticket otherManagerTicket = Ticket.builder().manager(otherManager).build();
 
-        doThrow(ApplicationException.from(TICKET_MANAGER_NOT_MATCH)).when(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
+        //doThrow(ApplicationException.from(TICKET_MANAGER_NOT_MATCH)).when(managerTicketDelegateUseCase).delegateTicket(TICKET_ID, MANAGER_ID, request);
 
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(otherManagerTicket);
 
         // When & Then
-        assertThatThrownBy(() -> sut.delegateTicket(TICKET_ID, MANAGER_ID, request))
+        assertThatThrownBy(() -> managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, request))
             .isInstanceOf(ApplicationException.class)
             .hasMessage(TICKET_MANAGER_NOT_MATCH.getMessage());
-
-        verify(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
     }
 
     @Test
@@ -208,15 +217,13 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
 
         ticket.updateStatus(TicketStatus.COMPLETE); // 이미 완료된 티켓으로 설정 (위임 불가)
 
-        doThrow(ApplicationException.from(TICKET_NOT_DELEGATABLE)).when(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
+        //doThrow(ApplicationException.from(TICKET_NOT_DELEGATABLE)).when(managerTicketDelegateUseCase).delegateTicket(TICKET_ID, MANAGER_ID, request);
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
 
         // When & Then
-        assertThatThrownBy(() -> sut.delegateTicket(TICKET_ID, MANAGER_ID, request))
+        assertThatThrownBy(() -> managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, request))
             .isInstanceOf(ApplicationException.class)
             .hasMessage(TICKET_NOT_DELEGATABLE.getMessage());
-
-        verify(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
     }
 
     @Test
@@ -228,16 +235,14 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
             .delegateManagerId(PkCrypto.encrypt(delegateManagerId))
             .build();
 
-        doThrow(ApplicationException.from(MEMBER_NOT_FOUND)).when(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
+        //doThrow(ApplicationException.from(MEMBER_NOT_FOUND)).when(managerTicketDelegateUseCase).delegateTicket(TICKET_ID, MANAGER_ID, request);
 
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
         given(memberGetService.byMemberId(delegateManagerId)).willThrow(ApplicationException.from(MEMBER_NOT_FOUND));
 
         // When & Then
-        assertThatThrownBy(() -> sut.delegateTicket(TICKET_ID, MANAGER_ID, request))
+        assertThatThrownBy(() -> managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, request))
             .isInstanceOf(ApplicationException.class)
             .hasMessage(MEMBER_NOT_FOUND.getMessage());
-
-        verify(sut).delegateTicket(TICKET_ID, MANAGER_ID, request);
     }
 }
