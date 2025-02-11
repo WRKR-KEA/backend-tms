@@ -5,13 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
-import com.wrkr.tickety.common.UnitTest;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -30,12 +32,16 @@ import org.springframework.data.domain.PageImpl;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ManagerTicketAllGetUseCaseTest extends UnitTest {
+public class ManagerTicketAllGetUseCaseTest {
 
-    private final ManagerTicketAllGetUseCase sut = new ManagerTicketAllGetUseCase(
-        memberGetService,
-        ticketGetService
-    );
+    @InjectMocks
+    private ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
+
+    @Mock
+    private MemberGetService memberGetService;
+
+    @Mock
+    private TicketGetService ticketGetService;
 
     @Mock
     private PkCrypto pkCrypto;
@@ -69,7 +75,7 @@ public class ManagerTicketAllGetUseCaseTest extends UnitTest {
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
 
         // When
-        ApplicationPageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = sut.getManagerTicketList(
+        ApplicationPageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(
             managerId, pageable, null, search
         );
 
