@@ -19,9 +19,11 @@ public class MyPageMapper {
             .role(member.getRole().getDescription())
             .profileImage(member.getProfileImage())
             .agitUrl(member.getAgitUrl())
+            .department(member.getDepartment())
             .agitNotification(member.getAgitNotification())
             .emailNotification(member.getEmailNotification())
             .serviceNotification(member.getServiceNotification())
+            .kakaoworkNotification(member.getKakaoworkNotification())
             .build();
     }
 }

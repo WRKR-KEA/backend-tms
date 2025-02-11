@@ -33,6 +33,9 @@ public record MyPageInfoResponse(
     @Schema(description = "회원 아지트 URL", example = "http://agit.com")
     String agitUrl,
 
+    @Schema(description = "회원 부서", example = "개발팀")
+    String department,
+
     @Schema(description = "아지트 알림 여부", example = "true")
     Boolean agitNotification,
 
@@ -40,7 +43,10 @@ public record MyPageInfoResponse(
     Boolean emailNotification,
 
     @Schema(description = "서비스 알림 여부", example = "true")
-    Boolean serviceNotification
+    Boolean serviceNotification,
+
+    @Schema(description = "카카오워크 알림 여부", example = "true")
+    Boolean kakaoworkNotification
 ) {
 
 }

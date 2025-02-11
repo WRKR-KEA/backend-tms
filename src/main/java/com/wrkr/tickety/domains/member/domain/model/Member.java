@@ -1,6 +1,8 @@
 package com.wrkr.tickety.domains.member.domain.model;
 
+
 import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
@@ -28,6 +30,7 @@ public class Member extends BaseTime {
     private Boolean agitNotification;
     private Boolean emailNotification;
     private Boolean serviceNotification;
+    private Boolean kakaoworkNotification;
     private Boolean isDeleted;
     private Boolean isTempPassword;
 
@@ -47,6 +50,7 @@ public class Member extends BaseTime {
         Boolean agitNotification,
         Boolean emailNotification,
         Boolean serviceNotification,
+        Boolean kakaoworkNotification,
         Boolean isDeleted,
         Boolean isTempPassword
     ) {
@@ -64,6 +68,7 @@ public class Member extends BaseTime {
         this.agitNotification = agitNotification;
         this.emailNotification = emailNotification;
         this.serviceNotification = serviceNotification;
+        this.kakaoworkNotification = kakaoworkNotification;
         this.isDeleted = isDeleted;
         this.isTempPassword = isTempPassword;
     }
@@ -86,9 +91,18 @@ public class Member extends BaseTime {
         this.isDeleted = isDeleted;
     }
 
-    public void modifyMyPageInfo(String position, String phone) {
-        this.position = position;
-        this.phone = phone;
+    public void modifyMyPageInfo(MyPageInfoUpdateRequest request) {
+        this.name = request.name();
+        this.phone = request.phone();
+        this.email = request.email();
+        this.position = request.position();
+        this.agitUrl = request.agitUrl();
+        this.department = request.department();
+        this.agitNotification = request.agitNotification();
+        this.emailNotification = request.emailNotification();
+        this.serviceNotification = request.serviceNotification();
+        this.kakaoworkNotification = request.kakaoworkNotification();
+
     }
 
     public void modifyPassword(String password, Boolean isTempPassword) {

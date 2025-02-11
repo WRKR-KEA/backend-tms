@@ -27,7 +27,11 @@ public class MyPageInfoUpdateUseCase {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
-        member.modifyMyPageInfo(request.position(), request.phone());
+        if (!member.getEmail().equals(request.email()) && memberGetService.existsByEmail(request.email())) {
+            throw ApplicationException.from(MemberErrorCode.ALREADY_EXIST_EMAIL);
+        }
+
+        member.modifyMyPageInfo(request);
         Member modifieddMember = memberUpdateService.modifyMemberInfo(member);
 
         return MemberPkResponse.builder()
