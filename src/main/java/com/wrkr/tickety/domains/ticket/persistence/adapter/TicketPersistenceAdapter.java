@@ -94,4 +94,8 @@ public class TicketPersistenceAdapter {
     public Long countByManagerAndIsPinned(Long managerId) {
         return ticketRepository.countByManager_memberIdAndIsPinnedTrue(managerId);
     }
+
+    public boolean isPinTicket(Long ticketId) {
+        return ticketRepository.existsByticketIdAndIsPinnedTrue(ticketId);
+    }
 }

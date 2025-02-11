@@ -63,5 +63,9 @@ public class TicketGetService {
     public List<Ticket> getManagersInProgressTickets(List<Long> managerIds) {
         return ticketPersistenceAdapter.findManagersInProgressTickets(managerIds);
     }
+
+    public boolean isPinTicket(Long ticketId) {
+        return ticketPersistenceAdapter.isPinTicket(ticketId);
+    }
 }
 
