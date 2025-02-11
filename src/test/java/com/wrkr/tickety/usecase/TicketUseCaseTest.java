@@ -167,12 +167,13 @@ public class TicketUseCaseTest {
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
 
-        given(ticketGetService.getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class))).willReturn(ticketPage);
+        given(ticketGetService.getTicketsByUserIdAndStatus(anyLong(), any(TicketStatus.class), any(ApplicationPageRequest.class))).willReturn(ticketPage);
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         //when
-        ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest);
+        ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest,
+            TicketStatus.REQUEST);
 
         //then
         assertThat(ticketAllGetPagingResponse).isNotNull();
@@ -180,7 +181,7 @@ public class TicketUseCaseTest {
         assertThat(ticketAllGetPagingResponse.size()).isEqualTo(1);
         assertThat(ticketAllGetPagingResponse.elements().getFirst().serialNumber()).isEqualTo("#12345678");
 
-        verify(ticketGetService).getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class));
+        verify(ticketGetService).getTicketsByUserIdAndStatus(anyLong(), any(TicketStatus.class), any(ApplicationPageRequest.class));
         verify(memberGetService).byMemberId(anyLong());
     }
 
