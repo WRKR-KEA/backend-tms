@@ -59,16 +59,16 @@ public class MemberInfoUpdateUseCase {
             validateAuthorization(findMember);
 
             findMember.modifyIsDeleted(true);
-            Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember);
+            findMember.modifyProfileImage(null);
+
+            memberUpdateService.modifyMemberInfo(findMember);
 
             deleteProfileImage(findMember.getProfileImage());
-
-            memberUpdateService.modifyMemberInfo(modifiedMember);
         });
     }
 
     private void deleteProfileImage(String profileImageUrl) {
-        if (s3ApiService.deleteProfileImage(profileImageUrl)) {
+        if (s3ApiService.deleteObject(profileImageUrl)) {
             log.error("Failed to delete profile image, profileImageUrl : {}", profileImageUrl);
         }
     }
