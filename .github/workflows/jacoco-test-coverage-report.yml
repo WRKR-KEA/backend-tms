@@ -27,12 +27,17 @@ jobs:
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.gradle/caches
+          path:
+            #          path: |
+            #            ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          #          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle-wrapper.properties') }}
+
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-wrapper-
+      #            ${{ runner.os }}-gradle-
+
 
       - name: Grant execute permission for gradlew
         shell: bash
@@ -63,10 +68,10 @@ jobs:
         run: |
           ./gradlew clean test jacocoTestReport -Dspring.profiles.active=test
 
-      - name: Run Tests and Generate Coverage
-        shell: bash
-        run: |
-          ./gradlew clean test jacocoTestReport
+      #      - name: Run Tests and Generate Coverage
+      #        shell: bash
+      #        run: |
+      #          ./gradlew clean test jacocoTestReport
 
       - name: Test Coverage Report
         id: jacoco
