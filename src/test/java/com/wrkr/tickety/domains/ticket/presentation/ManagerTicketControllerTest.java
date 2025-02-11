@@ -1,7 +1,5 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doThrow;
@@ -12,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
-import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
@@ -29,6 +26,7 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.WithMockCustomUser;
 import com.wrkr.tickety.global.config.security.auth.CustomUserDetails;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.excel.ExcelUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,7 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -131,13 +128,13 @@ class ManagerTicketControllerTest {
 
         @Test
         @DisplayName("실패: 티켓을 찾을 수 없음")
-        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
         void delegateTicket_TicketNotFound() throws Exception {
             // Given
-            String ticketId = "invalid_ticket_id";
-            TicketDelegateRequest request = new TicketDelegateRequest("Bqs3C822lkMNdWlmE-szUw");
+            String ticketId = PkCrypto.encrypt(1L);
+            TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
 
-            doThrow(new com.wrkr.tickety.global.exception.ApplicationException(TicketErrorCode.TICKET_NOT_FOUND))
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_NOT_FOUND))
                 .when(managerTicketDelegateUseCase)
                 .delegateTicket(anyLong(), anyLong(), any(TicketDelegateRequest.class));
 
@@ -151,11 +148,11 @@ class ManagerTicketControllerTest {
 
         @Test
         @DisplayName("실패: 현재 담당자가 일치하지 않음")
-        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
         void delegateTicket_ManagerNotMatch() throws Exception {
             // Given
-            String ticketId = "W1NMMfAHGTnNGLdRL3lvcw";
-            TicketDelegateRequest request = new TicketDelegateRequest("Bqs3C822lkMNdWlmE-szUw");
+            String ticketId = PkCrypto.encrypt(1L);
+            TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
 
             doThrow(new com.wrkr.tickety.global.exception.ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
                 .when(managerTicketDelegateUseCase)
@@ -171,11 +168,11 @@ class ManagerTicketControllerTest {
 
         @Test
         @DisplayName("실패: 위임할 수 없는 상태의 티켓")
-        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
         void delegateTicket_NotDelegatable() throws Exception {
             // Given
-            String ticketId = "W1NMMfAHGTnNGLdRL3lvcw";
-            TicketDelegateRequest request = new TicketDelegateRequest("Bqs3C822lkMNdWlmE-szUw");
+            String ticketId = PkCrypto.encrypt(1L);
+            TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
 
             doThrow(new com.wrkr.tickety.global.exception.ApplicationException(TicketErrorCode.TICKET_NOT_DELEGATABLE))
                 .when(managerTicketDelegateUseCase)
@@ -188,34 +185,6 @@ class ManagerTicketControllerTest {
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict());
         }
-    }
-
-    @Test
-    void securityContext_정상설정() {
-        // ✅ 직접 SecurityContext 설정 (테스트 환경에서 Authentication이 비어있을 경우)
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            System.out.println("❌ SecurityContext에 Authentication이 없음! 직접 설정 시도...");
-
-            Member member = Member.builder()
-                .memberId(1L)
-                .nickname("testUser")
-                .role(Role.USER)
-                .name("testUsername")
-                .build();
-
-            CustomUserDetails customUserDetails = new CustomUserDetails(member);
-
-            UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(customUserDetails, "PASSWORD", customUserDetails.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-
-        // ✅ SecurityContextHolder가 정상적으로 설정되었는지 검증
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        assertNotNull(authentication, "SecurityContext에 Authentication이 설정되지 않았습니다.");
-        assertTrue(authentication.getPrincipal() instanceof CustomUserDetails, "CustomUserDetails가 설정되지 않았습니다.");
-        assertNotNull(((CustomUserDetails) authentication.getPrincipal()).getMember(), "Member 객체가 null입니다.");
     }
 
 }
