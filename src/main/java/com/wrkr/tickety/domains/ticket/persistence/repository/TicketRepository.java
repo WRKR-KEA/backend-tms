@@ -29,4 +29,6 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
     Long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     Long countByManager_memberIdAndIsPinnedTrue(Long managerId);
+
+    boolean existsByticketIdAndIsPinnedTrue(Long ticketId);
 }
