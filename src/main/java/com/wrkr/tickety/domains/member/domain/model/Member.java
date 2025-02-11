@@ -1,9 +1,8 @@
 package com.wrkr.tickety.domains.member.domain.model;
 
 
-import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
-import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
