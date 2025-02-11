@@ -41,7 +41,7 @@ public class MemberInfoSearchUseCase {
     }
 
     private void validateRole(Role role) {
-        if (role.equals(Role.ADMIN)) {
+        if (role != null && role.equals(Role.ADMIN)) {
             throw ApplicationException.from(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID);
         }
     }
