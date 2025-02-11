@@ -56,7 +56,7 @@ public class TicketStatisticsController {
 
     @PostMapping("/{statisticsType}")
     @Operation(summary = "부모 카테고리별 통계 조회")
-    public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
+    public ApplicationResponse<StatisticsByCategoryResponse> getParentCategoryStatistics(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "통계 타입", example = "daily", required = true) @PathVariable StatisticsType statisticsType,
         @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true) @RequestBody @Valid StatisticsByCategoryRequest request
@@ -66,7 +66,7 @@ public class TicketStatisticsController {
 
     @PostMapping("/{statisticsType}/{parentCategoryId}")
     @Operation(summary = "자식 카테고리별 통계 조회")
-    public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
+    public ApplicationResponse<StatisticsByCategoryResponse> getChildCategoryStatistics(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "통계 타입", example = "daily", required = true) @PathVariable StatisticsType statisticsType,
         @Parameter(description = "부모 카테고리 id", example = "Bqs3C822lkMNdWlmE-szUw", required = true) @PathVariable String parentCategoryId,

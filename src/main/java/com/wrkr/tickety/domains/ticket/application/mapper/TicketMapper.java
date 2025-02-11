@@ -8,6 +8,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetR
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.PinTickets;
@@ -107,7 +108,7 @@ public class TicketMapper {
             .content(ticket.getContent())
             .category(ticket.getCategory().getParent().getName() + " " + ticket.getCategory().getName())
             .userNickname(ticket.getUser().getNickname())
-            .managerNickname(ticket.getManager().getNickname())
+            .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
             .createdAt(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
             .updatedAt(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
             .startedAt(startDate == null ? null : startDate.format(DateTimeFormatter.ISO_DATE))
@@ -200,4 +201,10 @@ public class TicketMapper {
     }
 
 
+    public static ManagerPinTicketResponse toManagerPinTicketResponse(Ticket pinnedTicket) {
+        return ManagerPinTicketResponse.builder()
+            .ticketId(PkCrypto.encrypt(pinnedTicket.getTicketId()))
+            .isPinned(pinnedTicket.getIsPinned())
+            .build();
+    }
 }

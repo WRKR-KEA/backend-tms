@@ -13,6 +13,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUs
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketGetMainUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -61,9 +63,11 @@ public class UserTicketController {
     public ApplicationResponse<ApplicationPageResponse<TicketAllGetResponse>> getAllTickets(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
-        ApplicationPageRequest pageRequest
+        ApplicationPageRequest pageRequest,
+        @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT )")
+        @RequestParam(value = "status", required = false) TicketStatus status
     ) {
-        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest));
+        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest, status));
     }
 
     @GetMapping("/{ticketId}")

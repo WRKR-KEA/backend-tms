@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
@@ -20,19 +20,19 @@ public class ManagerTicketPinUseCase {
     private final TicketGetService ticketGetService;
     private final TicketUpdateService ticketUpdateService;
 
-    public TicketPkResponse pinTicket(Member member, TicketPinRequest request) {
-        checkPinTicketCountsOverTen(member.getMemberId());
+    public ManagerPinTicketResponse pinTicket(Member member, TicketPinRequest request) {
+        checkPinTicketCountsOverTen(member.getMemberId(), PkCrypto.decrypt(request.ticketId()));
 
         Ticket requestTicket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(request.ticketId()));
-        Ticket pinnedTicket = ticketUpdateService.pinTicket(requestTicket);
+        checkStatusRequested(requestTicket);
+        checkTicketManager(requestTicket, member);
 
-        checkStatusRequested(pinnedTicket);
-        checkTicketManager(pinnedTicket, member);
-        return TicketMapper.toTicketPkResponse(PkCrypto.encrypt(pinnedTicket.getTicketId()));
+        Ticket pinnedTicket = ticketUpdateService.pinTicket(requestTicket);
+        return TicketMapper.toManagerPinTicketResponse(pinnedTicket);
     }
 
-    private void checkPinTicketCountsOverTen(Long managerId) {
-        if (ticketGetService.countPinTickets(managerId) >= 10) {
+    private void checkPinTicketCountsOverTen(Long managerId, Long ticketId) {
+        if (ticketGetService.countPinTickets(managerId) >= 10 && !ticketGetService.isPinTicket(ticketId)) {
             throw new ApplicationException(TicketErrorCode.TICKET_PIN_COUNT_OVER);
         }
     }
