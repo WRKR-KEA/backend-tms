@@ -5,7 +5,6 @@ import com.wrkr.tickety.domains.log.application.mapper.LogMapper;
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
 import com.wrkr.tickety.domains.log.domain.model.AccessLog;
 import com.wrkr.tickety.domains.log.domain.service.AccessLogGetService;
-import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
@@ -22,14 +21,14 @@ public class AccessLogExcelDownloadUseCase {
 
     private final AccessLogGetService accessLogGetService;
 
-    public List<AccessLogSearchResponse> getAllAccessLogs(Role role, String query, ActionType action, String startDateReq,
+    public List<AccessLogSearchResponse> getAllAccessLogs(String query, ActionType action, String startDateReq,
         String endDateReq) {
         LocalDate startDate = parseLocalDateOrNull(startDateReq);
         LocalDate endDate = parseLocalDateOrNull(endDateReq);
 
         validatePeriod(startDate, endDate);
 
-        List<AccessLog> accessLogs = accessLogGetService.getAllAccessLogs(role, query, action, startDate, endDate);
+        List<AccessLog> accessLogs = accessLogGetService.getAllAccessLogs(query, action, startDate, endDate);
 
         return accessLogs.stream()
             .map(LogMapper::toAccessLogSearchResponse)
