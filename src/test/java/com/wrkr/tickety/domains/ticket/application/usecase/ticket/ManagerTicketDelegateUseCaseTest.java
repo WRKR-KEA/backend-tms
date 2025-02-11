@@ -4,32 +4,48 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.wrkr.tickety.common.UnitTest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
+import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
-public class ManagerTicketDelegateUseCaseTest extends UnitTest {
+public class ManagerTicketDelegateUseCaseTest {
 
-    private final ManagerTicketDelegateUseCase sut = new ManagerTicketDelegateUseCase(
-        ticketGetService,
-        ticketUpdateService,
-        ticketHistorySaveService,
-        memberGetService,
-        applicationEventPublisher
-    );
+    @Mock
+    private TicketGetService ticketGetService;
+
+    @Mock
+    private MemberGetService memberGetService;
+
+    @Mock
+    private TicketUpdateService ticketUpdateService;
+
+    @Mock
+    private TicketHistorySaveService ticketHistorySaveService;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @InjectMocks
+    private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
 
     private static final Long USER_ID = 1L;
     private static final Long MANAGER_ID = 2L;
@@ -125,7 +141,7 @@ public class ManagerTicketDelegateUseCaseTest extends UnitTest {
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 
         // When
-        TicketPkResponse response = sut.delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
+        TicketPkResponse response = managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
 
         // Then
         assertThat(response).isNotNull();
