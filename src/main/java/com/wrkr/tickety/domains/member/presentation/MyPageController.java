@@ -30,7 +30,7 @@ public class MyPageController {
     private final MyPageInfoGetUseCase myPageInfoGetUseCase;
     private final MyPageInfoUpdateUseCase myPageInfoUpdateUseCase;
 
-    @Operation(summary = "마이페이지 회원 정보 조회", description = "마이페이지 회원 정보를 조회합니다.")
+    @Operation(summary = "사용자/담당자 - 마이페이지 회원 정보 조회", description = "사용자/담당자 마이페이지 회원 정보를 조회합니다.")
     @GetMapping
     @CustomErrorCodes(memberErrorCodes = {MemberErrorCode.MEMBER_NOT_FOUND, MemberErrorCode.DELETED_MEMBER})
     public ApplicationResponse<MyPageInfoResponse> getMemberInfo(
