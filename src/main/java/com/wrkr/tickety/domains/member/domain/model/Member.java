@@ -83,7 +83,6 @@ public class Member extends BaseTime {
         this.department = memberInfoUpdateRequest.department();
         this.position = memberInfoUpdateRequest.position();
         this.phone = memberInfoUpdateRequest.phone();
-        this.role = memberInfoUpdateRequest.role();
         this.agitUrl = memberInfoUpdateRequest.agitUrl();
     }
 
