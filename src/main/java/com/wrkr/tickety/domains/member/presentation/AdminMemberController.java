@@ -38,6 +38,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -86,7 +87,7 @@ public class AdminMemberController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApplicationResponse<MemberPkResponse> createMember(
         @AuthenticationPrincipal Member member,
-        @RequestPart(value = "request") MemberCreateRequest memberCreateRequest,
+        @RequestPart(value = "request") @Valid MemberCreateRequest memberCreateRequest,
         @RequestPart(required = false) MultipartFile profileImage
     ) {
         MemberPkResponse memberPkResponse = memberCreateUseCase.createMember(memberCreateRequest, profileImage);
@@ -147,7 +148,7 @@ public class AdminMemberController {
     public ApplicationResponse<MemberPkResponse> modifyMemberInfo(
         @AuthenticationPrincipal Member member,
         @PathVariable String memberId,
-        @RequestPart(value = "request") MemberInfoUpdateRequest memberInfoUpdateRequest,
+        @RequestPart(value = "request") @Valid MemberInfoUpdateRequest memberInfoUpdateRequest,
         @RequestPart(required = false) MultipartFile profileImage
     ) {
         MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberInfoUpdateRequest, profileImage);
