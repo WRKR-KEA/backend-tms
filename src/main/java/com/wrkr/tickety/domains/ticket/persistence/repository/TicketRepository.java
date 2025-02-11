@@ -29,4 +29,8 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
     Long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     Long countByManager_memberIdAndIsPinnedTrue(Long managerId);
+
+    @Query("SELECT t FROM TicketEntity t WHERE t.user.memberId = :userId AND t.status = :status")
+    Page<TicketEntity> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") TicketStatus status, Pageable pageable);
+
 }

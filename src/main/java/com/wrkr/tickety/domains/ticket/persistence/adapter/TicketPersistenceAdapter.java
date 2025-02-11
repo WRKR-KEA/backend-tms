@@ -94,4 +94,10 @@ public class TicketPersistenceAdapter {
     public Long countByManagerAndIsPinned(Long managerId) {
         return ticketRepository.countByManager_memberIdAndIsPinnedTrue(managerId);
     }
+
+    public Page<Ticket> findAllByUserIdAndStatus(Long userId, TicketStatus status, ApplicationPageRequest pageRequest) {
+        Pageable pageable = pageRequest.toPageableNoSort();
+        return ticketRepository.findAllByUserIdAndStatus(userId, status, pageable)
+            .map(this.ticketPersistenceMapper::toDomain);
+    }
 }

@@ -63,5 +63,9 @@ public class TicketGetService {
     public List<Ticket> getManagersInProgressTickets(List<Long> managerIds) {
         return ticketPersistenceAdapter.findManagersInProgressTickets(managerIds);
     }
+
+    public Page<Ticket> getTicketsByUserIdAndStatus(Long userId, TicketStatus status, ApplicationPageRequest pageRequest) {
+        return ticketPersistenceAdapter.findAllByUserIdAndStatus(userId, status, pageRequest);
+    }
 }
 
