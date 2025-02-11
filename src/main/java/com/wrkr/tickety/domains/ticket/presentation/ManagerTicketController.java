@@ -181,7 +181,8 @@ public class ManagerTicketController {
     @PatchMapping("/{ticketId}/delegate")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_NOT_DELEGATABLE})
     public ApplicationResponse<TicketPkResponse> delegateTicket(
-        @AuthenticationPrincipal Member member,
+        //todo
+        @AuthenticationPrincipal(expression = "member") Member member,
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
         @Valid @RequestBody TicketDelegateRequest request

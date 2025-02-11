@@ -17,4 +17,6 @@ public @interface WithMockCustomUser {
     Role role() default Role.USER;
 
     String nickname() default "alex.js";
+
+    long memberId() default 1L;
 }
