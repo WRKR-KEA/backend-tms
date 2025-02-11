@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.member.application.mapper;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
+import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequestForExcel;
 import com.wrkr.tickety.domains.member.application.dto.response.ManagerGetAllManagerResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.ManagerGetAllManagerResponse.Managers;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
@@ -14,20 +15,39 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemberMapper {
 
-    public static Member toMember(
-        MemberCreateRequest memberCreateRequest,
-        String encryptedPassword
+    public static Member mapToMemberFromExcel(
+        MemberCreateRequestForExcel memberCreateRequestForExcel,
+        String encryptedPassword,
+        String profileImageUrl
     ) {
         return Member.builder()
-            .email(memberCreateRequest.getEmail())
+            .email(memberCreateRequestForExcel.getEmail())
             .password(encryptedPassword)
-            .name(memberCreateRequest.getName())
-            .nickname(memberCreateRequest.getNickname())
-            .department(memberCreateRequest.getDepartment())
-            .position(memberCreateRequest.getPosition())
-            .phone(memberCreateRequest.getPhone())
-            .role(memberCreateRequest.getRole())
-            .profileImage(memberCreateRequest.getProfileImage())
+            .name(memberCreateRequestForExcel.getName())
+            .nickname(memberCreateRequestForExcel.getNickname())
+            .department(memberCreateRequestForExcel.getDepartment())
+            .position(memberCreateRequestForExcel.getPosition())
+            .phone(memberCreateRequestForExcel.getPhone())
+            .role(memberCreateRequestForExcel.getRole())
+            .profileImage(profileImageUrl)
+            .build();
+    }
+
+    public static Member mapToMember(
+        MemberCreateRequest memberCreateRequest,
+        String encryptedPassword,
+        String profileImageUrl
+    ) {
+        return Member.builder()
+            .email(memberCreateRequest.email())
+            .password(encryptedPassword)
+            .name(memberCreateRequest.name())
+            .nickname(memberCreateRequest.nickname())
+            .department(memberCreateRequest.department())
+            .position(memberCreateRequest.position())
+            .phone(memberCreateRequest.phone())
+            .role(memberCreateRequest.role())
+            .profileImage(profileImageUrl)
             .build();
     }
 

@@ -72,6 +72,28 @@ public class S3ApiService {
         }
     }
 
+    public String uploadMemberProfileImage(MultipartFile file) {
+        String objectKey = "attachments/member/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+        try {
+            s3Client.putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .contentType(file.getContentType())
+                    .build(),
+                RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+            );
+
+            String encodedUrl = s3Client.utilities().getUrl(builder ->
+                builder.bucket(bucketName).key(objectKey).build()
+            ).toString();
+            
+            return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드 실패", e);
+        }
+    }
 
     /**
      * S3에서 파일 삭제

@@ -31,7 +31,10 @@ public record MemberInfoResponse(
     String role,
 
     @Schema(description = "프로필 이미지 URL", example = "https://ibb.co/Gt8fycB")
-    String profileImage
+    String profileImage,
+
+    @Schema(description = "아지트 URL", example = "https://example.com/agit")
+    String agitUrl
 ) {
 
 }
