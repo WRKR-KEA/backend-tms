@@ -34,8 +34,8 @@ public class MemberInfoUpdateUseCase {
         Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
         validateAuthorization(findMember);
-        validateField(findMember, request.name(), request.department(), request.position(), request.phone(), request.role(), request.nickname(),
-            request.email());
+        validateEmailDuplicate(findMember.getEmail(), request.email());
+        validateNicknameDuplicate(findMember.getNickname(), request.nickname());
 
         boolean isEmptyProfileImage = profileImage == null || profileImage.isEmpty();
 
@@ -80,20 +80,16 @@ public class MemberInfoUpdateUseCase {
         }
     }
 
-    // 요청 값의 닉네임, 이메일이 기존 닉네임, 이메일과 같은 경우 중복이 일어나지 않도록 처리
-    private void validateField(Member findMember, String name, String department, String position, String phone, Role role, String nickname, String email) {
-        memberFieldValidator.validateName(name);
-        memberFieldValidator.validateDepartment(department);
-        memberFieldValidator.validatePosition(position);
-        memberFieldValidator.validatePhoneFormat(phone);
-        memberFieldValidator.validateRole(role);
-
-        if (!findMember.getNickname().equals(nickname)) {
-            memberFieldValidator.validateNicknameDuplicate(nickname);
+    // 요청 값의 닉네임, 이메일이 기존 닉네임, 이메일과 같은 경우 중복 오류가 일어나지 않도록 처리
+    private void validateEmailDuplicate(String memberEmail, String emailReq) {
+        if (!memberEmail.equals(emailReq)) {
+            memberFieldValidator.validateEmailDuplicate(emailReq);
         }
+    }
 
-        if (!findMember.getEmail().equals(email)) {
-            memberFieldValidator.validateEmailDuplicate(email);
+    private void validateNicknameDuplicate(String memberNickname, String nicknameReq) {
+        if (!memberNickname.equals(nicknameReq)) {
+            memberFieldValidator.validateNicknameDuplicate(nicknameReq);
         }
     }
 }

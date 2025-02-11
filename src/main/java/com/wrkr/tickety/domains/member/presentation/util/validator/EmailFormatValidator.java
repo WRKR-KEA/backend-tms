@@ -18,7 +18,7 @@ public class EmailFormatValidator implements ConstraintValidator<EmailFormat, St
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        boolean isValid = EMAIL_PATTERN.matcher(email).matches();
+        boolean isValid = email != null && !email.isBlank() && EMAIL_PATTERN.matcher(email).matches();
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

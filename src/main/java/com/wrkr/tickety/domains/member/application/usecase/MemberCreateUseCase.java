@@ -32,15 +32,8 @@ public class MemberCreateUseCase {
     private final MemberFieldValidator memberFieldValidator;
 
     public MemberPkResponse createMember(MemberCreateRequest memberCreateRequest, MultipartFile profileImage) {
-        memberFieldValidator.validateField(
-            memberCreateRequest.name(),
-            memberCreateRequest.department(),
-            memberCreateRequest.position(),
-            memberCreateRequest.phone(),
-            memberCreateRequest.role(),
-            memberCreateRequest.nickname(),
-            memberCreateRequest.email()
-        );
+        memberFieldValidator.validateEmailDuplicate(memberCreateRequest.email());
+        memberFieldValidator.validateNicknameDuplicate(memberCreateRequest.nickname());
 
         String tempPassword = RandomCodeGenerator.generateUUID().substring(0, 12);
         String encryptedPassword = PasswordEncoderUtil.encodePassword(tempPassword);

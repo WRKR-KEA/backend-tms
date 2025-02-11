@@ -18,7 +18,7 @@ public class NicknameFormatValidator implements ConstraintValidator<NicknameForm
 
     @Override
     public boolean isValid(String nickname, ConstraintValidatorContext context) {
-        boolean isValid = NICKNAME_PATTERN.matcher(nickname).matches();
+        boolean isValid = nickname != null && !nickname.isBlank() && NICKNAME_PATTERN.matcher(nickname).matches();
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

@@ -18,7 +18,7 @@ public class PhoneFormatValidator implements ConstraintValidator<PhoneNumberForm
 
     @Override
     public boolean isValid(String phoneNumber, ConstraintValidatorContext context) {
-        boolean isValid = PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches();
+        boolean isValid = phoneNumber != null && !phoneNumber.isBlank() && PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches();
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

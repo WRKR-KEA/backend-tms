@@ -10,8 +10,8 @@ import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_POSITION;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_ROLE;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-import static com.wrkr.tickety.global.response.code.CommonErrorCode.BAD_REQUEST;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INTERNAL_SERVER_ERROR;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequestForExcel;
@@ -86,8 +86,8 @@ public class AdminMemberController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApplicationResponse<MemberPkResponse> createMember(
         @AuthenticationPrincipal Member member,
-        @RequestPart MemberCreateRequest memberCreateRequest,
-        @RequestPart MultipartFile profileImage
+        @RequestPart(value = "request") MemberCreateRequest memberCreateRequest,
+        @RequestPart(required = false) MultipartFile profileImage
     ) {
         MemberPkResponse memberPkResponse = memberCreateUseCase.createMember(memberCreateRequest, profileImage);
 
@@ -147,8 +147,8 @@ public class AdminMemberController {
     public ApplicationResponse<MemberPkResponse> modifyMemberInfo(
         @AuthenticationPrincipal Member member,
         @PathVariable String memberId,
-        @RequestPart MemberInfoUpdateRequest memberInfoUpdateRequest,
-        @RequestPart MultipartFile profileImage
+        @RequestPart(value = "request") MemberInfoUpdateRequest memberInfoUpdateRequest,
+        @RequestPart(required = false) MultipartFile profileImage
     ) {
         MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberInfoUpdateRequest, profileImage);
         return ApplicationResponse.onSuccess(memberPkResponse);
@@ -174,10 +174,10 @@ public class AdminMemberController {
     }
 
     // TODO: ConstraintViolationException 제대로 처리되지 않는 문제 해결 필요
-    @CustomErrorCodes(commonErrorCodes = {BAD_REQUEST})
+    @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
     @Parameters({
-        @Parameter(name = "role", description = "회원 역할 (USER | MANAGER | ADMIN)", example = "USER"),
+        @Parameter(name = "role", description = "회원 역할 (USER | MANAGER)", example = "USER"),
         @Parameter(name = "query", description = "검색어 (이메일, 이름, 부서)", example = "alsgudtkwjs@gachon.ac.kr(이메일) or 김가천(이름) or 부서(개발 1팀)"),
         @Parameter(name = "pageable", description = "페이징", example = "{\"page\":1,\"size\":20}")
     })
