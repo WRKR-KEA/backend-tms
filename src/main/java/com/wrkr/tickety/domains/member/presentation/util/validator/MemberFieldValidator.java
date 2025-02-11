@@ -42,18 +42,22 @@ public class MemberFieldValidator {
         validateName(name);
         validateDepartment(department);
         validatePosition(position);
-        validatePhone(phone);
+        validatePhoneFormat(phone);
         validateRole(role);
-        validateNickname(nickname);
-        validateEmail(email);
+        validateNicknameFormat(nickname);
+        validateNicknameDuplicate(nickname);
+        validateEmailFormat(email);
+        validateEmailDuplicate(email);
     }
 
-    public void validateEmail(String email) {
+    public void validateEmailFormat(String email) {
         if (email == null || email.isBlank()
             || !EMAIL_PATTERN.matcher(email).matches()) {
             throw ApplicationException.from(INVALID_EMAIL);
         }
+    }
 
+    public void validateEmailDuplicate(String email) {
         if (memberGetService.existsByEmail(email)) {
             throw ApplicationException.from(ALREADY_EXIST_EMAIL);
         }
@@ -65,12 +69,14 @@ public class MemberFieldValidator {
         }
     }
 
-    public void validateNickname(String nickname) {
+    public void validateNicknameFormat(String nickname) {
         if (nickname == null || nickname.isBlank()
             || !NICKNAME_PATTERN.matcher(nickname).matches()) {
             throw ApplicationException.from(INVALID_NICKNAME);
         }
+    }
 
+    public void validateNicknameDuplicate(String nickname) {
         if (memberGetService.existsByNickname(nickname)) {
             throw ApplicationException.from(ALREADY_EXIST_NICKNAME);
         }
@@ -88,7 +94,7 @@ public class MemberFieldValidator {
         }
     }
 
-    public void validatePhone(String phone) {
+    public void validatePhoneFormat(String phone) {
         if (phone == null || phone.isBlank()
             || !PHONE_NUMBER_PATTERN.matcher(phone).matches()) {
             throw ApplicationException.from(INVALID_PHONE);

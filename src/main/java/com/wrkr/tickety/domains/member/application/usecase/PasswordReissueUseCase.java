@@ -67,4 +67,5 @@ public class PasswordReissueUseCase {
             throw ApplicationException.from(AuthErrorCode.INVALID_VERIFICATION_CODE);
         }
     }
+
 }

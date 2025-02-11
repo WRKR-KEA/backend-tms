@@ -2,17 +2,14 @@ package com.wrkr.tickety.domains.member.presentation;
 
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_EMAIL;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_NICKNAME;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.DEPARTMENT_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EMAIL_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_EMAIL_FORMAT;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NICKNAME_FORMAT;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_PHONE_FORMAT;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_DEPARTMENT;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_EMAIL;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NAME;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NICKNAME;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_PHONE;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_POSITION;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_ROLE;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.NAME_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.NICKNAME_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.PHONE_IS_BLANK;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.POSITION_IS_BLANK;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.BAD_REQUEST;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INTERNAL_SERVER_ERROR;
 
@@ -30,7 +27,6 @@ import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCa
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.annotation.file.FileExtension;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
@@ -40,8 +36,6 @@ import com.wrkr.tickety.global.utils.excel.ExcelUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
@@ -79,23 +73,14 @@ public class AdminMemberController {
 
     @CustomErrorCodes(memberErrorCodes =
         {
-            EMAIL_IS_BLANK, INVALID_EMAIL_FORMAT, ALREADY_EXIST_EMAIL,
-            NAME_IS_BLANK,
-            NICKNAME_IS_BLANK, INVALID_NICKNAME_FORMAT, ALREADY_EXIST_NICKNAME,
-            DEPARTMENT_IS_BLANK,
-            POSITION_IS_BLANK,
-            PHONE_IS_BLANK, INVALID_PHONE_FORMAT,
+            INVALID_EMAIL, ALREADY_EXIST_EMAIL,
+            INVALID_NAME,
+            INVALID_NICKNAME, ALREADY_EXIST_NICKNAME,
+            INVALID_DEPARTMENT,
+            INVALID_POSITION,
+            INVALID_PHONE,
             INVALID_ROLE
         }
-    )
-    @Parameter(
-        name = "memberCreateRequest",
-        description = "회원 등록 요청 데이터",
-        required = true,
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = @Schema(implementation = MemberCreateRequest.class)
-        )
     )
     @Operation(summary = "관리자 - 회원 등록", description = "회원을 등록 시 이메일로 임시 비밀번호를 발급합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -112,12 +97,12 @@ public class AdminMemberController {
     // TODO: csv 파일도 업로드할 수 있도록 개선 가능
     @CustomErrorCodes(memberErrorCodes =
         {
-            EMAIL_IS_BLANK, INVALID_EMAIL_FORMAT, ALREADY_EXIST_EMAIL,
-            NAME_IS_BLANK,
-            NICKNAME_IS_BLANK, INVALID_NICKNAME_FORMAT, ALREADY_EXIST_NICKNAME,
-            DEPARTMENT_IS_BLANK,
-            POSITION_IS_BLANK,
-            PHONE_IS_BLANK, INVALID_PHONE_FORMAT,
+            INVALID_EMAIL, ALREADY_EXIST_EMAIL,
+            INVALID_NAME,
+            INVALID_NICKNAME, ALREADY_EXIST_NICKNAME,
+            INVALID_DEPARTMENT,
+            INVALID_POSITION,
+            INVALID_PHONE,
             INVALID_ROLE
         }
     )
@@ -148,26 +133,17 @@ public class AdminMemberController {
     @CustomErrorCodes(memberErrorCodes =
         {
             MEMBER_NOT_FOUND,
-            EMAIL_IS_BLANK, INVALID_EMAIL_FORMAT, ALREADY_EXIST_EMAIL,
-            NAME_IS_BLANK,
-            NICKNAME_IS_BLANK, INVALID_NICKNAME_FORMAT, ALREADY_EXIST_NICKNAME,
-            DEPARTMENT_IS_BLANK,
-            POSITION_IS_BLANK,
-            PHONE_IS_BLANK, INVALID_PHONE_FORMAT,
+            INVALID_EMAIL, ALREADY_EXIST_EMAIL,
+            INVALID_NAME,
+            INVALID_NICKNAME, ALREADY_EXIST_NICKNAME,
+            INVALID_DEPARTMENT,
+            INVALID_POSITION,
+            INVALID_PHONE,
             INVALID_ROLE
         }
     )
     @Operation(summary = "관리자 - 회원 정보 수정", description = "회원 정보를 수정합니다.")
     @PatchMapping(value = "/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Parameter(
-        name = "memberInfoUpdateRequest",
-        description = "회원 수정 요청 데이터",
-        required = true,
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = @Schema(implementation = MemberInfoUpdateRequest.class)
-        )
-    )
     public ApplicationResponse<MemberPkResponse> modifyMemberInfo(
         @AuthenticationPrincipal Member member,
         @PathVariable String memberId,
@@ -189,7 +165,7 @@ public class AdminMemberController {
         return ApplicationResponse.onSuccess();
     }
 
-    @CustomErrorCodes(memberErrorCodes = {MemberErrorCode.MEMBER_NOT_FOUND})
+    @CustomErrorCodes(memberErrorCodes = {MEMBER_NOT_FOUND})
     @Operation(summary = "관리자 - 회원 정보 상세조회", description = "선택한 회원의 상세 정보를 조회합니다.")
     @GetMapping("/{memberId}")
     public ApplicationResponse<MemberInfoResponse> getMemberInfo(@PathVariable String memberId) {
