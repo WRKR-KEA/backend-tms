@@ -1,6 +1,8 @@
 package com.wrkr.tickety.domains.attachment.domain.service;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,9 +81,11 @@ public class S3ApiService {
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
 
-            return s3Client.utilities().getUrl(builder ->
+            String encodedUrl = s3Client.utilities().getUrl(builder ->
                 builder.bucket(bucketName).key(objectKey).build()
             ).toString();
+            
+            return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 실패", e);
         }
@@ -108,10 +112,5 @@ public class S3ApiService {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public Boolean deleteProfileImage(String profileImageUrl) {
-        String objectKey = profileImageUrl.substring(profileImageUrl.indexOf(bucketName) + bucketName.length() + 1);
-        return deleteObject(objectKey);
     }
 }
