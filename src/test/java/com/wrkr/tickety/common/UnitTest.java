@@ -42,12 +42,11 @@ import com.wrkr.tickety.domains.ticket.persistence.repository.TicketHistoryRepos
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketQueryDslRepository;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
 import org.junit.jupiter.api.Tag;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+//@SpringBootTest
 @Tag("UseCase")
 @Transactional
 @ExecuteParallel
