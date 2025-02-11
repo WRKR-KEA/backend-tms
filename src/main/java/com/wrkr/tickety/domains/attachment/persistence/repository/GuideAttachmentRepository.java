@@ -8,4 +8,6 @@ public interface GuideAttachmentRepository extends JpaRepository<GuideAttachment
 
 
     List<GuideAttachmentEntity> findByGuide_GuideId(Long guideId);
+
+    void deleteByFileUrl(String fileUrl);
 }

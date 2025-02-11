@@ -10,6 +10,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.GuideUpdateReques
 import com.wrkr.tickety.domains.ticket.application.dto.response.PkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.GuideMapper;
 import com.wrkr.tickety.domains.ticket.domain.model.Guide;
+import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideDeleteService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.utils.attachment.FileValidationUtil;
@@ -30,29 +31,45 @@ public class GuideUpdateUseCase {
     private final GuideMapper guideMapper;
     private final S3ApiService s3ApiService;
 
-    public PkResponse modifyGuide(Long cryptoGuideId, GuideUpdateRequest guideUpdateRequest, List<MultipartFile> guideAttachments) {
+    private static final int MAX_TOTAL_FILES = 5;
+    private final GuideDeleteService guideDeleteService;
+
+    public PkResponse modifyGuide(Long cryptoGuideId, GuideUpdateRequest guideUpdateRequest, List<MultipartFile> newAttachments) {
         Guide guide = guideService.updateGuide(cryptoGuideId, guideUpdateRequest);
 
-        // 1️⃣ 기존 첨부파일 가져오기
         List<GuideAttachment> existingAttachments = guideAttachmentGetService.getAttachmentsByGuideId(guide.getGuideId());
 
-        // 2️⃣ 기존 첨부파일 삭제 (S3 및 DB)
-        existingAttachments.forEach(attachment -> {
-            s3ApiService.deleteObject(attachment.getFileUrl());
-            guideAttachmentDeleteService.deleteAttachment(attachment);
-        });
+        // 1️⃣ 삭제할 첨부파일 삭제
+        if (guideUpdateRequest.deleteAttachments() != null && !guideUpdateRequest.deleteAttachments().isEmpty()) {
+            guideUpdateRequest.deleteAttachments().forEach(url -> {
+                s3ApiService.deleteObject(url);
+                guideAttachmentDeleteService.deleteByFileUrl(url);
+            });
 
-        // 3️⃣ 새로운 파일 업로드 (만약 새 파일이 존재하는 경우)
-        if (guideAttachments != null && !guideAttachments.isEmpty()) {
-            FileValidationUtil.validateFiles(guideAttachments);
-            List<GuideAttachment> newAttachments = guideAttachments.stream()
+            existingAttachments = existingAttachments.stream()
+                .filter(attachment -> !guideUpdateRequest.deleteAttachments().contains(attachment.getFileUrl()))
+                .toList();
+        }
+
+        int remainingFilesCount = existingAttachments.size();
+        int newFilesCount = (newAttachments != null) ? newAttachments.size() : 0;
+        int totalFilesAfterUpload = remainingFilesCount + newFilesCount;
+
+        if (totalFilesAfterUpload > MAX_TOTAL_FILES) {
+            throw new IllegalArgumentException("첨부파일 개수는 최대 " + MAX_TOTAL_FILES + "개까지 가능합니다. 현재 업로드 가능한 파일 개수: "
+                + (MAX_TOTAL_FILES - remainingFilesCount));
+        }
+
+        // 2️⃣ 새로운 첨부파일 업로드
+        if (newAttachments != null && !newAttachments.isEmpty()) {
+            FileValidationUtil.validateFiles(newAttachments);
+
+            List<GuideAttachment> uploadedAttachments = newAttachments.stream()
                 .filter(file -> !file.isEmpty())
                 .map(file -> saveGuideAttachment(guide, file))
                 .toList();
 
-            if (!newAttachments.isEmpty()) {
-                guideAttachmentUploadService.saveAll(newAttachments);
-            }
+            guideAttachmentUploadService.saveAll(uploadedAttachments);
         }
 
         return guideMapper.guideIdToPkResponse(guide);

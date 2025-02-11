@@ -16,6 +16,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinR
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
@@ -192,7 +193,7 @@ public class ManagerTicketController {
     @Operation(summary = "해당 티켓 상단 고정", description = "해당 티켓을 상단 고정합니다.")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_PIN_COUNT_OVER})
     @PatchMapping("/pin")
-    public ApplicationResponse<TicketPkResponse> pinTicket(
+    public ApplicationResponse<ManagerPinTicketResponse> pinTicket(
         @AuthenticationPrincipal Member member,
         @RequestBody TicketPinRequest request
     ) {

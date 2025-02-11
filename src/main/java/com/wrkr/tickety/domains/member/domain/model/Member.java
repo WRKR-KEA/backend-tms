@@ -1,6 +1,8 @@
 package com.wrkr.tickety.domains.member.domain.model;
 
-import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
+
+import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
@@ -28,6 +30,7 @@ public class Member extends BaseTime {
     private Boolean agitNotification;
     private Boolean emailNotification;
     private Boolean serviceNotification;
+    private Boolean kakaoworkNotification;
     private Boolean isDeleted;
     private Boolean isTempPassword;
 
@@ -47,6 +50,7 @@ public class Member extends BaseTime {
         Boolean agitNotification,
         Boolean emailNotification,
         Boolean serviceNotification,
+        Boolean kakaoworkNotification,
         Boolean isDeleted,
         Boolean isTempPassword
     ) {
@@ -64,36 +68,49 @@ public class Member extends BaseTime {
         this.agitNotification = agitNotification;
         this.emailNotification = emailNotification;
         this.serviceNotification = serviceNotification;
+        this.kakaoworkNotification = kakaoworkNotification;
         this.isDeleted = isDeleted;
         this.isTempPassword = isTempPassword;
     }
 
     // TODO: 필드 단위로 파라미터 받기
     public void modifyMemberInfo(
-        MemberUpdateRequest memberUpdateRequest
+        MemberInfoUpdateRequest memberInfoUpdateRequest
     ) {
-        this.email = memberUpdateRequest.email();
-        this.name = memberUpdateRequest.name();
-        this.nickname = memberUpdateRequest.nickname();
-        this.department = memberUpdateRequest.department();
-        this.position = memberUpdateRequest.position();
-        this.phone = memberUpdateRequest.phone();
-        this.role = memberUpdateRequest.role();
-        this.profileImage = memberUpdateRequest.profileImage();
+        this.email = memberInfoUpdateRequest.email();
+        this.name = memberInfoUpdateRequest.name();
+        this.nickname = memberInfoUpdateRequest.nickname();
+        this.department = memberInfoUpdateRequest.department();
+        this.position = memberInfoUpdateRequest.position();
+        this.phone = memberInfoUpdateRequest.phone();
+        this.agitUrl = memberInfoUpdateRequest.agitUrl();
     }
 
     public void modifyIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 
-    public void modifyMyPageInfo(String position, String phone) {
-        this.position = position;
-        this.phone = phone;
+    public void modifyMyPageInfo(MyPageInfoUpdateRequest request) {
+        this.name = request.name();
+        this.phone = request.phone();
+        this.email = request.email();
+        this.position = request.position();
+        this.agitUrl = request.agitUrl();
+        this.department = request.department();
+        this.agitNotification = request.agitNotification();
+        this.emailNotification = request.emailNotification();
+        this.serviceNotification = request.serviceNotification();
+        this.kakaoworkNotification = request.kakaoworkNotification();
+
     }
 
     public void modifyPassword(String password, Boolean isTempPassword) {
         this.password = password;
         this.isTempPassword = isTempPassword;
+    }
+
+    public void modifyProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public Boolean isDeleted() {

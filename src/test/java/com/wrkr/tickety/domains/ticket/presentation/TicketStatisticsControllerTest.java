@@ -25,22 +25,17 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = TicketStatisticsController.class)
 @AutoConfigureMockMvc
 class TicketStatisticsControllerTest {
 
-
-    private static final Logger log = LoggerFactory.getLogger(TicketStatisticsControllerTest.class);
     @Autowired
     private MockMvc mockMvc;
 
@@ -68,8 +63,8 @@ class TicketStatisticsControllerTest {
 
         @Test
         @DisplayName("부모 카테고리별 통계 조회")
-        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
-        void getParentCategoryStatistics() throws Exception {
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "managr.hjw")
+        void getParentCategoryStatisticsInDaily() throws Exception {
             //given
 
             LocalDate requestDate = LocalDate.now();
@@ -83,18 +78,65 @@ class TicketStatisticsControllerTest {
             StatisticsByCategoryResponse expectedResponse = StatisticsByCategoryResponse.builder().parentCategoryId(null)
                 .statisticData(StatisticData.builder().firstCategoryTicketCount(CategoryTicketCount).build()).date(requestDate.toString()).build();
             //when
+            when(statisticsByParentCategoryUseCase.getStatisticsByCategory(StatisticsType.DAILY, requestDate)).thenReturn(expectedResponse);
+
+            //then
+            mockMvc.perform(
+                post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))).andExpect(status().isOk()).andReturn();
+        }
+
+        @Test
+        @DisplayName("부모카테고리별 일별 통계 조회")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "managr.hjw")
+        void getParentCategoryStatisticsInMonthly() throws Exception {
+            //given
+
+            LocalDate requestDate = LocalDate.now();
+            StatisticsByCategoryRequest request = StatisticsByCategoryRequest.builder().date(LocalDate.now()).build();
+
+            List<TicketCount> CategoryTicketCount = new ArrayList<>();
+            IntStream.range(0, 5)
+                .forEach(i -> CategoryTicketCount.add(TicketCount.builder().categoryId("categoryId" + i).count(i).categoryName("categoryName" + i).build()));
+
+            StatisticsByCategoryResponse expectedResponse = StatisticsByCategoryResponse.builder().parentCategoryId(null)
+                .statisticData(StatisticData.builder().firstCategoryTicketCount(CategoryTicketCount).build()).date(requestDate.toString()).build();
+            //when
             when(statisticsByParentCategoryUseCase.getStatisticsByCategory(StatisticsType.MONTHLY, requestDate)).thenReturn(expectedResponse);
 
             //then
-            MvcResult result = mockMvc.perform(
-                    post(
-                        "/api/manager/statistics/{statisticsType}", "DAILY")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                ).andExpect(status().isOk())
-                .andReturn();
+            mockMvc.perform(
+                post("/api/manager/statistics/{statisticsType}", StatisticsType.MONTHLY.toString()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))).andExpect(status().isOk()).andReturn();
         }
 
+        @Test
+        @DisplayName("지원되지 않는 통계 타입은 예외 발생")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
+        void throwExceptionWhenUnsupportedStatisticsType() throws Exception {
+            final String UN_SUPPORTED_STATISTICS_TYPE = "unsupportedStatisticsType";
+            //given
+            StatisticsByCategoryRequest request = StatisticsByCategoryRequest.builder().date(LocalDate.now()).build();
+            //then
+            mockMvc.perform(
+                    post("/api/manager/statistics/{statisticsType}", UN_SUPPORTED_STATISTICS_TYPE)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("날짜 형식이 잘못된 경우 예외 발생")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
+        void throwExceptionWhenInvalidDateFormat() throws Exception {
+            //then
+            mockMvc.perform(
+                    post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString())
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString("{date:invalidDate}")))
+                .andExpect(status().isBadRequest());
+        }
     }
 }
