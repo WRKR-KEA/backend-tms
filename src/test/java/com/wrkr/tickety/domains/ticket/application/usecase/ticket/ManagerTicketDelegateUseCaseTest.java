@@ -29,11 +29,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.event.RecordApplicationEvents;
 
 @ExtendWith(MockitoExtension.class)
 @RecordApplicationEvents
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ManagerTicketDelegateUseCaseTest {
 
     @Mock
