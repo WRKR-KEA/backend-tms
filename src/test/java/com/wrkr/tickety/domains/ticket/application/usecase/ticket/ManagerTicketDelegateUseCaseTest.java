@@ -1,52 +1,35 @@
-package com.wrkr.tickety.usecase.Ticket;
+package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.wrkr.tickety.common.UnitTest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketDelegateUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
-import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
-import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
-import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
-public class ManagerTicketDelegateUseCaseTest {
+public class ManagerTicketDelegateUseCaseTest extends UnitTest {
 
-    @Mock
-    private TicketGetService ticketGetService;
-
-    @Mock
-    private MemberGetService memberGetService;
-
-    @Mock
-    private TicketUpdateService ticketUpdateService;
-
-    @Mock
-    private TicketHistorySaveService ticketHistorySaveService;
-
-    @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
-
-    @InjectMocks
-    private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
+    private final ManagerTicketDelegateUseCase sut = new ManagerTicketDelegateUseCase(
+        ticketGetService,
+        ticketUpdateService,
+        ticketHistorySaveService,
+        memberGetService,
+        applicationEventPublisher
+    );
 
     private static final Long USER_ID = 1L;
     private static final Long MANAGER_ID = 2L;
@@ -57,13 +40,12 @@ public class ManagerTicketDelegateUseCaseTest {
     private static final String TICKET_CONTENT = "티켓 내용";
 
     private Member user;
-    private Member manager;
     private Category category;
     private Ticket ticket;
 
     @BeforeAll
     static void init() {
-        PkCrypto pkCrypto = new PkCrypto("AES", "1234567890123456");
+        PkCrypto pkCrypto = new PkCrypto("TEST", "TESTSECRETKEY");
         pkCrypto.init();
     }
 
@@ -79,7 +61,7 @@ public class ManagerTicketDelegateUseCaseTest {
             .role(Role.USER)
             .build();
 
-        manager = Member.builder()
+        Member manager = Member.builder()
             .memberId(MANAGER_ID)
             .password("password")
             .nickname("담당자")
@@ -110,7 +92,7 @@ public class ManagerTicketDelegateUseCaseTest {
     @Test
     @DisplayName("담당자 본인이 승인 했던 티켓을 다른 담당자에게 배정한다 ")
     void testDelegateTicket() {
-        // given
+        // Given
         Long delegateManagerId = 3L;
 
         TicketDelegateRequest ticketDelegateRequest = TicketDelegateRequest.builder()
@@ -142,10 +124,10 @@ public class ManagerTicketDelegateUseCaseTest {
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
         given(ticketUpdateService.updateManager(ticket, delegateManager)).willReturn(updatedTicket);
 
-        // when
-        TicketPkResponse response = managerTicketDelegateUseCase.delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
+        // When
+        TicketPkResponse response = sut.delegateTicket(TICKET_ID, MANAGER_ID, ticketDelegateRequest);
 
-        // then
+        // Then
         assertThat(response).isNotNull();
         assertThat(response.ticketId()).isEqualTo(PkCrypto.encrypt(TICKET_ID));
         assertThat(updatedTicket.getManager()).isEqualTo(delegateManager);

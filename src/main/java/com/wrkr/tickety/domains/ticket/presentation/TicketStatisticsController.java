@@ -5,16 +5,18 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUM
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.StatisticsByCategoryRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.response.StatisticsByCategoryResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByCategoryResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByStatusResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.statistics.StatisticsByTicketStatusResponse;
-import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByCategoryUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByChildCategoryUseCase;
+import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByParentCategoryUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsByStatusUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.statistics.StatisticsGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.StatisticsType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
+import com.wrkr.tickety.global.utils.PkCrypto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -37,8 +39,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class TicketStatisticsController {
 
     private final StatisticsByStatusUseCase statisticsByStatusUseCase;
-    private final StatisticsByCategoryUseCase statisticsByCategoryUseCase;
+    private final StatisticsByParentCategoryUseCase statisticsByParentCategoryUseCase;
     private final StatisticsGetUseCase statisticsGetUseCase;
+    private final StatisticsByChildCategoryUseCase statisticsByChildCategoryUseCase;
 
     @GetMapping("/{statisticsType}/status")
     @Operation(summary = "일간/월간/연간 상태별 요약 조회")
@@ -52,13 +55,25 @@ public class TicketStatisticsController {
     }
 
     @PostMapping("/{statisticsType}")
-    @Operation(summary = "카테고리별 통계 조회")
+    @Operation(summary = "부모 카테고리별 통계 조회")
     public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "통계 타입", example = "daily", required = true) @PathVariable StatisticsType statisticsType,
         @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true) @RequestBody @Valid StatisticsByCategoryRequest request
     ) {
-        return ApplicationResponse.onSuccess(statisticsByCategoryUseCase.getStatisticsByCategory(statisticsType, request.date()));
+        return ApplicationResponse.onSuccess(statisticsByParentCategoryUseCase.getStatisticsByCategory(statisticsType, request.date()));
+    }
+
+    @PostMapping("/{statisticsType}/{parentCategoryId}")
+    @Operation(summary = "자식 카테고리별 통계 조회")
+    public ApplicationResponse<StatisticsByCategoryResponse> getStatistics(
+        @AuthenticationPrincipal Member member,
+        @Parameter(description = "통계 타입", example = "daily", required = true) @PathVariable StatisticsType statisticsType,
+        @Parameter(description = "부모 카테고리 id", example = "Bqs3C822lkMNdWlmE-szUw", required = true) @PathVariable String parentCategoryId,
+        @Parameter(description = "통계를 확인하고자 하는 날짜", example = "2025-01-12", required = true) @RequestBody @Valid StatisticsByCategoryRequest request
+    ) {
+        return ApplicationResponse.onSuccess(
+            statisticsByChildCategoryUseCase.getStatisticsByCategory(statisticsType, request.date(), PkCrypto.decrypt(parentCategoryId)));
     }
 
     @Operation(summary = "기간별 & 티켓 상태별 티켓 개수 조회", description = "기간별 & 티켓 상태별로 티켓의 개수를 조회합니다.")

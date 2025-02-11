@@ -12,6 +12,7 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideCreateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.utils.attachment.FileValidationUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,14 +39,17 @@ public class GuideCreateUseCase {
             .build();
 
         Guide savedGuide = guideCreateService.createGuide(guide);
+
         List<GuideAttachment> attachments;
         if (guideAttachments != null && !guideAttachments.isEmpty()) {
+            FileValidationUtil.validateFiles(guideAttachments);
+            
             attachments = new ArrayList<>();
             guideAttachments.forEach(attachmentFile -> {
                 String fileUrl = s3ApiService.uploadGuideFile(attachmentFile);
                 GuideAttachment guideAttachment = GuideAttachmentMapper.toGuideAttachmentDomain(savedGuide, fileUrl,
-                                                                                                attachmentFile.getOriginalFilename(),
-                                                                                                attachmentFile.getSize());
+                    attachmentFile.getOriginalFilename(),
+                    attachmentFile.getSize());
                 attachments.add(guideAttachment);
             });
 

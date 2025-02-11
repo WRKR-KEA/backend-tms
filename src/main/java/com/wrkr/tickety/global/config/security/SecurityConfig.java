@@ -5,6 +5,7 @@ import com.wrkr.tickety.global.config.security.filter.JwtAuthenticationFilter;
 import com.wrkr.tickety.global.config.security.handler.CustomAccessDeniedHandler;
 import com.wrkr.tickety.global.config.security.handler.CustomAuthenticationEntryPoint;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
+import jakarta.servlet.DispatcherType;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +48,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_API_ENDPOINTS = {
         "/api/auth/login",
-        "/api/members/password/reissue"
+        "/api/members/password/reissue",
+        "/api/members/password/code"
     };
 
     @Bean
@@ -64,6 +66,7 @@ public class SecurityConfig {
                 .requestMatchers(STATIC_RESOURCES).permitAll()
                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                 .requestMatchers(PUBLIC_API_ENDPOINTS).permitAll()
+                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name())
                 .requestMatchers("/api/manager/**").hasAnyAuthority(Role.MANAGER.name(), Role.ADMIN.name())
                 .requestMatchers("/api/user/**").hasAnyAuthority(Role.USER.name(), Role.MANAGER.name(), Role.ADMIN.name())
@@ -87,7 +90,9 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
-            "http://localhost:8080"
+            "http://localhost:8080",
+            "http://172.16.211.116:3000",
+            "http://172.16.211.53:8080"
         ));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));

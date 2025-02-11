@@ -1,19 +1,17 @@
-package com.wrkr.tickety.usecase.Ticket;
+package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
+import com.wrkr.tickety.common.UnitTest;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
-import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
-import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
@@ -23,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -33,19 +30,15 @@ import org.springframework.data.domain.PageImpl;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ManagerTicketAllGetUseCaseTest {
+public class ManagerTicketAllGetUseCaseTest extends UnitTest {
 
-    @InjectMocks
-    private ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
-
-    @Mock
-    private MemberGetService memberGetService;
-
-    @Mock
-    private TicketGetService ticketGetService;
+    private final ManagerTicketAllGetUseCase sut = new ManagerTicketAllGetUseCase(
+        memberGetService,
+        ticketGetService
+    );
 
     @Mock
-    private PkCrypto pkCrypto; // Mock 객체 생성
+    private PkCrypto pkCrypto;
 
     @BeforeEach
     void setUp() {
@@ -55,7 +48,7 @@ public class ManagerTicketAllGetUseCaseTest {
     @Test
     @DisplayName("담당자의 티켓 목록을 조회한다.")
     void getManagerTickets() {
-        // given
+        // Given
         Member member = Member.builder().memberId(1L).build();
         Member requestMember = Member.builder().memberId(2L).build();
         Long managerId = 1L;
@@ -75,30 +68,29 @@ public class ManagerTicketAllGetUseCaseTest {
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
         given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
 
-        // when
-        ApplicationPageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(managerId, pageable,
-            null,
-            search);
+        // When
+        ApplicationPageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = sut.getManagerTicketList(
+            managerId, pageable, null, search
+        );
 
-        // then
+        // Then
         assertEquals(3, ticketAllGetPagingResponse.elements().size());
     }
 
     @Test
     @DisplayName("담당자의 티켓 목록을 조회한다. 담당가id가 없는 경우를 테스트한다.")
     void throwMemberExceptionTest() {
-        // given
+        // Given
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         long managerId = pkCrypto.decryptValue(cryptoManagerId);
 
         when(memberGetService.byMemberId(managerId)).thenThrow(new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        //then
+        // Then
         ApplicationException exception = assertThrows(ApplicationException.class,
-            () -> memberGetService.byMemberId(managerId));
+            () -> memberGetService.byMemberId(managerId)
+        );
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
     }
-
-
 }
