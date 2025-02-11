@@ -67,7 +67,7 @@ public class Ticket extends BaseTime {
 
     public boolean isAccessibleBy(Member member) {
         if (member.getRole().equals(Role.USER)) {
-            return this.user.equals(member);
+            return this.user.getMemberId().equals(member.getMemberId());
         } else {
             return true;
         }

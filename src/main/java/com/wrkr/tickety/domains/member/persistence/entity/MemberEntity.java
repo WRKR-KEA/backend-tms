@@ -74,6 +74,10 @@ public class MemberEntity extends BaseTimeEntity {
     private Boolean serviceNotification;
 
     @Column(nullable = false)
+    @ColumnDefault("1")
+    private Boolean kakaoworkNotification;
+
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Boolean isDeleted;
 
@@ -97,6 +101,7 @@ public class MemberEntity extends BaseTimeEntity {
         Boolean agitNotification,
         Boolean emailNotification,
         Boolean serviceNotification,
+        Boolean kakaoworkNotification,
         Boolean isDeleted,
         Boolean isTempPassword
     ) {
@@ -114,6 +119,7 @@ public class MemberEntity extends BaseTimeEntity {
         this.agitNotification = agitNotification;
         this.emailNotification = emailNotification;
         this.serviceNotification = serviceNotification;
+        this.kakaoworkNotification = kakaoworkNotification;
         this.isDeleted = isDeleted;
         this.isTempPassword = isTempPassword;
     }

@@ -172,7 +172,7 @@ public class GuideUseCaseTest {
 
         MockMultipartFile file = new MockMultipartFile(
             "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
-            "test.txt",     // 파일명
+            "test.png",     // 파일명
             "text/plain",   // MIME 타입
             "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
         );
@@ -243,7 +243,7 @@ public class GuideUseCaseTest {
 
         MockMultipartFile file = new MockMultipartFile(
             "attachments",  // 필드명 (컨트롤러에서 받을 @RequestPart 이름과 일치해야 함)
-            "test.txt",     // 파일명
+            "test.jpg",     // 파일명
             "text/plain",   // MIME 타입
             "테스트 파일 내용입니다.".getBytes(StandardCharsets.UTF_8) // 파일 내용
         );

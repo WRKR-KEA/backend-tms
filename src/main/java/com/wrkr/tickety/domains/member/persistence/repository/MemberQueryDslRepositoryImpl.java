@@ -29,7 +29,8 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
             .where(
                 roleEq(role),
                 emailOrNameOrDepartmentContainsIgnoreCase(query),
-                isDeletedEq(false)
+                isDeletedEq(false),
+                roleNotAdmin()
             )
             .orderBy(memberEntity.memberId.desc())
             .offset(pageable.getOffset())
@@ -42,7 +43,8 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
             .where(
                 roleEq(role),
                 emailOrNameOrDepartmentContainsIgnoreCase(query),
-                isDeletedEq(false)
+                isDeletedEq(false),
+                roleNotAdmin()
             );
 
         return PageableExecutionUtils.getPage(
@@ -64,5 +66,9 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
 
     private BooleanExpression isDeletedEq(Boolean isDeleted) {
         return isDeleted == null ? null : memberEntity.isDeleted.eq(isDeleted);
+    }
+
+    private BooleanExpression roleNotAdmin() {
+        return memberEntity.role.ne(Role.ADMIN);
     }
 }

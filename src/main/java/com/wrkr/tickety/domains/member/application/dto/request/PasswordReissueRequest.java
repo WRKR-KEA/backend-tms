@@ -1,12 +1,13 @@
 package com.wrkr.tickety.domains.member.application.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record PasswordReissueRequest(
-    @NotBlank(message = "회원 PK를 입력해주세요.")
+
+    @Schema(description = "암호화된 회원 PK")
     String memberId,
 
-    @NotBlank(message = "인증 번호를 입력해주세요.")
+    @Schema(description = "인증 번호")
     String verificationCode
 ) {
 

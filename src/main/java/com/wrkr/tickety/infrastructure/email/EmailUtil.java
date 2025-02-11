@@ -23,6 +23,8 @@ public class EmailUtil {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
+    // TODO: 스레드 풀 설정 필요
+
     /**
      * @param emailCreateRequest
      * @param code:              타임리프 내부에 매핑할 변수
@@ -39,8 +41,8 @@ public class EmailUtil {
             mimeMessageHelper.setSubject(emailCreateRequest.subject()); // 메일 제목
             mimeMessageHelper.setText(setContext(code, type), true); // 메일 본문 내용, HTML 여부
             javaMailSender.send(mimeMessage);
-            
-        } catch (MessagingException e) { // TODO: 존재하지 않은 이메일인 경우도 고려해야함
+
+        } catch (MessagingException e) { // TODO: 존재하지 않은 이메일인 경우도 고려할 수 있으면 고려
             throw new ApplicationException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

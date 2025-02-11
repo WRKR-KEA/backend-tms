@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.member.presentation;
 
 import static com.wrkr.tickety.domains.auth.exception.AuthErrorCode.INVALID_VERIFICATION_CODE;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NICKNAME;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 
 import com.wrkr.tickety.domains.member.application.dto.request.PasswordReissueRequest;
@@ -12,7 +13,6 @@ import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.response.ApplicationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +34,7 @@ public class PublicController {
     )
     @PatchMapping("/api/members/password/reissue")
     public ApplicationResponse<MemberPkResponse> regeneratePassword(
-        @RequestBody @Valid PasswordReissueRequest passwordReissueRequest
+        @RequestBody PasswordReissueRequest passwordReissueRequest
     ) {
         MemberPkResponse memberPkResponse = passwordReissueUseCase.reissuePassword(passwordReissueRequest.memberId(),
             passwordReissueRequest.verificationCode());
@@ -42,10 +42,10 @@ public class PublicController {
     }
 
     @Operation(summary = "인증 코드 발급", description = "비밀번호 재발급 전, 인증 코드를 발급합니다.")
-    @CustomErrorCodes(memberErrorCodes = {MEMBER_NOT_FOUND /*, INVALID_NICKNAME_FORMAT*/})
+    @CustomErrorCodes(memberErrorCodes = {INVALID_NICKNAME})
     @PostMapping("/api/members/password/code")
     public ApplicationResponse<MemberPkResponse> createVerifyCode(
-        @RequestBody @Valid VerificationCodeRequest verificationCodeRequest
+        @RequestBody VerificationCodeRequest verificationCodeRequest
     ) {
         return ApplicationResponse.onSuccess(verificationCodeCreateUseCase.createVerificationCode(verificationCodeRequest.nickname()));
     }
