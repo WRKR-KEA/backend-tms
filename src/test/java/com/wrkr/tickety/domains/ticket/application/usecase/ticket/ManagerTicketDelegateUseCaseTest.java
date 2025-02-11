@@ -16,6 +16,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketUpdateService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,6 +65,12 @@ public class ManagerTicketDelegateUseCaseTest {
     private Category category;
     private Ticket ticket;
 
+    @BeforeAll
+    static void init() {
+        PkCrypto pkCrypto = new PkCrypto("AES", "1234567890123456");
+        pkCrypto.init();
+    }
+    
     @BeforeEach
     void setUp() {
         user = Member.builder()
