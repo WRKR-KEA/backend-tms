@@ -31,4 +31,8 @@ public class GuideAttachmentPersistenceAdapter {
     public void delete(GuideAttachment attachment) {
         guideAttachmentRepository.deleteById(attachment.getAttachmentId());
     }
+
+    public void deleteByFileUrl(String fileUrl) {
+        guideAttachmentRepository.deleteByFileUrl(fileUrl);
+    }
 }

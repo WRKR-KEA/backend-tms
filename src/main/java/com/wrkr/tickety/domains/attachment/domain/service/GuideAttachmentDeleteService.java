@@ -17,4 +17,8 @@ public class GuideAttachmentDeleteService {
     public void deleteAttachment(GuideAttachment attachment) {
         guideAttachmentPersistenceAdapter.delete(attachment);
     }
+
+    public void deleteByFileUrl(String fileUrl) {
+        guideAttachmentPersistenceAdapter.deleteByFileUrl(fileUrl);
+    }
 }
