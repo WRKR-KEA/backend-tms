@@ -98,4 +98,10 @@ public class TicketPersistenceAdapter {
     public boolean isPinTicket(Long ticketId) {
         return ticketRepository.existsByticketIdAndIsPinnedTrue(ticketId);
     }
+
+    public Page<Ticket> findAllByUserIdAndStatus(Long userId, TicketStatus status, ApplicationPageRequest pageRequest) {
+        Pageable pageable = pageRequest.toPageableNoSort();
+        return ticketRepository.findAllByUserIdAndStatus(userId, status, pageable)
+            .map(this.ticketPersistenceMapper::toDomain);
+    }
 }

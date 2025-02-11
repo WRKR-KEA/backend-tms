@@ -31,4 +31,7 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
     Long countByManager_memberIdAndIsPinnedTrue(Long managerId);
 
     boolean existsByticketIdAndIsPinnedTrue(Long ticketId);
+
+    @Query("SELECT t FROM TicketEntity t WHERE t.user.memberId = :userId AND t.status = :status")
+    Page<TicketEntity> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") TicketStatus status, Pageable pageable);
 }
