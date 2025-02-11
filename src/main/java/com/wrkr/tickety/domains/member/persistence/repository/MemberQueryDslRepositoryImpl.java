@@ -28,11 +28,11 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
             .selectFrom(memberEntity)
             .where(
                 roleEq(role),
-                emailOrNameOrDepartmentContainsIgnoreCase(query),
+                nicknameOrEmailOrNameOrDepartmentContainsIgnoreCase(query),
                 isDeletedEq(false),
                 roleNotAdmin()
             )
-            .orderBy(memberEntity.memberId.desc())
+            .orderBy(memberEntity.updatedAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -42,7 +42,7 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
             .from(memberEntity)
             .where(
                 roleEq(role),
-                emailOrNameOrDepartmentContainsIgnoreCase(query),
+                nicknameOrEmailOrNameOrDepartmentContainsIgnoreCase(query),
                 isDeletedEq(false),
                 roleNotAdmin()
             );
@@ -58,8 +58,9 @@ public class MemberQueryDslRepositoryImpl implements MemberQueryDslRepository {
         return role == null ? null : memberEntity.role.eq(role);
     }
 
-    private BooleanExpression emailOrNameOrDepartmentContainsIgnoreCase(String query) {
-        return query == null || query.isBlank() ? null : memberEntity.email.containsIgnoreCase(query)
+    private BooleanExpression nicknameOrEmailOrNameOrDepartmentContainsIgnoreCase(String query) {
+        return query == null || query.isBlank() ? null : memberEntity.nickname.containsIgnoreCase(query)
+            .or(memberEntity.email.containsIgnoreCase(query))
             .or(memberEntity.name.containsIgnoreCase(query))
             .or(memberEntity.department.containsIgnoreCase(query));
     }

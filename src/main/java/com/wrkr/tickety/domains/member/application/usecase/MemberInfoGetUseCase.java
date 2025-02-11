@@ -20,6 +20,6 @@ public class MemberInfoGetUseCase {
         // TODO: 프로젝션 사용도 고려
         Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
-        return MemberMapper.toMemberInfoResponse(findMember);
+        return MemberMapper.mapToMemberInfoResponse(findMember);
     }
 }
