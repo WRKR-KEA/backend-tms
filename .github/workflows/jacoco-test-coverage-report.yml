@@ -61,7 +61,7 @@ jobs:
       - name: Run Tests and Generate Coverage
         shell: bash
         run: |
-          ./gradlew clean test jacocoTestReport
+          ./gradlew clean test jacocoTestReport -Dspring.profiles.active=test
 
       - name: Test Coverage Report
         id: jacoco

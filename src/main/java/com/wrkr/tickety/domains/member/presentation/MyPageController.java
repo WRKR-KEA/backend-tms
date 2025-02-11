@@ -30,7 +30,7 @@ public class MyPageController {
     private final MyPageInfoGetUseCase myPageInfoGetUseCase;
     private final MyPageInfoUpdateUseCase myPageInfoUpdateUseCase;
 
-    @Operation(summary = "마이페이지 회원 정보 조회", description = "마이페이지 회원 정보를 조회합니다.")
+    @Operation(summary = "사용자/담당자 - 마이페이지 회원 정보 조회", description = "사용자/담당자 마이페이지 회원 정보를 조회합니다.")
     @GetMapping
     @CustomErrorCodes(memberErrorCodes = {MemberErrorCode.MEMBER_NOT_FOUND, MemberErrorCode.DELETED_MEMBER})
     public ApplicationResponse<MyPageInfoResponse> getMemberInfo(
@@ -40,8 +40,7 @@ public class MyPageController {
         return ApplicationResponse.onSuccess(response);
     }
 
-    // TODO : 회원 정보 수정 요청 DTO 데이터 변경 가능 - 현재는 직책, 전화번호만 수정함
-    @Operation(summary = "마이페이지 회원 정보 수정", description = "마이페이지 회원 정보를 조회합니다.")
+    @Operation(summary = "사용자/담당자 - 마이페이지 회원 정보 수정", description = "사용자/담당자 마이페이지 회원 정보를 조회합니다.")
     @PatchMapping
     @CustomErrorCodes(memberErrorCodes = {MemberErrorCode.MEMBER_NOT_FOUND, MemberErrorCode.DELETED_MEMBER})
     public ApplicationResponse<MemberPkResponse> updateMemberInfo(

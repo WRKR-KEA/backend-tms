@@ -92,7 +92,9 @@ public class SecurityConfig {
             "http://localhost:3000",
             "http://localhost:8080",
             "http://172.16.211.116:3000",
-            "http://172.16.211.53:8080"
+            "http://172.16.211.53:8080",
+            "10.102.13.162:3000",
+            "tcp://10.102.13.162:3000"
         ));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));
