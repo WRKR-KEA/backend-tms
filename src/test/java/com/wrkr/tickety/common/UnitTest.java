@@ -2,6 +2,7 @@ package com.wrkr.tickety.common;
 
 import static org.mockito.Mockito.mock;
 
+import com.wrkr.tickety.common.utils.DatabaseCleaner;
 import com.wrkr.tickety.common.utils.ExecuteParallel;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
@@ -42,19 +43,21 @@ import com.wrkr.tickety.domains.ticket.persistence.repository.TicketHistoryRepos
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketQueryDslRepository;
 import com.wrkr.tickety.domains.ticket.persistence.repository.TicketRepository;
 import org.junit.jupiter.api.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 
-//@SpringBootTest
+@SpringBootTest
 @Tag("UseCase")
 @Transactional
 @ExecuteParallel
 @RecordApplicationEvents
 public abstract class UnitTest {
 
-//    @Autowired
-//    private DatabaseCleaner databaseCleaner;
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
     /**
      * Service
