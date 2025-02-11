@@ -8,6 +8,7 @@ import com.wrkr.tickety.domains.member.persistence.adapter.MemberPersistenceAdap
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class MemberGetService {
     public Member byMemberId(Long memberId) {
         return memberPersistenceAdapter.findById(memberId)
             .orElseThrow(() -> ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public Optional<Member> byMemberIdNotException(Long memberId) {
+        return memberPersistenceAdapter.findById(memberId);
     }
 
     public Page<Member> searchMember(
@@ -43,6 +48,10 @@ public class MemberGetService {
 
     public Boolean existsByNickname(String nickname) {
         return memberPersistenceAdapter.existsByNickname(nickname);
+    }
+
+    public Optional<Member> findMemberByNickname(String nickname) {
+        return memberPersistenceAdapter.findByNicknameAndIsDeleted(nickname);
     }
 
     public Member loadMemberByNickname(String nickname) {

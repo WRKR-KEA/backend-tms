@@ -17,7 +17,6 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,7 +35,7 @@ public class CommentCreateUseCase {
     private final ApplicationEventPublisher applicationEventPublisher;
 
 
-    public PkResponse createComment(Member member, Long ticketId, CommentRequest request) {
+    public PkResponse createComment(Member member, Long ticketId, CommentRequest request, List<MultipartFile> commentAttachments) {
 
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
 
@@ -55,26 +54,27 @@ public class CommentCreateUseCase {
 
         Comment savedComment = commentSaveService.saveComment(comment);
 
-        if (request.attachments() != null && !request.attachments().isEmpty()) {
-            List<CommentAttachment> attachments = new ArrayList<>();
+        if (commentAttachments != null && !commentAttachments.isEmpty()) {
+            List<CommentAttachment> validAttachments = commentAttachments.stream()
+                .filter(file -> !file.isEmpty()) // 빈 파일 필터링
+                .map(file ->
+                    saveCommentAttachment(savedComment, file))
+                .toList();
 
-            for (MultipartFile file : request.attachments()) {
-                String fileUrl = s3ApiService.uploadCommentFile(file);
-                CommentAttachment attachment = CommentAttachmentMapper.toCommentAttachmentDomain(savedComment, fileUrl, file.getOriginalFilename(),
-                    file.getSize());
-
-                attachments.add(attachment);
-            }
-
-            commentAttachmentUploadService.saveAll(attachments);
+            commentAttachmentUploadService.saveAll(validAttachments);
         }
 
         applicationEventPublisher.publishEvent(CommentCreateEvent.builder()
-                                                   .comment(savedComment)
-                                                   .build());
-      
+            .comment(savedComment)
+            .build());
+
         return PkResponse.builder()
             .id(PkCrypto.encrypt(savedComment.getCommentId()))
             .build();
+    }
+
+    private CommentAttachment saveCommentAttachment(Comment comment, MultipartFile file) {
+        String fileUrl = s3ApiService.uploadCommentFile(file);
+        return CommentAttachmentMapper.toCommentAttachmentDomain(comment, fileUrl, file.getOriginalFilename(), file.getSize());
     }
 }

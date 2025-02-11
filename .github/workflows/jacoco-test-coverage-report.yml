@@ -2,7 +2,9 @@ name: Report Jacoco Test Coverage
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - develop
+      - release
     types: [ opened, synchronize, reopened ]
 
 permissions: write-all

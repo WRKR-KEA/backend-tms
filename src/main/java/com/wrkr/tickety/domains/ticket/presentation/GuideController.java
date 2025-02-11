@@ -86,15 +86,15 @@ public class GuideController {
             schema = @Schema(implementation = GuideCreateRequest.class)
         )
     )
-    @Parameter(name = "attachments", description = "첨부파일")
+    @Parameter(name = "newAttachments", description = "새로 추가할 첨부파일 목록")
     @PatchMapping(value = "/api/admin/guide/{cryptoGuideId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApplicationResponse<PkResponse> updateGuide(
         @AuthenticationPrincipal Member member,
         @PathVariable String cryptoGuideId,
         @RequestPart GuideUpdateRequest guideUpdateRequest,
-        @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
+        @RequestPart(value = "newAttachments", required = false) List<MultipartFile> newAttachments
     ) {
-        PkResponse pkResponse = guideUpdateUseCase.modifyGuide(PkCrypto.decrypt(cryptoGuideId), guideUpdateRequest, attachments);
+        PkResponse pkResponse = guideUpdateUseCase.modifyGuide(PkCrypto.decrypt(cryptoGuideId), guideUpdateRequest, newAttachments);
         return ApplicationResponse.onSuccess(pkResponse);
     }
 

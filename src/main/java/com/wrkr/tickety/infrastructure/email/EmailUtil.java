@@ -7,6 +7,8 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
@@ -15,10 +17,13 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @Component
 @RequiredArgsConstructor
 @Transactional
+@EnableAsync
 public class EmailUtil {
 
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
+
+    // TODO: 스레드 풀 설정 필요
 
     /**
      * @param emailCreateRequest
@@ -26,8 +31,8 @@ public class EmailUtil {
      * @param type:              html 파일 이름
      * @return
      */
-    // TODO: 이메일 전송 비동기로 구현 필요
-    public String sendMail(EmailCreateRequest emailCreateRequest, String code, String type) {
+    @Async
+    public void sendMail(EmailCreateRequest emailCreateRequest, String code, String type) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
@@ -37,9 +42,7 @@ public class EmailUtil {
             mimeMessageHelper.setText(setContext(code, type), true); // 메일 본문 내용, HTML 여부
             javaMailSender.send(mimeMessage);
 
-            return code;
-
-        } catch (MessagingException e) { // TODO: 존재하지 않은 이메일인 경우도 고려해야함
+        } catch (MessagingException e) { // TODO: 존재하지 않은 이메일인 경우도 고려할 수 있으면 고려
             throw new ApplicationException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

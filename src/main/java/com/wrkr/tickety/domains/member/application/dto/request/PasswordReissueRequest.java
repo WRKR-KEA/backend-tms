@@ -1,11 +1,14 @@
 package com.wrkr.tickety.domains.member.application.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record PasswordReissueRequest(
-    @NotBlank(message = "아이디를 입력해주세요.")
-//    @NicknameFormat(message = "유효하지 않은 닉네임입니다.") // TODO: WRKR-118 브랜치 머지되면 적용
-    String nickname
+
+    @Schema(description = "암호화된 회원 PK")
+    String memberId,
+
+    @Schema(description = "인증 번호")
+    String verificationCode
 ) {
 
 }

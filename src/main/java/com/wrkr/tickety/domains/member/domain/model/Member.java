@@ -1,7 +1,9 @@
 package com.wrkr.tickety.domains.member.domain.model;
 
+
 import com.wrkr.tickety.domains.member.application.dto.request.MemberUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
@@ -74,16 +76,16 @@ public class Member extends BaseTime {
 
     // TODO: 필드 단위로 파라미터 받기
     public void modifyMemberInfo(
-        MemberUpdateRequest memberUpdateRequest
+        MemberInfoUpdateRequest memberInfoUpdateRequest
     ) {
-        this.email = memberUpdateRequest.email();
-        this.name = memberUpdateRequest.name();
-        this.nickname = memberUpdateRequest.nickname();
-        this.department = memberUpdateRequest.department();
-        this.position = memberUpdateRequest.position();
-        this.phone = memberUpdateRequest.phone();
-        this.role = memberUpdateRequest.role();
-        this.profileImage = memberUpdateRequest.profileImage();
+        this.email = memberInfoUpdateRequest.email();
+        this.name = memberInfoUpdateRequest.name();
+        this.nickname = memberInfoUpdateRequest.nickname();
+        this.department = memberInfoUpdateRequest.department();
+        this.position = memberInfoUpdateRequest.position();
+        this.phone = memberInfoUpdateRequest.phone();
+        this.role = memberInfoUpdateRequest.role();
+        this.agitUrl = memberInfoUpdateRequest.agitUrl();
     }
 
     public void modifyIsDeleted(Boolean isDeleted) {
@@ -107,6 +109,10 @@ public class Member extends BaseTime {
     public void modifyPassword(String password, Boolean isTempPassword) {
         this.password = password;
         this.isTempPassword = isTempPassword;
+    }
+
+    public void modifyProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public Boolean isDeleted() {
