@@ -33,10 +33,10 @@ public record TicketDetailGetResponse(
     String managerNickname,
 
     @Schema(description = "생성 일시", example = "2021-01-01T00:00:00")
-    LocalDateTime createdAt,
+    String createdAt,
 
     @Schema(description = "수정 일시", example = "2021-01-01T00:00:00")
-    LocalDateTime updatedAt,
+    String updatedAt,
 
     @Schema(description = "시작 일시", example = "2021-01-01T00:00:00")
     LocalDateTime startedAt,

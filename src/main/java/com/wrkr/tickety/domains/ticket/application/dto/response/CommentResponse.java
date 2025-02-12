@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.ticket.application.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 
@@ -27,7 +26,7 @@ public record CommentResponse(
         String commentId,
 
         @Schema(description = "코멘트 전송일", example = "2025-01-21T14:50:30")
-        LocalDateTime createdAt,
+        String createdAt,
 
         @Schema(description = "코멘트 전송자가 회원일 경우, 회원 ID", nullable = true, example = "ouqJF8uKst63ZPA2T70jda")
         String memberId,
