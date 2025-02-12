@@ -94,7 +94,9 @@ public class SecurityConfig {
             "http://172.16.211.116:3000",
             "http://172.16.211.53:8080",
             "10.102.13.162:3000",
-            "tcp://10.102.13.162:3000"
+            "tcp://10.102.13.162:3000",
+            "https://wrkr.tickety.co.kr",
+            "https://wrkr.tickety.co.kr:3000"
         ));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));
