@@ -3,6 +3,7 @@ package com.wrkr.tickety.domains.member.domain.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
@@ -54,7 +55,7 @@ class MemberSaveServiceTest {
         Member savedMember = memberSaveService.save(createdMember);
 
         //then
-        verify(memberPersistenceAdapter).save(any(Member.class));
+        verify(memberPersistenceAdapter, times(1)).save(any(Member.class));
         assertThat(savedMember).isEqualTo(createdMember);
     }
 }
