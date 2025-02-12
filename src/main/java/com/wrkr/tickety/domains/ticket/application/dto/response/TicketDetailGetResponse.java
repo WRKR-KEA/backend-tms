@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.ticket.application.dto.response;
 
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
@@ -32,17 +31,17 @@ public record TicketDetailGetResponse(
     @Schema(description = "처리자", example = "춘식이")
     String managerNickname,
 
-    @Schema(description = "생성 일시", example = "2021-01-01T00:00:00")
-    LocalDateTime createdAt,
+    @Schema(description = "생성 일시", example = "2021-01-01 00:00")
+    String createdAt,
 
-    @Schema(description = "수정 일시", example = "2021-01-01T00:00:00")
-    LocalDateTime updatedAt,
+    @Schema(description = "수정 일시", example = "2021-01-01 00:00")
+    String updatedAt,
 
-    @Schema(description = "시작 일시", example = "2021-01-01T00:00:00")
-    LocalDateTime startedAt,
+    @Schema(description = "시작 일시", example = "2021-01-01 00:00")
+    String startedAt,
 
     @Schema(description = "종료 일시", example = "null")
-    LocalDateTime completedAt
+    String completedAt
 ) {
 
 }

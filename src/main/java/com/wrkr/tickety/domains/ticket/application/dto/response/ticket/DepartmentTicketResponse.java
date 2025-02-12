@@ -33,11 +33,11 @@ public record DepartmentTicketResponse(
     @ExcelColumn(headerName = "담당자 닉네임")
     String managerNickname,
 
-    @Schema(description = "요청일", example = "2021-01-01")
+    @Schema(description = "요청일", example = "2021-01-01 00:00")
     @ExcelColumn(headerName = "요청일")
     String requestedDate,
 
-    @Schema(description = "최근 업데이트일", example = "2021-01-01")
+    @Schema(description = "최근 업데이트일", example = "2021-01-01 00:00")
     @ExcelColumn(headerName = "최근 업데이트일")
     String updatedDate
 ) {
