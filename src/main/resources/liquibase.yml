@@ -1,4 +1,4 @@
 spring:
   liquibase:
     change-log: classpath:/db/changelog/changelog-master.sql
-    enabled: true
+    enabled: false
