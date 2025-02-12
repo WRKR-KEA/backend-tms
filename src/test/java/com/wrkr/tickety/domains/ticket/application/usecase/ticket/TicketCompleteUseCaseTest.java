@@ -43,7 +43,6 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @RecordApplicationEvents
-@DisplayName("Ticket [UseCase Layer] -> TicketComplete 테스트")
 class TicketCompleteUseCaseTest {
 
     @Mock
@@ -71,7 +70,7 @@ class TicketCompleteUseCaseTest {
     }
 
     @Nested
-    @DisplayName("담당자 티켓 완료")
+    @DisplayName("TicketComplete UseCase Layer > 담당자 티켓 완료")
     class completeTicket {
 
         @Test
