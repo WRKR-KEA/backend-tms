@@ -13,6 +13,7 @@ public class AuthMapper {
         return AuthTokenResponse.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken)
+            .nickname(member.getNickname())
             .name(member.getName())
             .role(member.getRole())
             .profileImage(member.getProfileImage())
