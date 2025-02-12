@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.ticket.application.usecase.category;
 
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
-import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryNameUpdateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryNameFieldRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategorySequenceUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.CategoryMapper;
@@ -40,17 +40,24 @@ public class CategoryUpdateUseCase {
         return CategoryMapper.mapToPkResponseList(updatedCategories);
     }
 
-    public CategoryPkResponse.CategoryPK updateCategoryName(Long categoryId, CategoryNameUpdateRequest request) {
+    public CategoryPkResponse.CategoryPK updateCategoryName(Long categoryId, CategoryNameFieldRequest request) {
         checkCategoryNameIsUnique(categoryId, request.name());
+        checkCategoryAbbreviationIsUnique(categoryId, request.abbreviation());
 
         Category findCategory = categoryGetService.getParentCategory(categoryId);
-        Category savedCategory = categoryUpdateService.updateCategoryName(findCategory, request.name());
+        Category savedCategory = categoryUpdateService.updateCategoryField(findCategory, request.name(), request.abbreviation());
         return CategoryMapper.mapToPkResponse(savedCategory);
     }
 
     private void checkCategoryNameIsUnique(Long categoryId, String name) {
-        if (categoryGetService.isCategoryNameExists(categoryId, name)) {
+        if (categoryGetService.isCategoryNameExistsNotMe(categoryId, name)) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXISTS);
+        }
+    }
+
+    private void checkCategoryAbbreviationIsUnique(Long categoryId, String abbreviation) {
+        if (categoryGetService.isCategoryAbbreviationExistsNotMe(categoryId, abbreviation)) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ABBREVIATION_ALREADY_EXISTS);
         }
     }
 }

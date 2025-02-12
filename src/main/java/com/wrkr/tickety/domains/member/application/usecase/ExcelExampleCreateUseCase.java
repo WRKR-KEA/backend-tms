@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ExcelExampleCreateUseCase {
 
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://i.ibb.co/7Fd4Hhx/tickety-default-image.jpg";
+
     public List<MemberCreateRequestForExcel> createMemberInfoExample() {
         List<MemberCreateRequestForExcel> exDatas = new ArrayList<>();
 
@@ -22,7 +24,7 @@ public class ExcelExampleCreateUseCase {
             .position("네트워크 엔지니어")
             .phone("010-1234-5678")
             .role(Role.MANAGER)
-            .profileImage("https://search.pstatic.net/sunny/?src=https%3A%2F%2Fimage.flaticon.com%2Ficons%2Fpng%2F512%2F74%2F74472.png&type=a340")
+            .profileImage(DEFAULT_PROFILE_IMAGE_URL)
             .agitUrl("https://example.com/agit")
             .build();
 
@@ -34,7 +36,7 @@ public class ExcelExampleCreateUseCase {
             .position("인사 담당자")
             .phone("010-1234-5678")
             .role(Role.USER)
-            .profileImage("https://search.pstatic.net/sunny/?src=https%3A%2F%2Fimage.flaticon.com%2Ficons%2Fpng%2F512%2F74%2F74472.png&type=a340")
+            .profileImage(DEFAULT_PROFILE_IMAGE_URL)
             .agitUrl("https://example.com/agit")
             .build();
 

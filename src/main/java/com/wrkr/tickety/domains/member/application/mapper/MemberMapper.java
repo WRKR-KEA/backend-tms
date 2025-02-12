@@ -69,6 +69,7 @@ public class MemberMapper {
             .phone(member.getPhone())
             .role(member.getRole().name())
             .profileImage(member.getProfileImage())
+            .agitUrl(member.getAgitUrl())
             .build();
     }
 
@@ -85,19 +86,16 @@ public class MemberMapper {
             .build();
     }
 
-    public static ManagerGetAllManagerResponse toManagerGetAllManagerResponse(List<Member> allManagers, Map<Long, Long> inProgressTicketCount) {
+    public static ManagerGetAllManagerResponse toManagerGetAllManagerResponse(Member member, List<Member> allManagers, Map<Long, Long> inProgressTicketCount) {
         return ManagerGetAllManagerResponse.builder()
+            .principal(
+                toManagerResponse(member, inProgressTicketCount)
+            )
             .managers(
                 allManagers.stream()
-                    .map(manager -> ManagerGetAllManagerResponse.Managers.builder()
-                        .memberId(PkCrypto.encrypt(manager.getMemberId()))
-                        .email(manager.getEmail())
-                        .nickname(manager.getNickname())
-                        .position(manager.getPosition())
-                        .phoneNumber(manager.getPhone())
-                        .ticketAmount(inProgressTicketCount.getOrDefault(manager.getMemberId(), 0L))
-                        .build()
-                    ).toList()
+                    .filter(manager -> !manager.getMemberId().equals(member.getMemberId()))
+                    .map(manager -> toManagerResponse(manager, inProgressTicketCount))
+                    .toList()
             )
             .build();
     }
@@ -106,6 +104,7 @@ public class MemberMapper {
         return Managers.builder()
             .memberId(PkCrypto.encrypt(member.getMemberId()))
             .email(member.getEmail())
+            .profileUrl(member.getProfileImage())
             .nickname(member.getNickname())
             .position(member.getPosition())
             .phoneNumber(member.getPhone())

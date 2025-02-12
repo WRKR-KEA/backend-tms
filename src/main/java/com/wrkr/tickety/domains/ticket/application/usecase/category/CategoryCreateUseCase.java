@@ -22,7 +22,7 @@ public class CategoryCreateUseCase {
     private final CategoryCreateService categoryCreateService;
 
     public CategoryPK createCategory(CategoryCreateRequest request) {
-        checkCategoryNameIsUnique(request.name());
+        checkCategoryRequestUnique(request.name(), request.abbreviation(), request.seq());
 
         Category requestCategory = CategoryMapper.mapToCategoryDomain(request);
         Category savedCategory = categoryCreateService.createCategory(requestCategory);
@@ -30,9 +30,15 @@ public class CategoryCreateUseCase {
         return CategoryMapper.mapToPkResponse(savedCategory);
     }
 
-    private void checkCategoryNameIsUnique(String name) {
+    private void checkCategoryRequestUnique(String name, String abbreviation, Integer seq) {
         if (categoryGetService.isCategoryNameExists(name)) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXISTS);
+        }
+        if (categoryGetService.isCategoryAbbreviationExists(abbreviation)) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ABBREVIATION_ALREADY_EXISTS);
+        }
+        if (categoryGetService.isCategorySequenceExists(seq)) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_SEQUENCE_ALREADY_EXISTS);
         }
     }
 

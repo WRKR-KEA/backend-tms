@@ -17,6 +17,7 @@ import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,9 +65,12 @@ public class ManagerTicketAllGetUseCaseTest {
         ApplicationPageRequest pageable = new ApplicationPageRequest(page, size, SortType.NEWEST);
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
         List<Ticket> tickets = List.of(
-            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).build(),
-            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).build(),
-            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).build()
+            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now()).build(),
+            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now()).build(),
+            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now()).build()
         );
         ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest.toPageable(), 3);
@@ -94,7 +98,7 @@ public class ManagerTicketAllGetUseCaseTest {
 
         // Then
         ApplicationException exception = assertThrows(ApplicationException.class,
-            () -> memberGetService.byMemberId(managerId)
+                                                      () -> memberGetService.byMemberId(managerId)
         );
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
