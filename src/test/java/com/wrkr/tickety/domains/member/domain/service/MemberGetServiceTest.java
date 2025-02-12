@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.member.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -65,11 +65,13 @@ class MemberGetServiceTest {
         //given
         Long memberId = 2L;
         given(memberPersistenceAdapter.findById(memberId)).willReturn(Optional.empty());
-        //when
-        ApplicationException ex = catchThrowableOfType(() -> memberGetService.byMemberId(memberId), ApplicationException.class);
-        // then
-        assertThat(ex).isInstanceOf(ApplicationException.class);
-        assertThat(ex.getCode()).isEqualTo(MemberErrorCode.MEMBER_NOT_FOUND);
-        assertThat(ex.getMessage()).isEqualTo(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
+        // when & then
+        assertThatThrownBy(() -> memberGetService.byMemberId(memberId))
+            .isInstanceOf(ApplicationException.class)
+            .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage())
+            .satisfies(exception -> {
+                // 예외를 ApplicationException으로 캐스팅
+                assertThat(((ApplicationException) exception).getCode()).isEqualTo(MemberErrorCode.MEMBER_NOT_FOUND);
+            });
     }
 }
