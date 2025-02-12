@@ -14,6 +14,7 @@ import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
@@ -41,7 +42,8 @@ class TicketCreateUseCaseTest {
     private static final Long CATEGORY_ID = 2L;
 
     private Member user;
-    private Category category;
+    private Category childCategory;
+    private Category parentCategory;
     private TicketCreateRequest validRequest;
     private String encryptedCategoryId;
 
@@ -57,6 +59,9 @@ class TicketCreateUseCaseTest {
     @Mock
     private TicketHistorySaveService ticketHistorySaveService;
 
+    @Mock
+    private TicketGetService ticketGetService;
+
     @InjectMocks
     private TicketCreateUseCase ticketCreateUseCase;
 
@@ -71,9 +76,16 @@ class TicketCreateUseCaseTest {
             .isDeleted(false)
             .build();
 
-        category = Category.builder()
+        parentCategory = Category.builder()
+            .categoryId(1L)
+            .name("부모 카테고리")
+            .abbreviation("PCAT") // ✅ 여기 추가
+            .build();
+
+        childCategory = Category.builder()
             .categoryId(CATEGORY_ID)
             .name("카테고리")
+            .parent(parentCategory)
             .build();
 
         validRequest = TicketCreateRequest.builder()
@@ -92,13 +104,14 @@ class TicketCreateUseCaseTest {
             .user(user)
             .title(validRequest.title())
             .content(validRequest.content())
-            .category(category)
+            .category(childCategory)
             .status(TicketStatus.REQUEST)
             .build();
 
-        given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(category);
+        given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(childCategory);
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
+        given(ticketGetService.findLastSequence(any(), any())).willReturn("01");
 
         // when
         TicketPkResponse response = ticketCreateUseCase.createTicket(validRequest, USER_ID);
@@ -124,7 +137,7 @@ class TicketCreateUseCaseTest {
     @DisplayName("❌ 실패: 존재하지 않는 사용자 ID로 생성 시 예외 발생")
     void createTicket_UserNotFound() {
         // given
-        given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(category);
+        given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(childCategory);
         given(memberGetService.byMemberId(USER_ID))
             .willThrow(new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
