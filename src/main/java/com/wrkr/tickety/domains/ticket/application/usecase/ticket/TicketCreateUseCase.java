@@ -16,10 +16,12 @@ import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.model.TicketHistory;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
+import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,16 +34,16 @@ public class TicketCreateUseCase {
     private final CategoryGetService categoryGetService;
     private final MemberGetService UserGetService;
     private final TicketHistorySaveService ticketHistorySaveService;
+    private final TicketGetService ticketGetService;
 
     public TicketPkResponse createTicket(TicketCreateRequest request, Long userId) {
-        Category category = categoryGetService.getChildrenCategory(decrypt(request.categoryId()));
-
+        Category childCategory = categoryGetService.getChildrenCategory(decrypt(request.categoryId()));
         Member member = UserGetService.byMemberId(userId);
 
-        String serialNumber = generateSerialNumber();
+        String serialNumber = generateSerialNumber(childCategory);
         TicketStatus status = TicketStatus.REQUEST;
 
-        Ticket ticket = mapToTicket(request, category, serialNumber, status, member);
+        Ticket ticket = mapToTicket(request, childCategory, serialNumber, status, member);
         Ticket savedTicket = ticketSaveService.save(ticket);
 
         ModifiedType modifiedType = ModifiedType.STATUS;
@@ -52,9 +54,12 @@ public class TicketCreateUseCase {
         return toTicketPkResponse(encrypt(savedTicket.getTicketId()));
     }
 
-    // TODO: 고민 해보고 추후 수정이 필요한 부분
-    private String generateSerialNumber() {
-        String hash = UUID.randomUUID().toString().substring(0, 8);
-        return "#" + hash;
+    private String generateSerialNumber(Category childCategory) {
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+        String prefix = today + childCategory.getParent().getAbbreviation() + childCategory.getAbbreviation();
+        String sequence = ticketGetService.findLastSequence(today, childCategory) == null ? "01" :
+            String.format("%02d", Integer.parseInt(ticketGetService.findLastSequence(today, childCategory)) + 1);
+
+        return "#" + prefix + sequence;
     }
 }
