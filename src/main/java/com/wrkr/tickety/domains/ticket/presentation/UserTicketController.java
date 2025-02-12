@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
+import static com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode.CATEGORY_NOT_EXISTS;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
@@ -48,7 +49,7 @@ public class UserTicketController {
 
     @PostMapping
     @Operation(summary = "사용자 티켓 요청", description = "사용자가 티켓을 요청합니다.")
-    @CustomErrorCodes(ticketErrorCodes = {})
+    @CustomErrorCodes(categoryErrorCodes = {CATEGORY_NOT_EXISTS})
     public ApplicationResponse<TicketPkResponse> createTicket(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "티켓 요청 정보", required = true)
@@ -93,7 +94,8 @@ public class UserTicketController {
 
     @GetMapping("/main")
     @Operation(summary = "사용자 메인 페이지 조회", description = "사용자의 메인 페이지를 조회합니다.")
-    public ApplicationResponse<UserTicketMainPageResponse> mainPage(@AuthenticationPrincipal Member member) {
+    public ApplicationResponse<UserTicketMainPageResponse> mainPage(
+        @AuthenticationPrincipal Member member) {
         return ApplicationResponse.onSuccess(ticketGetMainUseCase.getMain(member.getMemberId()));
     }
 }
