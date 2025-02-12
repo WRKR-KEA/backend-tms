@@ -18,8 +18,11 @@ public record AdminCategoryGetAllResponse(
         @Schema(description = "카테고리 ID", example = "Bqs3C822lkMNdWlmE-szUw")
         String categoryId,
 
-        @Schema(description = "카테고리 이름", example = "vm")
+        @Schema(description = "카테고리 이름", example = "데이터베이스")
         String name,
+
+        @Schema(description = "카테고리 약어", example = "DB")
+        String abbreviation,
 
         @Schema(description = "카테고리 순서", example = "1")
         Integer seq,
@@ -40,8 +43,11 @@ public record AdminCategoryGetAllResponse(
             @Schema(description = "카테고리 ID", example = "Bqs3C822lkMNdWlmE-szUw")
             String categoryId,
 
-            @Schema(description = "카테고리 이름", example = "vm")
+            @Schema(description = "카테고리 이름", example = "추가")
             String name,
+
+            @Schema(description = "카테고리 약어", example = "CRE")
+            String abbreviation,
 
             @Schema(description = "카테고리 순서", example = "1")
             Integer seq
