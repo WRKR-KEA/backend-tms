@@ -59,6 +59,9 @@ public class Ticket extends BaseTime {
 
     public boolean isRelatedWith(Member member) {
         if (member.getRole().equals(Role.MANAGER)) {
+            if (this.getStatus().compareTo(TicketStatus.CANCEL) < 0) {
+                return false;
+            }
             return this.manager.getMemberId().equals(member.getMemberId());
         } else {
             return this.user.equals(member);
@@ -69,7 +72,7 @@ public class Ticket extends BaseTime {
         if (member.getRole().equals(Role.USER)) {
             return this.user.getMemberId().equals(member.getMemberId());
         } else {
-            return true;
+            return !this.getStatus().equals(TicketStatus.CANCEL);
         }
     }
 
