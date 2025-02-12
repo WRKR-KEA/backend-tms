@@ -125,6 +125,8 @@ public class TicketUseCaseTest {
             .serialNumber(TICKET_SERIAL)
             .status(TicketStatus.REQUEST)
             .category(childCategory)
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
             .build();
     }
 
@@ -170,7 +172,7 @@ public class TicketUseCaseTest {
 
         // When
         ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest,
-            TicketStatus.REQUEST);
+                                                                                                                     TicketStatus.REQUEST);
 
         // Then
         assertThat(ticketAllGetPagingResponse).isNotNull();
