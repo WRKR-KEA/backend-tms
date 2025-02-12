@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -69,5 +71,13 @@ public class CategoryEntity extends BaseTimeEntity {
         this.seq = seq;
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void convertAbbreviationToUpperCase() {
+        if (abbreviation != null) {
+            abbreviation = abbreviation.toUpperCase();
+        }
     }
 }

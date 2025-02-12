@@ -46,6 +46,7 @@ public class CategoryMapper {
                         .categoryId(encrypt(category.getCategoryId()))
                         .name(category.getName())
                         .seq(category.getSeq())
+                        .abbreviation(category.getAbbreviation())
                         .isExistsGuide(existsGuideMap.get(category.getCategoryId()) != null && existsGuideMap.get(category.getCategoryId()))
                         .isExistsTemplate(existsTemplateMap.get(category.getCategoryId()) != null && existsTemplateMap.get(category.getCategoryId()))
                         .childCategories(
@@ -54,6 +55,7 @@ public class CategoryMapper {
                                 .map(childCategory -> AdminCategoryGetAllResponse.categories.childCategories.builder()
                                     .categoryId(encrypt(childCategory.getCategoryId()))
                                     .name(childCategory.getName())
+                                    .abbreviation(childCategory.getAbbreviation())
                                     .seq(childCategory.getSeq())
                                     .build()
                                 )
@@ -76,24 +78,28 @@ public class CategoryMapper {
     public static List<Category> initChildren(Category savedCategory) {
         Category createChildCategory = Category.builder()
             .name("생성")
+            .abbreviation("CRE")
             .seq(1)
             .parent(savedCategory)
             .build();
 
         Category deleteChildCategory = Category.builder()
             .name("삭제")
+            .abbreviation("DEL")
             .seq(2)
             .parent(savedCategory)
             .build();
 
         Category updateChildCategory = Category.builder()
             .name("변경")
+            .abbreviation("UPD")
             .seq(3)
             .parent(savedCategory)
             .build();
 
         Category etcChildCategory = Category.builder()
             .name("기타")
+            .abbreviation("ETC")
             .seq(4)
             .parent(savedCategory)
             .build();
@@ -107,6 +113,7 @@ public class CategoryMapper {
                 parentCategories.stream()
                     .map(category -> UserCategoryGetAllResponse.categories.builder()
                         .categoryId(encrypt(category.getCategoryId()))
+                        .abbreviation(category.getAbbreviation())
                         .name(category.getName())
                         .seq(category.getSeq())
                         .childCategories(
@@ -115,6 +122,7 @@ public class CategoryMapper {
                                 .map(childCategory -> UserCategoryGetAllResponse.categories.childCategories.builder()
                                     .categoryId(encrypt(childCategory.getCategoryId()))
                                     .name(childCategory.getName())
+                                    .abbreviation(childCategory.getAbbreviation())
                                     .seq(childCategory.getSeq())
                                     .build()
                                 )
