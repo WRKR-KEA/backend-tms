@@ -8,6 +8,10 @@ import lombok.Builder;
 @Builder
 public record ManagerGetAllManagerResponse(
 
+    @Schema(description = "담당자 본인", example = "ouqJF8uKst63ZPA2T70jda")
+    Managers principal,
+
+    @Schema(description = "담당자 목록")
     List<Managers> managers
 ) {
 
