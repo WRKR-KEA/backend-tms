@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
-import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPreviewResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
@@ -21,7 +21,7 @@ public class MemberInfoSearchUseCase {
 
     private final MemberGetService memberGetService;
 
-    public ApplicationPageResponse<MemberInfoResponse> searchMemberInfo(
+    public ApplicationPageResponse<MemberInfoPreviewResponse> searchMemberInfo(
         ApplicationPageRequest pageRequest,
         Role role,
         String query
@@ -36,7 +36,7 @@ public class MemberInfoSearchUseCase {
 
         return ApplicationPageResponse.of(
             memberPage,
-            MemberMapper::toMemberInfoResponse
+            MemberMapper::mapToMemberInfoPreviewResponse
         );
     }
 

@@ -26,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class MemberCreateUseCase {
 
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://i.ibb.co/7Fd4Hhx/tickety-default-image.jpg";
+
     private final MemberSaveService memberSaveService;
     private final S3ApiService s3ApiService;
     private final EmailUtil emailUtil;
@@ -39,7 +41,7 @@ public class MemberCreateUseCase {
         String encryptedPassword = PasswordEncoderUtil.encodePassword(tempPassword);
 
         String profileImageUrl =
-            (profileImage == null || profileImage.isEmpty()) ? "https://i.ibb.co/9V1m6sz/image.jpg" : s3ApiService.uploadMemberProfileImage(profileImage);
+            (profileImage == null || profileImage.isEmpty()) ? DEFAULT_PROFILE_IMAGE_URL : s3ApiService.uploadMemberProfileImage(profileImage);
 
         Member createdMember = memberSaveService.save(MemberMapper.mapToMember(memberCreateRequest, encryptedPassword, profileImageUrl));
 

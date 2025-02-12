@@ -58,12 +58,12 @@ public class MemberInfoUpdateUseCase {
 
             validateAuthorization(findMember);
 
+            deleteProfileImage(findMember.getProfileImage());
+
             findMember.modifyIsDeleted(true);
             findMember.modifyProfileImage(null);
 
             memberUpdateService.modifyMemberInfo(findMember);
-
-            deleteProfileImage(findMember.getProfileImage());
         });
     }
 
