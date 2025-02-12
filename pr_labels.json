@@ -1,11 +1,11 @@
 [
   {
-    "color": "3BB287",
+    "color": "9FD839",
     "default": false,
-    "description": "Release patch version",
-    "id": 8123465644,
-    "name": "patch",
-    "node_id": "LA_kwDONqtF4c8AAAAB5DI_rA",
-    "url": "https://api.github.com/repos/WRKR-KEA/backend-tms/labels/patch"
+    "description": "Release minor version",
+    "id": 8123465127,
+    "name": "minor",
+    "node_id": "LA_kwDONqtF4c8AAAAB5DI9pw",
+    "url": "https://api.github.com/repos/WRKR-KEA/backend-tms/labels/minor"
   }
 ]
