@@ -125,6 +125,8 @@ public class TicketUseCaseTest {
             .serialNumber(TICKET_SERIAL)
             .status(TicketStatus.REQUEST)
             .category(childCategory)
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
             .build();
     }
 
@@ -159,16 +161,18 @@ public class TicketUseCaseTest {
     @DisplayName("사용자가 요청했던 티켓들에 페이지네이션을 적용해서 전체 조회한다")
     void getTickets() {
         // Given
-        ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, null);
+        ApplicationPageRequest pageRequest = new ApplicationPageRequest(1, 10, null);
 
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
 
-        given(ticketGetService.getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class))).willReturn(ticketPage);
+        given(ticketGetService.getTicketsByUserIdAndStatus(anyLong(), any(TicketStatus.class), any(ApplicationPageRequest.class)))
+            .willReturn(ticketPage);
         given(memberGetService.byMemberId(anyLong())).willReturn(user);
         given(ticketHistoryGetService.getFirstManagerChangeDate(anyLong())).willReturn(LocalDateTime.now());
 
         // When
-        ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest);
+        ApplicationPageResponse<TicketAllGetResponse> ticketAllGetPagingResponse = ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest,
+                                                                                                                     TicketStatus.REQUEST);
 
         // Then
         assertThat(ticketAllGetPagingResponse).isNotNull();
@@ -176,7 +180,7 @@ public class TicketUseCaseTest {
         assertThat(ticketAllGetPagingResponse.size()).isEqualTo(1);
         assertThat(ticketAllGetPagingResponse.elements().getFirst().serialNumber()).isEqualTo("#12345678");
 
-        verify(ticketGetService).getTicketsByUserId(anyLong(), any(ApplicationPageRequest.class));
+        verify(ticketGetService).getTicketsByUserIdAndStatus(anyLong(), any(TicketStatus.class), any(ApplicationPageRequest.class));
         verify(memberGetService).byMemberId(anyLong());
     }
 

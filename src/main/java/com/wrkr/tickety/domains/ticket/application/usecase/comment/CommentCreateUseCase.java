@@ -17,6 +17,7 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.global.utils.attachment.FileValidationUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -55,6 +56,8 @@ public class CommentCreateUseCase {
         Comment savedComment = commentSaveService.saveComment(comment);
 
         if (commentAttachments != null && !commentAttachments.isEmpty()) {
+            FileValidationUtil.validateFiles(commentAttachments);
+
             List<CommentAttachment> validAttachments = commentAttachments.stream()
                 .filter(file -> !file.isEmpty()) // 빈 파일 필터링
                 .map(file ->

@@ -9,6 +9,7 @@ import com.wrkr.tickety.domains.log.domain.service.AccessLogSaveService;
 import com.wrkr.tickety.domains.log.utils.ClientIpResolver;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.global.annotation.logging.LogClientIp;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,25 +39,41 @@ public class AuthLoggingAspect {
 
         HttpServletRequest request = sra.getRequest();
         String clientIp = clientIpResolver.getClientIp(request);
-
         Object[] args = joinPoint.getArgs();
-        String nickname = extractNicknameOrMember(args);
-
+        String nickname = extractNickname(args);
         ActionType actionType = logClientIp.action();
-        AccessLog accessLog = toAccessLog(nickname, clientIp, actionType, true);
-        accessLogSaveService.save(accessLog);
 
-        return joinPoint.proceed();
+        boolean isSuccess = true;
+
+        try {
+            return joinPoint.proceed();
+        } catch (ApplicationException e) {
+            log.warn("ApplicationException error: {}", e.getMessage());
+            isSuccess = false;
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error: {}", e.getMessage(), e);
+            isSuccess = false;
+            throw e;
+        } finally {
+            saveAccessLog(nickname, clientIp, actionType, isSuccess);
+        }
     }
 
-    private String extractNicknameOrMember(Object[] args) {
+    private String extractNickname(Object[] args) {
         for (Object arg : args) {
             if (arg instanceof LoginRequest request) {
                 return request.nickname();
-            } else if (arg instanceof Member member) {
+            }
+            if (arg instanceof Member member) {
                 return member.getNickname();
             }
         }
         return "Unknown";
+    }
+
+    private void saveAccessLog(String nickname, String clientIp, ActionType actionType, boolean isSuccess) {
+        AccessLog accessLog = toAccessLog(nickname, clientIp, actionType, isSuccess);
+        accessLogSaveService.save(accessLog);
     }
 }

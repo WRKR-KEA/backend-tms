@@ -26,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MemberCreateFromExcelUseCase {
 
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://i.ibb.co/7Fd4Hhx/tickety-default-image.jpg";
+
     private final MemberSaveService memberSaveService;
     private final EmailUtil emailUtil;
     private final MemberFieldValidator memberFieldValidator;
@@ -48,7 +50,7 @@ public class MemberCreateFromExcelUseCase {
             String encryptedPassword = PasswordEncoderUtil.encodePassword(tempPassword);
 
             String profileImageUrl =
-                memberCreateRequestForExcel.getProfileImage() == null ? "https://i.ibb.co/9V1m6sz/image.jpg" : memberCreateRequestForExcel.getProfileImage();
+                memberCreateRequestForExcel.getProfileImage() == null ? DEFAULT_PROFILE_IMAGE_URL : memberCreateRequestForExcel.getProfileImage();
 
             Member createdMember = memberSaveService.save(MemberMapper.mapToMemberFromExcel(memberCreateRequestForExcel, encryptedPassword, profileImageUrl));
 

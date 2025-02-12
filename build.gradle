@@ -95,6 +95,7 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
     // Test
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'com.h2database:h2'
@@ -154,9 +155,8 @@ tasks.withType(GenerateSwaggerUI) {
         def securitySchemesContent = "  securitySchemes:\n" +           \
                                                "    APIKey:\n" +           \
                                                "      type: apiKey\n" +           \
-                                               "      name: Authorization\n" +           \
-                                               "      in: header\n" +          \
-                                               "security:\n" +
+                                                "      in: header\n" +           \
+                                                "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent

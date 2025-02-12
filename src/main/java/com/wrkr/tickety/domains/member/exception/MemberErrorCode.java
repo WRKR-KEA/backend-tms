@@ -26,7 +26,7 @@ public enum MemberErrorCode implements BaseErrorCode {
     INVALID_POSITION(HttpStatus.BAD_REQUEST, "MEMBER_010", "유효하지 않은 직책입니다."),
 
     ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT, "MEMBER_901", "이미 사용중인 이메일입니다."),
-    ALREADY_EXIST_NICKNAME(HttpStatus.CONFLICT, "MEMBER_902", "이미 사용중인 닉네임입니다."),
+    ALREADY_EXIST_NICKNAME(HttpStatus.CONFLICT, "MEMBER_902", "이미 사용중인 아이디입니다."),
     ;
 
 

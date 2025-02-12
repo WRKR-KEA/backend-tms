@@ -24,13 +24,13 @@ public class ManagerGetAllManagersUseCase {
     private final MemberGetService memberGetService;
     private final TicketGetService ticketGetService;
 
-    public ManagerGetAllManagerResponse getAllManagers() {
+    public ManagerGetAllManagerResponse getAllManagers(Member member) {
         List<Member> managers = memberGetService.getAllManagers();
         List<Long> managerIds = managers.stream().map(Member::getMemberId).toList();
 
         List<Ticket> inProgressTickets = ticketGetService.getManagersInProgressTickets(managerIds);
         Map<Long, Long> inProgressTicketCount = getTicketInProgressCount(inProgressTickets);
-        return MemberMapper.toManagerGetAllManagerResponse(memberGetService.getAllManagers(), inProgressTicketCount);
+        return MemberMapper.toManagerGetAllManagerResponse(member, memberGetService.getAllManagers(), inProgressTicketCount);
     }
 
     public ApplicationPageResponse<ManagerGetAllManagerResponse.Managers> getAllPageManagers(ApplicationPageRequest pageRequest) {

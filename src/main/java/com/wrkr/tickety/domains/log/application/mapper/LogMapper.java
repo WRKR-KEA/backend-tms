@@ -23,7 +23,6 @@ public class LogMapper {
         return AccessLogSearchResponse.builder()
             .accessLogId(String.valueOf(accessLog.getAccessLogId()))
             .nickname(accessLog.getNickname())
-            .role(accessLog.getRole())
             .ip(accessLog.getIp())
             .action(accessLog.getAction())
             .accessAt(accessLog.getAccessAt())

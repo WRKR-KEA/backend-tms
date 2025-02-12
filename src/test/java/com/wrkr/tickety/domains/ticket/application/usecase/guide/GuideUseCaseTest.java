@@ -96,8 +96,8 @@ public class GuideUseCaseTest {
     @BeforeEach
     public void setUp() {
         // 필요한 값으로 PkCrypto 객체 초기화
-        pkCrypto = new PkCrypto("AES", "GREATTEAM4WRKR12");
-        pkCrypto.init(); // @PostConstruct가 동작하지 않으므로 명시적으로 호출
+        pkCrypto = new PkCrypto("AES", "1234567890123456");
+        pkCrypto.init();
     }
 
     @Test

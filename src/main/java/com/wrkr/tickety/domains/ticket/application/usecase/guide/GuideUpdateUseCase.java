@@ -13,6 +13,7 @@ import com.wrkr.tickety.domains.ticket.domain.model.Guide;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideDeleteService;
 import com.wrkr.tickety.domains.ticket.domain.service.guide.GuideUpdateService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.utils.attachment.FileValidationUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +62,7 @@ public class GuideUpdateUseCase {
 
         // 2️⃣ 새로운 첨부파일 업로드
         if (newAttachments != null && !newAttachments.isEmpty()) {
+            FileValidationUtil.validateFiles(newAttachments);
 
             List<GuideAttachment> uploadedAttachments = newAttachments.stream()
                 .filter(file -> !file.isEmpty())

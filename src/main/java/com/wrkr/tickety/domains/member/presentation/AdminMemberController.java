@@ -17,6 +17,7 @@ import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateReque
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequestForExcel;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberDeleteRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPreviewResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.usecase.ExcelExampleCreateUseCase;
@@ -179,11 +180,11 @@ public class AdminMemberController {
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
     @Parameters({
         @Parameter(name = "role", description = "회원 역할 (USER | MANAGER)", example = "USER"),
-        @Parameter(name = "query", description = "검색어 (이메일, 이름, 부서)", example = "alsgudtkwjs@gachon.ac.kr(이메일) or 김가천(이름) or 부서(개발 1팀)"),
+        @Parameter(name = "query", description = "검색어 (아이디, 이메일, 이름, 부서)", example = "gachon.kim(아이디) or alsgudtkwjs@gachon.ac.kr(이메일) or 김가천(이름) or 부서(개발 1팀)"),
         @Parameter(name = "pageable", description = "페이징", example = "{\"page\":1,\"size\":20}")
     })
     @GetMapping
-    public ApplicationResponse<ApplicationPageResponse<MemberInfoResponse>> getTotalMemberInfo(
+    public ApplicationResponse<ApplicationPageResponse<MemberInfoPreviewResponse>> getTotalMemberInfo(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
         ApplicationPageRequest pageRequest,

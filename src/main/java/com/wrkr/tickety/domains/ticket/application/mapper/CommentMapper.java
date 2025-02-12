@@ -5,6 +5,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CommentResponse.CommentDto;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.global.utils.date.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,16 +22,16 @@ public class CommentMapper {
                 commentDTOList.add(CommentDto.builder()
                                        .type("SYSTEM")
                                        .commentId(PkCrypto.encrypt(comment.getCommentId()))
-                                       .createdAt(comment.getCreatedAt())
+                                       .createdAt(DateTimeFormatter.yyyyMMddHHmm(comment.getCreatedAt()))
                                        .content(comment.getContent())
                                        .build());
             } else {
                 commentDTOList.add(CommentDto.builder()
                                        .type(comment.getMember().getRole().toString())
                                        .commentId(PkCrypto.encrypt(comment.getCommentId()))
-                                       .createdAt(comment.getCreatedAt())
+                                       .createdAt(DateTimeFormatter.yyyyMMddHHmm(comment.getCreatedAt()))
                                        .memberId(PkCrypto.encrypt(comment.getMember().getMemberId()))
-                                       .nickname(comment.getMember().getName())
+                                       .nickname(comment.getMember().getNickname())
                                        .content(comment.getContent())
                                        .attachments(commentAttachmentGetService.getAttachmentsByCommentId(comment.getCommentId()))
                                        .build());
