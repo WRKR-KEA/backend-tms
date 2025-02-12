@@ -20,8 +20,8 @@ public class CategoryUpdateService {
         return categoryPersistenceAdapter.saveAll(findCategories);
     }
 
-    public Category updateCategoryName(Category findCategory, String name) {
-        findCategory.updateName(name);
+    public Category updateCategoryField(Category findCategory, String name, String abbreviation) {
+        findCategory.updateField(name, abbreviation);
         return categoryPersistenceAdapter.save(findCategory);
     }
 

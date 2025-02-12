@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-@Schema(description = "카테고리 이름 변경 DTO", name = "CategoryNameUpdateRequest")
-public record CategoryNameUpdateRequest(
+@Schema(description = "카테고리 필드 변경 DTO", name = "CategoryNameUpdateRequest")
+public record CategoryNameFieldRequest(
 
     @NotBlank(message = "변경할 카테고리 이름은 필수 입력 값입니다.")
     @Schema(description = "변경할 카테고리 이름", example = "데이터베이스")
