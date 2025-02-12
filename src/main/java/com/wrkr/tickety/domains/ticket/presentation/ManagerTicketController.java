@@ -182,7 +182,7 @@ public class ManagerTicketController {
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_NOT_DELEGATABLE})
     public ApplicationResponse<TicketPkResponse> delegateTicket(
         //todo
-        @AuthenticationPrincipal(expression = "member") Member member,
+        @AuthenticationPrincipal Member member,
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
         @Valid @RequestBody TicketDelegateRequest request

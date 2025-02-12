@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
+import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
@@ -24,7 +25,6 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketComplete
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.WithMockCustomUser;
-import com.wrkr.tickety.global.config.security.auth.CustomUserDetails;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
@@ -108,8 +108,8 @@ class ManagerTicketControllerTest {
         void delegateTicket_Success() throws Exception {
             // Given
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            log.info("customUserDetails : {}", customUserDetails.getMember().getNickname());
+            Member member = (Member) authentication.getPrincipal();
+            log.info("customUserDetails : {}", member.getNickname());
 
             String ticketId = PkCrypto.encrypt(1L);
             TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
