@@ -152,6 +152,7 @@ public class GuideUseCaseTest {
             .categoryId(parentId)
             .name("카테고리 1")
             .seq(1)
+            .abbreviation("CO")
             .isDeleted(false)
             .build();
         Category category = Category.builder()
@@ -159,6 +160,7 @@ public class GuideUseCaseTest {
             .parent(parent)
             .name("카테고리 2")
             .seq(2)
+            .abbreviation("CT")
             .isDeleted(false)
             .build();
 
@@ -203,6 +205,7 @@ public class GuideUseCaseTest {
             .categoryId(categoryId)
             .name("카테고리 1")
             .seq(1)
+            .abbreviation("CO")
             .isDeleted(false)
             .build();
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()
