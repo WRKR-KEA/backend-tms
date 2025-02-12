@@ -154,7 +154,7 @@ public class ManagerTicketController {
         @AuthenticationPrincipal Member member,
         @PathVariable(value = "ticketId") String ticketId
     ) {
-        TicketPkResponse response = ticketCompleteUseCase.completeTicket(member.getMemberId(), ticketId);
+        TicketPkResponse response = ticketCompleteUseCase.completeTicket(member.getMemberId(), PkCrypto.decrypt(ticketId));
         return ApplicationResponse.onSuccess(response);
     }
 
