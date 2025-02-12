@@ -34,7 +34,7 @@ public class MyPageController {
     @GetMapping
     @CustomErrorCodes(memberErrorCodes = {MemberErrorCode.MEMBER_NOT_FOUND, MemberErrorCode.DELETED_MEMBER})
     public ApplicationResponse<MyPageInfoResponse> getMemberInfo(
-        @AuthenticationPrincipal(expression = "member") Member member
+        @AuthenticationPrincipal Member member
     ) {
         MyPageInfoResponse response = myPageInfoGetUseCase.getMyPageInfo(member.getMemberId());
         return ApplicationResponse.onSuccess(response);
@@ -44,7 +44,7 @@ public class MyPageController {
     @PatchMapping
     @CustomErrorCodes(memberErrorCodes = {MemberErrorCode.MEMBER_NOT_FOUND, MemberErrorCode.DELETED_MEMBER})
     public ApplicationResponse<MemberPkResponse> updateMemberInfo(
-        @AuthenticationPrincipal(expression = "member") Member member,
+        @AuthenticationPrincipal Member member,
         @Parameter(description = "회원 정보 수정 요청 정보", required = true)
         @Valid @RequestBody MyPageInfoUpdateRequest request
     ) {
