@@ -61,7 +61,7 @@ public class Ticket extends BaseTime {
         if (member.getRole().equals(Role.MANAGER)) {
             return this.manager.getMemberId().equals(member.getMemberId());
         } else {
-            return this.user.equals(member);
+            return this.user.getMemberId().equals(member.getMemberId());
         }
     }
 
