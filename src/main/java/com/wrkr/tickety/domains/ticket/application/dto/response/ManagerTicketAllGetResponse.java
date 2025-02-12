@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.ticket.application.dto.response;
 
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
@@ -25,10 +24,10 @@ public record ManagerTicketAllGetResponse(
     String requesterNickname,
 
     @Schema(description = "요청일", example = "2021.08.01")
-    LocalDateTime createdAt,
+    String createdAt,
 
     @Schema(description = "최근 업데이트일", example = "2021.08.01")
-    LocalDateTime updatedAt,
+    String updatedAt,
 
     @Schema(description = "고정 여부", example = "true")
     boolean isPinned

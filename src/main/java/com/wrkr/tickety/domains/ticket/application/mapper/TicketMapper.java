@@ -19,8 +19,8 @@ import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistoryGetService;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.global.utils.date.DateTimeFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
@@ -63,9 +63,9 @@ public class TicketMapper {
             .serialNumber(ticket.getSerialNumber())
             .title(ticket.getTitle())
             .status(ticket.getStatus())
-            .createdAt(ticket.getCreatedAt())
-            .startedAt(firstManagerChangeDate)
-            .updatedAt(ticket.getUpdatedAt())
+            .createdAt(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .startedAt(DateTimeFormat.yyyyMMddHHmm(firstManagerChangeDate))
+            .updatedAt(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
             .build();
     }
 
@@ -79,8 +79,8 @@ public class TicketMapper {
             .status(ticket.getStatus())
             .userNickname(ticket.getUser().getNickname())
             .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
-            .createdAt(ticket.getCreatedAt())
-            .updatedAt(ticket.getUpdatedAt())
+            .createdAt(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedAt(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
             .startedAt(startDate)
             .completedAt(completeDate)
             .build();
@@ -93,8 +93,8 @@ public class TicketMapper {
             .title(ticket.getTitle())
             .status(ticket.getStatus())
             .requesterNickname(ticket.getUser().getNickname())
-            .createdAt(ticket.getCreatedAt())
-            .updatedAt(ticket.getUpdatedAt())
+            .createdAt(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedAt(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
             .isPinned(ticket.getIsPinned())
             .build();
     }
@@ -109,10 +109,10 @@ public class TicketMapper {
             .category(ticket.getCategory().getParent().getName() + " " + ticket.getCategory().getName())
             .userNickname(ticket.getUser().getNickname())
             .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
-            .createdAt(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
-            .updatedAt(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
-            .startedAt(startDate == null ? null : startDate.format(DateTimeFormatter.ISO_DATE))
-            .completedAt(completeDate == null ? null : completeDate.format(DateTimeFormatter.ISO_DATE))
+            .createdAt(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedAt(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
+            .startedAt(startDate == null ? null : DateTimeFormat.yyyyMMddHHmm(startDate))
+            .completedAt(completeDate == null ? null : DateTimeFormat.yyyyMMddHHmm(completeDate))
             .status(ticket.getStatus())
             .build();
     }
@@ -126,8 +126,8 @@ public class TicketMapper {
             .title(ticket.getTitle())
             .userNickname(ticket.getUser().getNickname())
             .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
-            .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
-            .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+            .requestedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
             .build()
         );
     }
@@ -141,8 +141,8 @@ public class TicketMapper {
                 .title(ticket.getTitle())
                 .userNickname(ticket.getUser().getNickname())
                 .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
-                .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
-                .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+                .requestedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+                .updatedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
                 .build()
             ).toList())
             .requestTickets(requestTickets.stream().map(ticket -> ManagerTicketMainPageResponse.requestTickets.builder()
@@ -151,8 +151,8 @@ public class TicketMapper {
                 .status(ticket.getStatus())
                 .title(ticket.getTitle())
                 .userNickname(ticket.getUser().getNickname())
-                .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
-                .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+                .requestedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+                .updatedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
                 .build()
             ).toList())
             .build();
@@ -166,8 +166,8 @@ public class TicketMapper {
             .title(departmentTicketPreResponse.title())
             .userNickname(departmentTicketPreResponse.userNickname())
             .managerNickname(departmentTicketPreResponse.managerNickname())
-            .requestedDate(departmentTicketPreResponse.requestedDate().format(DateTimeFormatter.ISO_DATE))
-            .updatedDate(departmentTicketPreResponse.updatedDate().format(DateTimeFormatter.ISO_DATE))
+            .requestedDate(DateTimeFormat.yyyyMMddHHmm(departmentTicketPreResponse.requestedDate()))
+            .updatedDate(DateTimeFormat.yyyyMMddHHmm(departmentTicketPreResponse.updatedDate()))
             .build();
     }
 
@@ -185,14 +185,14 @@ public class TicketMapper {
                 .title(ticket.getTitle())
                 .userNickname(ticket.getUser().getNickname())
                 .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
-                .requestedDate(ticket.getCreatedAt().format(DateTimeFormatter.ISO_DATE))
-                .updatedDate(ticket.getUpdatedAt().format(DateTimeFormatter.ISO_DATE))
+                .requestedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+                .updatedDate(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
                 .ticketTimeInfo(UserTicketMainPageResponse.recentTickets.ticketTimeInfo.builder()
-                    .createdAt(ticket.getCreatedAt())
-                    .updatedAt(ticket.getUpdatedAt())
-                    .startedAt(startDatesMap.get(ticket.getTicketId()))
-                    .endedAt(completeDatesMap.get(ticket.getTicketId()))
-                    .build()
+                                    .createdAt(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
+                                    .updatedAt(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
+                                    .startedAt(DateTimeFormat.yyyyMMddHHmm(startDatesMap.get(ticket.getTicketId())))
+                                    .endedAt(DateTimeFormat.yyyyMMddHHmm(completeDatesMap.get(ticket.getTicketId())))
+                                    .build()
                 )
                 .build()
             ).toList())
