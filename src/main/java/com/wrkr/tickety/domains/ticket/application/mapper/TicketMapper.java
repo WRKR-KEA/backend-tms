@@ -81,8 +81,8 @@ public class TicketMapper {
             .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
             .createdAt(DateTimeFormat.yyyyMMddHHmm(ticket.getCreatedAt()))
             .updatedAt(DateTimeFormat.yyyyMMddHHmm(ticket.getUpdatedAt()))
-            .startedAt(startDate)
-            .completedAt(completeDate)
+            .startedAt(DateTimeFormat.yyyyMMddHHmm(startDate))
+            .completedAt(DateTimeFormat.yyyyMMddHHmm(completeDate))
             .build();
     }
 
