@@ -69,6 +69,7 @@ public class MemberMapper {
             .phone(member.getPhone())
             .role(member.getRole().name())
             .profileImage(member.getProfileImage())
+            .agitUrl(member.getAgitUrl())
             .build();
     }
 

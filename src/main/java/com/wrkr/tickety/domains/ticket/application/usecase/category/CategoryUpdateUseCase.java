@@ -42,6 +42,7 @@ public class CategoryUpdateUseCase {
 
     public CategoryPkResponse.CategoryPK updateCategoryName(Long categoryId, CategoryNameUpdateRequest request) {
         checkCategoryNameIsUnique(categoryId, request.name());
+        checkCategoryAbbreviationIsUnique(categoryId, request.abbreviation());
 
         Category findCategory = categoryGetService.getParentCategory(categoryId);
         Category savedCategory = categoryUpdateService.updateCategoryName(findCategory, request.name());
@@ -49,8 +50,14 @@ public class CategoryUpdateUseCase {
     }
 
     private void checkCategoryNameIsUnique(Long categoryId, String name) {
-        if (categoryGetService.isCategoryNameExists(categoryId, name)) {
+        if (categoryGetService.isCategoryNameExistsNotMe(categoryId, name)) {
             throw ApplicationException.from(CategoryErrorCode.CATEGORY_ALREADY_EXISTS);
+        }
+    }
+
+    private void checkCategoryAbbreviationIsUnique(Long categoryId, String abbreviation) {
+        if (categoryGetService.isCategoryAbbreviationExistsNotMe(categoryId, abbreviation)) {
+            throw ApplicationException.from(CategoryErrorCode.CATEGORY_ABBREVIATION_ALREADY_EXISTS);
         }
     }
 }

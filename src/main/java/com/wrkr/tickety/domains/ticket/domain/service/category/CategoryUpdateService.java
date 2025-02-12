@@ -24,4 +24,9 @@ public class CategoryUpdateService {
         findCategory.updateName(name);
         return categoryPersistenceAdapter.save(findCategory);
     }
+
+    public void updateCategoriesSequenceByDeleted(List<Category> categories) {
+        categories.forEach(category -> category.updateSeq(category.getSeq() - 1));
+        categoryPersistenceAdapter.saveAll(categories);
+    }
 }

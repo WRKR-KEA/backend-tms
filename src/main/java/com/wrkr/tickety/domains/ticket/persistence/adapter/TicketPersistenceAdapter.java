@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
@@ -103,5 +104,9 @@ public class TicketPersistenceAdapter {
         Pageable pageable = pageRequest.toPageableNoSort();
         return ticketRepository.findAllByUserIdAndStatus(userId, status, pageable)
             .map(this.ticketPersistenceMapper::toDomain);
+    }
+
+    public String findLastSequence(String today, Category childCategory) {
+        return ticketRepository.findLastSequence(today, childCategory.getAbbreviation(), childCategory.getParent().getAbbreviation());
     }
 }

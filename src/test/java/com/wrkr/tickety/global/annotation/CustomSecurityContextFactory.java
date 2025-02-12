@@ -2,8 +2,9 @@ package com.wrkr.tickety.global.annotation;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.global.config.security.auth.CustomUserDetails;
+import java.util.Collections;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
@@ -25,9 +26,8 @@ public class CustomSecurityContextFactory implements WithSecurityContextFactory<
             throw new IllegalArgumentException("memberId는 0이 될 수 없습니다.");
         }
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(member);
         context.setAuthentication(
-            new UsernamePasswordAuthenticationToken(customUserDetails, "PASSWORD", customUserDetails.getAuthorities())
+            new UsernamePasswordAuthenticationToken(member, "PASSWORD", Collections.singleton(new SimpleGrantedAuthority(member.getRole().name())))
         );
 
         return context;
