@@ -27,16 +27,17 @@ public record DepartmentTicketPreResponse(
     @Schema(description = "담당자 닉네임", example = "manage.r")
     String managerNickname,
 
-    @Schema(description = "요청일", example = "2021-01-01 10:00:00")
+    @Schema(description = "요청일", example = "2021-01-01 10:00")
     LocalDateTime requestedDate,
 
-    @Schema(description = "최근 업데이트일", example = "2021-01-01 10:00:00")
+    @Schema(description = "최근 업데이트일", example = "2021-01-01 10:00")
     LocalDateTime updatedDate
 ) {
 
     @QueryProjection
     public DepartmentTicketPreResponse(Long ticketId, String ticketSerialNumber, TicketStatus status, String title, String userNickname, String managerNickname,
-        LocalDateTime requestedDate, LocalDateTime updatedDate) {
+        LocalDateTime requestedDate, LocalDateTime updatedDate
+    ) {
         this.ticketId = ticketId;
         this.ticketSerialNumber = ticketSerialNumber;
         this.status = status;

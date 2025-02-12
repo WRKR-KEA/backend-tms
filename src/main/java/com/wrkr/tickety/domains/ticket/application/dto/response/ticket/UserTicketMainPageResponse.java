@@ -33,10 +33,10 @@ public record UserTicketMainPageResponse(
         @Schema(description = "사용자 닉네임", example = "request.er")
         String userNickname,
 
-        @Schema(description = "요청일", example = "2021-01-01")
+        @Schema(description = "요청일", example = "2021-01-01 00:00")
         String requestedDate,
 
-        @Schema(description = "최근 업데이트일", example = "2021-01-01")
+        @Schema(description = "최근 업데이트일", example = "2021-01-01 00:00")
         String updatedDate,
 
         @Schema(description = "티켓 시간 정보")
@@ -46,16 +46,16 @@ public record UserTicketMainPageResponse(
         @Builder
         public record ticketTimeInfo(
 
-            @Schema(description = "생성 일시", example = "2021-01-01T00:00:00")
+            @Schema(description = "생성 일시", example = "2021-01-01 00:00")
             String createdAt,
 
-            @Schema(description = "수정 일시", example = "2021-01-01T00:00:00")
+            @Schema(description = "수정 일시", example = "2021-01-01 00:00")
             String updatedAt,
 
-            @Schema(description = "시작 일시", example = "2021-01-01T00:00:00")
+            @Schema(description = "시작 일시", example = "2021-01-01 00:00")
             String startedAt,
 
-            @Schema(description = "종료 일시", example = "2021-01-01T00:00:00")
+            @Schema(description = "종료 일시", example = "2021-01-01 00:00")
             String endedAt
         ) {
 

@@ -22,13 +22,13 @@ public record TicketAllGetResponse(
     @Schema(description = "티켓 상태", example = "REQUEST")
     TicketStatus status,
 
-    @Schema(description = "요청일", example = "2021.08.01")
+    @Schema(description = "요청일", example = "2021.08.01 00:00")
     String createdAt,
 
-    @Schema(description = "시작일", example = "2021.08.01")
+    @Schema(description = "시작일", example = "2021.08.01 00:00")
     String startedAt,
 
-    @Schema(description = "최근 업데이트일", example = "2021.08.01")
+    @Schema(description = "최근 업데이트일", example = "2021.08.01 00:00")
     String updatedAt
 ) {
 
