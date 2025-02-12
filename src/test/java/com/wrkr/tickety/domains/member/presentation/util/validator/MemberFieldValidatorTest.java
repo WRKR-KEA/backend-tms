@@ -34,7 +34,7 @@ class MemberFieldValidatorTest {
     private MemberGetService memberGetService;
 
     @Nested
-    class validateNicknameTest {
+    class ValidateNicknameTest {
 
         @DisplayName("사용중인 아이디(닉네임)일 경우 예외가 발생한다.")
         @Test
@@ -90,7 +90,7 @@ class MemberFieldValidatorTest {
     }
 
     @Nested
-    class validateEmailTest {
+    class ValidateEmailTest {
 
         @DisplayName("사용중인 이메일일 경우 예외가 발생한다.")
         @Test
@@ -147,7 +147,7 @@ class MemberFieldValidatorTest {
 
 
     @Nested
-    class validateNameTest {
+    class ValidateNameTest {
 
         @DisplayName("이름의 형식이 유효하지 않으면 예외가 발생한다.")
         @Test
@@ -176,7 +176,7 @@ class MemberFieldValidatorTest {
     }
 
     @Nested
-    class validateDepartmentTest {
+    class ValidateDepartmentTest {
 
         @DisplayName("부서의 형식이 유효하지 않으면 예외가 발생한다.")
         @Test
@@ -205,7 +205,7 @@ class MemberFieldValidatorTest {
     }
 
     @Nested
-    class validatePositionTest {
+    class ValidatePositionTest {
 
         @DisplayName("직책의 형식이 유효하지 않으면 예외가 발생한다.")
         @Test
@@ -234,7 +234,7 @@ class MemberFieldValidatorTest {
     }
 
     @Nested
-    class validatePhoneTest {
+    class ValidatePhoneTest {
 
         @DisplayName("전화번호의 형식이 유효하지 않으면 예외가 발생한다.")
         @Test
@@ -263,7 +263,7 @@ class MemberFieldValidatorTest {
     }
 
     @Nested
-    class validateRoleTest {
+    class ValidateRoleTest {
 
         @DisplayName("권한의 형식이 유효하지 않으면 예외가 발생한다.")
         @Test
