@@ -7,10 +7,8 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
-@Schema(description = "부서 전체 티켓 조회 및 검색 응답(엔티티 타입에 맞춘 DTO)", name = "부서 전체 티켓 조회 및 검색 응답")
-public record DepartmentTicketPreResponse(
-    @Schema(description = "티켓 ID", example = "1")
-    Long ticketId,
+@Schema(description = "부서 티켓 목록 조회 및 검색 엑셀 다운로드 프로젝션 전용 DTO")
+public record DepartmentTicketExcelPreResponse(
 
     @Schema(description = "티켓 일련번호", example = "VM-12345678")
     String ticketSerialNumber,
@@ -33,19 +31,19 @@ public record DepartmentTicketPreResponse(
     @Schema(description = "담당자 아이디(닉네임)", example = "manage.r")
     String managerNickname,
 
-    @Schema(description = "요청일", example = "2021-01-01 10:00")
+    @Schema(description = "요청일", example = "2021-01-01 00:00")
     LocalDateTime requestedDate,
 
-    @Schema(description = "최근 업데이트일", example = "2021-01-01 10:00")
+    @Schema(description = "최근 업데이트일", example = "2021-01-01 00:00")
     LocalDateTime updatedDate
+
 ) {
 
     @QueryProjection
-    public DepartmentTicketPreResponse(Long ticketId, String ticketSerialNumber, TicketStatus status, String title, String firstCategory, String secondCategory,
+    public DepartmentTicketExcelPreResponse(String ticketSerialNumber, TicketStatus status, String title, String firstCategory, String secondCategory,
         String userNickname, String managerNickname,
         LocalDateTime requestedDate, LocalDateTime updatedDate
     ) {
-        this.ticketId = ticketId;
         this.ticketSerialNumber = ticketSerialNumber;
         this.status = status;
         this.title = title;
@@ -56,4 +54,5 @@ public record DepartmentTicketPreResponse(
         this.requestedDate = requestedDate;
         this.updatedDate = updatedDate;
     }
+
 }

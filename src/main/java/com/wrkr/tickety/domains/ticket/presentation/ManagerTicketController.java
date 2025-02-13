@@ -15,6 +15,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDele
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
@@ -114,10 +115,10 @@ public class ManagerTicketController {
         @Parameter(description = "필터링 - 요청일 끝", example = "2025-01-27")
         @RequestParam(required = false) String endDate
     ) {
-        List<DepartmentTicketResponse> allTicketsNoPaging = ticketAllGetToExcelUseCase.getAllTicketsNoPaging(query, status, startDate, endDate);
+        List<DepartmentTicketExcelResponse> allTicketsNoPaging = ticketAllGetToExcelUseCase.getAllTicketsNoPaging(query, status, startDate, endDate);
 
         // TODO: 파일 이름 생성 정책 정하기
-        excelUtil.parseTicketDataToExcelGroupByStatus(response, allTicketsNoPaging, "ticket2025");
+        excelUtil.parseTicketDataToExcelGroupByStatus(response, allTicketsNoPaging, "department-ticket-list");
     }
 
     @PatchMapping("/approve")
@@ -155,7 +156,7 @@ public class ManagerTicketController {
         @AuthenticationPrincipal Member member,
         @PathVariable(value = "ticketId") String ticketId
     ) {
-        TicketPkResponse response = ticketCompleteUseCase.completeTicket(member.getMemberId(), ticketId);
+        TicketPkResponse response = ticketCompleteUseCase.completeTicket(member.getMemberId(), PkCrypto.decrypt(ticketId));
         return ApplicationResponse.onSuccess(response);
     }
 
