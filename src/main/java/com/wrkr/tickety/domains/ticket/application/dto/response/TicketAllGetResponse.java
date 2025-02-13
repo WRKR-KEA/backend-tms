@@ -22,6 +22,12 @@ public record TicketAllGetResponse(
     @Schema(description = "티켓 상태", example = "REQUEST")
     TicketStatus status,
 
+    @Schema(description = "티켓 1차 카테고리", example = "VM")
+    String firstCategory,
+
+    @Schema(description = "티켓 2차 카테고리", example = "생성")
+    String secondCategory,
+
     @Schema(description = "요청일", example = "2021.08.01 00:00")
     String createdAt,
 

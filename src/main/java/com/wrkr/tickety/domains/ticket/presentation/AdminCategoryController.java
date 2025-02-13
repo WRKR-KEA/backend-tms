@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.ticket.presentation;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryCreateRequest;
-import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryNameUpdateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategoryNameFieldRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.category.CategorySequenceUpdateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.CategoryPkResponse.CategoryPK;
@@ -66,10 +66,10 @@ public class AdminCategoryController {
 
     @CustomErrorCodes(categoryErrorCodes = {CategoryErrorCode.CATEGORY_NOT_EXISTS, CategoryErrorCode.CATEGORY_ALREADY_EXISTS,})
     @Parameter(name = "categoryId", description = "수정할 카테고리 ID", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true)
-    @Operation(summary = "카테고리 이름 수정", description = "관리자가 카테고리 이름을 수정합니다.")
+    @Operation(summary = "카테고리 필드 수정", description = "관리자가 카테고리 필드를 수정합니다.")
     @PatchMapping("/admin/categories/{categoryId}")
     public ApplicationResponse<CategoryPK> updateCategoryName(@PathVariable String categoryId,
-        @RequestBody @Valid CategoryNameUpdateRequest request
+        @RequestBody @Valid CategoryNameFieldRequest request
     ) {
         CategoryPK encryptedCategoryId = categoryUpdateUseCase.updateCategoryName(decrypt(categoryId), request);
         return ApplicationResponse.onSuccess(encryptedCategoryId);
