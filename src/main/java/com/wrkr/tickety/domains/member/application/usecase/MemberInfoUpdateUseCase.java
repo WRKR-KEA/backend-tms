@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class MemberInfoUpdateUseCase {
 
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://i.ibb.co/7Fd4Hhx/tickety-default-image.jpg";
+
     private final MemberUpdateService memberUpdateService;
     private final MemberGetService memberGetService;
     private final S3ApiService s3ApiService;
@@ -61,7 +63,6 @@ public class MemberInfoUpdateUseCase {
             deleteProfileImage(findMember.getProfileImage());
 
             findMember.modifyIsDeleted(true);
-            findMember.modifyProfileImage(null);
 
             memberUpdateService.modifyMemberInfo(findMember);
         });
@@ -73,14 +74,12 @@ public class MemberInfoUpdateUseCase {
         }
     }
 
-    // 다른 관리자의 정보 수정 금지
     private void validateAuthorization(Member member) {
         if (member.getRole().equals(Role.ADMIN)) {
             throw ApplicationException.from(AuthErrorCode.PERMISSION_DENIED);
         }
     }
 
-    // 요청 값의 닉네임, 이메일이 기존 닉네임, 이메일과 같은 경우 중복 오류가 일어나지 않도록 처리
     private void validateEmailDuplicate(String memberEmail, String emailReq) {
         if (!memberEmail.equals(emailReq)) {
             memberFieldValidator.validateEmailDuplicate(emailReq);
