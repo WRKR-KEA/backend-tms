@@ -116,7 +116,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'com.h2database:h2'
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.5")
-    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.projectlombok:lombok:1.18.26'
 
     // Webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -170,12 +170,12 @@ tasks.withType(GenerateSwaggerUI) {
     doFirst {
         def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
-        def securitySchemesContent = "  securitySchemes:\n" +              \
-                                                  "    APIKey:\n" +              \
-                                                  "      type: apiKey\n" +              \
-                                                  "      name: Authorization\n" +              \
-                                                  "      in: header\n" +             \
-                                                  "security:\n" +
+        def securitySchemesContent = "  securitySchemes:\n" +          \
+                                              "    APIKey:\n" +          \
+                                              "      type: apiKey\n" +          \
+                                              "      name: Authorization\n" +          \
+                                              "      in: header\n" +         \
+                                              "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent
