@@ -1,6 +1,14 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,14 +34,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @WebMvcTest(controllers = TicketStatisticsController.class)
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
 class TicketStatisticsControllerTest {
 
     @Autowired
@@ -130,13 +142,31 @@ class TicketStatisticsControllerTest {
         @DisplayName("날짜 형식이 잘못된 경우 예외 발생")
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
         void throwExceptionWhenInvalidDateFormat() throws Exception {
-            //then
-            mockMvc.perform(
-                    post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString())
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString("{date:invalidDate}")))
-                .andExpect(status().isBadRequest());
+            // given - when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString("{date:invalidDate}"));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andDo(
+                    document(
+                        "Statistics/Request/Failure/Case1",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                            parameterWithName("statisticsType").description("통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)")
+                        ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("false"),
+                            fieldWithPath("code").description("COMMON_002"),
+                            fieldWithPath("message").description("올바르지 않은 요청 형식입니다.")
+                        )
+                    ))
+            ;
         }
     }
 }

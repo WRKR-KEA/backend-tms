@@ -6,6 +6,7 @@ spring:
       - swagger.yml
       - s3.yml
       - kakaowork.yml
+      - jwt.yml
       - optional:classpath:env.properties
 
   liquibase:
