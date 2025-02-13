@@ -36,6 +36,7 @@ public class GuidePersistenceTest {
             .name("category")
             .isDeleted(false)
             .seq(1)
+            .abbreviation("CA")
             .build();
         entityManager.persist(categoryEntity);
         entityManager.flush();

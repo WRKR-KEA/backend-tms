@@ -1,7 +1,8 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
@@ -36,7 +37,7 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
     }
 
-    public List<DepartmentTicketPreResponse> getDepartmentAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
+    public List<DepartmentTicketExcelPreResponse> getDepartmentAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
         return ticketPersistenceAdapter.findAllTicketsNoPaging(query, status, startDate, endDate);
     }
 
@@ -70,6 +71,10 @@ public class TicketGetService {
 
     public Page<Ticket> getTicketsByUserIdAndStatus(Long userId, TicketStatus status, ApplicationPageRequest pageRequest) {
         return ticketPersistenceAdapter.findAllByUserIdAndStatus(userId, status, pageRequest);
+    }
+
+    public String findLastSequence(String today, Category childCategory) {
+        return ticketPersistenceAdapter.findLastSequence(today, childCategory);
     }
 }
 

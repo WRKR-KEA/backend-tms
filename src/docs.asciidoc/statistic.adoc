@@ -1,0 +1,31 @@
+= Statistic 조회
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 대댓글 등록
+
+=== 1. Authorization Header에 AccessToken이 없으면 조회에 실패한다.
+
+=== 어쩌구저쩌구
+
+HTTP Request
+
+include::{snippets}/Statistics/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/Statistics/Request/Failure/Case1/http-response.adoc[]
+include::{snippets}/Statistics/Request/Failure/Case1/response-fields.adoc[]
+
+==== 2. 조회에 성공한다. 어쩌구저쩌구
+
+HTTP Request
+
+include::{snippets}/Statistics/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/Statistics/Request/Failure/Case1/http-response.adoc[]

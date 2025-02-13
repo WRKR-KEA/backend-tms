@@ -6,8 +6,8 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.QDepartmentTicketPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.QDepartmentTicketExcelPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.persistence.entity.QTicketEntity;
@@ -68,16 +68,17 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     }
 
     @Override
-    public List<DepartmentTicketPreResponse> getAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
+    public List<DepartmentTicketExcelPreResponse> getAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
         QTicketEntity t = ticketEntity;
 
         return jpaQueryFactory
             .select(
-                new QDepartmentTicketPreResponse(
-                    t.ticketId,
+                new QDepartmentTicketExcelPreResponse(
                     t.serialNumber,
                     t.status,
                     t.title,
+                    t.category.parent.name,
+                    t.category.name,
                     t.user.nickname,
                     t.manager.nickname,
                     t.createdAt,

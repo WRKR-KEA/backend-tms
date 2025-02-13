@@ -16,10 +16,6 @@ public class CategoryGetService {
 
     private final CategoryPersistenceAdapter categoryPersistenceAdapter;
 
-    public List<Category> byIsDeletedFalse() {
-        return categoryPersistenceAdapter.findByIsDeletedFalse();
-    }
-
     public Category getParentCategory(Long categoryId) {
         return categoryPersistenceAdapter.findById(categoryId)
             .orElseThrow(() -> ApplicationException.from(CategoryErrorCode.CATEGORY_NOT_EXISTS));
@@ -42,8 +38,8 @@ public class CategoryGetService {
         return categoryPersistenceAdapter.getChildrenByCategoryIds(categoryIds);
     }
 
-    public boolean isCategoryNameExists(Long categoryId, String name) {
-        return categoryPersistenceAdapter.isCategoryNameExists(categoryId, name);
+    public boolean isCategoryNameExistsNotMe(Long categoryId, String name) {
+        return categoryPersistenceAdapter.isCategoryNameExistsNotMe(categoryId, name);
     }
 
     public boolean isCategoryNameExists(String name) {
@@ -52,5 +48,21 @@ public class CategoryGetService {
 
     public List<Category> findParents() {
         return categoryPersistenceAdapter.findParents();
+    }
+
+    public boolean isCategoryAbbreviationExists(String abbreviation) {
+        return categoryPersistenceAdapter.isCategoryAbbreviationExists(abbreviation);
+    }
+
+    public boolean isCategoryAbbreviationExistsNotMe(Long categoryId, String abbreviation) {
+        return categoryPersistenceAdapter.isCategoryAbbreviationExistsNotMe(categoryId, abbreviation);
+    }
+
+    public List<Category> findLowerSequenceCategories(Integer sequence) {
+        return categoryPersistenceAdapter.findLowerSequenceCategories(sequence);
+    }
+
+    public boolean isCategorySequenceExists(Integer seq) {
+        return categoryPersistenceAdapter.isCategorySequenceExists(seq);
     }
 }
