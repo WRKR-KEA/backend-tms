@@ -61,19 +61,23 @@ public class TicketMapper {
     public static TicketDetailGetResponse toTicketDetailGetResponse(Ticket ticket, LocalDateTime startDate, LocalDateTime completeDate) {
         return TicketDetailGetResponse.builder().id(PkCrypto.encrypt(ticket.getTicketId())).ticketSerialNumber(ticket.getSerialNumber())
             .title(ticket.getTitle()).content(ticket.getContent())
-            .category(ticket.getCategory().getParent().getName() + " " + ticket.getCategory().getName())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
             .status(ticket.getStatus()).userNickname(ticket.getUser().getNickname())
             .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
             .createdAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
             .updatedAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt()))
-            .startedAt(DateTimeFormatter.yyyyMMddHHmm(startDate))
+            .startedAt(startDate == null ? null : DateTimeFormatter.yyyyMMddHHmm(startDate))
             .completedAt(completeDate == null ? null : DateTimeFormatter.yyyyMMddHHmm(completeDate))
             .build();
     }
 
     public static ManagerTicketAllGetResponse toManagerTicketAllGetResponse(Ticket ticket) {
         return ManagerTicketAllGetResponse.builder().id(PkCrypto.encrypt(ticket.getTicketId())).serialNumber(ticket.getSerialNumber()).title(ticket.getTitle())
-            .status(ticket.getStatus()).requesterNickname(ticket.getUser().getNickname()).createdAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .status(ticket.getStatus())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
+            .requesterNickname(ticket.getUser().getNickname()).createdAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
             .updatedAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).isPinned(ticket.getIsPinned()).build();
     }
 
@@ -81,7 +85,8 @@ public class TicketMapper {
 
         return ManagerTicketDetailResponse.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId())).ticketSerialNumber(ticket.getSerialNumber())
             .title(ticket.getTitle()).content(ticket.getContent())
-            .category(ticket.getCategory().getParent().getName() + " " + ticket.getCategory().getName())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
             .userNickname(ticket.getUser().getNickname()).managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
             .createdAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt())).updatedAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt()))
             .startedAt(startDate == null ? null : DateTimeFormatter.yyyyMMddHHmm(startDate))
@@ -91,7 +96,10 @@ public class TicketMapper {
     public static ApplicationPageResponse<DepartmentTicketResponse> toDepartmentTicketResponse(Page<Ticket> ticketPage) {
 
         return ApplicationPageResponse.of(ticketPage, ticket -> DepartmentTicketResponse.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
-            .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle()).userNickname(ticket.getUser().getNickname())
+            .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
+            .userNickname(ticket.getUser().getNickname())
             .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
             .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt())).updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt()))
             .build());
@@ -101,7 +109,10 @@ public class TicketMapper {
         return ManagerTicketMainPageResponse.builder().pinTickets(pinTickets.stream()
                 .map(ticket -> PinTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
                     .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus())
-                    .title(ticket.getTitle()).userNickname(ticket.getUser().getNickname())
+                    .title(ticket.getTitle())
+                    .firstCategory(ticket.getCategory().getParent().getName())
+                    .secondCategory(ticket.getCategory().getName())
+                    .userNickname(ticket.getUser().getNickname())
                     .managerNickname(
                         ticket.getManager() == null ? null : ticket.getManager().getNickname())
                     .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
@@ -109,6 +120,8 @@ public class TicketMapper {
             .requestTickets(requestTickets.stream()
                 .map(ticket -> ManagerTicketMainPageResponse.requestTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
                     .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle())
+                    .firstCategory(ticket.getCategory().getParent().getName())
+                    .secondCategory(ticket.getCategory().getName())
                     .userNickname(ticket.getUser().getNickname()).requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
                     .updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build()).toList()).build();
     }
@@ -116,7 +129,10 @@ public class TicketMapper {
     public static DepartmentTicketResponse mapToDepartmentTicketResponse(DepartmentTicketPreResponse departmentTicketPreResponse) {
         return DepartmentTicketResponse.builder().ticketId(PkCrypto.encrypt(departmentTicketPreResponse.ticketId()))
             .ticketSerialNumber(departmentTicketPreResponse.ticketSerialNumber()).status(departmentTicketPreResponse.status())
-            .title(departmentTicketPreResponse.title()).userNickname(departmentTicketPreResponse.userNickname())
+            .title(departmentTicketPreResponse.title())
+            .firstCategory(departmentTicketPreResponse.firstCategory())
+            .secondCategory(departmentTicketPreResponse.secondCategory())
+            .userNickname(departmentTicketPreResponse.userNickname())
             .managerNickname(departmentTicketPreResponse.managerNickname())
             .requestedDate(DateTimeFormatter.yyyyMMddHHmm(departmentTicketPreResponse.requestedDate()))
             .updatedDate(DateTimeFormatter.yyyyMMddHHmm(departmentTicketPreResponse.updatedDate())).build();
@@ -128,6 +144,8 @@ public class TicketMapper {
         return UserTicketMainPageResponse.builder().recentTickets(recentTickets.stream().map(ticket -> UserTicketMainPageResponse.recentTickets.builder()
                 .ticketId(PkCrypto.encrypt(ticket.getTicketId())).ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus())
                 .title(ticket.getTitle())
+                .firstCategory(ticket.getCategory().getParent().getName())
+                .secondCategory(ticket.getCategory().getName())
                 .userNickname(ticket.getUser().getNickname()).managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
                 .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt())).updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt()))
                 .ticketTimeInfo(

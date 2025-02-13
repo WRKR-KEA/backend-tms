@@ -19,8 +19,11 @@ public record TicketDetailGetResponse(
     @Schema(description = "티켓 내용", example = "티켓 내용")
     String content,
 
-    @Schema(description = "업무", example = "VM 추가")
-    String category,
+    @Schema(description = "티켓 1차 카테고리", example = "VM")
+    String firstCategory,
+
+    @Schema(description = "티켓 2차 카테고리", example = "생성")
+    String secondCategory,
 
     @Schema(description = "티켓 상태", example = "REQUEST")
     TicketStatus status,

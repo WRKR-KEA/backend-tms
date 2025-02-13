@@ -11,6 +11,7 @@ import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
@@ -64,12 +65,20 @@ public class ManagerTicketAllGetUseCaseTest {
         String search = "search";
         ApplicationPageRequest pageable = new ApplicationPageRequest(page, size, SortType.NEWEST);
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
+        Category category = Category.builder()
+            .categoryId(2L)
+            .name("생성")
+            .parent(
+                Category.builder()
+                    .categoryId(1L)
+                    .name("VM").build()
+            ).build();
         List<Ticket> tickets = List.of(
-            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).createdAt(LocalDateTime.now())
+            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).createdAt(LocalDateTime.now()).category(category)
                 .updatedAt(LocalDateTime.now()).build(),
-            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).createdAt(LocalDateTime.now())
+            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).createdAt(LocalDateTime.now()).category(category)
                 .updatedAt(LocalDateTime.now()).build(),
-            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).createdAt(LocalDateTime.now())
+            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).createdAt(LocalDateTime.now()).category(category)
                 .updatedAt(LocalDateTime.now()).build()
         );
         ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
@@ -98,7 +107,7 @@ public class ManagerTicketAllGetUseCaseTest {
 
         // Then
         ApplicationException exception = assertThrows(ApplicationException.class,
-                                                      () -> memberGetService.byMemberId(managerId)
+            () -> memberGetService.byMemberId(managerId)
         );
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());

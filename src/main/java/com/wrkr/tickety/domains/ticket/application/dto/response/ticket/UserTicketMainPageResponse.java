@@ -27,6 +27,12 @@ public record UserTicketMainPageResponse(
         @Schema(description = "티켓 제목", example = "VM 생성 요청")
         String title,
 
+        @Schema(description = "티켓 1차 카테고리", example = "VM")
+        String firstCategory,
+
+        @Schema(description = "티켓 2차 카테고리", example = "생성")
+        String secondCategory,
+
         @Schema(description = "담당자 닉네임", example = "manage.r")
         String managerNickname,
 
