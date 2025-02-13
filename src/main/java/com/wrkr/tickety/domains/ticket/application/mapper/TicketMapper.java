@@ -45,6 +45,7 @@ public class TicketMapper {
         LocalDateTime firstManagerChangeDate = ticketHistoryGetService.getFirstManagerChangeDate(ticket.getTicketId());
 
         return TicketAllGetResponse.builder().id(PkCrypto.encrypt(ticket.getTicketId()))
+
             .managerName(ticket.getManager() == null ? null : ticket.getManager().getNickname())
             .serialNumber(ticket.getSerialNumber())
             .title(ticket.getTitle())
