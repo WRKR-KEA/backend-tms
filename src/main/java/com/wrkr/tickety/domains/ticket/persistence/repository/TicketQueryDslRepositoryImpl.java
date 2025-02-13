@@ -78,6 +78,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                     t.serialNumber,
                     t.status,
                     t.title,
+                    t.category.parent.name,
+                    t.category.name,
                     t.user.nickname,
                     t.manager.nickname,
                     t.createdAt,

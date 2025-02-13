@@ -40,8 +40,11 @@ public record ManagerTicketDetailResponse(
         1주일 내로 처리 부탁드립니다.""")
     String content,
 
-    @Schema(description = "업무", example = "VM 추가")
-    String category,
+    @Schema(description = "티켓 1차 카테고리", example = "VM")
+    String firstCategory,
+
+    @Schema(description = "티켓 2차 카테고리", example = "생성")
+    String secondCategory,
 
     @Schema(description = "사용자 닉네임", example = "request.er")
     String userNickname,

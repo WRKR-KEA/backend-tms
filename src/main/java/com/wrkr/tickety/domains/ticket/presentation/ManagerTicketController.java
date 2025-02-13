@@ -204,7 +204,6 @@ public class ManagerTicketController {
     @GetMapping("/main")
     public ApplicationResponse<ManagerTicketMainPageResponse> getMainPage(@AuthenticationPrincipal Member member) {
         return ApplicationResponse.onSuccess(managerGetMainUseCase.getMain(member.getMemberId()));
-
     }
 
 }
