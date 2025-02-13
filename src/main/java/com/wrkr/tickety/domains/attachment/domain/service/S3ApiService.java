@@ -19,15 +19,14 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 @RequiredArgsConstructor
 public class S3ApiService {
 
+    private static final String BUCKET_PREFIX = "v1/1693f30f6d0848e895e9bb87002e8f62/";
+
     private final S3Client s3Client;
 
     @Value("${s3.bucket-name}")
     private String bucketName;
 
     private final Environment env;
-
-    @Value("${s3.bucket-prefix}")
-    private String bucketPrefix;
 
     /**
      * 단일 파일 업로드 후 URL 반환
@@ -140,9 +139,10 @@ public class S3ApiService {
         if (env.getActiveProfiles()[0].equals("prod")) {
             int bucketIndex = encodedUrl.indexOf(bucketName);
             if (bucketIndex != -1) {
-                encodedUrl = encodedUrl.substring(0, bucketIndex) +
-                    bucketPrefix +
-                    encodedUrl.substring(bucketIndex);
+                encodedUrl =
+                    encodedUrl.substring(0, bucketIndex) +
+                        BUCKET_PREFIX +
+                        encodedUrl.substring(bucketIndex);
             }
         }
         return encodedUrl;
