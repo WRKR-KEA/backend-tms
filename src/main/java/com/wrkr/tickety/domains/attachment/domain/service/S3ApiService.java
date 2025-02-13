@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -22,6 +23,11 @@ public class S3ApiService {
 
     @Value("${s3.bucket-name}")
     private String bucketName;
+
+    private final Environment env;
+
+    @Value("${s3.bucket-prefix}")
+    private String bucketPrefix;
 
     /**
      * 단일 파일 업로드 후 URL 반환
@@ -42,6 +48,8 @@ public class S3ApiService {
             String encodedUrl = s3Client.utilities().getUrl(builder ->
                 builder.bucket(bucketName).key(objectKey).build()
             ).toString();
+
+            encodedUrl = addUrlPrefix(encodedUrl);
 
             return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -66,6 +74,8 @@ public class S3ApiService {
                 builder.bucket(bucketName).key(objectKey).build()
             ).toString();
 
+            encodedUrl = addUrlPrefix(encodedUrl);
+
             return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 실패", e);
@@ -88,7 +98,9 @@ public class S3ApiService {
             String encodedUrl = s3Client.utilities().getUrl(builder ->
                 builder.bucket(bucketName).key(objectKey).build()
             ).toString();
-            
+
+            encodedUrl = addUrlPrefix(encodedUrl);
+
             return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 실패", e);
@@ -116,5 +128,23 @@ public class S3ApiService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * 운영 환경일 경우 bucketName 앞에 Prefix 붙여주기
+     *
+     * @param encodedUrl
+     * @return
+     */
+    private String addUrlPrefix(String encodedUrl) {
+        if (env.getActiveProfiles()[0].equals("prod")) {
+            int bucketIndex = encodedUrl.indexOf(bucketName);
+            if (bucketIndex != -1) {
+                encodedUrl = encodedUrl.substring(0, bucketIndex) +
+                    bucketPrefix +
+                    encodedUrl.substring(bucketIndex);
+            }
+        }
+        return encodedUrl;
     }
 }
