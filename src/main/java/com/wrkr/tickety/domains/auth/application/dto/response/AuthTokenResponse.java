@@ -14,6 +14,9 @@ public record AuthTokenResponse(
     @Schema(description = "리프레시 토큰", example = "eyJ0eXAiOiJKV1QiLCJhbG.eyJzdWIiOiIxQiOjE2OTgzODk0MjAsImV4cCI6MTY5OTU5OTAyMH0.XYB0Bl6UZ3xGgG1wnXd-REF")
     String refreshToken,
 
+    @Schema(description = "닉네임", example = "user.kgc")
+    String nickname,
+
     @Schema(description = "이름", example = "김가천")
     String name,
 

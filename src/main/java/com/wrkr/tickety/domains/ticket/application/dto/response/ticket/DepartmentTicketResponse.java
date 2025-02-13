@@ -25,6 +25,12 @@ public record DepartmentTicketResponse(
     @ExcelColumn(headerName = "티켓 제목")
     String title,
 
+    @Schema(description = "티켓 1차 카테고리", example = "VM")
+    String firstCategory,
+
+    @Schema(description = "티켓 2차 카테고리", example = "생성")
+    String secondCategory,
+
     @Schema(description = "사용자 닉네임", example = "request.er")
     @ExcelColumn(headerName = "사용자 닉네임")
     String userNickname,
@@ -33,11 +39,11 @@ public record DepartmentTicketResponse(
     @ExcelColumn(headerName = "담당자 닉네임")
     String managerNickname,
 
-    @Schema(description = "요청일", example = "2021-01-01")
+    @Schema(description = "요청일", example = "2021-01-01 00:00")
     @ExcelColumn(headerName = "요청일")
     String requestedDate,
 
-    @Schema(description = "최근 업데이트일", example = "2021-01-01")
+    @Schema(description = "최근 업데이트일", example = "2021-01-01 00:00")
     @ExcelColumn(headerName = "최근 업데이트일")
     String updatedDate
 ) {

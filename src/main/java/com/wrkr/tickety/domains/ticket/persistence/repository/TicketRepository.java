@@ -29,4 +29,20 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
     Long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     Long countByManager_memberIdAndIsPinnedTrue(Long managerId);
+
+    boolean existsByticketIdAndIsPinnedTrue(Long ticketId);
+
+    @Query("SELECT t FROM TicketEntity t WHERE t.user.memberId = :userId AND t.status = :status")
+    Page<TicketEntity> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") TicketStatus status, Pageable pageable);
+
+    @Query(
+        "SELECT MAX(CAST(RIGHT(t.serialNumber, 2) AS int)) " +
+            "FROM TicketEntity t " +
+            "WHERE t.serialNumber LIKE CONCAT('#', :today, :parentCategory, :childCategory, '%')"
+    )
+    String findLastSequence(
+        @Param("today") String today,
+        @Param("childCategory") String childCategory,
+        @Param("parentCategory") String parentCategory
+    );
 }

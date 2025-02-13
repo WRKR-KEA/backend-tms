@@ -13,6 +13,7 @@ public class Category extends BaseTime {
     private Long categoryId;
     private Category parent;
     private String name;
+    private String abbreviation;
     private Integer seq;
     private Boolean isDeleted;
     private LocalDateTime deletedAt;
@@ -22,6 +23,7 @@ public class Category extends BaseTime {
         Long categoryId,
         Category parent,
         String name,
+        String abbreviation,
         Integer seq,
         Boolean isDeleted,
         LocalDateTime deletedAt
@@ -29,13 +31,15 @@ public class Category extends BaseTime {
         this.categoryId = categoryId;
         this.parent = parent;
         this.name = name;
+        this.abbreviation = abbreviation;
         this.seq = seq;
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
     }
 
-    public void updateName(String name) {
+    public void updateField(String name, String abbreviation) {
         this.name = name;
+        this.abbreviation = abbreviation;
     }
 
     public void updateSeq(Integer seq) {

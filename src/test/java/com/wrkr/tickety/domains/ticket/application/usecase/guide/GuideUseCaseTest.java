@@ -96,8 +96,8 @@ public class GuideUseCaseTest {
     @BeforeEach
     public void setUp() {
         // 필요한 값으로 PkCrypto 객체 초기화
-        pkCrypto = new PkCrypto("AES", "GREATTEAM4WRKR12");
-        pkCrypto.init(); // @PostConstruct가 동작하지 않으므로 명시적으로 호출
+        pkCrypto = new PkCrypto("AES", "1234567890123456");
+        pkCrypto.init();
     }
 
     @Test
@@ -152,6 +152,7 @@ public class GuideUseCaseTest {
             .categoryId(parentId)
             .name("카테고리 1")
             .seq(1)
+            .abbreviation("CO")
             .isDeleted(false)
             .build();
         Category category = Category.builder()
@@ -159,6 +160,7 @@ public class GuideUseCaseTest {
             .parent(parent)
             .name("카테고리 2")
             .seq(2)
+            .abbreviation("CT")
             .isDeleted(false)
             .build();
 
@@ -203,6 +205,7 @@ public class GuideUseCaseTest {
             .categoryId(categoryId)
             .name("카테고리 1")
             .seq(1)
+            .abbreviation("CO")
             .isDeleted(false)
             .build();
         GuideCreateRequest guideCreateRequest = GuideCreateRequest.builder()

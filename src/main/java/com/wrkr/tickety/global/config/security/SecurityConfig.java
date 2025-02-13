@@ -10,6 +10,8 @@ import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -92,7 +94,11 @@ public class SecurityConfig {
             "http://localhost:3000",
             "http://localhost:8080",
             "http://172.16.211.116:3000",
-            "http://172.16.211.53:8080"
+            "http://172.16.211.53:8080",
+            "10.102.13.162:3000",
+            "tcp://10.102.13.162:3000",
+            "https://wrkr.tickety.co.kr",
+            "https://wrkr.tickety.co.kr:3000"
         ));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));
@@ -111,5 +117,10 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 }

@@ -29,6 +29,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    // MEMO: isManagerAccessible() 조건은 담당자가 조회하는 경우에만 필요
     @Override
     public Page<TicketEntity> getAll(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageRequest) {
 
@@ -40,7 +41,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 titleOrManagerNicknameOrSerialNumberContainsIgnoreCase(query),
                 statusEq(status),
                 createdAtGoe(startDate),
-                createdAtLoe(endDate)
+                createdAtLoe(endDate),
+                isManagerAccessible()
             )
             .orderBy(orderSpecifiers)
             .offset((long) pageRequest.size() * pageRequest.page())
@@ -54,7 +56,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 titleOrManagerNicknameOrSerialNumberContainsIgnoreCase(query),
                 statusEq(status),
                 createdAtGoe(startDate),
-                createdAtLoe(endDate)
+                createdAtLoe(endDate),
+                isManagerAccessible()
             );
 
         return PageableExecutionUtils.getPage(
@@ -75,6 +78,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                     t.serialNumber,
                     t.status,
                     t.title,
+                    t.category.parent.name,
+                    t.category.name,
                     t.user.nickname,
                     t.manager.nickname,
                     t.createdAt,
@@ -86,7 +91,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 titleOrManagerNicknameOrSerialNumberContainsIgnoreCase(query),
                 statusEq(status),
                 createdAtGoe(startDate),
-                createdAtLoe(endDate)
+                createdAtLoe(endDate),
+                isManagerAccessible()
             )
             .orderBy(t.ticketId.desc())
             .fetch();
@@ -105,7 +111,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
                 statusEq(status),
-                searchEq(query)
+                searchEq(query),
+                isManagerAccessible()
             )
             .orderBy(orderSpecifiers)
             .offset((long) pageRequest.size() * pageRequest.page())
@@ -117,7 +124,8 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
             .where(
                 ticketEntity.manager.memberId.eq(managerId),
                 statusEq(status),
-                searchEq(query)
+                searchEq(query),
+                isManagerAccessible()
             );
 
         return PageableExecutionUtils.getPage(
@@ -163,5 +171,9 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     private BooleanExpression searchEq(String search) {
         return search == null ? null : ticketEntity.serialNumber.contains(search)
             .or(ticketEntity.content.contains(search));
+    }
+
+    private BooleanExpression isManagerAccessible() {
+        return ticketEntity.status.ne(TicketStatus.CANCEL);
     }
 }

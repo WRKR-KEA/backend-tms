@@ -1,6 +1,8 @@
 package com.wrkr.tickety.domains.attachment.domain.service;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,9 +39,11 @@ public class S3ApiService {
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
 
-            return s3Client.utilities().getUrl(builder ->
+            String encodedUrl = s3Client.utilities().getUrl(builder ->
                 builder.bucket(bucketName).key(objectKey).build()
             ).toString();
+
+            return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 실패", e);
         }
@@ -58,14 +62,38 @@ public class S3ApiService {
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
 
-            return s3Client.utilities().getUrl(builder ->
+            String encodedUrl = s3Client.utilities().getUrl(builder ->
                 builder.bucket(bucketName).key(objectKey).build()
             ).toString();
+
+            return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 실패", e);
         }
     }
 
+    public String uploadMemberProfileImage(MultipartFile file) {
+        String objectKey = "attachments/member/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+        try {
+            s3Client.putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .contentType(file.getContentType())
+                    .build(),
+                RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+            );
+
+            String encodedUrl = s3Client.utilities().getUrl(builder ->
+                builder.bucket(bucketName).key(objectKey).build()
+            ).toString();
+            
+            return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드 실패", e);
+        }
+    }
 
     /**
      * S3에서 파일 삭제

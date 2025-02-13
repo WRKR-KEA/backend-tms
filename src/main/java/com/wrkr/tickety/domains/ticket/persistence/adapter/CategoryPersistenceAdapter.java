@@ -27,13 +27,6 @@ public class CategoryPersistenceAdapter {
         return categoryEntity.map(this.categoryPersistenceMapper::toDomain);
     }
 
-    public List<Category> findByIsDeletedFalse() {
-        final List<CategoryEntity> categoryEntities = categoryRepository.findByIsDeletedFalse();
-        return categoryEntities.stream()
-            .map(this.categoryPersistenceMapper::toDomain)
-            .toList();
-    }
-
     public List<Category> findChildren(Long categoryId) {
         final List<CategoryEntity> categoryEntities = categoryRepository.findByParentCategoryIdAndIsDeletedFalse(categoryId);
         return categoryEntities.stream()
@@ -65,7 +58,7 @@ public class CategoryPersistenceAdapter {
             .toList();
     }
 
-    public boolean isCategoryNameExists(Long categoryId, String name) {
+    public boolean isCategoryNameExistsNotMe(Long categoryId, String name) {
         return this.categoryRepository.existsByNameAndIsDeletedFalseAndCategoryIdNot(name, categoryId);
     }
 
@@ -85,5 +78,24 @@ public class CategoryPersistenceAdapter {
         return categoryEntities.stream()
             .map(this.categoryPersistenceMapper::toDomain)
             .toList();
+    }
+
+    public boolean isCategoryAbbreviationExists(String abbreviation) {
+        return this.categoryRepository.existsByAbbreviationAndIsDeletedFalse(abbreviation);
+    }
+
+    public boolean isCategoryAbbreviationExistsNotMe(Long categoryId, String abbreviation) {
+        return this.categoryRepository.existsByAbbreviationAndIsDeletedFalseAndCategoryIdNot(abbreviation, categoryId);
+    }
+
+    public List<Category> findLowerSequenceCategories(Integer sequence) {
+        final List<CategoryEntity> categoryEntities = this.categoryRepository.findByIsDeletedFalseAndParentIsNullAndSeqIsGreaterThan(sequence);
+        return categoryEntities.stream()
+            .map(this.categoryPersistenceMapper::toDomain)
+            .toList();
+    }
+
+    public boolean isCategorySequenceExists(Integer seq) {
+        return this.categoryRepository.existsBySeqAndIsDeletedFalse(seq);
     }
 }

@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.persistence.adapter.TicketPersistenceAdapter;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
@@ -62,6 +63,18 @@ public class TicketGetService {
 
     public List<Ticket> getManagersInProgressTickets(List<Long> managerIds) {
         return ticketPersistenceAdapter.findManagersInProgressTickets(managerIds);
+    }
+
+    public boolean isPinTicket(Long ticketId) {
+        return ticketPersistenceAdapter.isPinTicket(ticketId);
+    }
+
+    public Page<Ticket> getTicketsByUserIdAndStatus(Long userId, TicketStatus status, ApplicationPageRequest pageRequest) {
+        return ticketPersistenceAdapter.findAllByUserIdAndStatus(userId, status, pageRequest);
+    }
+
+    public String findLastSequence(String today, Category childCategory) {
+        return ticketPersistenceAdapter.findLastSequence(today, childCategory);
     }
 }
 

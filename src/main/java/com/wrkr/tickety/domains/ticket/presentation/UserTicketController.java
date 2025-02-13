@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
+import static com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode.CATEGORY_NOT_EXISTS;
 import static com.wrkr.tickety.global.utils.PkCrypto.decrypt;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
@@ -13,6 +14,7 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCancelUs
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCreateUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketDetailGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketGetMainUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,7 +49,7 @@ public class UserTicketController {
 
     @PostMapping
     @Operation(summary = "사용자 티켓 요청", description = "사용자가 티켓을 요청합니다.")
-    @CustomErrorCodes(ticketErrorCodes = {})
+    @CustomErrorCodes(categoryErrorCodes = {CATEGORY_NOT_EXISTS})
     public ApplicationResponse<TicketPkResponse> createTicket(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "티켓 요청 정보", required = true)
@@ -61,9 +64,11 @@ public class UserTicketController {
     public ApplicationResponse<ApplicationPageResponse<TicketAllGetResponse>> getAllTickets(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20}")
-        ApplicationPageRequest pageRequest
+        ApplicationPageRequest pageRequest,
+        @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT )")
+        @RequestParam(value = "status", required = false) TicketStatus status
     ) {
-        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest));
+        return ApplicationResponse.onSuccess(ticketAllGetUseCase.getAllTickets(member.getMemberId(), pageRequest, status));
     }
 
     @GetMapping("/{ticketId}")
@@ -89,7 +94,8 @@ public class UserTicketController {
 
     @GetMapping("/main")
     @Operation(summary = "사용자 메인 페이지 조회", description = "사용자의 메인 페이지를 조회합니다.")
-    public ApplicationResponse<UserTicketMainPageResponse> mainPage(@AuthenticationPrincipal Member member) {
+    public ApplicationResponse<UserTicketMainPageResponse> mainPage(
+        @AuthenticationPrincipal Member member) {
         return ApplicationResponse.onSuccess(ticketGetMainUseCase.getMain(member.getMemberId()));
     }
 }

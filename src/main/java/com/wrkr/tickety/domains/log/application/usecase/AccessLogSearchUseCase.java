@@ -5,7 +5,6 @@ import com.wrkr.tickety.domains.log.application.mapper.LogMapper;
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
 import com.wrkr.tickety.domains.log.domain.model.AccessLog;
 import com.wrkr.tickety.domains.log.domain.service.AccessLogGetService;
-import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.exception.ApplicationException;
@@ -24,14 +23,14 @@ public class AccessLogSearchUseCase {
 
     private final AccessLogGetService accessLogGetService;
 
-    public ApplicationPageResponse<AccessLogSearchResponse> searchAccessLogs(Pageable pageable, Role role, String query, ActionType action, String startDateReq,
+    public ApplicationPageResponse<AccessLogSearchResponse> searchAccessLogs(Pageable pageable, String query, ActionType action, String startDateReq,
         String endDateReq) {
         LocalDate startDate = parseLocalDateOrNull(startDateReq);
         LocalDate endDate = parseLocalDateOrNull(endDateReq);
 
         validatePeriod(startDate, endDate);
 
-        Page<AccessLog> accessLogsPage = accessLogGetService.searchAccessLogs(pageable, role, query, action, startDate, endDate);
+        Page<AccessLog> accessLogsPage = accessLogGetService.searchAccessLogs(pageable, query, action, startDate, endDate);
         return ApplicationPageResponse.of(accessLogsPage, LogMapper::toAccessLogSearchResponse);
     }
 

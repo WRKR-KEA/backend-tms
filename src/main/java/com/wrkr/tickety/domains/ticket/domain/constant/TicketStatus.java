@@ -9,14 +9,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum TicketStatus {
 
-    REQUEST("요청"),
-    IN_PROGRESS("진행"),
-    COMPLETE("완료"),
-    CANCEL("취소"),
-    REJECT("반려"),
+    REQUEST("요청", 1),
+    CANCEL("취소", 2),
+    IN_PROGRESS("진행", 3),
+    REJECT("반려", 4),
+    COMPLETE("완료", 5),
     ;
 
     private final String description;
+    private final int seq;
 
     @JsonCreator
     public static TicketStatus from(String status) {
