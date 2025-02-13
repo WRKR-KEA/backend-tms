@@ -48,7 +48,8 @@ public class TicketMapper {
                 .managerName(ticket.getManager() == null ? null : ticket.getManager().getNickname()).serialNumber(ticket.getSerialNumber())
                 .title(ticket.getTitle())
                 .status(ticket.getStatus()).createdAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
-                .startedAt(DateTimeFormatter.yyyyMMddHHmm(firstManagerChangeDate)).updatedAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build();
+                .startedAt(firstManagerChangeDate == null ? null : DateTimeFormatter.yyyyMMddHHmm(firstManagerChangeDate))
+                .updatedAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build();
     }
 
     public static TicketDetailGetResponse toTicketDetailGetResponse(Ticket ticket, LocalDateTime startDate, LocalDateTime completeDate) {
@@ -59,7 +60,7 @@ public class TicketMapper {
                 .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
                 .createdAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
                 .updatedAt(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt()))
-                .startedAt(DateTimeFormatter.yyyyMMddHHmm(startDate))
+                .startedAt(startDate == null ? null : DateTimeFormatter.yyyyMMddHHmm(startDate))
                 .completedAt(completeDate == null ? null : DateTimeFormatter.yyyyMMddHHmm(completeDate))
                 .build();
     }
