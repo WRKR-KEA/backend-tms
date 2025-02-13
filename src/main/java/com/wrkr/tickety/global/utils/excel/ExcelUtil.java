@@ -2,7 +2,7 @@ package com.wrkr.tickety.global.utils.excel;
 
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INTERNAL_SERVER_ERROR;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.converter.ConverterUtil;
@@ -214,21 +214,21 @@ public class ExcelUtil {
         }
     }
 
-    public void parseTicketDataToExcelGroupByStatus(HttpServletResponse response, List<DepartmentTicketResponse> ticketDataList, String filename) {
+    public void parseTicketDataToExcelGroupByStatus(HttpServletResponse response, List<DepartmentTicketExcelResponse> ticketDataList, String filename) {
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx\"");
 
         try (Workbook workbook = WorkbookFactory.create(true)) {
             for (TicketStatus status : TicketStatus.values()) {
-                List<DepartmentTicketResponse> filteredData = ticketDataList.stream()
-                    .filter(ticket -> ticket.status() == status)
+                List<DepartmentTicketExcelResponse> filteredData = ticketDataList.stream()
+                    .filter(ticket -> ticket.status().equals(status.getDescription()))
                     .collect(Collectors.toList());
 
                 if (!filteredData.isEmpty()) {
                     Sheet sheet = workbook.createSheet(status.getDescription());
-                    renderHeader(sheet, DepartmentTicketResponse.class);
-                    renderBody(sheet, filteredData, DepartmentTicketResponse.class);
+                    renderHeader(sheet, DepartmentTicketExcelResponse.class);
+                    renderBody(sheet, filteredData, DepartmentTicketExcelResponse.class);
                 }
             }
 
