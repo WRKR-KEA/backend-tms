@@ -24,9 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Transactional
 public class MemberInfoUpdateUseCase {
-
-    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://i.ibb.co/7Fd4Hhx/tickety-default-image.jpg";
-
+    
     private final MemberUpdateService memberUpdateService;
     private final MemberGetService memberGetService;
     private final S3ApiService s3ApiService;
