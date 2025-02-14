@@ -126,7 +126,7 @@ class MyPageControllerTest {
     class GetMyPageInfoTest {
 
         @Test
-        @DisplayName("✅ 성공: 회원 정보 조회")
+        @DisplayName("성공: 회원 정보 조회")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_Success() throws Exception {
             // given
@@ -138,7 +138,7 @@ class MyPageControllerTest {
         }
 
         @Test
-        @DisplayName("❌ 실패: 회원을 찾을 수 없음")
+        @DisplayName("실패: 회원을 찾을 수 없음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_NotFound() throws Exception {
             // given
@@ -151,7 +151,7 @@ class MyPageControllerTest {
         }
 
         @Test
-        @DisplayName("❌ 실패: 삭제된 회원은 조회 할 수 없음")
+        @DisplayName("실패: 삭제된 회원은 조회 할 수 없음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_Deleted() throws Exception {
             // given
@@ -170,7 +170,7 @@ class MyPageControllerTest {
     class UpdateMyPageInfoTest {
 
         @Test
-        @DisplayName("✅ 성공: 회원 정보 수정")
+        @DisplayName("성공: 회원 정보 수정")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_Success() throws Exception {
             // given
@@ -190,7 +190,7 @@ class MyPageControllerTest {
         }
 
         @Test
-        @DisplayName("❌ 실패: 회원을 찾을 수 없음")
+        @DisplayName("실패: 회원을 찾을 수 없음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_NotFound() throws Exception {
             // given
@@ -207,7 +207,7 @@ class MyPageControllerTest {
         }
 
         @Test
-        @DisplayName("❌ 실패: 중복 이메일로 인한 수정 실패")
+        @DisplayName("실패: 중복 이메일로 인한 수정 실패")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_DuplicateEmail() throws Exception {
             // given
@@ -224,7 +224,7 @@ class MyPageControllerTest {
         }
 
         @Test
-        @DisplayName("❌ 실패: 삭제된 회원은 수정 할 수 없음")
+        @DisplayName("실패: 삭제된 회원은 수정 할 수 없음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_Deleted() throws Exception {
             // given

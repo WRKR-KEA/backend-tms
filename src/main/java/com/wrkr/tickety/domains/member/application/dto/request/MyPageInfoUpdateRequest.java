@@ -19,7 +19,7 @@ public record MyPageInfoUpdateRequest(
     String phone,
 
     @Schema(description = "회원 이메일", example = "email@gachon.ac.kr")
-    @EmailFormat
+    @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
     String email,
 
     @NotBlank(message = "유효하지 않은 직책입니다.")

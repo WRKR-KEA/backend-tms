@@ -46,7 +46,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 정상 케이스 - 캐시에 값이 있을 경우 Redis에서 데이터 조회")
+    @DisplayName("정상 케이스 - 캐시에 값이 있을 경우 Redis에서 데이터 조회")
     void getMyPageInfo_CacheHit() throws Exception {
         // given
         Long memberId = 1L;
@@ -78,7 +78,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 정상 케이스 - 캐시에 값이 없으면 DB에서 조회 후 Redis에 저장")
+    @DisplayName("정상 케이스 - 캐시에 값이 없으면 DB에서 조회 후 Redis에 저장")
     void getMyPageInfo_CacheMiss() throws Exception {
         // given
         Long memberId = 2L;
@@ -112,7 +112,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 존재하지 않는 회원 ID로 조회 시 예외 발생 (MEMBER_NOT_FOUND)")
+    @DisplayName("실패 케이스 - 존재하지 않는 회원 ID로 조회 시 예외 발생 (MEMBER_NOT_FOUND)")
     void getMyPageInfo_memberNotFound() {
         // given
         Long invalidMemberId = 999L;
@@ -127,7 +127,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 삭제된 회원 정보 조회 시 예외 발생 (DELETED_MEMBER)")
+    @DisplayName("실패 케이스 - 삭제된 회원 정보 조회 시 예외 발생 (DELETED_MEMBER)")
     void getMyPageInfo_deletedMember() {
         // given
         Long memberId = 3L;
@@ -155,7 +155,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 캐시 저장 중 예외 발생")
+    @DisplayName("실패 케이스 - 캐시 저장 중 예외 발생")
     void getMyPageInfo_CacheSaveFailure() throws Exception {
         // given
         Long memberId = 4L;
@@ -187,7 +187,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 캐시 역직렬화 중 예외 발생")
+    @DisplayName("실패 케이스 - 캐시 역직렬화 중 예외 발생")
     void getMyPageInfo_CacheDeserializationFailure() throws Exception {
         // given
         Long memberId = 5L;
