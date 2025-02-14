@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.notification.application.dto;
 
-import com.wrkr.tickety.domains.notification.domain.constant.tickety.NotificationType;
+import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
