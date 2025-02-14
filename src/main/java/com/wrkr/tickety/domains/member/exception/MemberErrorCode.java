@@ -15,7 +15,7 @@ public enum MemberErrorCode implements BaseErrorCode {
 
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "MEMBER_001", "유효하지 않은 이메일입니다."),
     INVALID_PHONE(HttpStatus.BAD_REQUEST, "MEMBER_002", "유효하지 않은 전화번호입니다."),
-    INVALID_ROLE(HttpStatus.BAD_REQUEST, "MEMBER_003", "유효하지 않은 역할입니다."),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "MEMBER_003", "유효하지 않은 권한입니다."),
     DELETED_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER_004", "삭제된 회원입니다."),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "MEMBER_005", "유효하지 않은 비밀번호 형식입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_006", "유효하지 않은 아이디입니다."),
