@@ -8,7 +8,7 @@ import lombok.Builder;
 public record RemindEvent(
 
     Ticket ticket,
-    Member receiver
+    Member member
 ) {
 
 }
