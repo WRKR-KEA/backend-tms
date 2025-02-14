@@ -1,10 +1,13 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.attachment.domain.service.S3ApiService;
 import com.wrkr.tickety.domains.auth.exception.AuthErrorCode;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.MyPageInfoResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
+import com.wrkr.tickety.domains.member.application.mapper.MyPageMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
@@ -13,6 +16,7 @@ import com.wrkr.tickety.domains.member.presentation.util.validator.MemberFieldVa
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.infrastructure.redis.RedisService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +28,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Transactional
 public class MemberInfoUpdateUseCase {
-    
+
     private final MemberUpdateService memberUpdateService;
     private final MemberGetService memberGetService;
     private final S3ApiService s3ApiService;
     private final MemberFieldValidator memberFieldValidator;
+    private final RedisService redisService;
+    private final ObjectMapper objectMapper;
 
     public MemberPkResponse modifyMemberInfo(String memberId, MemberInfoUpdateRequest request, MultipartFile profileImage) {
         Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
@@ -49,6 +55,17 @@ public class MemberInfoUpdateUseCase {
         findMember.modifyMemberInfo(request);
         Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember);
 
+        String key = "MEMBER_INFO:" + modifiedMember.getMemberId();
+        redisService.deleteValues(key);
+
+        try {
+            MyPageInfoResponse updatedResponse = MyPageMapper.toMyPageInfoResponse(modifiedMember);
+            String jsonData = objectMapper.writeValueAsString(updatedResponse);
+            redisService.setValuesWithoutTTL(key, jsonData);
+        } catch (Exception e) {
+            throw new RuntimeException("회원 정보 캐싱 중 오류 발생", e);
+        }
+
         return MemberMapper.toMemberPkResponse(PkCrypto.encrypt(modifiedMember.getMemberId()));
     }
 
@@ -63,6 +80,8 @@ public class MemberInfoUpdateUseCase {
             findMember.modifyIsDeleted(true);
 
             memberUpdateService.modifyMemberInfo(findMember);
+
+            redisService.deleteValues("MEMBER_INFO:" + findMember.getMemberId());
         });
     }
 
