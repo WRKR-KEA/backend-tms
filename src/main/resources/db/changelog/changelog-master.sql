@@ -24,3 +24,7 @@ CREATE TABLE `notification` (
                                 `type` enum('COMMENT','REMIND','TICKET') NOT NULL,
                                 PRIMARY KEY (`notification_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- changeset Wonee:add_ticket_title_length_limit
+ALTER TABLE ticket
+    MODIFY COLUMN title VARCHAR(50) NOT NULL;
