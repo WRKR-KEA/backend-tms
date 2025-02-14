@@ -30,4 +30,10 @@ public class MapEmailTemplateService {
         context.setVariable("ticketSerialNumber", ticketSerialNumber);
         return templateEngine.process(type, context);
     }
+
+    public String setRemindContext(String ticketSerialNumber, String type) {
+        Context context = new Context();
+        context.setVariable("ticketSerialNumber", ticketSerialNumber);
+        return templateEngine.process(type, context);
+    }
 }

@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.notification.persistence.entity;
 
-import com.wrkr.tickety.domains.notification.domain.constant.tickety.NotificationType;
+import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

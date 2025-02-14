@@ -19,4 +19,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long>, Mem
     List<MemberEntity> findByRoleAndIsDeletedFalse(Role role);
 
     Page<MemberEntity> findByRoleAndIsDeletedFalse(Role role, Pageable pageable);
+
+    Optional<MemberEntity> findByMemberIdAndIsDeleted(Long memberId, boolean isDeleted);
 }

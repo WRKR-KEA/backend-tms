@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.notification.domain.model;
 
-import com.wrkr.tickety.domains.notification.domain.constant.tickety.NotificationType;
+import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.global.model.BaseTime;
 import lombok.AccessLevel;
 import lombok.Builder;
