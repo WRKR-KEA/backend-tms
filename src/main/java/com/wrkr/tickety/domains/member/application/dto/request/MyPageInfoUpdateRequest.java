@@ -20,8 +20,7 @@ public record MyPageInfoUpdateRequest(
     String phone,
 
     @Schema(description = "회원 이메일", example = "email@gachon.ac.kr")
-    @EmailFormat
-    @NotBlank
+    @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
     String email,
 
     @NotBlank
