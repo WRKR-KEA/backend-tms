@@ -1,7 +1,7 @@
 package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelResponse;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
@@ -21,7 +21,7 @@ public class TicketAllGetToExcelUseCase {
 
     private final TicketGetService ticketGetService;
 
-    public List<DepartmentTicketResponse> getAllTicketsNoPaging(String queryReq, String statusReq, String startDateReq, String endDateReq) {
+    public List<DepartmentTicketExcelResponse> getAllTicketsNoPaging(String queryReq, String statusReq, String startDateReq, String endDateReq) {
         LocalDate startDate = parseLocalDateOrNull(startDateReq);
         LocalDate endDate = parseLocalDateOrNull(endDateReq);
 
@@ -32,10 +32,11 @@ public class TicketAllGetToExcelUseCase {
         String query = queryReq == null || queryReq.isBlank() ? null : queryReq;
         TicketStatus status = TicketStatus.from(statusReq);
 
-        List<DepartmentTicketPreResponse> departmentAllTicketsNoPaging = ticketGetService.getDepartmentAllTicketsNoPaging(query, status, startDate, endDate);
+        List<DepartmentTicketExcelPreResponse> departmentAllTicketsNoPaging = ticketGetService.getDepartmentAllTicketsNoPaging(query, status, startDate,
+            endDate);
 
         return departmentAllTicketsNoPaging.stream()
-            .map(TicketMapper::mapToDepartmentTicketResponse)
+            .map(TicketMapper::mapToDepartmentTicketExcelResponse)
             .toList();
     }
 

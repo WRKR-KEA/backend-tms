@@ -5,9 +5,10 @@ import com.wrkr.tickety.domains.member.presentation.util.annotation.NicknameForm
 import com.wrkr.tickety.domains.member.presentation.util.annotation.PhoneNumberFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
-@Schema(description = "회원 정보 수정 DTO")
+@Schema(description = "관리자 - 회원 정보 수정 DTO")
 @Builder
 public record MemberInfoUpdateRequest(
 
@@ -36,7 +37,19 @@ public record MemberInfoUpdateRequest(
     String phone,
 
     @Schema(description = "아지트 URL", example = "https://ibb.co/Gt8fycB")
-    String agitUrl
+    String agitUrl,
+
+    @Schema(description = "이메일 알림 여부", example = "true")
+    @NotNull(message = "이메일 알림 수신 여부를 선택해주세요.")
+    Boolean emailNotification,
+
+    @Schema(description = "서비스 알림 여부", example = "true")
+    @NotNull(message = "서비스 알림 수신 여부를 선택해주세요.")
+    Boolean serviceNotification,
+
+    @Schema(description = "카카오워크 알림 여부", example = "true")
+    @NotNull(message = "카카오워크 알림 수신 여부를 선택해주세요.")
+    Boolean kakaoworkNotification
 ) {
 
 }
