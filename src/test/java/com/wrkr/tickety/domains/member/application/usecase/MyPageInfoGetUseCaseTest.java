@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.member.application.dto.response.MyPageInfoResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MyPageMapper;
@@ -151,5 +152,55 @@ class MyPageInfoGetUseCaseTest {
         assertThatThrownBy(() -> myPageInfoGetUseCase.getMyPageInfo(memberId))
             .isInstanceOf(ApplicationException.class)
             .hasMessage(MemberErrorCode.DELETED_MEMBER.getMessage());
+    }
+
+    @Test
+    @DisplayName("❌ 실패 케이스 - 캐시 저장 중 예외 발생")
+    void getMyPageInfo_CacheSaveFailure() throws Exception {
+        // given
+        Long memberId = 4L;
+        String key = "MEMBER_INFO:" + memberId;
+        Member member = Member.builder()
+            .memberId(memberId)
+            .nickname("nickname")
+            .password("password")
+            .name("name")
+            .phone("010-1234-5678")
+            .email("email@gachon.ac.kr")
+            .department("department")
+            .position("position")
+            .profileImage("profileImage")
+            .role(Role.USER)
+            .isDeleted(false)
+            .build();
+
+        MyPageInfoResponse response = MyPageMapper.toMyPageInfoResponse(member);
+        given(redisService.getValues(key)).willReturn(Optional.empty());
+        given(memberGetService.byMemberId(memberId)).willReturn(member);
+        given(objectMapper.writeValueAsString(response)).willThrow(new JsonProcessingException("직렬화 실패") {
+        });
+
+        // when & then
+        assertThatThrownBy(() -> myPageInfoGetUseCase.getMyPageInfo(memberId))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("캐싱 데이터를 직렬화하는 중 오류 발생");
+    }
+
+    @Test
+    @DisplayName("❌ 실패 케이스 - 캐시 역직렬화 중 예외 발생")
+    void getMyPageInfo_CacheDeserializationFailure() throws Exception {
+        // given
+        Long memberId = 5L;
+        String key = "MEMBER_INFO:" + memberId;
+        String invalidJson = "{invalid_json}";
+
+        given(redisService.getValues(key)).willReturn(Optional.of(invalidJson));
+        given(objectMapper.readValue(invalidJson, MyPageInfoResponse.class)).willThrow(new JsonProcessingException("역직렬화 실패") {
+        });
+
+        // when & then
+        assertThatThrownBy(() -> myPageInfoGetUseCase.getMyPageInfo(memberId))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("캐싱된 데이터를 역직렬화하는 중 오류 발생");
     }
 }

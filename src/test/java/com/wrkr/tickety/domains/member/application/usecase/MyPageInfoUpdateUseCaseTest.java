@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -162,5 +163,34 @@ class MyPageInfoUpdateUseCaseTest {
         assertThatThrownBy(() -> myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, duplicateEmailRequest))
             .isInstanceOf(ApplicationException.class)
             .hasMessage(MemberErrorCode.ALREADY_EXIST_EMAIL.getMessage());
+    }
+
+    @Test
+    @DisplayName("❌ 실패 케이스 - 캐시 저장 중 예외 발생")
+    void updateMyPageInfo_CacheSaveFailure() throws Exception {
+        // given
+        given(memberGetService.byMemberId(USER_ID)).willReturn(user);
+        given(memberUpdateService.modifyMemberInfo(any(Member.class))).willReturn(user);
+        given(objectMapper.writeValueAsString(any(MyPageInfoResponse.class))).willThrow(new JsonProcessingException("직렬화 실패") {
+        });
+
+        // when & then
+        assertThatThrownBy(() -> myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("회원 정보 캐싱 중 오류 발생");
+    }
+
+    @Test
+    @DisplayName("❌ 실패 케이스 - 캐시 삭제 중 예외 발생")
+    void updateMyPageInfo_CacheDeleteFailure() throws Exception {
+        // given
+        given(memberGetService.byMemberId(USER_ID)).willReturn(user);
+        given(memberUpdateService.modifyMemberInfo(any(Member.class))).willReturn(user);
+        doThrow(new RuntimeException("Redis 삭제 실패")).when(redisService).deleteValues("MEMBER_INFO:" + USER_ID);
+
+        // when & then
+        assertThatThrownBy(() -> myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Redis 삭제 실패");
     }
 }
