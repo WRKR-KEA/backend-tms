@@ -97,7 +97,7 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 정상 케이스 - 회원 정보를 성공적으로 수정한다.")
+    @DisplayName("정상 케이스 - 회원 정보를 성공적으로 수정한다.")
     void updateMyPageInfo_success() {
         // given
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);
@@ -111,7 +111,7 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 존재하지 않는 회원 ID로 수정 시 예외 발생 (MEMBER_NOT_FOUND)")
+    @DisplayName("실패 케이스 - 존재하지 않는 회원 ID로 수정 시 예외 발생 (MEMBER_NOT_FOUND)")
     void updateMyPageInfo_memberNotFound() {
         // given
         given(memberGetService.byMemberId(INVALID_ID))
@@ -124,7 +124,7 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 삭제된 회원 정보 수정 시 예외 발생 (DELETED_MEMBER)")
+    @DisplayName("실패 케이스 - 삭제된 회원 정보 수정 시 예외 발생 (DELETED_MEMBER)")
     void updateMyPageInfo_deletedMember() {
         // given
         given(memberGetService.byMemberId(deletedUser.getMemberId())).willReturn(deletedUser);
@@ -136,7 +136,7 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 이메일이 이미 존재할 경우 예외 발생 (ALREADY_EXIST_EMAIL)")
+    @DisplayName("실패 케이스 - 이메일이 이미 존재할 경우 예외 발생 (ALREADY_EXIST_EMAIL)")
     void updateMyPageInfo_duplicateEmail() {
         // given
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);

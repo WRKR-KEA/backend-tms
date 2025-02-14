@@ -35,7 +35,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 정상 케이스 - 사용자/담당자의 마이페이지 정보를 성공적으로 가져온다.")
+    @DisplayName("정상 케이스 - 사용자/담당자의 마이페이지 정보를 성공적으로 가져온다.")
     void getMyPageInfo() {
         // given
         Long memberId = 1L;
@@ -65,7 +65,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 존재하지 않는 회원 ID로 조회 시 예외 발생 (MEMBER_NOT_FOUND)")
+    @DisplayName("실패 케이스 - 존재하지 않는 회원 ID로 조회 시 예외 발생 (MEMBER_NOT_FOUND)")
     void getMyPageInfo_memberNotFound() {
         // given
         Long invalidMemberId = 999L;
@@ -80,7 +80,7 @@ class MyPageInfoGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 삭제된 회원 정보 조회 시 예외 발생 (DELETED_MEMBER)")
+    @DisplayName("실패 케이스 - 삭제된 회원 정보 조회 시 예외 발생 (DELETED_MEMBER)")
     void getMyPageInfo_deletedMember() {
         // given
         Long memberId = 2L;
