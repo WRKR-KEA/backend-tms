@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
-@Schema(description = "회원 정보 수정 DTO")
+@Schema(description = "관리자 - 회원 정보 수정 DTO")
 @Builder
 public record MemberInfoUpdateRequest(
 
