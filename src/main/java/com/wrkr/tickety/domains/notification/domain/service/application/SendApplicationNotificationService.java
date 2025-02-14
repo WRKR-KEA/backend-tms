@@ -1,10 +1,11 @@
 package com.wrkr.tickety.domains.notification.domain.service.application;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitCommentNotificationMessage;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketDelegateNotificationMessage;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
-import com.wrkr.tickety.domains.notification.domain.constant.tickety.NotificationType;
+import com.wrkr.tickety.domains.notification.domain.constant.application.Remind;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -42,5 +43,10 @@ public class SendApplicationNotificationService {
             prevManager.getNickname(), ticket.getSerialNumber()
         );
         sseEmitterService.send(newManager, NotificationType.COMMENT, managerMessage);
+    }
+
+    public void sendRemindApplicationNotification(Member member, Ticket ticket) {
+        String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
+        sseEmitterService.send(member, NotificationType.REMIND, message);
     }
 }
