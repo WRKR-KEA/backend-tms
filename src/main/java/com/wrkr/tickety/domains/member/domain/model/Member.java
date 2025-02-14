@@ -84,9 +84,6 @@ public class Member extends BaseTime {
         this.position = memberInfoUpdateRequest.position();
         this.phone = memberInfoUpdateRequest.phone();
         this.agitUrl = memberInfoUpdateRequest.agitUrl();
-        this.emailNotification = memberInfoUpdateRequest.emailNotification();
-        this.serviceNotification = memberInfoUpdateRequest.serviceNotification();
-        this.kakaoworkNotification = memberInfoUpdateRequest.kakaoworkNotification();
     }
 
     public void modifyIsDeleted(Boolean isDeleted) {

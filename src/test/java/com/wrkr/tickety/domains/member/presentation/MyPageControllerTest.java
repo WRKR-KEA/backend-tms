@@ -140,8 +140,8 @@ class MyPageControllerTest extends RestDocsSupport {
     class GetMyPageInfoTest {
 
         @Test
-        @DisplayName("✅ 성공: 회원 정보 조회")
-        @WithMockCustomUser(username = "user", role = Role.USER, memberId = 1L)
+        @DisplayName("성공: 회원 정보 조회")
+        @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_Success() throws Exception {
             // given
             given(myPageInfoGetUseCase.getMyPageInfo(USER_ID)).willReturn(myPageInfoResponse);
@@ -160,8 +160,8 @@ class MyPageControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 회원을 찾을 수 없음")
-        @WithMockCustomUser(username = "user", role = Role.USER, memberId = 1L)
+        @DisplayName("실패: 회원을 찾을 수 없음")
+        @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_NotFound() throws Exception {
             given(myPageInfoGetUseCase.getMyPageInfo(USER_ID))
                 .willThrow(ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -179,8 +179,8 @@ class MyPageControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 삭제된 회원은 조회 할 수 없음")
-        @WithMockCustomUser(username = "user", role = Role.USER, memberId = 1L)
+        @DisplayName("실패: 삭제된 회원은 조회 할 수 없음")
+        @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_Deleted() throws Exception {
             user.modifyIsDeleted(true);
             given(myPageInfoGetUseCase.getMyPageInfo(USER_ID))
@@ -204,8 +204,8 @@ class MyPageControllerTest extends RestDocsSupport {
     class UpdateMyPageInfoTest {
 
         @Test
-        @DisplayName("✅ 성공: 회원 정보 수정")
-        @WithMockCustomUser(username = "user", role = Role.USER, memberId = 1L)
+        @DisplayName("성공: 회원 정보 수정")
+        @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_Success() throws Exception {
             MemberPkResponse response = MemberPkResponse.builder()
                 .memberId(PkCrypto.encrypt(USER_ID))
@@ -229,8 +229,8 @@ class MyPageControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 회원을 찾을 수 없음")
-        @WithMockCustomUser(username = "user", role = Role.USER, memberId = 1L)
+        @DisplayName("실패: 회원을 찾을 수 없음")
+        @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_NotFound() throws Exception {
             doThrow(ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND))
                 .when(myPageInfoUpdateUseCase).updateMyPageInfo(USER_ID, validRequest);
@@ -251,8 +251,8 @@ class MyPageControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 중복 이메일로 인한 수정 실패")
-        @WithMockCustomUser(username = "user", role = Role.USER, memberId = 1L)
+        @DisplayName("실패: 중복 이메일로 인한 수정 실패")
+        @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_DuplicateEmail() throws Exception {
             doThrow(ApplicationException.from(MemberErrorCode.ALREADY_EXIST_EMAIL))
                 .when(myPageInfoUpdateUseCase).updateMyPageInfo(USER_ID, duplicateEmailRequest);

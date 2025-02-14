@@ -144,7 +144,7 @@ class UserTicketControllerTest extends RestDocsSupport {
     class CreateTicketTest {
 
         @Test
-        @DisplayName("✅ 성공: 티켓 요청 성공")
+        @DisplayName("성공: 티켓 요청 성공")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void createTicket_Success() throws Exception {
             // given
@@ -171,7 +171,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 존재하지 않는 카테고리로 요청 시 예외 발생")
+        @DisplayName("실패: 존재하지 않는 카테고리로 요청 시 예외 발생")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void createTicket_CategoryNotFound() throws Exception {
             // given
@@ -196,7 +196,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 존재하지 않는 사용자 ID로 생성 시 예외 발생")
+        @DisplayName("실패: 존재하지 않는 사용자 ID로 생성 시 예외 발생")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void createTicket_UserNotFound() throws Exception {
             // given
@@ -226,7 +226,7 @@ class UserTicketControllerTest extends RestDocsSupport {
     class CancelTicketTest {
 
         @Test
-        @DisplayName("✅ 성공: 사용자가 요청한 티켓을 취소")
+        @DisplayName("성공: 사용자가 요청한 티켓을 취소")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void cancelTicket_Success() throws Exception {
             // given
@@ -251,7 +251,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 티켓이 요청한 사용자에게 속하지 않음")
+        @DisplayName("실패: 티켓이 요청한 사용자에게 속하지 않음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void cancelTicket_NotBelongToUser() throws Exception {
             // given
@@ -274,7 +274,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 요청 상태가 아닌 티켓 취소 시 예외 발생")
+        @DisplayName("실패: 요청 상태가 아닌 티켓 취소 시 예외 발생")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void cancelTicket_NotRequestStatus() throws Exception {
             // given
@@ -297,7 +297,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 존재하지 않는 티켓 ID로 취소 시 예외 발생")
+        @DisplayName("실패: 존재하지 않는 티켓 ID로 취소 시 예외 발생")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void cancelTicket_TicketNotFound() throws Exception {
             // given
@@ -325,7 +325,7 @@ class UserTicketControllerTest extends RestDocsSupport {
     class GetTicketTest {
 
         @Test
-        @DisplayName("✅ 성공: 사용자가 요청한 특정 티켓을 조회")
+        @DisplayName("성공: 사용자가 요청한 특정 티켓을 조회")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getTicket_Success() throws Exception {
             // given
@@ -358,7 +358,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 사용자가 자신의 티켓이 아닌 경우 예외 발생")
+        @DisplayName("실패: 사용자가 자신의 티켓이 아닌 경우 예외 발생")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 2L)
         void getTicket_UnauthorizedAccess() throws Exception {
             // given
@@ -381,7 +381,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 존재하지 않는 티켓 ID 조회 시 예외 발생")
+        @DisplayName("실패: 존재하지 않는 티켓 ID 조회 시 예외 발생")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getTicket_TicketNotFound() throws Exception {
             // given
@@ -410,11 +410,11 @@ class UserTicketControllerTest extends RestDocsSupport {
     class GetAllTicketsTest {
 
         @Test
-        @DisplayName("✅ 성공: 사용자의 전체 티켓 조회")
+        @DisplayName("성공: 사용자의 전체 티켓 조회")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getAllTickets_Success() throws Exception {
             // given
-            Page<TicketAllGetResponse> ticketPage = new PageImpl<>(List.of(ticketResponse)); // ✅ Page<T> 변환
+            Page<TicketAllGetResponse> ticketPage = new PageImpl<>(List.of(ticketResponse)); // Page<T> 변환
             ApplicationPageResponse<TicketAllGetResponse> response = ApplicationPageResponse.of(ticketPage, Function.identity());
 
             given(ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest, null)).willReturn(response);
@@ -436,11 +436,11 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("✅ 성공: 특정 상태의 티켓 조회")
+        @DisplayName("성공: 특정 상태의 티켓 조회")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getAllTickets_WithStatus_Success() throws Exception {
             // given
-            Page<TicketAllGetResponse> ticketPage = new PageImpl<>(List.of(ticketResponse)); // ✅ Page<T> 변환
+            Page<TicketAllGetResponse> ticketPage = new PageImpl<>(List.of(ticketResponse)); // Page<T> 변환
             ApplicationPageResponse<TicketAllGetResponse> response = ApplicationPageResponse.of(ticketPage, Function.identity());
 
             given(ticketAllGetUseCase.getAllTickets(USER_ID, pageRequest, TicketStatus.REQUEST)).willReturn(response);
@@ -463,7 +463,7 @@ class UserTicketControllerTest extends RestDocsSupport {
         }
 
         @Test
-        @DisplayName("❌ 실패: 존재하지 않는 사용자 ID로 조회 시 예외 발생")
+        @DisplayName("실패: 존재하지 않는 사용자 ID로 조회 시 예외 발생")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getAllTickets_UserNotFound() throws Exception {
             // given
