@@ -52,7 +52,7 @@ public class TicketStatusChangeEventListener {
     )
     public void handleTicketStatusChangeInProgressEvent(TicketStatusChangeEvent event) {
         Ticket ticket = event.ticket();
-        Member member = event.user();
+        Member member = event.ticket().getManager();
 
         Comment systemComment = Comment.builder()
             .ticket(ticket)

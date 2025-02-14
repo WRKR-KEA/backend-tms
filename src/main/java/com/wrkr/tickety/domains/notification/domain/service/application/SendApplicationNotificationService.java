@@ -8,15 +8,17 @@ import com.wrkr.tickety.domains.notification.domain.constant.tickety.Notificatio
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-@Async
+@EnableAsync
 public class SendApplicationNotificationService {
 
     private final SseEmitterService sseEmitterService;
 
+    @Async
     public void sendTicketStatusApplicationNotification(Member member, Ticket ticket, AgitTicketNotificationMessageType agitTicketNotificationMessageType) {
         String ticketSerialNumber = ticket.getSerialNumber();
         String message = switch (agitTicketNotificationMessageType) {
@@ -27,11 +29,13 @@ public class SendApplicationNotificationService {
         sseEmitterService.send(member, NotificationType.TICKET, message);
     }
 
+    @Async
     public void sendCommentApplicationNotification(Member receiver, Ticket ticket) {
         String message = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
         sseEmitterService.send(receiver, NotificationType.COMMENT, message);
     }
 
+    @Async
     public void sendTicketDelegateApplicationNotification(Member prevManager, Member newManager, Ticket ticket) {
         String userMessage = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
