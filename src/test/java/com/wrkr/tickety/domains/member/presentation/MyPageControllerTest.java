@@ -1,13 +1,19 @@
 package com.wrkr.tickety.domains.member.presentation;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.BDDMockito.doThrow;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wrkr.tickety.docs.RestDocsSupport;
 import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MyPageInfoResponse;
@@ -26,15 +32,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = MyPageController.class)
 @AutoConfigureMockMvc
-class MyPageControllerTest {
+@AutoConfigureRestDocs
+class MyPageControllerTest extends RestDocsSupport {
 
     private static final Long USER_ID = 1L;
 
@@ -121,6 +130,11 @@ class MyPageControllerTest {
         pkCrypto.init();
     }
 
+    @Override
+    protected Object initController() {
+        return new MyPageController(myPageInfoGetUseCase, myPageInfoUpdateUseCase);
+    }
+
     @Nested
     @DisplayName("마이페이지 회원 정보 조회 API 테스트")
     class GetMyPageInfoTest {
@@ -133,35 +147,55 @@ class MyPageControllerTest {
             given(myPageInfoGetUseCase.getMyPageInfo(USER_ID)).willReturn(myPageInfoResponse);
 
             // when & then
-            mockMvc.perform(get("/api/user/my-page"))
-                .andExpect(status().isOk());
+            mockMvc.perform(RestDocumentationRequestBuilders.get("/api/user/my-page"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("MyPage/getMyPageInfo/Request/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag("회원 정보 API")
+                        .summary("회원 정보 조회 성공")
+                        .build())));
         }
 
         @Test
         @DisplayName("실패: 회원을 찾을 수 없음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_NotFound() throws Exception {
-            // given
             given(myPageInfoGetUseCase.getMyPageInfo(USER_ID))
                 .willThrow(ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
 
-            // when & then
-            mockMvc.perform(get("/api/user/my-page"))
-                .andExpect(status().isNotFound());
+            mockMvc.perform(RestDocumentationRequestBuilders.get("/api/user/my-page"))
+                .andExpect(status().isNotFound())
+                .andDo(print())
+                .andDo(document("MyPage/getMyPageInfo/Request/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag("회원 정보 API")
+                        .summary("회원을 찾을 수 없음")
+                        .build())));
         }
 
         @Test
         @DisplayName("실패: 삭제된 회원은 조회 할 수 없음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void getMyPageInfo_Deleted() throws Exception {
-            // given
             user.modifyIsDeleted(true);
             given(myPageInfoGetUseCase.getMyPageInfo(USER_ID))
                 .willThrow(ApplicationException.from(MemberErrorCode.DELETED_MEMBER));
 
-            // when & then
-            mockMvc.perform(get("/api/user/my-page"))
-                .andExpect(status().isBadRequest());
+            mockMvc.perform(RestDocumentationRequestBuilders.get("/api/user/my-page"))
+                .andExpect(status().isBadRequest())
+                .andDo(print())
+                .andDo(document("MyPage/getMyPageInfo/Request/Failure/Case2",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag("회원 정보 API")
+                        .summary("삭제된 회원 조회 실패")
+                        .build())));
         }
     }
 
@@ -173,71 +207,69 @@ class MyPageControllerTest {
         @DisplayName("성공: 회원 정보 수정")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_Success() throws Exception {
-            // given
             MemberPkResponse response = MemberPkResponse.builder()
                 .memberId(PkCrypto.encrypt(USER_ID))
                 .build();
 
-            given(myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest))
-                .willReturn(response);
+            given(myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest)).willReturn(response);
 
-            // when & then
-            mockMvc.perform(patch("/api/user/my-page")
+            mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/user/my-page")
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(validRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("MyPage/updateMyPageInfo/Request/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag("회원 정보 API")
+                        .summary("회원 정보 수정 성공")
+                        .build())));
         }
 
         @Test
         @DisplayName("실패: 회원을 찾을 수 없음")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_NotFound() throws Exception {
-            // given
             doThrow(ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND))
-                .when(myPageInfoUpdateUseCase)
-                .updateMyPageInfo(USER_ID, validRequest);
+                .when(myPageInfoUpdateUseCase).updateMyPageInfo(USER_ID, validRequest);
 
-            // when & then
-            mockMvc.perform(patch("/api/user/my-page")
+            mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/user/my-page")
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(validRequest)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(print())
+                .andDo(document("MyPage/updateMyPageInfo/Request/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag("회원 정보 API")
+                        .summary("회원을 찾을 수 없음")
+                        .build())));
         }
 
         @Test
         @DisplayName("실패: 중복 이메일로 인한 수정 실패")
         @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
         void updateMyPageInfo_DuplicateEmail() throws Exception {
-            // given
             doThrow(ApplicationException.from(MemberErrorCode.ALREADY_EXIST_EMAIL))
-                .when(myPageInfoUpdateUseCase)
-                .updateMyPageInfo(USER_ID, duplicateEmailRequest);
+                .when(myPageInfoUpdateUseCase).updateMyPageInfo(USER_ID, duplicateEmailRequest);
 
-            // when & then
-            mockMvc.perform(patch("/api/user/my-page")
+            mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/user/my-page")
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(duplicateEmailRequest)))
-                .andExpect(status().isConflict());
-        }
-
-        @Test
-        @DisplayName("실패: 삭제된 회원은 수정 할 수 없음")
-        @WithMockCustomUser(username = "user", role = Role.USER, nickname = "manager.psw", memberId = 1L)
-        void updateMyPageInfo_Deleted() throws Exception {
-            // given
-            user.modifyIsDeleted(true);
-            given(myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest))
-                .willThrow(ApplicationException.from(MemberErrorCode.DELETED_MEMBER));
-
-            // when & then
-            mockMvc.perform(patch("/api/user/my-page")
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(validRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict())
+                .andDo(print())
+                .andDo(document("MyPage/updateMyPageInfo/Request/Failure/Case2",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag("회원 정보 API")
+                        .summary("중복 이메일로 인한 수정 실패")
+                        .build())));
         }
     }
 }

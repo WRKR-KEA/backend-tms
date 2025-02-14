@@ -1,0 +1,144 @@
+= User Ticket API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 사용자 티켓 요청
+
+=== 1. 티켓 요청 성공
+
+HTTP Request
+
+include::{snippets}/UserTicket/CreateTicket/Request/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/CreateTicket/Request/Success/http-response.adoc[]
+
+=== 2. 존재하지 않는 카테고리로 요청 시 예외 발생
+
+HTTP Request
+
+include::{snippets}/UserTicket/CreateTicket/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/CreateTicket/Request/Failure/Case1/http-response.adoc[]
+
+=== 3. 존재하지 않는 사용자 ID로 생성 시 예외 발생
+
+HTTP Request
+
+include::{snippets}/UserTicket/CreateTicket/Request/Failure/Case2/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/CreateTicket/Request/Failure/Case2/http-response.adoc[]
+
+== 사용자 티켓 취소
+
+=== 1. 사용자가 요청한 티켓을 취소
+
+HTTP Request
+
+include::{snippets}/UserTicket/CancelTicket/Request/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/CancelTicket/Request/Success/http-response.adoc[]
+
+=== 2. 티켓이 요청한 사용자에게 속하지 않음
+
+HTTP Request
+
+include::{snippets}/UserTicket/CancelTicket/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/CancelTicket/Request/Failure/Case1/http-response.adoc[]
+
+=== 3. 요청 상태가 아닌 티켓 취소 시 예외 발생
+
+HTTP Request
+
+include::{snippets}/UserTicket/CancelTicket/Request/Failure/Case2/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/CancelTicket/Request/Failure/Case2/http-response.adoc[]
+
+=== 4. 존재하지 않는 티켓 ID로 취소 시 예외 발생
+
+HTTP Request
+
+include::{snippets}/UserTicket/CancelTicket/Request/Failure/Case3/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/CancelTicket/Request/Failure/Case3/http-response.adoc[]
+
+== 사용자 티켓 상세 조회
+
+=== 1. 사용자가 요청한 특정 티켓을 조회
+
+HTTP Request
+
+include::{snippets}/UserTicket/GetTicket/Request/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/GetTicket/Request/Success/http-response.adoc[]
+
+=== 2. 사용자가 자신의 티켓이 아닌 경우 예외 발생
+
+HTTP Request
+
+include::{snippets}/UserTicket/GetTicket/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/GetTicket/Request/Failure/Case1/http-response.adoc[]
+
+=== 3. 존재하지 않는 티켓 ID 조회 시 예외 발생
+
+HTTP Request
+
+include::{snippets}/UserTicket/GetTicket/Request/Failure/Case2/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/GetTicket/Request/Failure/Case2/http-response.adoc[]
+
+== 사용자 전체 티켓 조회
+
+=== 1. 사용자의 전체 티켓 조회
+
+HTTP Request
+
+include::{snippets}/UserTicket/GetAllTickets/Request/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/GetAllTickets/Request/Success/http-response.adoc[]
+
+=== 2. 특정 상태의 티켓 조회
+
+HTTP Request
+
+include::{snippets}/UserTicket/GetAllTickets/Request/SuccessWithStatus/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/GetAllTickets/Request/SuccessWithStatus/http-response.adoc[]
+
+=== 3. 존재하지 않는 사용자 ID로 조회 시 예외 발생
+
+HTTP Request
+
+include::{snippets}/UserTicket/GetAllTickets/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserTicket/GetAllTickets/Request/Failure/Case1/http-response.adoc[]
