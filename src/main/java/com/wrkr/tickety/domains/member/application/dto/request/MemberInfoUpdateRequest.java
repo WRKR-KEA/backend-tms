@@ -12,7 +12,7 @@ import lombok.Builder;
 public record MemberInfoUpdateRequest(
 
     @Schema(description = "이메일", example = "wrkr@gachon.ac.kr")
-    @EmailFormat
+    @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
     String email,
 
     @Schema(description = "이름", example = "김가천")
