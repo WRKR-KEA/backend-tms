@@ -20,4 +20,6 @@ public @interface EmailFormat {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    String[] acceptedDomains();
 }

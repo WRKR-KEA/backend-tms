@@ -3,35 +3,35 @@ package com.wrkr.tickety.domains.member.application.dto.request;
 import com.wrkr.tickety.domains.member.presentation.util.annotation.EmailFormat;
 import com.wrkr.tickety.domains.member.presentation.util.annotation.PhoneNumberFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 @Schema(description = "회원 정보 수정 요청 DTO")
 public record MyPageInfoUpdateRequest(
-    @NotNull
+    @NotBlank
     @Schema(description = "회원 이름", example = "홍길동")
     String name,
 
-    @NotNull
+    @NotBlank
     @PhoneNumberFormat
     @Schema(description = "회원 전화번호", example = "010-1234-5678")
     String phone,
 
     @Schema(description = "회원 이메일", example = "email@gachon.ac.kr")
-    @EmailFormat
-    @NotNull
+    @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
     String email,
 
-    @NotNull
+    @NotBlank
     @Schema(description = "회원 직급", example = "팀장")
     String position,
 
-    @NotNull
+    @NotBlank
     @Schema(description = "회원 아지트 URL", example = "http://agit.com")
     String agitUrl,
 
-    @NotNull
+    @NotBlank
     @Schema(description = "회원 부서", example = "개발팀")
     String department,
 
