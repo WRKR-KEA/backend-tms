@@ -5,8 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.MyPageInfoResponse;
+import com.wrkr.tickety.domains.member.application.mapper.MyPageMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
@@ -14,6 +18,7 @@ import com.wrkr.tickety.domains.member.domain.service.MemberUpdateService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.infrastructure.redis.RedisService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +45,12 @@ class MyPageInfoUpdateUseCaseTest {
 
     @Mock
     private MemberUpdateService memberUpdateService;
+
+    @Mock
+    private RedisService redisService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private MyPageInfoUpdateUseCase myPageInfoUpdateUseCase;
@@ -98,10 +109,15 @@ class MyPageInfoUpdateUseCaseTest {
 
     @Test
     @DisplayName("✅ 정상 케이스 - 회원 정보를 성공적으로 수정한다.")
-    void updateMyPageInfo_success() {
+    void updateMyPageInfo_success() throws JsonProcessingException {
         // given
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);
         given(memberUpdateService.modifyMemberInfo(any(Member.class))).willReturn(user);
+
+        MyPageInfoResponse updatedResponse = MyPageMapper.toMyPageInfoResponse(user);
+        String jsonData = new ObjectMapper().writeValueAsString(updatedResponse);
+
+        given(objectMapper.writeValueAsString(any(MyPageInfoResponse.class))).willReturn(jsonData);
 
         // when
         MemberPkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest);
