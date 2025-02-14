@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.notification.application.mapper;
 import static com.wrkr.tickety.global.utils.date.NotificationTimeFormatter.formatRelativeTime;
 
 import com.wrkr.tickety.domains.notification.application.dto.ApplicationNotificationResponse;
-import com.wrkr.tickety.domains.notification.domain.constant.tickety.NotificationType;
+import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.model.Notification;
 import com.wrkr.tickety.global.utils.PkCrypto;
 

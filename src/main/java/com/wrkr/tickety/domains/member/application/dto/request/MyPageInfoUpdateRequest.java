@@ -10,29 +10,26 @@ import lombok.Builder;
 @Builder
 @Schema(description = "회원 정보 수정 요청 DTO")
 public record MyPageInfoUpdateRequest(
-    @NotBlank
+    @NotBlank(message = "유효하지 않은 이름입니다.")
     @Schema(description = "회원 이름", example = "홍길동")
     String name,
 
-    @NotBlank
     @PhoneNumberFormat
     @Schema(description = "회원 전화번호", example = "010-1234-5678")
     String phone,
 
     @Schema(description = "회원 이메일", example = "email@gachon.ac.kr")
-    @EmailFormat
-    @NotBlank
+    @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
     String email,
 
-    @NotBlank
-    @Schema(description = "회원 직급", example = "팀장")
+    @NotBlank(message = "유효하지 않은 직책입니다.")
+    @Schema(description = "회원 직책", example = "팀장")
     String position,
 
-    @NotBlank
     @Schema(description = "회원 아지트 URL", example = "http://agit.com")
     String agitUrl,
 
-    @NotBlank
+    @NotBlank(message = "유효하지 않은 부서입니다.")
     @Schema(description = "회원 부서", example = "개발팀")
     String department,
 

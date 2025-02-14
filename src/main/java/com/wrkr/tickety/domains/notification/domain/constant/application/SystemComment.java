@@ -1,4 +1,4 @@
-package com.wrkr.tickety.domains.notification.domain.constant.systemComment;
+package com.wrkr.tickety.domains.notification.domain.constant.application;
 
 import lombok.RequiredArgsConstructor;
 

@@ -79,7 +79,7 @@ class TicketCreateUseCaseTest {
         parentCategory = Category.builder()
             .categoryId(1L)
             .name("부모 카테고리")
-            .abbreviation("PCAT") // ✅ 여기 추가
+            .abbreviation("PC") // 여기 추가
             .build();
 
         childCategory = Category.builder()
@@ -96,7 +96,7 @@ class TicketCreateUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 성공: 티켓을 정상적으로 생성")
+    @DisplayName("성공: 티켓을 정상적으로 생성")
     void createTicket_Success() {
         // given
         Ticket ticket = Ticket.builder()
@@ -121,7 +121,7 @@ class TicketCreateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 존재하지 않는 카테고리 ID로 생성 시 예외 발생")
+    @DisplayName("실패: 존재하지 않는 카테고리 ID로 생성 시 예외 발생")
     void createTicket_CategoryNotFound() {
         // given
         given(categoryGetService.getChildrenCategory(CATEGORY_ID))
@@ -134,7 +134,7 @@ class TicketCreateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 존재하지 않는 사용자 ID로 생성 시 예외 발생")
+    @DisplayName("실패: 존재하지 않는 사용자 ID로 생성 시 예외 발생")
     void createTicket_UserNotFound() {
         // given
         given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(childCategory);

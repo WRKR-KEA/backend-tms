@@ -5,6 +5,7 @@ import com.wrkr.tickety.domains.notification.application.dto.response.KakaoworkM
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitCommentNotificationMessage;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketDelegateNotificationMessage;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
+import com.wrkr.tickety.domains.notification.domain.constant.application.Remind;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,5 +74,10 @@ public class KakaoworkMessageService {
             prevManager.getNickname(), ticket.getSerialNumber()
         );
         sendMessageByEmail(newManager.getEmail(), MessageToManager).block();
+    }
+
+    public void sendRemindKakaoworkAlarm(Member receiver, Ticket ticket) {
+        String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
+        sendMessageByEmail(receiver.getEmail(), message).block();
     }
 }

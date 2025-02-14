@@ -66,9 +66,9 @@ class TicketAllGetUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        createdAt = LocalDateTime.now().minusDays(1); // ✅ 하루 전 생성
-        updatedAt = LocalDateTime.now(); // ✅ 현재 시간
-        firstManagerChangeDate = LocalDateTime.now().minusHours(5); // ✅ 5시간 전 변경
+        createdAt = LocalDateTime.now().minusDays(1); // 하루 전 생성
+        updatedAt = LocalDateTime.now(); // 현재 시간
+        firstManagerChangeDate = LocalDateTime.now().minusHours(5); // 5시간 전 변경
 
         user = Member.builder()
             .memberId(USER_ID)
@@ -103,7 +103,7 @@ class TicketAllGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 성공: 사용자의 전체 티켓 조회")
+    @DisplayName("성공: 사용자의 전체 티켓 조회")
     void getAllTickets_Success() {
         // given
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
@@ -124,7 +124,7 @@ class TicketAllGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 성공: 특정 상태의 티켓 조회")
+    @DisplayName("성공: 특정 상태의 티켓 조회")
     void getAllTickets_WithStatus_Success() {
         // given
         Page<Ticket> ticketPage = new PageImpl<>(List.of(ticket));
@@ -142,7 +142,7 @@ class TicketAllGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 존재하지 않는 사용자 ID로 조회 시 예외 발생")
+    @DisplayName("실패: 존재하지 않는 사용자 ID로 조회 시 예외 발생")
     void getAllTickets_UserNotFound() {
         // given
         given(memberGetService.byMemberId(USER_ID))

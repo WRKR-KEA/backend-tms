@@ -46,6 +46,11 @@ public class SendEmailNotificationService {
         sendEmail(emailCreateRequest, text);
     }
 
+    public void sendRemindCreateEmail(EmailCreateRequest emailCreateRequest, Ticket ticket, String type) {
+        String text = mapEmailTemplateService.setRemindContext(ticket.getSerialNumber(), type);
+        sendEmail(emailCreateRequest, text);
+    }
+
     private void sendEmail(EmailCreateRequest emailCreateRequest, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {

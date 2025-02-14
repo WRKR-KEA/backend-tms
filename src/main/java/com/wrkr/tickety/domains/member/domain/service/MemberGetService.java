@@ -30,6 +30,10 @@ public class MemberGetService {
         return memberPersistenceAdapter.findById(memberId);
     }
 
+    public Optional<Member> findMemberByMemberIdAndIsDeleted(Long memberId, boolean isDeleted) {
+        return memberPersistenceAdapter.findByIdAndIsDeleted(memberId, isDeleted);
+    }
+
     public Page<Member> searchMember(
         ApplicationPageRequest pageRequest,
         Role role,
