@@ -26,4 +26,9 @@ public class RedisRepository {
     public void deleteValues(String key) {
         redisTemplate.delete(key);
     }
+
+    public void setValuesWithoutTTL(String key, String data) {
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        values.set(key, data);
+    }
 }

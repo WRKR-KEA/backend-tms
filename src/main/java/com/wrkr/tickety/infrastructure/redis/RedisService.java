@@ -15,6 +15,10 @@ public class RedisService {
         redisRepository.setValues(key, data, duration);
     }
 
+    public void setValuesWithoutTTL(String key, String data) {
+        redisRepository.setValuesWithoutTTL(key, data);
+    }
+
     public Optional<String> getValues(String key) {
         return redisRepository.getValues(key);
     }
