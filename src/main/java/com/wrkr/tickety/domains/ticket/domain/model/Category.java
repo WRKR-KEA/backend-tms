@@ -37,8 +37,9 @@ public class Category extends BaseTime {
         this.deletedAt = deletedAt;
     }
 
-    public void updateName(String name) {
+    public void updateField(String name, String abbreviation) {
         this.name = name;
+        this.abbreviation = abbreviation;
     }
 
     public void updateSeq(Integer seq) {

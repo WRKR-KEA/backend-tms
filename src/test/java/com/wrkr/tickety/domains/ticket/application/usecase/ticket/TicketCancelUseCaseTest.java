@@ -73,7 +73,7 @@ class TicketCancelUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 성공: 요청 상태의 티켓을 정상적으로 취소")
+    @DisplayName("성공: 요청 상태의 티켓을 정상적으로 취소")
     void cancelTicket_Success() {
         // given
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
@@ -88,7 +88,7 @@ class TicketCancelUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 티켓이 사용자의 것이 아닐 경우 예외 발생")
+    @DisplayName("실패: 티켓이 사용자의 것이 아닐 경우 예외 발생")
     void cancelTicket_NotBelongToUser() {
         // given
         Member anotherUser = Member.builder()
@@ -113,7 +113,7 @@ class TicketCancelUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 티켓이 요청 상태가 아닐 경우 예외 발생")
+    @DisplayName("실패: 티켓이 요청 상태가 아닐 경우 예외 발생")
     void cancelTicket_NotRequestStatus() {
         // given
         ticket.updateStatus(TicketStatus.IN_PROGRESS);
@@ -126,7 +126,7 @@ class TicketCancelUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 존재하지 않는 티켓 ID로 취소 시 예외 발생")
+    @DisplayName("실패: 존재하지 않는 티켓 ID로 취소 시 예외 발생")
     void cancelTicket_TicketNotFound() {
         // given
         given(ticketGetService.getTicketByTicketId(TICKET_ID))

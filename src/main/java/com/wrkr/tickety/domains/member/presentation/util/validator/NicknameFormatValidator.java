@@ -25,6 +25,6 @@ public class NicknameFormatValidator implements ConstraintValidator<NicknameForm
             context.buildConstraintViolationWithTemplate(MemberErrorCode.INVALID_NICKNAME.getMessage()).addConstraintViolation();
         }
 
-        return true;
+        return isValid;
     }
 }

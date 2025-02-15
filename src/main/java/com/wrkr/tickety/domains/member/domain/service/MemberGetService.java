@@ -30,6 +30,10 @@ public class MemberGetService {
         return memberPersistenceAdapter.findById(memberId);
     }
 
+    public Optional<Member> findMemberByMemberIdAndIsDeleted(Long memberId, boolean isDeleted) {
+        return memberPersistenceAdapter.findByIdAndIsDeleted(memberId, isDeleted);
+    }
+
     public Page<Member> searchMember(
         ApplicationPageRequest pageRequest,
         Role role,
@@ -42,8 +46,8 @@ public class MemberGetService {
         );
     }
 
-    public Boolean existsByEmail(String email) {
-        return memberPersistenceAdapter.existsByEmail(email);
+    public Boolean existsByEmailAndIsDeleted(String email, Boolean isDeleted) {
+        return memberPersistenceAdapter.existsByEmailAndIsDeleted(email, isDeleted);
     }
 
     public Boolean existsByNickname(String nickname) {

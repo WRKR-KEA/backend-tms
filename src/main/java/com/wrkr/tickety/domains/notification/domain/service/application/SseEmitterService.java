@@ -3,7 +3,7 @@ package com.wrkr.tickety.domains.notification.domain.service.application;
 import static com.wrkr.tickety.domains.notification.application.mapper.NotificationMapper.toNotification;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.notification.domain.constant.tickety.NotificationType;
+import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.model.Notification;
 import com.wrkr.tickety.domains.notification.persistence.adapter.NotificationPersistenceAdapter;
 import com.wrkr.tickety.domains.notification.persistence.repository.EmitterRepository;

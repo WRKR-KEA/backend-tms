@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberRepository extends JpaRepository<MemberEntity, Long>, MemberQueryDslRepository {
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndIsDeleted(String email, Boolean isDeleted);
 
     boolean existsByNickname(String nickname);
 
@@ -19,4 +19,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long>, Mem
     List<MemberEntity> findByRoleAndIsDeletedFalse(Role role);
 
     Page<MemberEntity> findByRoleAndIsDeletedFalse(Role role, Pageable pageable);
+
+    Optional<MemberEntity> findByMemberIdAndIsDeleted(Long memberId, boolean isDeleted);
 }

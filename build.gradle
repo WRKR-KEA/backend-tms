@@ -1,10 +1,10 @@
-import org.hidetake.gradle.swagger.generator.GenerateSwaggerUI
-
 buildscript {
     ext {
         restdocsApiSpecVersion = '0.17.1'
     }
 }
+
+import org.hidetake.gradle.swagger.generator.GenerateSwaggerUI
 
 plugins {
     id 'java'
@@ -13,6 +13,7 @@ plugins {
     id 'com.epages.restdocs-api-spec' version "${restdocsApiSpecVersion}"
     id 'org.hidetake.swagger.generator' version '2.18.2'
     id 'jacoco'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 group = 'com.wrkr'
@@ -24,10 +25,25 @@ java {
     }
 }
 
+ext {
+    snippetsDir = file("build/generated-snippets")
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn test
+}
+
+asciidoctor.doFirst {
+    delete file("src/main/resources/static/docs")
 }
 
 repositories {
@@ -100,7 +116,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'com.h2database:h2'
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.5")
+    testImplementation 'org.projectlombok:lombok:1.18.26'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
 
     // Webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -110,6 +128,7 @@ dependencies {
 
     // RestDocs
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     // openAPI3
     testImplementation 'com.epages:restdocs-api-spec-mockmvc:' + restdocsApiSpecVersion
@@ -144,6 +163,7 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
     jvmArgs '-Xshare:off'
+    outputs.dir snippetsDir
 }
 
 // doFrist를 통한 Header 설정
@@ -152,12 +172,12 @@ tasks.withType(GenerateSwaggerUI) {
     doFirst {
         def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
-        def securitySchemesContent = "  securitySchemes:\n" +            \
-                                                "    APIKey:\n" +            \
-                                                "      type: apiKey\n" +            \
-                                                "      name: Authorization\n" +            \
-                                                "      in: header\n" +           \
-                                                "security:\n" +
+        def securitySchemesContent = "  securitySchemes:\n" +          \
+                                              "    APIKey:\n" +          \
+                                              "      type: apiKey\n" +          \
+                                              "      name: Authorization\n" +          \
+                                              "      in: header\n" +         \
+                                              "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent
@@ -166,10 +186,25 @@ tasks.withType(GenerateSwaggerUI) {
 
 // 생성된 openapi3 스펙을 기반으로 SwaggerUISample 생성 및 static/docs 패키지에 복사
 bootJar {
-    dependsOn generateSwaggerUISample
+    dependsOn generateSwaggerUISample, asciidoctor
+
     from("${generateSwaggerUISample.outputDir}") {
         into 'static/docs'
     }
+
+    from("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
+}
+
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+build {
+    dependsOn copyDocument
 }
 
 def QDomains = []

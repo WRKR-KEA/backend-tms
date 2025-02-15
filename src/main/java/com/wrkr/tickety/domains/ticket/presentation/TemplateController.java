@@ -68,7 +68,7 @@ public class TemplateController {
 
     @CustomErrorCodes(templateErrorCodes = {TemplateErrorCode.TEMPLATE_NOT_EXISTS})
     @Parameter(name = "templateId", description = "삭제할 템플릿의 ID", example = "Tqs3C822lkMNdWlmE-szUw", required = true)
-    @Operation(summary = "관지라 템플릿 삭제", description = "관리자가 템플릿을 삭제합니다.")
+    @Operation(summary = "관리자 템플릿 삭제", description = "관리자가 템플릿을 삭제합니다.")
     @DeleteMapping("admin/templates/{templateId}")
     public ApplicationResponse<TemplatePKResponse> deleteTemplate(@PathVariable String templateId) {
         TemplatePKResponse deletedTemplateId = templateDeleteUseCase.deleteTemplate(decrypt(templateId));

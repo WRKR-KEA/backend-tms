@@ -104,6 +104,7 @@ public class MemberMapper {
         return Managers.builder()
             .memberId(PkCrypto.encrypt(member.getMemberId()))
             .email(member.getEmail())
+            .profileUrl(member.getProfileImage())
             .nickname(member.getNickname())
             .position(member.getPosition())
             .phoneNumber(member.getPhone())

@@ -21,7 +21,10 @@ public record ManagerGetAllManagerResponse(
         @Schema(description = "담당자 ID", example = "ouqJF8uKst63ZPA2T70jda")
         String memberId,
 
-        @Schema(description = "담당자 이름", example = "김철수")
+        @Schema(description = "담당자 프로필 사진", example = "알렉스")
+        String profileUrl,
+
+        @Schema(description = "담당자 아이디(닉네임)", example = "alex.js")
         String nickname,
 
         @Schema(description = "담당자 직책", example = "팀장")

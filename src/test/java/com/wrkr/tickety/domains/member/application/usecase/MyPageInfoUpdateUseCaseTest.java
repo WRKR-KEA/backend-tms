@@ -4,9 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.member.application.dto.request.MyPageInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.MyPageInfoResponse;
+import com.wrkr.tickety.domains.member.application.mapper.MyPageMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
@@ -14,6 +19,7 @@ import com.wrkr.tickety.domains.member.domain.service.MemberUpdateService;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import com.wrkr.tickety.infrastructure.redis.RedisService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +46,12 @@ class MyPageInfoUpdateUseCaseTest {
 
     @Mock
     private MemberUpdateService memberUpdateService;
+
+    @Mock
+    private RedisService redisService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private MyPageInfoUpdateUseCase myPageInfoUpdateUseCase;
@@ -97,11 +109,16 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("✅ 정상 케이스 - 회원 정보를 성공적으로 수정한다.")
-    void updateMyPageInfo_success() {
+    @DisplayName("정상 케이스 - 회원 정보를 성공적으로 수정한다.")
+    void updateMyPageInfo_success() throws JsonProcessingException {
         // given
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);
         given(memberUpdateService.modifyMemberInfo(any(Member.class))).willReturn(user);
+
+        MyPageInfoResponse updatedResponse = MyPageMapper.toMyPageInfoResponse(user);
+        String jsonData = new ObjectMapper().writeValueAsString(updatedResponse);
+
+        given(objectMapper.writeValueAsString(any(MyPageInfoResponse.class))).willReturn(jsonData);
 
         // when
         MemberPkResponse response = myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest);
@@ -111,7 +128,7 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 존재하지 않는 회원 ID로 수정 시 예외 발생 (MEMBER_NOT_FOUND)")
+    @DisplayName("실패 케이스 - 존재하지 않는 회원 ID로 수정 시 예외 발생 (MEMBER_NOT_FOUND)")
     void updateMyPageInfo_memberNotFound() {
         // given
         given(memberGetService.byMemberId(INVALID_ID))
@@ -124,7 +141,7 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 삭제된 회원 정보 수정 시 예외 발생 (DELETED_MEMBER)")
+    @DisplayName("실패 케이스 - 삭제된 회원 정보 수정 시 예외 발생 (DELETED_MEMBER)")
     void updateMyPageInfo_deletedMember() {
         // given
         given(memberGetService.byMemberId(deletedUser.getMemberId())).willReturn(deletedUser);
@@ -136,15 +153,44 @@ class MyPageInfoUpdateUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패 케이스 - 이메일이 이미 존재할 경우 예외 발생 (ALREADY_EXIST_EMAIL)")
+    @DisplayName("실패 케이스 - 이메일이 이미 존재할 경우 예외 발생 (ALREADY_EXIST_EMAIL)")
     void updateMyPageInfo_duplicateEmail() {
         // given
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);
-        given(memberGetService.existsByEmail(duplicateEmailRequest.email())).willReturn(true);
+        given(memberGetService.existsByEmailAndIsDeleted(duplicateEmailRequest.email(), false)).willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, duplicateEmailRequest))
             .isInstanceOf(ApplicationException.class)
             .hasMessage(MemberErrorCode.ALREADY_EXIST_EMAIL.getMessage());
+    }
+
+    @Test
+    @DisplayName("실패 케이스 - 캐시 저장 중 예외 발생")
+    void updateMyPageInfo_CacheSaveFailure() throws Exception {
+        // given
+        given(memberGetService.byMemberId(USER_ID)).willReturn(user);
+        given(memberUpdateService.modifyMemberInfo(any(Member.class))).willReturn(user);
+        given(objectMapper.writeValueAsString(any(MyPageInfoResponse.class))).willThrow(new JsonProcessingException("직렬화 실패") {
+        });
+
+        // when & then
+        assertThatThrownBy(() -> myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("회원 정보 캐싱 중 오류 발생");
+    }
+
+    @Test
+    @DisplayName("실패 케이스 - 캐시 삭제 중 예외 발생")
+    void updateMyPageInfo_CacheDeleteFailure() throws Exception {
+        // given
+        given(memberGetService.byMemberId(USER_ID)).willReturn(user);
+        given(memberUpdateService.modifyMemberInfo(any(Member.class))).willReturn(user);
+        doThrow(new RuntimeException("Redis 삭제 실패")).when(redisService).deleteValues("MEMBER_INFO:" + USER_ID);
+
+        // when & then
+        assertThatThrownBy(() -> myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, validRequest))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Redis 삭제 실패");
     }
 }
