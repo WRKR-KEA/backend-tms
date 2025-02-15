@@ -10,16 +10,20 @@ import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
 @Service
 @RequiredArgsConstructor
+@EnableAsync
 public class SendAgitNotificationService {
 
     private final WebClient webClient;
 
+    @Async
     public void sendTicketStatusChangeAgitAlarm(Member member, Ticket ticket, AgitTicketNotificationMessageType agitTicketNotificationMessageType) {
         String agitUrl = member.getAgitUrl();
         String ticketSerialNumber = ticket.getSerialNumber();
@@ -31,12 +35,14 @@ public class SendAgitNotificationService {
         requestAgitApi(agitUrl, message);
     }
 
+    @Async
     public void sendCommentCreateAgitAlarm(Member receiver, Ticket ticket) {
         String message = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
         String agitUrl = receiver.getAgitUrl();
         requestAgitApi(agitUrl, message);
     }
 
+    @Async
     public void sendTicketDelegateAgitAlarm(Member prevManager, Member newManager, Ticket ticket) {
         String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
@@ -68,7 +74,7 @@ public class SendAgitNotificationService {
             .retrieve()
             .toBodilessEntity()
             .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1))
-                .filter(throwable -> !(throwable instanceof InterruptedException)))
+                           .filter(throwable -> !(throwable instanceof InterruptedException)))
             .block();
     }
 }
