@@ -43,7 +43,9 @@ public class MemberCreateUseCase {
         String profileImageUrl =
             (profileImage == null || profileImage.isEmpty()) ? DEFAULT_PROFILE_IMAGE_URL : s3ApiService.uploadMemberProfileImage(profileImage);
 
-        Member createdMember = memberSaveService.save(MemberMapper.mapToMember(memberCreateRequest, encryptedPassword, profileImageUrl));
+        String agiturl = memberCreateRequest.agitUrl();
+        Member createdMember = memberSaveService.save(
+            MemberMapper.mapToMember(memberCreateRequest, encryptedPassword, profileImageUrl, agiturl));
 
         EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(
             createdMember.getEmail(),

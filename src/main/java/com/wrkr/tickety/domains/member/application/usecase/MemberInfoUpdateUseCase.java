@@ -52,7 +52,8 @@ public class MemberInfoUpdateUseCase {
             findMember.modifyProfileImage(newProfileImageUrl);
         }
 
-        findMember.modifyMemberInfo(request);
+        String agitUrl = request.agitUrl();
+        findMember.modifyMemberInfo(request, agitUrl);
         Member modifiedMember = memberUpdateService.modifyMemberInfo(findMember);
 
         String key = "MEMBER_INFO:" + modifiedMember.getMemberId();
