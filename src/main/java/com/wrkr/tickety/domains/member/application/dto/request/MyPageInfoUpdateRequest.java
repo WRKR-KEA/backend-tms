@@ -50,4 +50,9 @@ public record MyPageInfoUpdateRequest(
     Boolean kakaoworkNotification
 ) {
 
+    public MyPageInfoUpdateRequest {
+        if (agitUrl == null || agitUrl.isBlank()) {
+            agitNotification = false;
+        }
+    }
 }
