@@ -1,5 +1,8 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.EXCEED_MAX_FILE_SIZE;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_IMAGE_EXTENSION;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.attachment.domain.service.S3ApiService;
 import com.wrkr.tickety.domains.auth.exception.AuthErrorCode;
@@ -29,6 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class MemberInfoUpdateUseCase {
 
+    private static final String[] ACCEPTED_EXTENSIONS = {"jpg", "jpeg", "png"};
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
+
     private final MemberUpdateService memberUpdateService;
     private final MemberGetService memberGetService;
     private final S3ApiService s3ApiService;
@@ -37,6 +43,11 @@ public class MemberInfoUpdateUseCase {
     private final ObjectMapper objectMapper;
 
     public MemberPkResponse modifyMemberInfo(String memberId, MemberInfoUpdateRequest request, MultipartFile profileImage) {
+        if (isFileUpload(profileImage)) {
+            validateFileSize(profileImage);
+            validateImageFileExtension(profileImage);
+        }
+
         Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
         validateAuthorization(findMember);
@@ -108,5 +119,38 @@ public class MemberInfoUpdateUseCase {
         if (!memberNickname.equals(nicknameReq)) {
             memberFieldValidator.validateNicknameDuplicate(nicknameReq);
         }
+    }
+
+    public void validateImageFileExtension(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+
+        if (filename == null || !filename.contains(".")) {
+            throw ApplicationException.from(INVALID_IMAGE_EXTENSION);
+        }
+
+        String fileExtension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+
+        boolean isValid = false;
+
+        for (String ext : ACCEPTED_EXTENSIONS) {
+            if (ext.equalsIgnoreCase(fileExtension)) {
+                isValid = true;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            throw ApplicationException.from(INVALID_IMAGE_EXTENSION);
+        }
+    }
+
+    public void validateFileSize(MultipartFile file) {
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw ApplicationException.from(EXCEED_MAX_FILE_SIZE);
+        }
+    }
+
+    public Boolean isFileUpload(MultipartFile file) {
+        return (file == null || file.isEmpty()) ? false : true;
     }
 }
