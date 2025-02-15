@@ -7,6 +7,26 @@
 
 = 관리자 - 회원 관리 기능
 
+== 회원 등록
+
+=== 1. 회원 정보가 등록되고, 이메일로 임시 비밀번호가 발급된다.
+
+HTTP Request
+
+HTTP Response
+
+=== 2. 이미 사용중인 이메일로 등록을 시도할 경우, ALREADY_EXIST_EMAIL 예외가 발생한다.
+
+HTTP Request
+
+HTTP Response
+
+=== 3. 이미 사용중인 아이디(닉네임)로 등록을 시도할 경우, ALREADY_EXIST_NICKNAME 예외가 발생한다.
+
+HTTP Request
+
+HTTP Response
+
 == 회원 상세 조회
 
 === 1. 회원 정보를 성공적으로 조회한다.

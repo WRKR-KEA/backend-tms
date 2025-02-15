@@ -1,9 +1,19 @@
 package com.wrkr.tickety.domains.member.presentation;
 
 import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_J;
+import static com.wrkr.tickety.domains.member.domain.constant.Role.ADMIN;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_EMAIL;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_NICKNAME;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -14,7 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.application.usecase.ExcelExampleCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateFromExcelUseCase;
@@ -22,7 +34,6 @@ import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoGetUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
-import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.global.annotation.WithMockCustomUser;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
@@ -30,6 +41,7 @@ import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.SuccessCode;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.excel.ExcelUtil;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,12 +50,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @WebMvcTest(controllers = AdminMemberController.class)
 @AutoConfigureMockMvc
@@ -90,13 +104,13 @@ class AdminMemberControllerTest {
     }
 
 
-    /*@Nested
+    @Nested
     @DisplayName("회원 등록 API 테스트")
     class CreateMemberTest {
 
         @Test
         @DisplayName("회원 등록에 성공한다.")
-        @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
+        @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
         void createMemberSuccess() throws Exception {
             // given
             Member member = USER_J.toMember();
@@ -117,31 +131,30 @@ class AdminMemberControllerTest {
             String content = objectMapper.writeValueAsString(memberCreateRequest);
             MockMultipartFile requestJson = new MockMultipartFile(
                 "request",
-                "request",
-                MediaType.APPLICATION_JSON_VALUE,
+                "request.json",
+                APPLICATION_JSON_VALUE,
                 content.getBytes(StandardCharsets.UTF_8)
             );
 
             MockMultipartFile profileImage = new MockMultipartFile(
                 "profileImage",
                 "profileImage.png",
-                MediaType.IMAGE_PNG_VALUE,
+                IMAGE_PNG_VALUE,
                 "profileImage.png".getBytes()
             );
 
-            when(memberCreateUseCase.createMember(any(MemberCreateRequest.class), any(MultipartFile.class))).thenReturn(
+            when(memberCreateUseCase.createMember(any(MemberCreateRequest.class), any(MockMultipartFile.class))).thenReturn(
                 MemberPkResponse.builder()
                     .memberId(encryptedMemberId)
                     .build()
             );
 
             // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                .multipart("/api/admin/members")
+            MockHttpServletRequestBuilder requestBuilder = multipart("/api/admin/members")
                 .file(requestJson)
                 .file(profileImage)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MULTIPART_FORM_DATA_VALUE)
+                .accept(APPLICATION_JSON)
                 .with(csrf());
 
             // then
@@ -152,10 +165,10 @@ class AdminMemberControllerTest {
                     jsonPath("$.code").value(SuccessCode.SUCCESS.getCustomCode()),
                     jsonPath("$.message").value(SuccessCode.SUCCESS.getMessage()),
                     jsonPath("$.result.memberId").value(encryptedMemberId)
-                )
-                .andDo(
+                );
+                /*.andDo(
                     document(
-                        "AdminMember/Request/Success",
+                        "AdminMember/createMember/Request/Success",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -176,9 +189,164 @@ class AdminMemberControllerTest {
                             fieldWithPath("result.memberId").type(JsonFieldType.STRING).description("암호화된 회원 PK")
                         )
                     )
-                );
+                );*/
+
         }
-    }*/
+
+        @Test
+        @DisplayName("이미 사용 중인 이메일로 회원 등록 시 ALREADY_EXIST_EMAIL 예외가 발생한다.")
+        @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
+        void createMemberWithDuplicateEmail() throws Exception {
+            // given
+            Member member = USER_J.toMember();
+
+            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .nickname(member.getNickname())
+                .department(member.getDepartment())
+                .position(member.getPosition())
+                .phone(member.getPhone())
+                .role(member.getRole())
+                .agitUrl(member.getAgitUrl())
+                .build();
+
+            String content = objectMapper.writeValueAsString(memberCreateRequest);
+            MockMultipartFile requestJson = new MockMultipartFile(
+                "request",
+                "request.json",
+                APPLICATION_JSON_VALUE,
+                content.getBytes(StandardCharsets.UTF_8)
+            );
+
+            MockMultipartFile profileImage = new MockMultipartFile(
+                "profileImage",
+                "profileImage.png",
+                IMAGE_PNG_VALUE,
+                "profileImage.png".getBytes()
+            );
+
+            doThrow(new ApplicationException(ALREADY_EXIST_EMAIL)).when(memberCreateUseCase)
+                .createMember(any(MemberCreateRequest.class), any(MockMultipartFile.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = multipart("/api/admin/members")
+                .file(requestJson)
+                .file(profileImage)
+                .contentType(MULTIPART_FORM_DATA_VALUE)
+                .accept(APPLICATION_JSON)
+                .with(csrf());
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpectAll(
+                    status().isConflict(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").value(ALREADY_EXIST_EMAIL.getCustomCode()),
+                    jsonPath("$.message").value(ALREADY_EXIST_EMAIL.getMessage())
+                );
+                /*.andDo(document(
+                    "AdminMember/createMember/Request/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("request.email").type(JsonFieldType.STRING).description("회원 이메일 주소"),
+                        fieldWithPath("request.name").type(JsonFieldType.STRING).description("회원 이름"),
+                        fieldWithPath("request.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
+                        fieldWithPath("request.department").type(JsonFieldType.STRING).description("회원 소속 부서"),
+                        fieldWithPath("request.position").type(JsonFieldType.STRING).description("회원 직위"),
+                        fieldWithPath("request.phone").type(JsonFieldType.STRING).description("회원 전화번호"),
+                        fieldWithPath("request.role").type(JsonFieldType.STRING).description("회원 역할"),
+                        fieldWithPath("request.agitUrl").type(JsonFieldType.STRING).description("회원 아지트 URL"),
+                        fieldWithPath("profileImage").type(MULTIPART_FORM_DATA_VALUE).description("프로필 이미지")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("응답 성공 여부"),
+                        fieldWithPath("code").type(JsonFieldType.STRING).description("응답 코드"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지")
+                    )
+                ));*/
+        }
+
+
+        @Test
+        @DisplayName("이미 사용 중인 아이디(닉네임)로 회원 등록 시 ALREADY_EXIST_NICKNAME 예외가 발생한다.")
+        @WithMockUser(username = "admin", roles = "ADMIN")
+        void createMemberWithDuplicateNickname() throws Exception {
+            // given
+            Member member = USER_J.toMember();
+
+            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .nickname(member.getNickname())
+                .department(member.getDepartment())
+                .position(member.getPosition())
+                .phone(member.getPhone())
+                .role(member.getRole())
+                .agitUrl(member.getAgitUrl())
+                .build();
+
+            String content = objectMapper.writeValueAsString(memberCreateRequest);
+            MockMultipartFile requestJson = new MockMultipartFile(
+                "request",
+                "request.json",
+                APPLICATION_JSON_VALUE,
+                content.getBytes(StandardCharsets.UTF_8)
+            );
+
+            MockMultipartFile profileImage = new MockMultipartFile(
+                "profileImage",
+                "profileImage.png",
+                IMAGE_PNG_VALUE,
+                "profileImage".getBytes()
+            );
+
+            doThrow(new ApplicationException(ALREADY_EXIST_NICKNAME)).when(memberCreateUseCase)
+                .createMember(any(MemberCreateRequest.class), any(MockMultipartFile.class));
+
+            // when
+            ResultActions requestBuilder = mockMvc.perform(multipart("/api/admin/members")
+                .file(requestJson)
+                .file(profileImage)
+                .contentType(MULTIPART_FORM_DATA_VALUE)
+                .accept(APPLICATION_JSON)
+                .with(csrf())
+            );
+
+            // then
+            requestBuilder
+                .andExpectAll(
+                    status().isConflict(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").value(ALREADY_EXIST_NICKNAME.getCustomCode()),
+                    jsonPath("$.message").value(ALREADY_EXIST_NICKNAME.getMessage())
+                );
+                /*.andDo(document(
+                    "AdminMember/createMember/Request/Failure/Case2",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("request.email").type(JsonFieldType.STRING).description("회원 이메일 주소"),
+                        fieldWithPath("request.name").type(JsonFieldType.STRING).description("회원 이름"),
+                        fieldWithPath("request.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
+                        fieldWithPath("request.department").type(JsonFieldType.STRING).description("회원 소속 부서"),
+                        fieldWithPath("request.position").type(JsonFieldType.STRING).description("회원 직위"),
+                        fieldWithPath("request.phone").type(JsonFieldType.STRING).description("회원 전화번호"),
+                        fieldWithPath("request.role").type(JsonFieldType.STRING).description("회원 역할"),
+                        fieldWithPath("request.agitUrl").type(JsonFieldType.STRING).description("회원 아지트 URL"),
+                        fieldWithPath("profileImage").type(MULTIPART_FORM_DATA_VALUE).description("프로필 이미지")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("응답 성공 여부"),
+                        fieldWithPath("code").type(JsonFieldType.STRING).description("응답 코드"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지")
+                    )
+                ));*/
+        }
+
+
+    }
 
     @Nested
     @DisplayName("회원 정보 조회 API 테스트")
@@ -186,7 +354,7 @@ class AdminMemberControllerTest {
 
         @Test
         @DisplayName("회원 정보를 성공적으로 조회한다.")
-        @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
+        @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
         void getMemberInfoSuccess() throws Exception {
             // given
             Member member = USER_J.toMember();
@@ -199,7 +367,7 @@ class AdminMemberControllerTest {
             // when
             ResultActions requestBuilder = mockMvc.perform(RestDocumentationRequestBuilders
                 .get("/api/admin/members/{memberId}", encryptedMemberId)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
                 .with(csrf()));
 
             // then
@@ -242,7 +410,7 @@ class AdminMemberControllerTest {
 
         @Test
         @DisplayName("존재하지 않는 회원 ID로 요청할 경우 MEMBER_NOT_FOUND 예외를 발생시킨다.")
-        @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
+        @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
         void getMemberInfoNotFound() throws Exception {
             // given
             String memberId = "999";
@@ -251,7 +419,7 @@ class AdminMemberControllerTest {
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders
                     .get("/api/admin/members/{memberId}", memberId)
-                    .accept(MediaType.APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
                     .with(csrf()))
                 .andExpectAll(
                     status().isNotFound(),
