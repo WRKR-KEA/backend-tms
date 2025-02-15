@@ -157,7 +157,7 @@ class MyPageInfoUpdateUseCaseTest {
     void updateMyPageInfo_duplicateEmail() {
         // given
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);
-        given(memberGetService.existsByEmail(duplicateEmailRequest.email())).willReturn(true);
+        given(memberGetService.existsByEmailAndIsDeleted(duplicateEmailRequest.email(), false)).willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> myPageInfoUpdateUseCase.updateMyPageInfo(USER_ID, duplicateEmailRequest))

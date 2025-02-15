@@ -58,7 +58,7 @@ public class MemberFieldValidator {
     }
 
     public void validateEmailDuplicate(String email) {
-        if (memberGetService.existsByEmail(email)) {
+        if (memberGetService.existsByEmailAndIsDeleted(email, false)) {
             throw ApplicationException.from(ALREADY_EXIST_EMAIL);
         }
     }
