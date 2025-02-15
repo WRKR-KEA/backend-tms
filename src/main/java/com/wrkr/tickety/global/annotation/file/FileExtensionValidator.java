@@ -1,6 +1,5 @@
 package com.wrkr.tickety.global.annotation.file;
 
-import static com.wrkr.tickety.global.response.code.CommonErrorCode.BAD_REQUEST;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_FILE_EXTENSION;
 
 import jakarta.validation.ConstraintValidator;
@@ -18,15 +17,13 @@ public class FileExtensionValidator implements ConstraintValidator<FileExtension
 
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
-        String filename = file.getOriginalFilename();
-
-        if (filename == null) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(BAD_REQUEST.getMessage()).addConstraintViolation();
-            return false;
+        if (file == null || file.isEmpty()) {
+            return true;
         }
 
+        String filename = file.getOriginalFilename();
         String fileExtension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+
         boolean isValid = false;
 
         for (String ext : acceptedExtensions) {
@@ -40,7 +37,7 @@ public class FileExtensionValidator implements ConstraintValidator<FileExtension
             context.disableDefaultConstraintViolation();
 
             String allowedFileExtensions = String.join(",", acceptedExtensions);
-            String errorMessage = String.format("%s (허용된 확장자: %s)",
+            String errorMessage = String.format("%s (허용된 형식: %s)",
                 INVALID_FILE_EXTENSION.getMessage(),
                 allowedFileExtensions);
 

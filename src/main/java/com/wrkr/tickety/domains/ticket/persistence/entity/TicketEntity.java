@@ -49,7 +49,7 @@ public class TicketEntity extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String serialNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")

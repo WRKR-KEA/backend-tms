@@ -75,7 +75,8 @@ public class Member extends BaseTime {
 
     // TODO: 필드 단위로 파라미터 받기
     public void modifyMemberInfo(
-        MemberInfoUpdateRequest memberInfoUpdateRequest
+        MemberInfoUpdateRequest memberInfoUpdateRequest,
+        String agitUrl
     ) {
         this.email = memberInfoUpdateRequest.email();
         this.name = memberInfoUpdateRequest.name();
@@ -83,7 +84,8 @@ public class Member extends BaseTime {
         this.department = memberInfoUpdateRequest.department();
         this.position = memberInfoUpdateRequest.position();
         this.phone = memberInfoUpdateRequest.phone();
-        this.agitUrl = memberInfoUpdateRequest.agitUrl();
+        this.agitUrl = agitUrl;
+        this.agitNotification = agitUrl == null || agitUrl.isBlank() ? false : this.agitNotification;
     }
 
     public void modifyIsDeleted(Boolean isDeleted) {

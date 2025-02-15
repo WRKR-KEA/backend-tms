@@ -1,11 +1,15 @@
 package com.wrkr.tickety.domains.notification.listener;
 
+import static com.wrkr.tickety.domains.notification.application.mapper.NotificationMapper.toNotification;
+
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
-import com.wrkr.tickety.domains.notification.domain.constant.systemComment.SystemComment;
+import com.wrkr.tickety.domains.notification.domain.constant.application.SystemComment;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
+import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
@@ -31,18 +35,27 @@ public class TicketStatusChangeEventListener {
     private final SendApplicationNotificationService sendApplicationNotificationService;
     private final KakaoworkMessageService kakaoworkMessageService;
     private final CommentSaveService commentSaveService;
+    private final NotificationSaveService notificationSaveService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void handleTicketStatusChangeEvent(TicketStatusChangeEvent ticketStatusChangeEvent) {
         Ticket ticket = ticketStatusChangeEvent.ticket();
         Member member = ticketStatusChangeEvent.user();
+
         AgitTicketNotificationMessageType agitTicketNotificationMessageType = ticketStatusChangeEvent.agitTicketNotificationMessageType();
+        String message = switch (agitTicketNotificationMessageType) {
+            case TICKET_APPROVED -> AgitTicketNotificationMessageType.TICKET_APPROVED.format(ticket.getSerialNumber());
+            case TICKET_REJECT -> AgitTicketNotificationMessageType.TICKET_REJECT.format(ticket.getSerialNumber());
+            case TICKET_FINISHED -> AgitTicketNotificationMessageType.TICKET_FINISHED.format(ticket.getSerialNumber());
+        };
+
         sendAgitNotificationService.sendTicketStatusChangeAgitAlarm(member, ticket, agitTicketNotificationMessageType);
         EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(member.getEmail(), EmailConstants.TICKET_STATUS_CHANGE_SUBJECT, null);
         sendEmailNotificationService.sendTicketStatusChangeEmail(emailCreateRequest, ticket, EmailConstants.TICKET_STATUS_CHANGE);
         sendApplicationNotificationService.sendTicketStatusApplicationNotification(member, ticket, agitTicketNotificationMessageType);
         kakaoworkMessageService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType);
+        notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }
 
     @Async
@@ -52,7 +65,7 @@ public class TicketStatusChangeEventListener {
     )
     public void handleTicketStatusChangeInProgressEvent(TicketStatusChangeEvent event) {
         Ticket ticket = event.ticket();
-        Member member = event.user();
+        Member member = event.ticket().getManager();
 
         Comment systemComment = Comment.builder()
             .ticket(ticket)

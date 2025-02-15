@@ -1,0 +1,70 @@
+= MyPage API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 마이페이지 조회
+
+=== 1. Authorization Header에 AccessToken이 없으면 조회에 실패한다.
+
+HTTP Request
+
+include::{snippets}/MyPage/getMyPageInfo/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/MyPage/getMyPageInfo/Request/Failure/Case1/http-response.adoc[]
+
+=== 2. 삭제된 회원은 조회할 수 없다.
+
+HTTP Request
+
+include::{snippets}/MyPage/getMyPageInfo/Request/Failure/Case2/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/MyPage/getMyPageInfo/Request/Failure/Case2/http-response.adoc[]
+
+=== 3. 회원 정보 조회에 성공한다.
+
+HTTP Request
+
+include::{snippets}/MyPage/getMyPageInfo/Request/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/MyPage/getMyPageInfo/Request/Success/http-response.adoc[]
+
+== 마이페이지 수정
+
+=== 1. 회원 정보 수정에 성공한다.
+
+HTTP Request
+
+include::{snippets}/MyPage/updateMyPageInfo/Request/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/MyPage/updateMyPageInfo/Request/Success/http-response.adoc[]
+
+=== 2. 회원을 찾을 수 없어 수정에 실패한다.
+
+HTTP Request
+
+include::{snippets}/MyPage/updateMyPageInfo/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/MyPage/updateMyPageInfo/Request/Failure/Case1/http-response.adoc[]
+
+=== 3. 중복된 이메일로 인해 수정에 실패한다.
+
+HTTP Request
+
+include::{snippets}/MyPage/updateMyPageInfo/Request/Failure/Case2/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/MyPage/updateMyPageInfo/Request/Failure/Case2/http-response.adoc[]
