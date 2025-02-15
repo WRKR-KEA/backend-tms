@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.member.application.usecase;
 
+import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_J;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_EMAIL;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_NICKNAME;
 import static com.wrkr.tickety.infrastructure.email.EmailConstants.TEMP_PASSWORD_SUBJECT;
@@ -21,7 +22,6 @@ import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateReque
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
-import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
@@ -67,11 +67,12 @@ class MemberCreateUseCaseTest {
     @Mock
     private MemberFieldValidator memberFieldValidator;
 
+    @Mock
+    private PkCrypto pkCrypto;
+
     private static MockedStatic<RandomCodeGenerator> randomCodeGeneratorMockedStatic;
 
     private static MockedStatic<PasswordEncoderUtil> passwordEncoderUtilMockedStatic;
-
-    private static MockedStatic<PkCrypto> pkCrpytoMockedStatic;
 
     private MockedStatic<MemberMapper> memberMapperMockedStatic;
 
@@ -79,9 +80,11 @@ class MemberCreateUseCaseTest {
 
     @BeforeEach
     public void setUp() {
+        pkCrypto = new PkCrypto("AES", "1234567890123456");
+        pkCrypto.init();
+
         randomCodeGeneratorMockedStatic = mockStatic(RandomCodeGenerator.class);
         passwordEncoderUtilMockedStatic = mockStatic(PasswordEncoderUtil.class);
-        pkCrpytoMockedStatic = mockStatic(PkCrypto.class);
         memberMapperMockedStatic = mockStatic(MemberMapper.class);
         emailMapperMockedStatic = mockStatic(EmailMapper.class);
     }
@@ -90,7 +93,6 @@ class MemberCreateUseCaseTest {
     public void tearDown() {
         randomCodeGeneratorMockedStatic.close();
         passwordEncoderUtilMockedStatic.close();
-        pkCrpytoMockedStatic.close();
         memberMapperMockedStatic.close();
         emailMapperMockedStatic.close();
     }
@@ -99,35 +101,18 @@ class MemberCreateUseCaseTest {
     @Test
     void createMemberSuccessTest() {
         //given
-        Long memberId = 1L;
-        String encryptedMemberId = "encryptedMemberId";
 
-        String tempPassword = "Abcd1234567!";
-        String encodedPassword = "abcd1234!";
+        Member member = USER_J.toMember();
 
-        String nickname = "test.user";
-        String email = "test@gachon.ac.kr";
-
-        String name = "TestUser";
-        String department = "BE team1";
-        String position = "BE Developer";
-        String phone = "010-1234-5678";
-        Role role = Role.USER;
-        String profileImageUrl = "profile.png";
-        String agitUrl = "https://www.gachon.ac.kr";
-
-        Member createdMember = Member.builder()
-            .memberId(memberId)
-            .nickname(nickname)
-            .password(encodedPassword)
-            .email(email)
-            .name(name)
-            .department(department)
-            .position(position)
-            .phone(phone)
-            .role(role)
-            .agitUrl(agitUrl)
-            .profileImage(profileImageUrl)
+        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+            .email(member.getEmail())
+            .name(member.getName())
+            .nickname(member.getNickname())
+            .department(member.getDepartment())
+            .position(member.getPosition())
+            .phone(member.getPhone())
+            .role(member.getRole())
+            .agitUrl(member.getAgitUrl())
             .build();
 
         MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
