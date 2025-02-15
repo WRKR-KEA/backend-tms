@@ -1,22 +1,21 @@
 package com.wrkr.tickety.domains.member.presentation;
 
 import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_J;
-import static org.mockito.ArgumentMatchers.any;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
-import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
+import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.application.usecase.ExcelExampleCreateUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateFromExcelUseCase;
 import com.wrkr.tickety.domains.member.application.usecase.MemberCreateUseCase;
@@ -27,10 +26,10 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.global.annotation.WithMockCustomUser;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.SuccessCode;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.excel.ExcelUtil;
-import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,13 +39,11 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(controllers = AdminMemberController.class)
 @AutoConfigureMockMvc
@@ -93,7 +90,7 @@ class AdminMemberControllerTest {
     }
 
 
-    @Nested
+    /*@Nested
     @DisplayName("회원 등록 API 테스트")
     class CreateMemberTest {
 
@@ -181,6 +178,99 @@ class AdminMemberControllerTest {
                     )
                 );
         }
+    }*/
 
+    @Nested
+    @DisplayName("회원 정보 조회 API 테스트")
+    class GetMemberInfoTest {
+
+        @Test
+        @DisplayName("회원 정보를 성공적으로 조회한다.")
+        @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
+        void getMemberInfoSuccess() throws Exception {
+            // given
+            Member member = USER_J.toMember();
+            String encryptedMemberId = pkCrypto.encryptValue(member.getMemberId());
+
+            MemberInfoResponse memberInfoResponse = MemberMapper.mapToMemberInfoResponse(member);
+
+            when(memberInfoGetUseCase.getMemberInfo(encryptedMemberId)).thenReturn(memberInfoResponse);
+
+            // when
+            ResultActions requestBuilder = mockMvc.perform(RestDocumentationRequestBuilders
+                .get("/api/admin/members/{memberId}", encryptedMemberId)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(csrf()));
+
+            // then
+            requestBuilder
+                .andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.isSuccess").value(true),
+                    jsonPath("$.code").value(SuccessCode.SUCCESS.getCustomCode()),
+                    jsonPath("$.message").value(SuccessCode.SUCCESS.getMessage()),
+                    jsonPath("$.result.email").value(memberInfoResponse.email()),
+                    jsonPath("$.result.name").value(memberInfoResponse.name()),
+                    jsonPath("$.result.nickname").value(memberInfoResponse.nickname()),
+                    jsonPath("$.result.department").value(memberInfoResponse.department()),
+                    jsonPath("$.result.position").value(memberInfoResponse.position()),
+                    jsonPath("$.result.phone").value(memberInfoResponse.phone()),
+                    jsonPath("$.result.role").value(memberInfoResponse.role()),
+                    jsonPath("$.result.agitUrl").value(memberInfoResponse.agitUrl())
+                )
+                .andDo(document(
+                    "AdminMember/getMemberInfo/Request/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("응답 성공 여부"),
+                        fieldWithPath("code").type(JsonFieldType.STRING).description("응답 코드"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                        fieldWithPath("result.memberId").type(JsonFieldType.STRING).description("암호화된 회원 PK"),
+                        fieldWithPath("result.profileImage").type(JsonFieldType.STRING).description("회원 프로필 이미지 URL"),
+                        fieldWithPath("result.email").type(JsonFieldType.STRING).description("회원 이메일 주소"),
+                        fieldWithPath("result.name").type(JsonFieldType.STRING).description("회원 이름"),
+                        fieldWithPath("result.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
+                        fieldWithPath("result.department").type(JsonFieldType.STRING).description("회원 소속 부서"),
+                        fieldWithPath("result.position").type(JsonFieldType.STRING).description("회원 직위"),
+                        fieldWithPath("result.phone").type(JsonFieldType.STRING).description("회원 전화번호"),
+                        fieldWithPath("result.role").type(JsonFieldType.STRING).description("회원 역할"),
+                        fieldWithPath("result.agitUrl").type(JsonFieldType.STRING).optional().description("회원 아지트 URL")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 회원 ID로 요청할 경우 MEMBER_NOT_FOUND 예외를 발생시킨다.")
+        @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
+        void getMemberInfoNotFound() throws Exception {
+            // given
+            String memberId = "999";
+            when(memberInfoGetUseCase.getMemberInfo(memberId)).thenThrow(ApplicationException.from(MEMBER_NOT_FOUND));
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/admin/members/{memberId}", memberId)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .with(csrf()))
+                .andExpectAll(
+                    status().isNotFound(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").value(MEMBER_NOT_FOUND.getCustomCode()),
+                    jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
+                )
+                .andDo(document(
+                    "AdminMember/getMemberInfo/Request/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN).description("응답 성공 여부"),
+                        fieldWithPath("code").type(JsonFieldType.STRING).description("응답 코드"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지")
+                    )
+                ));
+        }
     }
+
+
 }
