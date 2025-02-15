@@ -97,7 +97,7 @@ class MemberFieldValidatorTest {
         void validateEmailDuplicateTestDuplicate() {
             //given
             String email = "email@gachon.ac.kr";
-            given(memberGetService.existsByEmail(email)).willReturn(true);
+            given(memberGetService.existsByEmailAndIsDeleted(email, false)).willReturn(true);
 
             // when & then
             assertThatThrownBy(() -> memberFieldValidator.validateEmailDuplicate(email))
@@ -113,7 +113,7 @@ class MemberFieldValidatorTest {
         void validateEmailDuplicateTestNotDuplicate() {
             //given
             String email = "email@gachon.ac.kr";
-            given(memberGetService.existsByEmail(email)).willReturn(false);
+            given(memberGetService.existsByEmailAndIsDeleted(email, false)).willReturn(false);
 
             //when & then
             memberFieldValidator.validateEmailDuplicate(email);
