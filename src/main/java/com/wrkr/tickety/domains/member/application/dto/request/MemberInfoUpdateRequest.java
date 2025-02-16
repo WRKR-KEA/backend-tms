@@ -7,12 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
-@Schema(description = "회원 정보 수정 DTO")
+@Schema(description = "관리자 - 회원 정보 수정 DTO")
 @Builder
 public record MemberInfoUpdateRequest(
 
     @Schema(description = "이메일", example = "wrkr@gachon.ac.kr")
-    @EmailFormat
+    @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
     String email,
 
     @Schema(description = "이름", example = "김가천")

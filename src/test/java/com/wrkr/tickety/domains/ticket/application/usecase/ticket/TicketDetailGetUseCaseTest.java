@@ -57,10 +57,10 @@ class TicketDetailGetUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        createdAt = LocalDateTime.now().minusDays(1); // ✅ 하루 전 생성
-        updatedAt = LocalDateTime.now(); // ✅ 현재 시간
-        firstManagerChangeDate = LocalDateTime.now().minusHours(5); // ✅ 5시간 전 변경
-        completeDate = LocalDateTime.now().minusHours(1); // ✅ 1시간 전 완료
+        createdAt = LocalDateTime.now().minusDays(1); // 하루 전 생성
+        updatedAt = LocalDateTime.now(); // 현재 시간
+        firstManagerChangeDate = LocalDateTime.now().minusHours(5); // 5시간 전 변경
+        completeDate = LocalDateTime.now().minusHours(1); // 1시간 전 완료
 
         user = Member.builder()
             .memberId(USER_ID)
@@ -77,7 +77,7 @@ class TicketDetailGetUseCaseTest {
         category = Category.builder()
             .categoryId(1L)
             .name("테스트 카테고리")
-            .parent(parentCategory)  // ✅ 부모 카테고리 설정
+            .parent(parentCategory)  // 부모 카테고리 설정
             .build();
 
         ticket = Ticket.builder()
@@ -87,7 +87,7 @@ class TicketDetailGetUseCaseTest {
             .content("티켓 상세 테스트")
             .serialNumber("TCK-123456")
             .status(TicketStatus.REQUEST)
-            .category(category)  // ✅ 부모 카테고리 포함된 category 사용
+            .category(category)  // 부모 카테고리 포함된 category 사용
             .createdAt(createdAt)
             .updatedAt(updatedAt)
             .build();
@@ -95,7 +95,7 @@ class TicketDetailGetUseCaseTest {
 
 
     @Test
-    @DisplayName("✅ 성공: 사용자의 특정 티켓 조회")
+    @DisplayName("성공: 사용자의 특정 티켓 조회")
     void getTicket_Success() {
         // given
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
@@ -118,7 +118,7 @@ class TicketDetailGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 사용자가 자신의 티켓이 아닌 경우 예외 발생")
+    @DisplayName("실패: 사용자가 자신의 티켓이 아닌 경우 예외 발생")
     void getTicket_UnauthorizedAccess() {
         // given
         given(ticketGetService.getTicketByTicketId(TICKET_ID)).willReturn(ticket);
@@ -130,7 +130,7 @@ class TicketDetailGetUseCaseTest {
     }
 
     @Test
-    @DisplayName("❌ 실패: 존재하지 않는 티켓 ID 조회 시 예외 발생")
+    @DisplayName("실패: 존재하지 않는 티켓 ID 조회 시 예외 발생")
     void getTicket_TicketNotFound() {
         // given
         given(ticketGetService.getTicketByTicketId(TICKET_ID))

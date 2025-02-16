@@ -1,8 +1,11 @@
 package com.wrkr.tickety.global.utils.excel;
 
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.EXCEED_MAX_FILE_SIZE;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.FILE_NOT_UPLOAD;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INTERNAL_SERVER_ERROR;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_EXCEL_EXTENSION;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.converter.ConverterUtil;
@@ -40,9 +43,17 @@ public class ExcelUtil {
     private static final int bodyStartRowToRender = 1;
     private static final int startColToRender = 0;
 
+    private static final String[] ACCEPTED_EXTENSIONS = {"xlsx", "xls"};
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
+
     private final ConverterUtil converterUtil;
 
     public <T> List<T> parseExcelToObject(MultipartFile file, Class<T> clazz) {
+        /* valid */
+        validateFileUpload(file);
+        validateFileSize(file);
+        validateExcelFileExtension(file);
+
         /* read workbook & sheet */
         Workbook workbook;
         try {
@@ -214,27 +225,62 @@ public class ExcelUtil {
         }
     }
 
-    public void parseTicketDataToExcelGroupByStatus(HttpServletResponse response, List<DepartmentTicketResponse> ticketDataList, String filename) {
+    public void parseTicketDataToExcelGroupByStatus(HttpServletResponse response, List<DepartmentTicketExcelResponse> ticketDataList, String filename) {
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx\"");
 
         try (Workbook workbook = WorkbookFactory.create(true)) {
             for (TicketStatus status : TicketStatus.values()) {
-                List<DepartmentTicketResponse> filteredData = ticketDataList.stream()
-                    .filter(ticket -> ticket.status() == status)
+                List<DepartmentTicketExcelResponse> filteredData = ticketDataList.stream()
+                    .filter(ticket -> ticket.status().equals(status.getDescription()))
                     .collect(Collectors.toList());
 
                 if (!filteredData.isEmpty()) {
                     Sheet sheet = workbook.createSheet(status.getDescription());
-                    renderHeader(sheet, DepartmentTicketResponse.class);
-                    renderBody(sheet, filteredData, DepartmentTicketResponse.class);
+                    renderHeader(sheet, DepartmentTicketExcelResponse.class);
+                    renderBody(sheet, filteredData, DepartmentTicketExcelResponse.class);
                 }
             }
 
             workbook.write(response.getOutputStream());
         } catch (IOException e) {
             throw new ApplicationException(INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void validateExcelFileExtension(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+
+        if (filename == null || !filename.contains(".")) {
+            throw ApplicationException.from(INVALID_EXCEL_EXTENSION);
+        }
+
+        String fileExtension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+
+        boolean isValid = false;
+
+        for (String ext : ACCEPTED_EXTENSIONS) {
+            if (ext.equalsIgnoreCase(fileExtension)) {
+                isValid = true;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            throw ApplicationException.from(INVALID_EXCEL_EXTENSION);
+        }
+    }
+
+    public void validateFileSize(MultipartFile file) {
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw ApplicationException.from(EXCEED_MAX_FILE_SIZE);
+        }
+    }
+
+    public void validateFileUpload(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw ApplicationException.from(FILE_NOT_UPLOAD);
         }
     }
 }

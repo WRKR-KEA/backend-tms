@@ -27,10 +27,10 @@ public record DepartmentTicketPreResponse(
     @Schema(description = "티켓 2차 카테고리", example = "생성")
     String secondCategory,
 
-    @Schema(description = "사용자 닉네임", example = "request.er")
+    @Schema(description = "요청자 아이디(닉네임)", example = "request.er")
     String userNickname,
 
-    @Schema(description = "담당자 닉네임", example = "manage.r")
+    @Schema(description = "담당자 아이디(닉네임)", example = "manage.r")
     String managerNickname,
 
     @Schema(description = "요청일", example = "2021-01-01 10:00")
@@ -41,7 +41,8 @@ public record DepartmentTicketPreResponse(
 ) {
 
     @QueryProjection
-    public DepartmentTicketPreResponse(Long ticketId, String ticketSerialNumber, TicketStatus status, String title, String firstCategory, String secondCategory, String userNickname, String managerNickname,
+    public DepartmentTicketPreResponse(Long ticketId, String ticketSerialNumber, TicketStatus status, String title, String firstCategory, String secondCategory,
+        String userNickname, String managerNickname,
         LocalDateTime requestedDate, LocalDateTime updatedDate
     ) {
         this.ticketId = ticketId;

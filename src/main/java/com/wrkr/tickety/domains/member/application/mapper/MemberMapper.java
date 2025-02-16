@@ -19,7 +19,8 @@ public class MemberMapper {
     public static Member mapToMemberFromExcel(
         MemberCreateRequestForExcel memberCreateRequestForExcel,
         String encryptedPassword,
-        String profileImageUrl
+        String profileImageUrl,
+        String agitUrl
     ) {
         return Member.builder()
             .email(memberCreateRequestForExcel.getEmail())
@@ -31,13 +32,16 @@ public class MemberMapper {
             .phone(memberCreateRequestForExcel.getPhone())
             .role(memberCreateRequestForExcel.getRole())
             .profileImage(profileImageUrl)
+            .agitUrl(agitUrl)
+            .agitNotification(agitUrl == null || agitUrl.isBlank() ? false : true)
             .build();
     }
 
     public static Member mapToMember(
         MemberCreateRequest memberCreateRequest,
         String encryptedPassword,
-        String profileImageUrl
+        String profileImageUrl,
+        String agitUrl
     ) {
         return Member.builder()
             .email(memberCreateRequest.email())
@@ -49,6 +53,8 @@ public class MemberMapper {
             .phone(memberCreateRequest.phone())
             .role(memberCreateRequest.role())
             .profileImage(profileImageUrl)
+            .agitUrl(agitUrl)
+            .agitNotification(agitUrl == null || agitUrl.isBlank() ? false : true)
             .build();
     }
 

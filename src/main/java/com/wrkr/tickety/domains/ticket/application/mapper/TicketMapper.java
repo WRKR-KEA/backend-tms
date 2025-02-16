@@ -6,6 +6,8 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAll
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketDetailGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
@@ -126,16 +128,30 @@ public class TicketMapper {
                     .updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build()).toList()).build();
     }
 
-    public static DepartmentTicketResponse mapToDepartmentTicketResponse(DepartmentTicketPreResponse departmentTicketPreResponse) {
-        return DepartmentTicketResponse.builder().ticketId(PkCrypto.encrypt(departmentTicketPreResponse.ticketId()))
-            .ticketSerialNumber(departmentTicketPreResponse.ticketSerialNumber()).status(departmentTicketPreResponse.status())
-            .title(departmentTicketPreResponse.title())
-            .firstCategory(departmentTicketPreResponse.firstCategory())
-            .secondCategory(departmentTicketPreResponse.secondCategory())
-            .userNickname(departmentTicketPreResponse.userNickname())
-            .managerNickname(departmentTicketPreResponse.managerNickname())
-            .requestedDate(DateTimeFormatter.yyyyMMddHHmm(departmentTicketPreResponse.requestedDate()))
-            .updatedDate(DateTimeFormatter.yyyyMMddHHmm(departmentTicketPreResponse.updatedDate())).build();
+    public static DepartmentTicketResponse mapToDepartmentTicketResponse(DepartmentTicketPreResponse preResponse) {
+        return DepartmentTicketResponse.builder().ticketId(PkCrypto.encrypt(preResponse.ticketId()))
+            .ticketSerialNumber(preResponse.ticketSerialNumber()).status(preResponse.status())
+            .title(preResponse.title())
+            .firstCategory(preResponse.firstCategory())
+            .secondCategory(preResponse.secondCategory())
+            .userNickname(preResponse.userNickname())
+            .managerNickname(preResponse.managerNickname())
+            .requestedDate(DateTimeFormatter.yyyyMMddHHmm(preResponse.requestedDate()))
+            .updatedDate(DateTimeFormatter.yyyyMMddHHmm(preResponse.updatedDate())).build();
+    }
+
+    public static DepartmentTicketExcelResponse mapToDepartmentTicketExcelResponse(DepartmentTicketExcelPreResponse preResponse) {
+        return DepartmentTicketExcelResponse.builder()
+            .ticketSerialNumber(preResponse.ticketSerialNumber())
+            .status(preResponse.status().getDescription())
+            .title(preResponse.title())
+            .firstCategory(preResponse.firstCategory())
+            .secondCategory(preResponse.secondCategory())
+            .userNickname(preResponse.userNickname())
+            .managerNickname(preResponse.managerNickname())
+            .requestedDate(DateTimeFormatter.yyyyMMddHHmm(preResponse.requestedDate()))
+            .updatedDate(DateTimeFormatter.yyyyMMddHHmm(preResponse.updatedDate()))
+            .build();
     }
 
     public static UserTicketMainPageResponse toUserTicketMainPageResponse(List<Ticket> recentTickets, Map<Long, LocalDateTime> startDatesMap,
