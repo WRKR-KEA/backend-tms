@@ -1,6 +1,15 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,6 +38,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -37,6 +47,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = TicketStatisticsController.class)
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
 class TicketStatisticsControllerTest {
 
     @Autowired
@@ -176,7 +187,28 @@ class TicketStatisticsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result.date").value(requestDate.toString()));
+                .andExpect(jsonPath("$.result.date").value(requestDate.toString()))
+                .andDo(document("get-child-category-statistics",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                pathParameters(
+                                    parameterWithName("statisticsType").description("통계 타입 (예: DAILY, MONTHLY)"),
+                                    parameterWithName("parentCategoryId").description("부모 카테고리 ID")
+                                ),
+                                requestFields(
+                                    fieldWithPath("date").description("통계를 확인하고자 하는 날짜")
+                                ),
+                                responseFields(
+                                    fieldWithPath("isSuccess").description("성공 여부"),
+                                    fieldWithPath("code").description("응답 코드"),
+                                    fieldWithPath("message").description("응답 메시지"),
+                                    fieldWithPath("result.parentCategoryId").description("부모 카테고리 ID"),
+                                    fieldWithPath("result.date").description("응답 날짜"),
+                                    fieldWithPath("result.statisticData.firstCategoryTicketCount[].categoryId").description("카테고리 ID"),
+                                    fieldWithPath("result.statisticData.firstCategoryTicketCount[].count").description("티켓 수"),
+                                    fieldWithPath("result.statisticData.firstCategoryTicketCount[].categoryName").description("카테고리 이름")
+                                )
+                ));
         }
 
         @Test
