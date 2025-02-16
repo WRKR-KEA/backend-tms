@@ -77,7 +77,7 @@ class TicketCompleteUseCaseTest {
         @DisplayName("티켓의 담당자가 아니라면 TICKET_MANAGER_NOT_MATCH 예외가 발생한다.")
         void throwExceptionByTicketManagerNotMatch() {
             // given
-            Ticket ticket = TICKET_IN_PROGRESS_01.toTicket();
+            Ticket ticket = TICKET_IN_PROGRESS_01.toInProgressTicket();
             Member manager = MANAGER_B.toMember();
 
             given(ticketGetService.getTicketByTicketId(ticket.getTicketId())).willReturn(ticket);
@@ -95,7 +95,7 @@ class TicketCompleteUseCaseTest {
         @DisplayName("진행 중인 티켓이 아니라면 TICKET_NOT_COMPLETABLE 예외가 발생한다.")
         void throwExceptionByTicketNotCompletable() {
             // given
-            Ticket ticket = TICKET_REQUEST_01.toTicket();
+            Ticket ticket = TICKET_REQUEST_01.toInProgressTicket();
             Member manager = MANAGER_C.toMember();
             given(ticketGetService.getTicketByTicketId(ticket.getTicketId())).willReturn(ticket);
 
@@ -113,7 +113,7 @@ class TicketCompleteUseCaseTest {
         @DisplayName("담당자는 진행 중이던 티켓 완료 처리에 성공한다.")
         void successCompleteTicket() {
             // given
-            Ticket ticket = TICKET_IN_PROGRESS_01.toTicket();
+            Ticket ticket = TICKET_IN_PROGRESS_01.toInProgressTicket();
             Member manager = MANAGER_A.toMember();
 
             given(ticketGetService.getTicketByTicketId(ticket.getTicketId())).willReturn(ticket);
