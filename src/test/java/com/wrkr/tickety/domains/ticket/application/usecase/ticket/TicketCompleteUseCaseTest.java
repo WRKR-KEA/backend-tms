@@ -95,7 +95,7 @@ class TicketCompleteUseCaseTest {
         @DisplayName("진행 중인 티켓이 아니라면 TICKET_NOT_COMPLETABLE 예외가 발생한다.")
         void throwExceptionByTicketNotCompletable() {
             // given
-            Ticket ticket = TICKET_REQUEST_01.toInProgressTicket();
+            Ticket ticket = TICKET_REQUEST_01.toRequestTicket();
             Member manager = MANAGER_C.toMember();
             given(ticketGetService.getTicketByTicketId(ticket.getTicketId())).willReturn(ticket);
 
