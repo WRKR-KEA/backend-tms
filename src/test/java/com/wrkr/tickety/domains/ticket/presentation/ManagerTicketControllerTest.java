@@ -296,7 +296,7 @@ class ManagerTicketControllerTest {
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
         void throwExceptionByTicketManagerNotMatch() throws Exception {
             // given
-            Ticket ticket = TICKET_CANCEL_01.toTicket();
+            Ticket ticket = TICKET_CANCEL_01.toInProgressTicket();
 
             doThrow(ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
                 .when(ticketCompleteUseCase)
@@ -386,7 +386,7 @@ class ManagerTicketControllerTest {
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
         void throwExceptionByTicketNotCompletable() throws Exception {
             // given
-            Ticket ticket = TICKET_COMPLETE_01.toTicket();
+            Ticket ticket = TICKET_COMPLETE_01.toInProgressTicket();
             doThrow(ApplicationException.from(TicketErrorCode.TICKET_NOT_COMPLETABLE))
                 .when(ticketCompleteUseCase)
                 .completeTicket(anyLong(), eq(ticket.getTicketId()));
