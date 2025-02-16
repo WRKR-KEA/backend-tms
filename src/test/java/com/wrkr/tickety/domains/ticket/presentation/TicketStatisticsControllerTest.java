@@ -55,24 +55,18 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureRestDocs
 class TicketStatisticsControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private StatisticsByParentCategoryUseCase statisticsByParentCategoryUseCase;
-
-    @MockitoBean
-    private StatisticsByStatusUseCase statisticsByStatusUseCase;
-
-    @MockitoBean
-    private StatisticsGetUseCase statisticsGetUseCase;
-
     @InjectMocks
     static PkCrypto pkCrypto;
-
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockitoBean
+    private StatisticsByParentCategoryUseCase statisticsByParentCategoryUseCase;
+    @MockitoBean
+    private StatisticsByStatusUseCase statisticsByStatusUseCase;
+    @MockitoBean
+    private StatisticsGetUseCase statisticsGetUseCase;
     @MockitoBean
     private StatisticsByChildCategoryUseCase statisticsByChildCategoryUseCase;
 
@@ -97,18 +91,44 @@ class TicketStatisticsControllerTest {
             String statisticsType = StatisticsType.DAILY.toString();
             String date = requestDate.toString();
             StatisticsByStatusResponse expectedResponse = StatisticsByStatusResponse.builder().date(requestDate.toString()).accept(10L).reject(5L).request(7L)
-                .complete(3L).build();
+                                                                                    .complete(3L).build();
             //when
             when(statisticsByStatusUseCase.getStatisticsByStatus(StatisticsType.from(statisticsType), date)).thenReturn(expectedResponse);
 
             //then
             mockMvc.perform(get("/api/manager/statistics/{statisticsType}/status", StatisticsType.DAILY.toString()).with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON).queryParam("date", date)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.result.date").value(requestDate.toString())).andExpect(jsonPath("$.result.accept").value(expectedResponse.accept()))
-                .andExpect(jsonPath("$.result.reject").value(expectedResponse.reject()))
-                .andExpect(jsonPath("$.result.request").value(expectedResponse.request()))
-                .andExpect(jsonPath("$.result.complete").value(expectedResponse.complete()))
-                .andDo(document("get-statistics-by-status", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()), pathParameters(parameterWithName("statisticsType").description("통계 타입 (DAILY | MONTHLY | YEARLY)")), queryParameters(parameterWithName("date").description("통계를 확인하고자 하는 기준일 (Optional)")), responseFields(fieldWithPath("result").description("일간/월간/연간 상태별 요약 응답"), fieldWithPath("isSuccess").description("성공 여부"), fieldWithPath("code").description("응답 코드"), fieldWithPath("message").description("응답 메시지"), fieldWithPath("result.date").description("통계 날짜"), fieldWithPath("result.accept").description("승인된 티켓 수"), fieldWithPath("result.reject").description("반려된 티켓 수"), fieldWithPath("result.request").description("요청된 티켓 수"), fieldWithPath("result.complete").description("완료된 티켓 수"))));
+                                                                                                                   .contentType(MediaType.APPLICATION_JSON)
+                                                                                                                   .queryParam("date", date))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.result.date").value(requestDate.toString())).andExpect(jsonPath("$.result.accept").value(expectedResponse.accept()))
+                   .andExpect(jsonPath("$.result.reject").value(expectedResponse.reject()))
+                   .andExpect(jsonPath("$.result.request").value(expectedResponse.request()))
+                   .andExpect(jsonPath("$.result.complete").value(expectedResponse.complete()))
+                   .andDo(document("get-statistics-by-status",
+                                   preprocessRequest(prettyPrint()),
+                                   preprocessResponse(prettyPrint()),
+                                   pathParameters(
+                                       parameterWithName("statisticsType")
+                                           .description("통계 타입 (DAILY | MONTHLY | YEARLY)")
+                                                 ),
+                                   queryParameters(
+                                       parameterWithName("date")
+                                           .description("통계를 확인하고자 하는 기준일 (Optional)")
+                                                  ),
+                                   responseFields(
+                                       fieldWithPath("result")
+                                           .description("일간/월간/연간 상태별 요약 응답"),
+                                       fieldWithPath("isSuccess").description("성공 여부"),
+                                       fieldWithPath("code").description("응답 코드"),
+                                       fieldWithPath("message").description("응답 메시지"),
+                                       fieldWithPath("result.date").description("통계 날짜"),
+                                       fieldWithPath("result.accept").description("승인된 티켓 수"),
+                                       fieldWithPath("result.reject").description("반려된 티켓 수"),
+                                       fieldWithPath("result.request").description("요청된 티켓 수"),
+                                       fieldWithPath("result.complete").description("완료된 티켓 수")
+                                                 )
+                                  )
+                         );
         }
 
         @Test
@@ -120,7 +140,9 @@ class TicketStatisticsControllerTest {
             StatisticsByCategoryRequest request = StatisticsByCategoryRequest.builder().date(LocalDate.now()).build();
             //then
             mockMvc.perform(get("/api/manager/statistics/{statisticsType}/status", UN_SUPPORTED_STATISTICS_TYPE).with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest());
+                                                                                                                .contentType(MediaType.APPLICATION_JSON)
+                                                                                                                .content(objectMapper.writeValueAsString(request)))
+                   .andExpect(status().isBadRequest());
         }
     }
 
@@ -143,14 +165,18 @@ class TicketStatisticsControllerTest {
             });
 
             StatisticsByCategoryResponse expectedResponse = StatisticsByCategoryResponse.builder().parentCategoryId(null)
-                .statisticData(StatisticData.builder().firstCategoryTicketCount(CategoryTicketCount).build()).date(requestDate.toString()).build();
+                                                                                        .statisticData(StatisticData.builder()
+                                                                                                                    .firstCategoryTicketCount(CategoryTicketCount)
+                                                                                                                    .build()).date(requestDate.toString())
+                                                                                        .build();
             //when
             when(statisticsByParentCategoryUseCase.getStatisticsByCategory(StatisticsType.DAILY, requestDate)).thenReturn(expectedResponse);
 
             //then
-            mockMvc.perform(post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString()).with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request))).andExpect(status().isOk())
-                .andReturn();
+            mockMvc.perform(
+                       post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                                                                                                        .content(objectMapper.writeValueAsString(request)))
+                   .andExpect(status().isOk()).andReturn();
         }
 
         @Test
@@ -164,17 +190,22 @@ class TicketStatisticsControllerTest {
 
             List<TicketCount> CategoryTicketCount = new ArrayList<>();
             IntStream.range(0, 5)
-                .forEach(i -> CategoryTicketCount.add(TicketCount.builder().categoryId("categoryId" + i).count(i).categoryName("categoryName" + i).build()));
+                     .forEach(i -> CategoryTicketCount.add(TicketCount.builder().categoryId("categoryId" + i).count(i).categoryName("categoryName" + i)
+                                                                      .build()));
 
             StatisticsByCategoryResponse expectedResponse = StatisticsByCategoryResponse.builder().parentCategoryId(null)
-                .statisticData(StatisticData.builder().firstCategoryTicketCount(CategoryTicketCount).build()).date(requestDate.toString()).build();
+                                                                                        .statisticData(StatisticData.builder()
+                                                                                                                    .firstCategoryTicketCount(CategoryTicketCount)
+                                                                                                                    .build()).date(requestDate.toString())
+                                                                                        .build();
             //when
             when(statisticsByParentCategoryUseCase.getStatisticsByCategory(StatisticsType.MONTHLY, requestDate)).thenReturn(expectedResponse);
 
             //then
-            mockMvc.perform(post("/api/manager/statistics/{statisticsType}", StatisticsType.MONTHLY.toString()).with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request))).andExpect(status().isOk())
-                .andReturn();
+            mockMvc.perform(
+                       post("/api/manager/statistics/{statisticsType}", StatisticsType.MONTHLY.toString()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                                                                                                          .content(objectMapper.writeValueAsString(request)))
+                   .andExpect(status().isOk()).andReturn();
         }
 
         @Test
@@ -185,8 +216,12 @@ class TicketStatisticsControllerTest {
             //given
             StatisticsByCategoryRequest request = StatisticsByCategoryRequest.builder().date(LocalDate.now()).build();
             //then
-            mockMvc.perform(post("/api/manager/statistics/{statisticsType}", UN_SUPPORTED_STATISTICS_TYPE).with(csrf()).contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest());
+            mockMvc.perform(
+                       post("/api/manager/statistics/{statisticsType}", UN_SUPPORTED_STATISTICS_TYPE)
+                           .with(csrf())
+                           .contentType(MediaType.APPLICATION_JSON)
+                           .content(objectMapper.writeValueAsString(request)))
+                   .andExpect(status().isBadRequest());
         }
 
         @Test
@@ -194,12 +229,28 @@ class TicketStatisticsControllerTest {
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw")
         void throwExceptionWhenInvalidDateFormat() throws Exception {
             // given - when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders.post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString())
-                .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString("{date:invalidDate}"));
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString()).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString("{date:invalidDate}"));
 
             // then
-            mockMvc.perform(requestBuilder).andExpect(status().isBadRequest())
-                .andDo(document("Statistics/Request/Failure/Case1", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()), pathParameters(parameterWithName("statisticsType").description("통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)")), responseFields(fieldWithPath("isSuccess").description("false"), fieldWithPath("code").description("COMMON_002"), fieldWithPath("message").description("올바르지 않은 요청 형식입니다."))));
+            mockMvc.perform(requestBuilder)
+                   .andExpect(status().isBadRequest())
+                   .andDo(
+                       document(
+                           "Statistics/Request/Failure/Case1",
+                           preprocessRequest(prettyPrint()),
+                           preprocessResponse(prettyPrint()),
+                           pathParameters(
+                               parameterWithName("statisticsType").description("통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)")
+                                         ),
+                           responseFields(
+                               fieldWithPath("isSuccess").description("false"),
+                               fieldWithPath("code").description("COMMON_002"),
+                               fieldWithPath("message").description("올바르지 않은 요청 형식입니다.")
+                                         )
+                               ))
+            ;
         }
     }
 }
