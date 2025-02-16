@@ -98,7 +98,9 @@ public class SecurityConfig {
             "10.102.13.162:3000",
             "tcp://10.102.13.162:3000",
             "https://wrkr.tickety.co.kr",
-            "https://wrkr.tickety.co.kr:3000"
+            "https://wrkr.tickety.co.kr:3000",
+            "http://www.tickety.co.kr",
+            "https://www.tickety.co.kr"
         ));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));
