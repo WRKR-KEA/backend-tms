@@ -330,7 +330,7 @@ class MemberInfoUpdateUseCaseTest {
         @Test
         void softDeleteMemberWithNonExistentMember() {
             // given
-            String nonExistentEncryptedId = "nonExistentId";
+            String nonExistentEncryptedId = pkCrypto.encryptValue(USER_J.toMember().getMemberId());
             List<String> memberIdList = List.of(nonExistentEncryptedId);
 
             given(memberGetService.byMemberId(any())).willThrow(ApplicationException.from(MEMBER_NOT_FOUND));
