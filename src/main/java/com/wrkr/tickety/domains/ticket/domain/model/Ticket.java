@@ -23,29 +23,7 @@ public class Ticket extends BaseTime {
     private String content;
     private TicketStatus status;
     private Boolean isPinned;
-
-//    @Builder
-//    public Ticket(
-//        Long ticketId,
-//        Member user,
-//        Member manager,
-//        Category category,
-//        String serialNumber,
-//        String title,
-//        String content,
-//        TicketStatus status,
-//        Boolean isPinned
-//    ) {
-//        this.ticketId = ticketId;
-//        this.user = user;
-//        this.manager = manager;
-//        this.category = category;
-//        this.serialNumber = serialNumber;
-//        this.title = title;
-//        this.content = content;
-//        this.status = status;
-//        this.isPinned = isPinned;
-//    }
+    private Integer version;
 
     public void updateStatus(TicketStatus status) {
         this.status = status;
