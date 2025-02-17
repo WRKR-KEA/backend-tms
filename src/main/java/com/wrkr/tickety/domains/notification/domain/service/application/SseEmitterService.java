@@ -32,7 +32,7 @@ public class SseEmitterService {
         emitter.onTimeout(() -> emitter.complete());
         emitter.onError((error) -> emitter.complete());
 
-        sendToClient(emitter, emitterId, "Subscribe EventStream: [memberId = " + memberId + "]");
+        sendToClient(emitter, emitterId, "connect", "Subscribe EventStream: [memberId = " + memberId + "]");
 
         if (!lastEventId.isEmpty()) {
             Map<String, Object> events = emitterRepository.findAllEventCacheStartWithByMemberId(String.valueOf(memberId));
@@ -63,6 +63,18 @@ public class SseEmitterService {
         try {
             emitter.send(SseEmitter.event()
                 .id(emitterId)
+                .data(data));
+        } catch (IOException exception) {
+            emitter.complete();
+            log.warn("[SSE] Failed to send event: {}: {}", emitterId, exception.getMessage());
+        }
+    }
+
+    private void sendToClient(SseEmitter emitter, String emitterId, String type, Object data) {
+        try {
+            emitter.send(SseEmitter.event()
+                .id(emitterId)
+                .name(type)
                 .data(data));
         } catch (IOException exception) {
             emitter.complete();
