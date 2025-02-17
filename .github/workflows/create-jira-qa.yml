@@ -6,7 +6,7 @@ on:
 jobs:
   create-issue:
     name: Create Jira QA
-    runs-on: self-hosted
+    runs-on: host-10-0-1-214
     steps:
       - name: Check if issue uses qa template
         id: check_template
