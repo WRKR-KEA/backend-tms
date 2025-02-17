@@ -2,8 +2,11 @@ package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
@@ -20,6 +23,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistor
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +32,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 
 @ExtendWith(MockitoExtension.class)
 class TicketCreateUseCaseTest {
@@ -61,6 +67,12 @@ class TicketCreateUseCaseTest {
 
     @Mock
     private TicketGetService ticketGetService;
+
+    @Mock
+    private RedissonClient redissonClient;
+
+    @Mock
+    private RLock rLock;
 
     @InjectMocks
     private TicketCreateUseCase ticketCreateUseCase;
@@ -97,7 +109,7 @@ class TicketCreateUseCaseTest {
 
     @Test
     @DisplayName("성공: 티켓을 정상적으로 생성")
-    void createTicket_Success() {
+    void createTicket_Success() throws InterruptedException {
         // given
         Ticket ticket = Ticket.builder()
             .ticketId(1L)
@@ -110,6 +122,8 @@ class TicketCreateUseCaseTest {
 
         given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(childCategory);
         given(memberGetService.byMemberId(USER_ID)).willReturn(user);
+        given(redissonClient.getLock(anyString())).willReturn(rLock);
+        given(rLock.tryLock(5, 10, TimeUnit.SECONDS)).willReturn(true);
         given(ticketSaveService.save(any(Ticket.class))).willReturn(ticket);
         given(ticketGetService.findLastSequence(any(), any())).willReturn("01");
 
@@ -118,6 +132,7 @@ class TicketCreateUseCaseTest {
 
         // then
         assertThat(response.ticketId()).isNotNull();
+        verify(rLock, times(1)).unlock();
     }
 
     @Test
@@ -146,5 +161,37 @@ class TicketCreateUseCaseTest {
             .isInstanceOf(ApplicationException.class)
             .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
     }
+
+    @Test
+    @DisplayName("실패: Lock을 획득하지 못할 경우 예외 발생")
+    void createTicket_LockTimeout() throws InterruptedException {
+        // given
+        given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(childCategory);
+        given(memberGetService.byMemberId(USER_ID)).willReturn(user);
+        given(redissonClient.getLock(anyString())).willReturn(rLock);
+        given(rLock.tryLock(5, 10, TimeUnit.SECONDS)).willReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> ticketCreateUseCase.createTicket(validRequest, USER_ID))
+            .isInstanceOf(ApplicationException.class)
+            .hasMessage("티켓 생성 요청이 많습니다. 잠시 후 다시 시도해주세요.");
+    }
+
+    @Test
+    @DisplayName("실패: Lock을 획득 중 InterruptedException 발생 시 예외 발생")
+    void createTicket_Interrupted() throws InterruptedException {
+        // given
+        given(categoryGetService.getChildrenCategory(CATEGORY_ID)).willReturn(childCategory);
+        given(memberGetService.byMemberId(USER_ID)).willReturn(user);
+        given(redissonClient.getLock(anyString())).willReturn(rLock);
+        given(rLock.tryLock(5, 10, TimeUnit.SECONDS)).willThrow(new InterruptedException());
+
+        // when & then
+        assertThatThrownBy(() -> ticketCreateUseCase.createTicket(validRequest, USER_ID))
+            .isInstanceOf(ApplicationException.class)
+            .hasMessage("티켓 생성 중 오류가 발생했습니다.");
+    }
+
+
 }
 
