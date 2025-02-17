@@ -1,0 +1,52 @@
+= Admin Member API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+= 관리자 - 회원 관리 기능
+
+== 회원 등록
+
+=== 1. 회원 정보가 등록되고, 이메일로 임시 비밀번호가 발급된다.
+
+HTTP Request
+
+HTTP Response
+
+=== 2. 이미 사용중인 이메일로 등록을 시도할 경우, ALREADY_EXIST_EMAIL 예외가 발생한다.
+
+HTTP Request
+
+HTTP Response
+
+=== 3. 이미 사용중인 아이디(닉네임)로 등록을 시도할 경우, ALREADY_EXIST_NICKNAME 예외가 발생한다.
+
+HTTP Request
+
+HTTP Response
+
+== 회원 상세 조회
+
+=== 1. 회원 정보를 성공적으로 조회한다.
+
+HTTP Request
+
+include::{snippets}/AdminMember/getMemberInfo/Request/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/AdminMember/getMemberInfo/Request/Success/http-response.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Request/Success/response-fields.adoc[]
+
+=== 2. 존재하지 않는 회원 ID로 요청할 경우 MEMBER_NOT_FOUND 예외를 발생시킨다.
+
+HTTP Request
+
+include::{snippets}/AdminMember/getMemberInfo/Request/Failure/Case1/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/AdminMember/getMemberInfo/Request/Failure/Case1/http-response.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Request/Failure/Case1/response-fields.adoc[]
