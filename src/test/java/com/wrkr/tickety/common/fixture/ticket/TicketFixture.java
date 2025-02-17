@@ -9,16 +9,16 @@ import lombok.Getter;
 public enum TicketFixture {
 
     // 요청 상태 (REQUEST)
-    TICKET_REQUEST_01(101L, "#250202VMCRE01", "서버 장애 발생", "서버가 응답하지 않습니다.", TicketStatus.REQUEST, false, UserFixture.MANAGER_C, UserFixture.USER_B),
-    TICKET_REQUEST_02(102L, "#250202VMCRE02", "DB 성능 저하", "쿼리 실행 속도가 느립니다.", TicketStatus.REQUEST, false, UserFixture.MANAGER_C, UserFixture.USER_D),
-    TICKET_REQUEST_03(103L, "#250202VMCRE03", "네트워크 장애", "VPN 연결이 끊어졌습니다.", TicketStatus.REQUEST, true, UserFixture.MANAGER_C, UserFixture.USER_F),
-    TICKET_REQUEST_04(104L, "#250202VMCRE04", "권한 요청", "DB 접근 권한 요청", TicketStatus.REQUEST, false, UserFixture.MANAGER_C, UserFixture.USER_H),
-    TICKET_REQUEST_05(105L, "#250202VMCRE05", "서버 재시작 요청", "배포 후 서버가 다운되었습니다.", TicketStatus.REQUEST, false, UserFixture.MANAGER_C, UserFixture.USER_A),
-    TICKET_REQUEST_06(106L, "#250202VMCRE06", "로그 파일 요청", "서버 로그 파일이 필요합니다.", TicketStatus.REQUEST, false, UserFixture.MANAGER_C, UserFixture.USER_C),
-    TICKET_REQUEST_07(107L, "#250202VMCRE07", "네트워크 설정 변경", "VPN 설정을 변경해야 합니다.", TicketStatus.REQUEST, false, UserFixture.MANAGER_C, UserFixture.USER_E),
-    TICKET_REQUEST_08(108L, "#250202VMCRE08", "모니터링 추가 요청", "Grafana 대시보드 추가 요청.", TicketStatus.REQUEST, false, UserFixture.MANAGER_A, UserFixture.USER_G),
-    TICKET_REQUEST_09(109L, "#250202VMCRE09", "스토리지 용량 부족", "NAS 저장소 공간 부족", TicketStatus.REQUEST, false, UserFixture.MANAGER_A, UserFixture.USER_I),
-    TICKET_REQUEST_10(110L, "#250202VMCRE10", "백업 설정 변경", "자동 백업 주기 변경 요청", TicketStatus.REQUEST, false, UserFixture.MANAGER_A, UserFixture.USER_B),
+    TICKET_REQUEST_01(101L, "#250202VMCRE01", "서버 장애 발생", "서버가 응답하지 않습니다.", TicketStatus.REQUEST, false, null, UserFixture.USER_B),
+    TICKET_REQUEST_02(102L, "#250202VMCRE02", "DB 성능 저하", "쿼리 실행 속도가 느립니다.", TicketStatus.REQUEST, false, null, UserFixture.USER_D),
+    TICKET_REQUEST_03(103L, "#250202VMCRE03", "네트워크 장애", "VPN 연결이 끊어졌습니다.", TicketStatus.REQUEST, true, null, UserFixture.USER_F),
+    TICKET_REQUEST_04(104L, "#250202VMCRE04", "권한 요청", "DB 접근 권한 요청", TicketStatus.REQUEST, false, null, UserFixture.USER_H),
+    TICKET_REQUEST_05(105L, "#250202VMCRE05", "서버 재시작 요청", "배포 후 서버가 다운되었습니다.", TicketStatus.REQUEST, false, null, UserFixture.USER_A),
+    TICKET_REQUEST_06(106L, "#250202VMCRE06", "로그 파일 요청", "서버 로그 파일이 필요합니다.", TicketStatus.REQUEST, false, null, UserFixture.USER_C),
+    TICKET_REQUEST_07(107L, "#250202VMCRE07", "네트워크 설정 변경", "VPN 설정을 변경해야 합니다.", TicketStatus.REQUEST, false, null, UserFixture.USER_E),
+    TICKET_REQUEST_08(108L, "#250202VMCRE08", "모니터링 추가 요청", "Grafana 대시보드 추가 요청.", TicketStatus.REQUEST, false, null, UserFixture.USER_G),
+    TICKET_REQUEST_09(109L, "#250202VMCRE09", "스토리지 용량 부족", "NAS 저장소 공간 부족", TicketStatus.REQUEST, false, null, UserFixture.USER_I),
+    TICKET_REQUEST_10(110L, "#250202VMCRE10", "백업 설정 변경", "자동 백업 주기 변경 요청", TicketStatus.REQUEST, false, null, UserFixture.USER_B),
 
     // 진행 상태 (IN_PROGRESS)
     TICKET_IN_PROGRESS_01(201L, "#250202DBCRE01", "서버 유지보수 진행 중", "정기 점검 수행 중", TicketStatus.IN_PROGRESS, false, UserFixture.MANAGER_A, UserFixture.USER_E),
@@ -66,7 +66,19 @@ public enum TicketFixture {
         this.user = user;
     }
 
-    public Ticket toTicket() {
+    public Ticket toRequestTicket() {
+        return Ticket.builder()
+            .ticketId(this.ticketId)
+            .serialNumber(this.serialNumber)
+            .title(this.title)
+            .content(this.content)
+            .status(this.status)
+            .isPinned(this.isPinned)
+            .user(this.user.toMember())
+            .build();
+    }
+
+    public Ticket toInProgressTicket() {
         return Ticket.builder()
             .ticketId(this.ticketId)
             .serialNumber(this.serialNumber)
