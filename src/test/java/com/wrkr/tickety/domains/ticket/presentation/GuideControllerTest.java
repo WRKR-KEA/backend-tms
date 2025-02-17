@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.ticket.presentation;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.ticket.application.dto.request.GuideCreateRequest;
@@ -102,6 +104,11 @@ class GuideControllerTest {
                .andDo(document("Guide/Get",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
+                               resource(ResourceSnippetParameters.builder()
+                                                                 .summary("도움말 조회 API")
+                                                                 .description("주어진 암호화된 카테고리 키를 이용하여 도움말을 조회하는 API입니다.")
+                                                                 .tag("Guide")
+                                                                 .build()),
                                pathParameters(parameterWithName("cryptoCategoryId").description("암호화된 카테고리 키")),
                                responseFields(
                                    fieldWithPath("result").description("도움말 응답 객체 (GuideResponse)"),
@@ -165,6 +172,11 @@ class GuideControllerTest {
                .andDo(document("Guide/Create",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
+                               resource(ResourceSnippetParameters.builder()
+                                                                 .summary("도움말 생성 API")
+                                                                 .description("주어진 암호화된 카테고리 키와 함께 요청 본문에 포함된 JSON 데이터(guideCreateRequest)와 첨부 파일(attachments)을 이용해 새로운 도움말을 생성하는 API입니다.")
+                                                                 .tag("Guide")
+                                                                 .build()),
                                pathParameters(parameterWithName("cryptoCategoryId").description("암호화된 카테고리 키")),
                                requestParts(partWithName("guideCreateRequest").description("도움말 요청 dto"),
                                             partWithName("attachments").description("첨부 파일 목록")),
@@ -221,6 +233,11 @@ class GuideControllerTest {
                .andDo(document("Guide/Update",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
+                               resource(ResourceSnippetParameters.builder()
+                                                                 .summary("도움말 수정 API")
+                                                                 .description("주어진 암호화된 카테고리 키와 함께 요청 본문에 포함된 JSON 데이터(guideCreateRequest)와 첨부 파일(attachments)을 이용해 새로운 도움말을 수정하는 API입니다.")
+                                                                 .tag("Guide")
+                                                                 .build()),
                                pathParameters(parameterWithName("cryptoGuideId").description("암호화된 도움말 키")),
                                requestParts(partWithName("guideUpdateRequest").description("도움말 수정 요청 데이터"),
                                             partWithName("newAttachments").description("새로 추가할 첨부파일 목록")),
@@ -246,6 +263,11 @@ class GuideControllerTest {
                .andDo(document("Guide/Delete",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
+                               resource(ResourceSnippetParameters.builder()
+                                                                 .summary("도움말 삭제 API")
+                                                                 .description("주어진 암호화된 도움말 키를 이용하여 도움말을 삭제하는 API입니다.")
+                                                                 .tag("Guide")
+                                                                 .build()),
                                pathParameters(parameterWithName("cryptoGuideId").description("암호화된 도움말 키")),
                                responseFields(
                                    fieldWithPath("isSuccess").description("성공 여부"),
