@@ -57,8 +57,8 @@ public class MemberPersistenceAdapter {
         return memberEntityPage.map(this.memberPersistenceMapper::toDomain);
     }
 
-    public Boolean existsByEmail(final String email) {
-        return this.memberRepository.existsByEmail(email);
+    public Boolean existsByEmailAndIsDeleted(final String email, final Boolean isDeleted) {
+        return this.memberRepository.existsByEmailAndIsDeleted(email, isDeleted);
     }
 
     public Boolean existsByNickname(final String nickname) {

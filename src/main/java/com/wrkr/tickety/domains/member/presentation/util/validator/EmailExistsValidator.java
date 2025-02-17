@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class EmailExistsValidator implements ConstraintValidator<ExistEmail, String> {
+
     private final MemberGetService memberGetService;
 
     @Override
@@ -18,7 +19,7 @@ public class EmailExistsValidator implements ConstraintValidator<ExistEmail, Str
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        boolean isValid = !memberGetService.existsByEmail(email);
+        boolean isValid = !memberGetService.existsByEmailAndIsDeleted(email, false);
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

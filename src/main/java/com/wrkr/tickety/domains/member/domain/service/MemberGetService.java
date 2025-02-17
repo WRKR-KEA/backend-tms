@@ -46,8 +46,8 @@ public class MemberGetService {
         );
     }
 
-    public Boolean existsByEmail(String email) {
-        return memberPersistenceAdapter.existsByEmail(email);
+    public Boolean existsByEmailAndIsDeleted(String email, Boolean isDeleted) {
+        return memberPersistenceAdapter.existsByEmailAndIsDeleted(email, isDeleted);
     }
 
     public Boolean existsByNickname(String nickname) {

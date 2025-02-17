@@ -11,11 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-@Async
+@EnableAsync
 public class SendEmailNotificationService {
 
     private final JavaMailSender javaMailSender;
@@ -27,11 +28,13 @@ public class SendEmailNotificationService {
         sendEmail(emailCreateRequest, text);
     }
 
+    @Async
     public void sendDelegateTicketManagerEmailToUser(EmailCreateRequest emailCreateRequest, Ticket ticket, Member newManager, String type) {
         String text = mapEmailTemplateService.setDelegateContext(ticket.getSerialNumber(), newManager.getNickname(), type);
         sendEmail(emailCreateRequest, text);
     }
 
+    @Async
     public void sendDelegateTicketManagerEmailToNewManager(EmailCreateRequest emailCreateRequest,
         Ticket ticket,
         Member prevManager,
@@ -41,6 +44,7 @@ public class SendEmailNotificationService {
         sendEmail(emailCreateRequest, text);
     }
 
+    @Async
     public void sendCommentCreateEmail(EmailCreateRequest emailCreateRequest, Ticket ticket, String type) {
         String text = mapEmailTemplateService.setCommentCreateContext(ticket.getSerialNumber(), type);
         sendEmail(emailCreateRequest, text);

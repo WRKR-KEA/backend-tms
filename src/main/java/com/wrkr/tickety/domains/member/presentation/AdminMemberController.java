@@ -10,8 +10,14 @@ import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_POSITION;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_ROLE;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.EXCEED_MAX_FILE_SIZE;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.FILE_NOT_UPLOAD;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INTERNAL_SERVER_ERROR;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_EXCEL_EXTENSION;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_IMAGE_EXTENSION;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequestForExcel;
@@ -40,10 +46,8 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,8 +77,8 @@ public class AdminMemberController {
     private final ExcelExampleCreateUseCase excelExampleCreateUseCase;
     private final ExcelUtil excelUtil;
 
-    @CustomErrorCodes(memberErrorCodes =
-        {
+    @CustomErrorCodes(
+        memberErrorCodes = {
             INVALID_EMAIL, ALREADY_EXIST_EMAIL,
             INVALID_NAME,
             INVALID_NICKNAME, ALREADY_EXIST_NICKNAME,
@@ -82,10 +86,14 @@ public class AdminMemberController {
             INVALID_POSITION,
             INVALID_PHONE,
             INVALID_ROLE
+        },
+        commonErrorCodes = {
+            INVALID_IMAGE_EXTENSION,
+            EXCEED_MAX_FILE_SIZE
         }
     )
     @Operation(summary = "관리자 - 회원 등록", description = "회원을 등록 시 이메일로 임시 비밀번호를 발급합니다.")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
     public ApplicationResponse<MemberPkResponse> createMember(
         @AuthenticationPrincipal Member member,
         @RequestPart(value = "request") @Valid MemberCreateRequest memberCreateRequest,
@@ -97,8 +105,8 @@ public class AdminMemberController {
     }
 
     // TODO: csv 파일도 업로드할 수 있도록 개선 가능
-    @CustomErrorCodes(memberErrorCodes =
-        {
+    @CustomErrorCodes(
+        memberErrorCodes = {
             INVALID_EMAIL, ALREADY_EXIST_EMAIL,
             INVALID_NAME,
             INVALID_NICKNAME, ALREADY_EXIST_NICKNAME,
@@ -106,14 +114,19 @@ public class AdminMemberController {
             INVALID_POSITION,
             INVALID_PHONE,
             INVALID_ROLE
+        },
+        commonErrorCodes = {
+            FILE_NOT_UPLOAD,
+            INVALID_EXCEL_EXTENSION,
+            EXCEED_MAX_FILE_SIZE
         }
     )
     @Operation(summary = "관리자 - 회원 등록(엑셀 파일 업로드)", description = "정해진 양식의 엑셀 파일 내용을 읽어 회원을 등록합니다.")
-    @PostMapping(value = "/excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/excel", consumes = MULTIPART_FORM_DATA_VALUE)
     public ApplicationResponse<List<MemberPkResponse>> createMemberExcelUpload(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "엑셀 파일")
-        @RequestParam @FileExtension(acceptedExtensions = {"xls", "xlsx"}) @NotNull(message = "업로드할 파일을 선택해주세요.") MultipartFile file
+        @RequestParam(required = false) MultipartFile file
     ) {
         List<MemberCreateRequestForExcel> memberCreateRequestForExcels = excelUtil.parseExcelToObject(file, MemberCreateRequestForExcel.class);
         List<MemberPkResponse> memberPkResponses = memberCreateFromExcelUseCase.createMember(memberCreateRequestForExcels);
@@ -132,8 +145,8 @@ public class AdminMemberController {
         excelUtil.renderObjectToExcel(response, memberInfoExamples, MemberCreateRequestForExcel.class, "member_info_example");
     }
 
-    @CustomErrorCodes(memberErrorCodes =
-        {
+    @CustomErrorCodes(
+        memberErrorCodes = {
             MEMBER_NOT_FOUND,
             INVALID_EMAIL, ALREADY_EXIST_EMAIL,
             INVALID_NAME,
@@ -142,15 +155,19 @@ public class AdminMemberController {
             INVALID_POSITION,
             INVALID_PHONE,
             INVALID_ROLE
+        },
+        commonErrorCodes = {
+            INVALID_IMAGE_EXTENSION,
+            EXCEED_MAX_FILE_SIZE
         }
     )
     @Operation(summary = "관리자 - 회원 정보 수정", description = "회원 정보를 수정합니다.")
-    @PatchMapping(value = "/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/{memberId}", consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
     public ApplicationResponse<MemberPkResponse> modifyMemberInfo(
         @AuthenticationPrincipal Member member,
         @PathVariable String memberId,
         @RequestPart(value = "request") @Valid MemberInfoUpdateRequest memberInfoUpdateRequest,
-        @RequestPart(required = false) MultipartFile profileImage
+        @RequestPart(required = false) @FileExtension(acceptedExtensions = {"jpg", "png", "jpeg"}) MultipartFile profileImage
     ) {
         MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberInfoUpdateRequest, profileImage);
         return ApplicationResponse.onSuccess(memberPkResponse);

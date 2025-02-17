@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberRepository extends JpaRepository<MemberEntity, Long>, MemberQueryDslRepository {
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndIsDeleted(String email, Boolean isDeleted);
 
     boolean existsByNickname(String nickname);
 
