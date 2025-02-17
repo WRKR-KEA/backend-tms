@@ -99,7 +99,7 @@ class PasswordReissueUseCaseTest {
     }
 
     @Test
-    @DisplayName("회원이 존재하지 않으면 예외가 발생한다.")
+    @DisplayName("회원이 존재하지 않으면 MEMBER_NOT_FOUND 예외가 발생한다.")
     void reissuePasswordMemberNotFound() {
         // given
         String encryptedMemberId = PkCrypto.encrypt(999L);

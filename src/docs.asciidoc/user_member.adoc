@@ -23,7 +23,6 @@
 HTTP Request
 
 include::{snippets}/UserMember/updatePassword/Success/http-request.adoc[]
-include::{snippets}/UserMember/updatePassword/Success/request-body.adoc[]
 include::{snippets}/UserMember/updatePassword/Success/request-fields.adoc[]
 
 HTTP Response
@@ -36,7 +35,6 @@ include::{snippets}/UserMember/updatePassword/Success/response-fields.adoc[]
 HTTP Request
 
 include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/http-request.adoc[]
-include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/request-body.adoc[]
 include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/request-fields.adoc[]
 
 HTTP Response
@@ -49,7 +47,6 @@ include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/response
 HTTP Request
 
 include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/http-request.adoc[]
-include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/request-body.adoc[]
 include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/request-fields.adoc[]
 
 HTTP Response
@@ -74,7 +71,6 @@ include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/response-fi
 HTTP Request
 
 include::{snippets}/UserMember/updatePassword/Failure/InvalidPasswordFormat/http-request.adoc[]
-include::{snippets}/UserMember/updatePassword/Failure/InvalidPasswordFormat/request-body.adoc[]
 include::{snippets}/UserMember/updatePassword/Failure/InvalidPasswordFormat/request-fields.adoc[]
 
 HTTP Response
