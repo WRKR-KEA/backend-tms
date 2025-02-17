@@ -7,7 +7,7 @@ on:
 jobs:
   create-issue:
     name: Create Jira Test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check if issue uses test template
         id: check_template
