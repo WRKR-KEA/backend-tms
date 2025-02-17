@@ -34,8 +34,8 @@ public class TicketCompleteUseCase {
 
     public TicketPkResponse completeTicket(Long memberId, Long ticketId) {
         Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
-        validateTicketManager(ticket, memberId);
         validateCompletableStatus(ticket);
+        validateTicketManager(ticket, memberId);
         Ticket completedTicket = ticketUpdateService.updateStatus(ticket, COMPLETE);
 
         updateTicketHistory(completedTicket);
