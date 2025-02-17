@@ -99,7 +99,7 @@ class GuideControllerTest {
                .andExpect(jsonPath("$.result.guideId").value(cryptoCategoryId))
                .andExpect(jsonPath("$.result.content").value("도움말 내용"))
                .andExpect(jsonPath("$.result.attachmentUrls").isEmpty())
-               .andDo(document("도움말 조회",
+               .andDo(document("Guide/Get",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
                                pathParameters(parameterWithName("cryptoCategoryId").description("암호화된 카테고리 키")),
@@ -162,7 +162,7 @@ class GuideControllerTest {
                        )
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.result.id").value(cryptoCategoryId))
-               .andDo(document("도움말 생성",
+               .andDo(document("Guide/Create",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
                                pathParameters(parameterWithName("cryptoCategoryId").description("암호화된 카테고리 키")),
@@ -218,7 +218,7 @@ class GuideControllerTest {
                        )
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.result.id").value(cryptoGuideId))
-               .andDo(document("도움말 수정",
+               .andDo(document("Guide/Update",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
                                pathParameters(parameterWithName("cryptoGuideId").description("암호화된 도움말 키")),
@@ -243,7 +243,7 @@ class GuideControllerTest {
         mockMvc.perform(delete("/api/admin/guide/{cryptoGuideId}", cryptoGuideId).with(csrf()))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.isSuccess").value(true))
-               .andDo(document("도움말 삭제",
+               .andDo(document("Guide/Delete",
                                preprocessRequest(prettyPrint()),
                                preprocessResponse(prettyPrint()),
                                pathParameters(parameterWithName("cryptoGuideId").description("암호화된 도움말 키")),
