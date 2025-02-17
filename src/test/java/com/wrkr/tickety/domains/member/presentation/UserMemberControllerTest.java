@@ -72,7 +72,7 @@ class UserMemberControllerTest {
     }
 
     @ParameterizedTest
-    @DisplayName("비밀번호 형식이 올바르면 비밀번호 재설정에 성공한다.")
+    @DisplayName("비밀번호 형식(특수문자, 대문자, 숫자를 포함하는 8~12자 비밀번호)이 올바르면 비밀번호 재설정에 성공한다.")
     @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
     @CsvSource({
         "Abc123!@",
