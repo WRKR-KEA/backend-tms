@@ -38,15 +38,15 @@ public enum UserFixture {
     USER_Q(27L, "harrison@gmail.com", "Dummy0212*", "박정재", "harrison.wrkr", "INFRA", "팀원", "010-7711-2222", Role.USER, "profile_h.jpg"),
     USER_R(28L, "loopy@gmail.com", "Dummy0212*", "최예원", "loopy.wrkr", "INFRA", "팀원", "010-1161-2222", Role.USER, "profile_f.jpg"),
 
-    ADMIN_A(29L, "admin1@gmail.com", "AdminPass01*", "관리자1", "admin1.wrkr", "ADMIN", "팀장", "010-1234-5679", Role.ADMIN, "admin_profile_a.jpg"),
-    ADMIN_B(30L, "admin2@gmail.com", "AdminPass02*", "관리자2", "admin2.wrkr", "ADMIN", "팀장", "010-9876-5480", Role.ADMIN, "admin_profile_b.jpg"),
-    ADMIN_C(31L, "admin3@gmail.com", "AdminPass03*", "관리자3", "admin3.wrkr", "ADMIN", "팀장", "010-5678-1861", Role.ADMIN, "admin_profile_c.jpg"),
-    ADMIN_D(32L, "admin4@gmail.com", "AdminPass04*", "관리자4", "admin4.wrkr", "ADMIN", "팀장", "010-2468-1392", Role.ADMIN, "admin_profile_d.jpg"),
-    ADMIN_E(33L, "admin5@gmail.com", "AdminPass05*", "관리자5", "admin5.wrkr", "ADMIN", "팀장", "010-1131-2203", Role.ADMIN, "admin_profile_e.jpg"),
-    ADMIN_F(34L, "admin6@gmail.com", "AdminPass06*", "관리자6", "admin6.wrkr", "ADMIN", "팀장", "010-1811-2224", Role.ADMIN, "admin_profile_f.jpg"),
-    ADMIN_G(35L, "admin7@gmail.com", "AdminPass07*", "관리자7", "admin7.wrkr", "ADMIN", "팀장", "010-1111-2533", Role.ADMIN, "admin_profile_g.jpg"),
-    ADMIN_H(36L, "admin8@gmail.com", "AdminPass08*", "관리자8", "admin8.wrkr", "ADMIN", "팀장", "010-7211-2234", Role.ADMIN, "admin_profile_h.jpg"),
-    ADMIN_I(37L, "admin9@gmail.com", "AdminPass09*", "관리자9", "admin9.wrkr", "ADMIN", "팀장", "010-1161-2345", Role.ADMIN, "admin_profile_i.jpg"),
+    ADMIN_A(29L, "admin1@gmail.com", "AdminPass01*", "관리자1", "admina.wrkr", "ADMIN", "팀장", "010-1234-5679", Role.ADMIN, "admin_profile_a.jpg"),
+    ADMIN_B(30L, "admin2@gmail.com", "AdminPass02*", "관리자2", "adminb.wrkr", "ADMIN", "팀장", "010-9876-5480", Role.ADMIN, "admin_profile_b.jpg"),
+    ADMIN_C(31L, "admin3@gmail.com", "AdminPass03*", "관리자3", "adminc.wrkr", "ADMIN", "팀장", "010-5678-1861", Role.ADMIN, "admin_profile_c.jpg"),
+    ADMIN_D(32L, "admin4@gmail.com", "AdminPass04*", "관리자4", "admind.wrkr", "ADMIN", "팀장", "010-2468-1392", Role.ADMIN, "admin_profile_d.jpg"),
+    ADMIN_E(33L, "admin5@gmail.com", "AdminPass05*", "관리자5", "admine.wrkr", "ADMIN", "팀장", "010-1131-2203", Role.ADMIN, "admin_profile_e.jpg"),
+    ADMIN_F(34L, "admin6@gmail.com", "AdminPass06*", "관리자6", "adminh.wrkr", "ADMIN", "팀장", "010-1811-2224", Role.ADMIN, "admin_profile_f.jpg"),
+    ADMIN_G(35L, "admin7@gmail.com", "AdminPass07*", "관리자7", "adminj.wrkr", "ADMIN", "팀장", "010-1111-2533", Role.ADMIN, "admin_profile_g.jpg"),
+    ADMIN_H(36L, "admin8@gmail.com", "AdminPass08*", "관리자8", "admini.wrkr", "ADMIN", "팀장", "010-7211-2234", Role.ADMIN, "admin_profile_h.jpg"),
+    ADMIN_I(37L, "admin9@gmail.com", "AdminPass09*", "관리자9", "admink.wrkr", "ADMIN", "팀장", "010-1161-2345", Role.ADMIN, "admin_profile_i.jpg"),
 
     ;
 
