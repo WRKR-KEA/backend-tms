@@ -28,3 +28,10 @@ CREATE TABLE `notification` (
 -- changeset Wonee:add_ticket_title_length_limit
 ALTER TABLE ticket
     MODIFY COLUMN title VARCHAR(50) NOT NULL;
+
+-- changeset Wonee:add_ticket_version_column
+ALTER TABLE ticket
+    ADD COLUMN version INT NOT NULL DEFAULT 0;
+
+-- changeset Wonee:update_existing_ticket_version
+UPDATE ticket SET version = 0 WHERE version IS NULL;

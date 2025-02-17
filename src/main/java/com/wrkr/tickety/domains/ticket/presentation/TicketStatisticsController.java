@@ -46,7 +46,7 @@ public class TicketStatisticsController {
     @GetMapping("/{statisticsType}/status")
     @Operation(summary = "일간/월간/연간 상태별 요약 조회")
     @CustomErrorCodes(statisticsErrorCodes = {ILLEGAL_STATISTICS_OPTION})
-    public ApplicationResponse<StatisticsByStatusResponse> getStatisticsByStatusDaily(
+    public ApplicationResponse<StatisticsByStatusResponse> getStatisticsByStatus(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "통계 타입 (DAILY | MONTHLY | YEARLY)", example = "daily", required = true) @PathVariable String statisticsType,
         @Parameter(description = "통계를 확인하고자 하는 기준일", example = "2025-01-01") @RequestParam(required = false) String date

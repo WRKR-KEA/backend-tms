@@ -16,6 +16,8 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.INTERNAL_SER
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_EXCEL_EXTENSION;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_IMAGE_EXTENSION;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequestForExcel;
@@ -46,7 +48,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -92,7 +93,7 @@ public class AdminMemberController {
         }
     )
     @Operation(summary = "관리자 - 회원 등록", description = "회원을 등록 시 이메일로 임시 비밀번호를 발급합니다.")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
     public ApplicationResponse<MemberPkResponse> createMember(
         @AuthenticationPrincipal Member member,
         @RequestPart(value = "request") @Valid MemberCreateRequest memberCreateRequest,
@@ -121,7 +122,7 @@ public class AdminMemberController {
         }
     )
     @Operation(summary = "관리자 - 회원 등록(엑셀 파일 업로드)", description = "정해진 양식의 엑셀 파일 내용을 읽어 회원을 등록합니다.")
-    @PostMapping(value = "/excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/excel", consumes = MULTIPART_FORM_DATA_VALUE)
     public ApplicationResponse<List<MemberPkResponse>> createMemberExcelUpload(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "엑셀 파일")
@@ -161,7 +162,7 @@ public class AdminMemberController {
         }
     )
     @Operation(summary = "관리자 - 회원 정보 수정", description = "회원 정보를 수정합니다.")
-    @PatchMapping(value = "/{memberId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "/{memberId}", consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
     public ApplicationResponse<MemberPkResponse> modifyMemberInfo(
         @AuthenticationPrincipal Member member,
         @PathVariable String memberId,
