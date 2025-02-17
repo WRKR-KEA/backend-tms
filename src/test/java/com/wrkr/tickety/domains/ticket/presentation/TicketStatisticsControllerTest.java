@@ -99,7 +99,7 @@ class TicketStatisticsControllerTest {
         }
 
         @Test
-        @DisplayName("부모카테고리별 일별 통계 조회")
+        @DisplayName("부모카테고리별 월별 통계 조회")
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "managr.hjw")
         void getParentCategoryStatisticsInMonthly() throws Exception {
             //given
