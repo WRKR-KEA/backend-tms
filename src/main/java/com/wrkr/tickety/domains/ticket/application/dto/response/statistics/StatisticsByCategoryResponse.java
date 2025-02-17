@@ -18,7 +18,7 @@ public record StatisticsByCategoryResponse(
     @Builder
     public record StatisticData(
         @Schema(description = "2차 카테고리 티켓 수 배열")
-        List<TicketCount> firstCategoryTicketCount
+        List<TicketCount> categoryTicketCount
     ) {
 
     }
