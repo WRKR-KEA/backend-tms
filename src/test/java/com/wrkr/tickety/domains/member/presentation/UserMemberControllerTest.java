@@ -35,6 +35,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -69,17 +71,21 @@ class UserMemberControllerTest {
         pkCrypto.init();
     }
 
-    @Test
-    @DisplayName("비밀번호 재설정에 성공한다.")
+    @ParameterizedTest
+    @DisplayName("비밀번호 형식이 올바르면 비밀번호 재설정에 성공한다.")
     @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
-    void updatePasswordSuccess() throws Exception {
+    @CsvSource({
+        "Abc123!@",
+        "Abcdef123!@#"
+    })
+    void updatePasswordValidFormat(String password) throws Exception {
         // given
         final MemberPkResponse response = new MemberPkResponse(PkCrypto.encrypt(2L));
         doReturn(response).when(passwordUpdateUseCase).updatePassword(anyLong(), anyString(), anyString());
 
         PasswordUpdateRequest request = PasswordUpdateRequest.builder()
-            .password("newPwd123!")
-            .confirmPassword("newPwd123!")
+            .password(password)
+            .confirmPassword(password)
             .build();
 
         String requestBody = objectMapper.writeValueAsString(request);
@@ -206,14 +212,21 @@ class UserMemberControllerTest {
             ));
     }
 
-    @Test
-    @DisplayName("비밀번호 형식이 올바르지 않을 경우 BAD_REQUEST 예외가 발생한다.")
+    @ParameterizedTest
+    @DisplayName("비밀번호 형식이 올바르지 않으면 BAD_REQUEST 예외가 발생한다.")
     @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
-    void updatePasswordInvalidPasswordFormat() throws Exception {
+    @CsvSource({
+        "Abc12!",
+        "Abcdef1234!@#",
+        "Abcdefg!",
+        "abcdef123!",
+        "Abcdef123"
+    })
+    void updatePasswordInvalidPasswordFormat(String password) throws Exception {
         // given
         PasswordUpdateRequest request = PasswordUpdateRequest.builder()
-            .password("invalid")
-            .confirmPassword("invalid")
+            .password(password)
+            .confirmPassword(password)
             .build();
 
         String requestBody = objectMapper.writeValueAsString(request);
@@ -239,17 +252,16 @@ class UserMemberControllerTest {
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
                 requestFields(
-                    fieldWithPath("password").description("잘못된 형식의 새 비밀번호"),
-                    fieldWithPath("confirmPassword").description("잘못된 형식의 비밀번호 확인")
+                    fieldWithPath("password").description("새 비밀번호"),
+                    fieldWithPath("confirmPassword").description("비밀번호 확인")
                 ),
                 responseFields(
                     fieldWithPath("isSuccess").description("응답 성공 여부"),
                     fieldWithPath("code").description("응답 코드"),
                     fieldWithPath("message").description("응답 메시지"),
-                    fieldWithPath("result.password").description("비밀번호 형식 오류 메시지"),
-                    fieldWithPath("result.confirmPassword").description("비밀번호 확인 형식 오류 메시지")
+                    fieldWithPath("result.confirmPassword").description("비밀번호 확인 필드에 대한 오류 메시지"),
+                    fieldWithPath("result.password").description("비밀번호 입력 필드에 대한 오류 메시지")
                 )
             ));
     }
-
 }
