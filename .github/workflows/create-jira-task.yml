@@ -1,13 +1,11 @@
 name: Create Jira Task
 on:
-  issues:
-    types:
-      - opened
+  workflow_dispatch:
 
 jobs:
   create-issue:
     name: Create Jira Task
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check if issue uses task template
         id: check_template
