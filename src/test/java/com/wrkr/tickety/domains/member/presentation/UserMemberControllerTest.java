@@ -33,6 +33,7 @@ import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -71,197 +72,202 @@ class UserMemberControllerTest {
         pkCrypto.init();
     }
 
-    @ParameterizedTest
-    @DisplayName("비밀번호 형식(특수문자, 대문자, 숫자를 포함하는 8~12자 비밀번호)이 올바르면 비밀번호 재설정에 성공한다.")
-    @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
-    @CsvSource({
-        "Abc123!@",
-        "Abcdef123!@#"
-    })
-    void updatePasswordValidFormat(String password) throws Exception {
-        // given
-        final MemberPkResponse response = new MemberPkResponse(PkCrypto.encrypt(2L));
-        doReturn(response).when(passwordUpdateUseCase).updatePassword(anyLong(), anyString(), anyString());
+    @Nested
+    @DisplayName("공통 - 비밀번호 재설정 API 테스트")
+    class UpdatePassword {
 
-        PasswordUpdateRequest request = PasswordUpdateRequest.builder()
-            .password(password)
-            .confirmPassword(password)
-            .build();
+        @ParameterizedTest
+        @DisplayName("비밀번호 형식(특수문자, 대문자, 숫자를 포함하는 8~12자 비밀번호)이 올바르면 비밀번호 재설정에 성공한다.")
+        @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
+        @CsvSource({
+            "Abc123!@",
+            "Abcdef123!@#"
+        })
+        void updatePasswordValidFormat(String password) throws Exception {
+            // given
+            final MemberPkResponse response = new MemberPkResponse(PkCrypto.encrypt(2L));
+            doReturn(response).when(passwordUpdateUseCase).updatePassword(anyLong(), anyString(), anyString());
 
-        String requestBody = objectMapper.writeValueAsString(request);
+            PasswordUpdateRequest request = PasswordUpdateRequest.builder()
+                .password(password)
+                .confirmPassword(password)
+                .build();
 
-        // when
-        ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody)
-            .with(csrf()));
+            String requestBody = objectMapper.writeValueAsString(request);
 
-        // then
-        requestBuilder.andDo(print())
-            .andExpectAll(
-                status().isOk(),
-                jsonPath("$.isSuccess").value(true),
-                jsonPath("$.code").value(SUCCESS.getCustomCode()),
-                jsonPath("$.message").value(SUCCESS.getMessage()),
-                jsonPath("$.result.memberId").value(response.memberId())
-            )
-            .andDo(document(
-                "UserMember/updatePassword/Success",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestFields(
-                    fieldWithPath("password").description("새 비밀번호"),
-                    fieldWithPath("confirmPassword").description("비밀번호 확인")
-                ),
-                responseFields(
-                    fieldWithPath("isSuccess").description("응답 성공 여부"),
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("응답 메시지"),
-                    fieldWithPath("result.memberId").description("암호화된 회원 PK")
+            // when
+            ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .with(csrf()));
+
+            // then
+            requestBuilder.andDo(print())
+                .andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.isSuccess").value(true),
+                    jsonPath("$.code").value(SUCCESS.getCustomCode()),
+                    jsonPath("$.message").value(SUCCESS.getMessage()),
+                    jsonPath("$.result.memberId").value(response.memberId())
                 )
-            ));
-    }
+                .andDo(document(
+                    "UserMember/updatePassword/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").description("새 비밀번호"),
+                        fieldWithPath("confirmPassword").description("비밀번호 확인")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result.memberId").description("암호화된 회원 PK")
+                    )
+                ));
+        }
 
-    @Test
-    @DisplayName("비밀번호가 일치하지 않을 경우 UNMATCHED_PASSWORD 예외가 발생한다.")
-    @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
-    void updatePasswordUnmatchedPassword() throws Exception {
-        // given
-        PasswordUpdateRequest request = PasswordUpdateRequest.builder()
-            .password("newPwd123!")
-            .confirmPassword("diffPwd123!")
-            .build();
+        @Test
+        @DisplayName("비밀번호가 일치하지 않을 경우 UNMATCHED_PASSWORD 예외가 발생한다.")
+        @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
+        void updatePasswordUnmatchedPassword() throws Exception {
+            // given
+            PasswordUpdateRequest request = PasswordUpdateRequest.builder()
+                .password("newPwd123!")
+                .confirmPassword("diffPwd123!")
+                .build();
 
-        String requestBody = objectMapper.writeValueAsString(request);
+            String requestBody = objectMapper.writeValueAsString(request);
 
-        doThrow(ApplicationException.from(UNMATCHED_PASSWORD)).when(passwordUpdateUseCase)
-            .updatePassword(anyLong(), anyString(), anyString());
+            doThrow(ApplicationException.from(UNMATCHED_PASSWORD)).when(passwordUpdateUseCase)
+                .updatePassword(anyLong(), anyString(), anyString());
 
-        // when
-        ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody)
-            .with(csrf()));
+            // when
+            ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .with(csrf()));
 
-        // then
-        requestBuilder.andDo(print())
-            .andExpectAll(
-                status().isBadRequest(),
-                jsonPath("$.isSuccess").value(false),
-                jsonPath("$.code").value(UNMATCHED_PASSWORD.getCustomCode()),
-                jsonPath("$.message").value(UNMATCHED_PASSWORD.getMessage())
-            )
-            .andDo(document(
-                "UserMember/updatePassword/Failure/UnmatchedPassword",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestFields(
-                    fieldWithPath("password").description("새 비밀번호"),
-                    fieldWithPath("confirmPassword").description("비밀번호 확인 (다른 값)")
-                ),
-                responseFields(
-                    fieldWithPath("isSuccess").description("응답 성공 여부"),
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("응답 메시지")
+            // then
+            requestBuilder.andDo(print())
+                .andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").value(UNMATCHED_PASSWORD.getCustomCode()),
+                    jsonPath("$.message").value(UNMATCHED_PASSWORD.getMessage())
                 )
-            ));
-    }
+                .andDo(document(
+                    "UserMember/updatePassword/Failure/UnmatchedPassword",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").description("새 비밀번호"),
+                        fieldWithPath("confirmPassword").description("비밀번호 확인 (다른 값)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지")
+                    )
+                ));
+        }
 
-    @Test
-    @DisplayName("존재하지 않는 회원 ID로 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.")
-    @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
-    void updatePasswordMemberNotFound() throws Exception {
-        // given
-        PasswordUpdateRequest request = PasswordUpdateRequest.builder()
-            .password("newPwd123!")
-            .confirmPassword("newPwd123!")
-            .build();
+        @Test
+        @DisplayName("존재하지 않는 회원 ID로 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.")
+        @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
+        void updatePasswordMemberNotFound() throws Exception {
+            // given
+            PasswordUpdateRequest request = PasswordUpdateRequest.builder()
+                .password("newPwd123!")
+                .confirmPassword("newPwd123!")
+                .build();
 
-        String requestBody = objectMapper.writeValueAsString(request);
+            String requestBody = objectMapper.writeValueAsString(request);
 
-        doThrow(ApplicationException.from(MEMBER_NOT_FOUND)).when(passwordUpdateUseCase)
-            .updatePassword(anyLong(), anyString(), anyString());
+            doThrow(ApplicationException.from(MEMBER_NOT_FOUND)).when(passwordUpdateUseCase)
+                .updatePassword(anyLong(), anyString(), anyString());
 
-        // when
-        ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody)
-            .with(csrf()));
+            // when
+            ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .with(csrf()));
 
-        // then
-        requestBuilder.andDo(print())
-            .andExpectAll(
-                status().isNotFound(),
-                jsonPath("$.isSuccess").value(false),
-                jsonPath("$.code").value(MEMBER_NOT_FOUND.getCustomCode()),
-                jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
-            )
-            .andDo(document(
-                "UserMember/updatePassword/Failure/MemberNotFound",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestFields(
-                    fieldWithPath("password").description("새 비밀번호"),
-                    fieldWithPath("confirmPassword").description("비밀번호 확인")
-                ),
-                responseFields(
-                    fieldWithPath("isSuccess").description("응답 성공 여부"),
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("응답 메시지")
+            // then
+            requestBuilder.andDo(print())
+                .andExpectAll(
+                    status().isNotFound(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").value(MEMBER_NOT_FOUND.getCustomCode()),
+                    jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
                 )
-            ));
-    }
+                .andDo(document(
+                    "UserMember/updatePassword/Failure/MemberNotFound",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").description("새 비밀번호"),
+                        fieldWithPath("confirmPassword").description("비밀번호 확인")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지")
+                    )
+                ));
+        }
 
-    @ParameterizedTest
-    @DisplayName("비밀번호 형식이 올바르지 않으면 BAD_REQUEST 예외가 발생한다.")
-    @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
-    @CsvSource({
-        "Abc12!",
-        "Abcdef1234!@#",
-        "Abcdefg!",
-        "abcdef123!",
-        "Abcdef123"
-    })
-    void updatePasswordInvalidPasswordFormat(String password) throws Exception {
-        // given
-        PasswordUpdateRequest request = PasswordUpdateRequest.builder()
-            .password(password)
-            .confirmPassword(password)
-            .build();
+        @ParameterizedTest
+        @DisplayName("비밀번호 형식이 올바르지 않으면 BAD_REQUEST 예외가 발생한다.")
+        @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
+        @CsvSource({
+            "Abc12!",
+            "Abcdef1234!@#",
+            "Abcdefg!",
+            "abcdef123!",
+            "Abcdef123"
+        })
+        void updatePasswordInvalidPasswordFormat(String password) throws Exception {
+            // given
+            PasswordUpdateRequest request = PasswordUpdateRequest.builder()
+                .password(password)
+                .confirmPassword(password)
+                .build();
 
-        String requestBody = objectMapper.writeValueAsString(request);
+            String requestBody = objectMapper.writeValueAsString(request);
 
-        // when
-        ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody)
-            .with(csrf()));
+            // when
+            ResultActions requestBuilder = mockMvc.perform(patch("/api/user/members/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .with(csrf()));
 
-        // then
-        requestBuilder.andDo(print())
-            .andExpectAll(
-                status().isBadRequest(),
-                jsonPath("$.isSuccess").value(false),
-                jsonPath("$.code").value(BAD_REQUEST.getCustomCode()),
-                jsonPath("$.message").value(BAD_REQUEST.getMessage()),
-                jsonPath("$.result.password").value(INVALID_PASSWORD_FORMAT.getMessage()),
-                jsonPath("$.result.confirmPassword").value(INVALID_PASSWORD_FORMAT.getMessage())
-            )
-            .andDo(document(
-                "UserMember/updatePassword/Failure/InvalidPasswordFormat",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestFields(
-                    fieldWithPath("password").description("새 비밀번호"),
-                    fieldWithPath("confirmPassword").description("비밀번호 확인")
-                ),
-                responseFields(
-                    fieldWithPath("isSuccess").description("응답 성공 여부"),
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("응답 메시지"),
-                    fieldWithPath("result.confirmPassword").description("비밀번호 확인 필드에 대한 오류 메시지"),
-                    fieldWithPath("result.password").description("비밀번호 입력 필드에 대한 오류 메시지")
+            // then
+            requestBuilder.andDo(print())
+                .andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").value(BAD_REQUEST.getCustomCode()),
+                    jsonPath("$.message").value(BAD_REQUEST.getMessage()),
+                    jsonPath("$.result.password").value(INVALID_PASSWORD_FORMAT.getMessage()),
+                    jsonPath("$.result.confirmPassword").value(INVALID_PASSWORD_FORMAT.getMessage())
                 )
-            ));
+                .andDo(document(
+                    "UserMember/updatePassword/Failure/InvalidPasswordFormat",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").description("새 비밀번호"),
+                        fieldWithPath("confirmPassword").description("비밀번호 확인")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result.confirmPassword").description("비밀번호 확인 필드에 대한 오류 메시지"),
+                        fieldWithPath("result.password").description("비밀번호 입력 필드에 대한 오류 메시지")
+                    )
+                ));
+        }
     }
 }

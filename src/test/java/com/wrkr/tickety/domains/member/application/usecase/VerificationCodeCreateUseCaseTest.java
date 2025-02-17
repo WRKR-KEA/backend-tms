@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("인증 코드 발급 UseCase Layer Test")
 public class VerificationCodeCreateUseCaseTest {
 
     @Mock
@@ -70,7 +71,7 @@ public class VerificationCodeCreateUseCaseTest {
         when(memberGetService.findMemberByNickname(member.getNickname())).thenReturn(Optional.of(member));
         doNothing().when(redisService).deleteValues(anyString());
         doNothing().when(redisService).setValues(anyString(), anyString(), any());
-        doNothing().when(emailUtil).sendMail(any(), anyString(), anyString());  // mock email sending
+        doNothing().when(emailUtil).sendMail(any(), anyString(), anyString());
 
         // when
         MemberPkResponse response = verificationCodeCreateUseCase.createVerificationCode(member.getNickname());
