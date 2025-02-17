@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.member.presentation.util.validator;
 
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_PHONE_MAX_LENGTH;
 
+import com.wrkr.tickety.domains.member.domain.constant.RegexConstants;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.presentation.util.annotation.PhoneNumberFormat;
 import jakarta.validation.ConstraintValidator;
@@ -10,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class PhoneFormatValidator implements ConstraintValidator<PhoneNumberFormat, String> {
 
-    private static final String PHONE_NUMBER_REGEX = "^010-\\d{4}-\\d{4}$";
+    private static final String PHONE_NUMBER_REGEX = RegexConstants.PHONE_NUMBER_REGEX;
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(PHONE_NUMBER_REGEX);
 
     @Override
