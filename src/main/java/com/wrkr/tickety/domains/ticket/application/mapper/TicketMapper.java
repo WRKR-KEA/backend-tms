@@ -183,4 +183,25 @@ public class TicketMapper {
     public static ManagerPinTicketResponse toManagerPinTicketResponse(Ticket pinnedTicket) {
         return ManagerPinTicketResponse.builder().ticketId(PkCrypto.encrypt(pinnedTicket.getTicketId())).isPinned(pinnedTicket.getIsPinned()).build();
     }
+
+    public static ManagerTicketMainPageResponse.PinTickets toTestPin(Ticket ticket) {
+        return ManagerTicketMainPageResponse.PinTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+            .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
+            .userNickname(ticket.getUser().getNickname())
+            .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
+            .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build();
+    }
+
+    public static ManagerTicketMainPageResponse.requestTickets toTestRequest(Ticket ticket) {
+        return ManagerTicketMainPageResponse.requestTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+            .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
+            .userNickname(ticket.getUser().getNickname())
+            .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build();
+    }
 }

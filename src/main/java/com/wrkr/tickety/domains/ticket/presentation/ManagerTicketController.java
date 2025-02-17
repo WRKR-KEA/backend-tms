@@ -207,4 +207,16 @@ public class ManagerTicketController {
         return ApplicationResponse.onSuccess(managerGetMainUseCase.getMain(member.getMemberId()));
     }
 
+    @Operation(summary = "담당자 메인 페이지 고정 티켓 조회", description = "담당자의 메인 페이지에서 고정된 티켓을 조회합니다.")
+    @GetMapping("/main/pins")
+    public ApplicationResponse<List<ManagerTicketMainPageResponse.PinTickets>> getMainPagePinTicket(@AuthenticationPrincipal Member member) {
+        return ApplicationResponse.onSuccess(managerGetMainUseCase.getPinTickets(member.getMemberId()));
+    }
+
+    @Operation(summary = "담당자 사용자 요청 티켓 조회", description = "담다앚의 메인 페이지에서 사용자의 요청된 티켓을 조회합니다.")
+    @GetMapping("/main/requests")
+    public ApplicationResponse<List<ManagerTicketMainPageResponse.requestTickets>> getMainPageRecentTicket() {
+        return ApplicationResponse.onSuccess(managerGetMainUseCase.getRecentTickets());
+    }
+
 }
