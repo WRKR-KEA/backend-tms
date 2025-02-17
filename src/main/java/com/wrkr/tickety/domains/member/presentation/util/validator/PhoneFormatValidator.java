@@ -1,5 +1,7 @@
 package com.wrkr.tickety.domains.member.presentation.util.validator;
 
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_PHONE_MAX_LENGTH;
+
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.presentation.util.annotation.PhoneNumberFormat;
 import jakarta.validation.ConstraintValidator;
@@ -18,6 +20,12 @@ public class PhoneFormatValidator implements ConstraintValidator<PhoneNumberForm
 
     @Override
     public boolean isValid(String phoneNumber, ConstraintValidatorContext context) {
+        if (phoneNumber.length() > 50) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(EXCEED_PHONE_MAX_LENGTH.getMessage()).addConstraintViolation();
+            return false;
+        }
+
         boolean isValid = phoneNumber != null && !phoneNumber.isBlank() && PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches();
 
         if (!isValid) {

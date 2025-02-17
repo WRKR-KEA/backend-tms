@@ -18,12 +18,10 @@ public record MyPageInfoUpdateRequest(
 
     @PhoneNumberFormat
     @Schema(description = "회원 전화번호", example = "010-1234-5678")
-    @Size(max = 50, message = "전화번호는 50자 이하로 입력해주세요.")
     String phone,
 
     @Schema(description = "회원 이메일", example = "email@gachon.ac.kr")
     @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
-    @Size(max = 50, message = "이메일은 50자 이하로 입력해주세요.")
     String email,
 
     @NotBlank(message = "유효하지 않은 직책입니다.")

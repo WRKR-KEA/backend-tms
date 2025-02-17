@@ -1,5 +1,7 @@
 package com.wrkr.tickety.domains.member.presentation.util.validator;
 
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_NICKNAME_MAX_LENGTH;
+
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.member.presentation.util.annotation.NicknameFormat;
 import jakarta.validation.ConstraintValidator;
@@ -18,6 +20,12 @@ public class NicknameFormatValidator implements ConstraintValidator<NicknameForm
 
     @Override
     public boolean isValid(String nickname, ConstraintValidatorContext context) {
+        if (nickname.length() > 50) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(EXCEED_NICKNAME_MAX_LENGTH.getMessage()).addConstraintViolation();
+            return false;
+        }
+
         boolean isValid = nickname != null && !nickname.isBlank() && NICKNAME_PATTERN.matcher(nickname).matches();
 
         if (!isValid) {

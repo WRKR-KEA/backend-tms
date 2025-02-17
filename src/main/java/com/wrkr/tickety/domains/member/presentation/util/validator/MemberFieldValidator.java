@@ -5,6 +5,12 @@ import static com.wrkr.tickety.domains.member.domain.constant.RegexConstants.NIC
 import static com.wrkr.tickety.domains.member.domain.constant.RegexConstants.PHONE_NUMBER_REGEX;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_EMAIL;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.ALREADY_EXIST_NICKNAME;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_DEPARTMENT_MAX_LENGTH;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_EMAIL_MAX_LENGTH;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_NAME_MAX_LENGTH;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_NICKNAME_MAX_LENGTH;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_PHONE_MAX_LENGTH;
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_POSITION_MAX_LENGTH;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_DEPARTMENT;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_EMAIL;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NAME;
@@ -51,7 +57,11 @@ public class MemberFieldValidator {
     }
 
     public void validateEmailFormat(String email) {
-        if (email == null || email.isBlank() || email.length() > 50
+        if (email.length() > 50) {
+            throw ApplicationException.from(EXCEED_EMAIL_MAX_LENGTH);
+        }
+
+        if (email == null || email.isBlank()
             || !EMAIL_PATTERN.matcher(email).matches()) {
             throw ApplicationException.from(INVALID_EMAIL);
         }
@@ -64,13 +74,21 @@ public class MemberFieldValidator {
     }
 
     public void validateName(String name) {
-        if (name == null || name.isBlank() || name.length() > 50) {
+        if (name.length() > 50) {
+            throw ApplicationException.from(EXCEED_NAME_MAX_LENGTH);
+        }
+
+        if (name == null || name.isBlank()) {
             throw ApplicationException.from(INVALID_NAME);
         }
     }
 
     public void validateNicknameFormat(String nickname) {
-        if (nickname == null || nickname.isBlank() || nickname.length() > 50
+        if (nickname.length() > 50) {
+            throw ApplicationException.from(EXCEED_NICKNAME_MAX_LENGTH);
+        }
+
+        if (nickname == null || nickname.isBlank()
             || !NICKNAME_PATTERN.matcher(nickname).matches()) {
             throw ApplicationException.from(INVALID_NICKNAME);
         }
@@ -83,19 +101,31 @@ public class MemberFieldValidator {
     }
 
     public void validateDepartment(String department) {
-        if (department == null || department.isBlank() || department.length() > 50) {
+        if (department.length() > 50) {
+            throw ApplicationException.from(EXCEED_DEPARTMENT_MAX_LENGTH);
+        }
+
+        if (department == null || department.isBlank()) {
             throw ApplicationException.from(INVALID_DEPARTMENT);
         }
     }
 
     public void validatePosition(String position) {
-        if (position == null || position.isBlank() || position.length() > 50) {
+        if (position.length() > 50) {
+            throw ApplicationException.from(EXCEED_POSITION_MAX_LENGTH);
+        }
+
+        if (position == null || position.isBlank()) {
             throw ApplicationException.from(INVALID_POSITION);
         }
     }
 
     public void validatePhoneFormat(String phone) {
-        if (phone == null || phone.isBlank() || phone.length() > 50
+        if (phone.length() > 50) {
+            throw ApplicationException.from(EXCEED_PHONE_MAX_LENGTH);
+        }
+
+        if (phone == null || phone.isBlank()
             || !PHONE_NUMBER_PATTERN.matcher(phone).matches()) {
             throw ApplicationException.from(INVALID_PHONE);
         }

@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.member.presentation.util.validator;
 
+import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.EXCEED_EMAIL_MAX_LENGTH;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_EMAIL;
 
 import com.wrkr.tickety.domains.member.presentation.util.annotation.EmailFormat;
@@ -8,6 +9,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+// 해당 accpetedDomain에 따라 RegexConstants의 EMAIL_REGEX를 동기화해야합니다.
 public class EmailFormatValidator implements ConstraintValidator<EmailFormat, String> {
 
     private String[] acceptedDomains;
@@ -43,6 +45,12 @@ public class EmailFormatValidator implements ConstraintValidator<EmailFormat, St
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
+        if (email.length() > 50) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(EXCEED_EMAIL_MAX_LENGTH.getMessage()).addConstraintViolation();
+            return false;
+        }
+
         boolean isValid = email != null && !email.isBlank() && emailPattern.matcher(email).matches();
 
         if (!isValid) {

@@ -14,7 +14,6 @@ public record MemberInfoUpdateRequest(
 
     @Schema(description = "이메일", example = "wrkr@gachon.ac.kr")
     @EmailFormat(acceptedDomains = {"gachon.ac.kr", "gmail.com"})
-    @Size(max = 50, message = "이메일은 50자 이하로 입력해주세요.")
     String email,
 
     @Schema(description = "이름", example = "김가천")
@@ -24,7 +23,6 @@ public record MemberInfoUpdateRequest(
 
     @Schema(description = "닉네임", example = "gachon.km")
     @NicknameFormat
-    @Size(max = 50, message = "아이디는 50자 이하로 입력해주세요.")
     String nickname,
 
     @Schema(description = "부서", example = "백엔드 개발팀")
@@ -39,7 +37,6 @@ public record MemberInfoUpdateRequest(
 
     @Schema(description = "전화번호", example = "010-1234-5678")
     @PhoneNumberFormat
-    @Size(max = 50, message = "전화번호는 50자 이하로 입력해주세요.")
     String phone,
 
     @Schema(description = "아지트 URL", example = "https://ibb.co/Gt8fycB")
