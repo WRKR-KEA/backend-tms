@@ -11,14 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
 @Service
 @RequiredArgsConstructor
-@EnableAsync
 public class SendAgitNotificationService {
 
     private final WebClient webClient;
@@ -58,6 +56,7 @@ public class SendAgitNotificationService {
         requestAgitApi(newManager.getAgitUrl(), MessageToManager);
     }
 
+    @Async
     public void sendRemindAgitAlarm(Member member, Ticket ticket) {
         String agitUrl = member.getAgitUrl();
         String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
@@ -77,7 +76,7 @@ public class SendAgitNotificationService {
             .retrieve()
             .toBodilessEntity()
             .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1))
-                           .filter(throwable -> !(throwable instanceof InterruptedException)))
+                .filter(throwable -> !(throwable instanceof InterruptedException)))
             .block();
     }
 }

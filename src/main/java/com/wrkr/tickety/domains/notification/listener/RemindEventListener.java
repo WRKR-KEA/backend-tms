@@ -31,6 +31,7 @@ public class RemindEventListener {
     private final SendApplicationNotificationService sendApplicationNotificationService;
     private final KakaoworkMessageService kakaoworkMessageService;
     private final NotificationSaveService notificationSaveService;
+    private final NotificationRunner notificationRunner;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -39,15 +40,18 @@ public class RemindEventListener {
         Ticket ticket = remindEvent.ticket();
         String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
 
-        sendAgitNotificationService.sendRemindAgitAlarm(member, ticket);
+        notificationRunner.run(member, () -> sendAgitNotificationService.sendRemindAgitAlarm(member, ticket));
 
-        EmailCreateRequest createRequest = EmailMapper.toEmailCreateRequest(
-            ticket.getUser().getEmail(), EmailConstants.REMIND_SUBJECT, null
-        );
-        sendEmailNotificationService.sendRemindCreateEmail(createRequest, ticket, EmailConstants.REMIND_TYPE);
+        notificationRunner.run(member, () -> {
+            EmailCreateRequest createRequest = EmailMapper.toEmailCreateRequest(
+                ticket.getUser().getEmail(), EmailConstants.REMIND_SUBJECT, null
+            );
+            sendEmailNotificationService.sendRemindCreateEmail(createRequest, ticket, EmailConstants.REMIND_TYPE);
+        });
 
-        sendApplicationNotificationService.sendRemindApplicationNotification(member, ticket);
-        kakaoworkMessageService.sendRemindKakaoworkAlarm(member, ticket);
+        notificationRunner.run(member, () -> sendApplicationNotificationService.sendRemindApplicationNotification(member, ticket));
+
+        notificationRunner.run(member, () -> kakaoworkMessageService.sendRemindKakaoworkAlarm(member, ticket));
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }

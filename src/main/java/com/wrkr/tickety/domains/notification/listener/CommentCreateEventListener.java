@@ -6,6 +6,7 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitCommentNotificationMessage;
+import com.wrkr.tickety.domains.notification.domain.service.NotificationRunner;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
@@ -31,6 +32,7 @@ public class CommentCreateEventListener {
     private final SendApplicationNotificationService sendApplicationNotificationService;
     private final KakaoworkMessageService kakaoworkMessageService;
     private final NotificationSaveService notificationSaveService;
+    private final NotificationRunner notificationRunner;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

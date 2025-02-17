@@ -35,12 +35,15 @@ public class SendApplicationNotificationService {
     }
 
     @Async
-    public void sendTicketDelegateApplicationNotification(Member prevManager, Member newManager, Ticket ticket) {
+    public void sendTicketDelegateApplicationNotificationToUser(Member newManager, Ticket ticket) {
         String userMessage = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
         );
         sseEmitterService.send(ticket.getUser(), NotificationType.COMMENT, userMessage);
+    }
 
+    @Async
+    public void sendTicketDelegateApplicationNotificationToManager(Member prevManager, Member newManager, Ticket ticket) {
         String managerMessage = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(
             prevManager.getNickname(), ticket.getSerialNumber()
         );
