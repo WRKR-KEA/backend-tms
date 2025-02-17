@@ -9,12 +9,10 @@ import com.wrkr.tickety.domains.notification.domain.constant.application.Remind;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-@EnableAsync
 public class SendApplicationNotificationService {
 
     private final SseEmitterService sseEmitterService;
@@ -49,6 +47,7 @@ public class SendApplicationNotificationService {
         sseEmitterService.send(newManager, NotificationType.COMMENT, managerMessage);
     }
 
+    @Async
     public void sendRemindApplicationNotification(Member member, Ticket ticket) {
         String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
         sseEmitterService.send(member, NotificationType.REMIND, message);

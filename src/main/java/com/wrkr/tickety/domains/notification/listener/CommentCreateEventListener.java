@@ -17,14 +17,13 @@ import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
 import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @RequiredArgsConstructor
 @Component
-@EnableAsync
 public class CommentCreateEventListener {
 
     private final SendAgitNotificationService sendAgitNotificationService;
@@ -34,7 +33,7 @@ public class CommentCreateEventListener {
     private final NotificationSaveService notificationSaveService;
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCommentCreateEvent(CommentCreateEvent commentCreateEvent) {
         Comment comment = commentCreateEvent.comment();
         Member member = comment.getMember();
@@ -47,14 +46,21 @@ public class CommentCreateEventListener {
         } else {
             receiver = ticket.getUser();
         }
-        sendAgitNotificationService.sendCommentCreateAgitAlarm(receiver, ticket);
-        EmailCreateRequest emailCreateRequest = EmailCreateRequest.builder()
-            .to(receiver.getEmail())
-            .subject(EmailConstants.TICKET_COMMENT_SUBJECT)
-            .build();
-        sendEmailNotificationService.sendCommentCreateEmail(emailCreateRequest, ticket, EmailConstants.TICKET_COMMENT);
-        sendApplicationNotificationService.sendCommentApplicationNotification(receiver, ticket);
-        kakaoworkMessageService.sendCommentCreateKakaoworkAlarm(receiver, ticket);
+
+        notificationRunner.run(receiver, () -> sendAgitNotificationService.sendCommentCreateAgitAlarm(receiver, ticket));
+
+        notificationRunner.run(receiver, () -> {
+            EmailCreateRequest emailCreateRequest = EmailCreateRequest.builder()
+                .to(receiver.getEmail())
+                .subject(EmailConstants.TICKET_COMMENT_SUBJECT)
+                .build();
+            sendEmailNotificationService.sendCommentCreateEmail(emailCreateRequest, ticket, EmailConstants.TICKET_COMMENT);
+        });
+
+        notificationRunner.run(receiver, () -> sendApplicationNotificationService.sendCommentApplicationNotification(receiver, ticket));
+
+        notificationRunner.run(receiver, () -> kakaoworkMessageService.sendCommentCreateKakaoworkAlarm(receiver, ticket));
+
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }
 }

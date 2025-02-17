@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -26,7 +27,6 @@ public class KakaoworkMessageService {
 
     @Value("${kakaowork.api.app-key}")
     private String appKey;
-
 
     public KakaoworkMessageService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
@@ -48,7 +48,7 @@ public class KakaoworkMessageService {
             .doOnError(e -> log.error("Error sending message by email: {}", e.getMessage()));
     }
 
-
+    @Async
     public void sendTicketStatusChangeKakaoworkAlarm(Member member, Ticket ticket, AgitTicketNotificationMessageType agitTicketNotificationMessageType) {
         String ticketSerialNumber = ticket.getSerialNumber();
         String message = switch (agitTicketNotificationMessageType) {
@@ -59,11 +59,13 @@ public class KakaoworkMessageService {
         sendMessageByEmail(member.getEmail(), message).block();
     }
 
+    @Async
     public void sendCommentCreateKakaoworkAlarm(Member receiver, Ticket ticket) {
         String message = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
         sendMessageByEmail(receiver.getEmail(), message).block();
     }
 
+    @Async
     public void sendTicketDelegateKakaoworkAlarm(Member prevManager, Member newManager, Ticket ticket) {
         String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
@@ -76,6 +78,7 @@ public class KakaoworkMessageService {
         sendMessageByEmail(newManager.getEmail(), MessageToManager).block();
     }
 
+    @Async
     public void sendRemindKakaoworkAlarm(Member receiver, Ticket ticket) {
         String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
         sendMessageByEmail(receiver.getEmail(), message).block();
