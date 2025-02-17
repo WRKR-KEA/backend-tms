@@ -2,6 +2,7 @@ package com.wrkr.tickety.domains.ticket.presentation;
 
 import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_CANCEL_01;
 import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_COMPLETE_01;
+import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_IN_PROGRESS_01;
 import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_REQUEST_01;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -252,7 +253,7 @@ class ManagerTicketControllerTest {
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지"),
-                            fieldWithPath("result").description("완료한 티켓 정보"),
+                            fieldWithPath("result").description("반환 결과"),
                             fieldWithPath("result.ticketId").description("완료한 티켓 ID(PK)")
                         )
                     )
@@ -646,6 +647,222 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                             parameterWithName("ticketId").description("승인할 티켓 ID(PK) 리스트")
+                        ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("커스텀 예외 코드"),
+                            fieldWithPath("message").description("예외 메시지")
+                        )
+                    )
+                );
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 티켓 반려 API [PATCH /api/manager/tickets/{ticketId}/reject]")
+    class rejectTicket {
+
+        @Test
+        @DisplayName("티켓 반려 처리에 성공한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void rejectTicketSuccess() throws Exception {
+            // given
+            final TicketPkResponse response = new TicketPkResponse(PkCrypto.encrypt(TICKET_ID));
+            doReturn(response).when(ticketRejectUseCase).rejectTicket(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .patch("/api/manager/tickets/{ticketId}/reject", PkCrypto.encrypt(TICKET_ID))
+//                .header(AUTHORIZATION, BEARER_TOKEN + " " + ACCESS_TOKEN)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Reject/Success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+//                        requestHeaders(
+//                            headerWithName(AUTHORIZATION).description("Access Token")
+//                        ),
+                        pathParameters(
+                            parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
+                        ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("커스텀 예외 코드"),
+                            fieldWithPath("message").description("예외 메시지"),
+                            fieldWithPath("result").description("반환 결과"),
+                            fieldWithPath("result.ticketId").description("반려한 티켓 ID(PK)")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 티켓 반려 처리에 실패한다.")
+//        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void withoutAccessToken() throws Exception {
+            // given
+            final TicketPkResponse response = new TicketPkResponse(PkCrypto.encrypt(TICKET_ID));
+            doReturn(response).when(ticketRejectUseCase).rejectTicket(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .patch("/api/manager/tickets/{ticketId}/reject", PkCrypto.encrypt(TICKET_ID))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.AUTHENTICATION_FAILED;
+            mockMvc.perform(requestBuilder)
+                .andExpect(
+                    status().isUnauthorized()
+                )
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Reject/Failure/Case1",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                            parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
+                        )
+//                        responseFields(
+//                            fieldWithPath("isSuccess").description("성공 여부"),
+//                            fieldWithPath("code").description("커스텀 예외 코드"),
+//                            fieldWithPath("message").description("예외 메시지")
+//                        )
+                    )
+                );
+        }
+
+        @Test
+        @DisplayName("해당 티켓의 담당자가 아니면 티켓 반려 처리에 실패한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void throwExceptionByTicketManagerNotMatch() throws Exception {
+            // given
+            Ticket ticket = TICKET_IN_PROGRESS_01.toInProgressTicket();
+
+            doThrow(ApplicationException.from(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
+                .when(ticketRejectUseCase)
+                .rejectTicket(eq(2L), eq(ticket.getTicketId()));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .patch("/api/manager/tickets/{ticketId}/reject", PkCrypto.encrypt(ticket.getTicketId()))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            // then
+            final TicketErrorCode expectedError = TicketErrorCode.TICKET_MANAGER_NOT_MATCH;
+            mockMvc.perform(requestBuilder)
+                .andExpectAll(
+                    status().isForbidden(),
+                    jsonPath("$.isSuccess").exists(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").exists(),
+                    jsonPath("$.code").value(expectedError.getCustomCode()),
+                    jsonPath("$.message").exists(),
+                    jsonPath("$.message").value(expectedError.getMessage())
+                )
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Reject/Failure/Case2",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                            parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
+                        ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("커스텀 예외 코드"),
+                            fieldWithPath("message").description("예외 메시지")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 티켓이면 티켓 완료 처리에 실패한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void throwExceptionByTicketNotFound() throws Exception {
+            // given
+            doThrow(ApplicationException.from(TicketErrorCode.TICKET_NOT_FOUND))
+                .when(ticketRejectUseCase)
+                .rejectTicket(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .patch("/api/manager/tickets/{ticketId}/reject", PkCrypto.encrypt(TICKET_ID))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            // then
+            final TicketErrorCode expectedError = TicketErrorCode.TICKET_NOT_FOUND;
+            mockMvc.perform(requestBuilder)
+                .andExpectAll(
+                    status().isNotFound(),
+                    jsonPath("$.isSuccess").exists(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").exists(),
+                    jsonPath("$.code").value(expectedError.getCustomCode()),
+                    jsonPath("$.message").exists(),
+                    jsonPath("$.message").value(expectedError.getMessage())
+                )
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Reject/Failure/Case3",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                            parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
+                        ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("커스텀 예외 코드"),
+                            fieldWithPath("message").description("예외 메시지")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        @DisplayName("진행 중인 티켓이 아니면 티켓 반려 처리에 실패한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void throwExceptionByTicketNotCompletable() throws Exception {
+            // given
+            Ticket ticket = TICKET_COMPLETE_01.toInProgressTicket();
+            doThrow(ApplicationException.from(TicketErrorCode.TICKET_NOT_REJECTABLE))
+                .when(ticketRejectUseCase)
+                .rejectTicket(anyLong(), eq(ticket.getTicketId()));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .patch("/api/manager/tickets/{ticketId}/reject", PkCrypto.encrypt(ticket.getTicketId()))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            // then
+            final TicketErrorCode expectedError = TicketErrorCode.TICKET_NOT_REJECTABLE;
+            mockMvc.perform(requestBuilder)
+                .andExpectAll(
+                    status().isConflict(),
+                    jsonPath("$.isSuccess").exists(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").exists(),
+                    jsonPath("$.code").value(expectedError.getCustomCode()),
+                    jsonPath("$.message").exists(),
+                    jsonPath("$.message").value(expectedError.getMessage())
+                )
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Reject/Failure/Case4",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                            parameterWithName("ticketId").description("완료할 티켓 ID(PK)")
                         ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),

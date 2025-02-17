@@ -2,10 +2,9 @@ package com.wrkr.tickety.domains.ticket.application.usecase.ticket;
 
 import static com.wrkr.tickety.common.fixture.member.UserFixture.MANAGER_A;
 import static com.wrkr.tickety.common.fixture.member.UserFixture.MANAGER_B;
-import static com.wrkr.tickety.common.fixture.member.UserFixture.MANAGER_C;
+import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_COMPLETE_01;
 import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_IN_PROGRESS_01;
-import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_REQUEST_01;
-import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.COMPLETE;
+import static com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus.REJECT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -43,22 +42,22 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @RecordApplicationEvents
-class TicketCompleteUseCaseTest {
+class TicketRejectUseCaseTest {
 
     @Mock
-    private TicketGetService ticketGetService;
+    TicketGetService ticketGetService;
 
     @Mock
-    private TicketUpdateService ticketUpdateService;
+    TicketHistorySaveService ticketHistorySaveService;
 
     @Mock
-    private TicketHistorySaveService ticketHistorySaveService;
+    TicketUpdateService ticketUpdateService;
 
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    ApplicationEventPublisher applicationEventPublisher;
 
     @InjectMocks
-    private TicketCompleteUseCase ticketCompleteUseCase;
+    TicketRejectUseCase ticketRejectUseCase;
 
     @Mock
     private PkCrypto pkCrypto;
@@ -70,7 +69,7 @@ class TicketCompleteUseCaseTest {
     }
 
     @Nested
-    @DisplayName("TicketComplete UseCase Layer > 담당자 티켓 완료")
+    @DisplayName("TicketReject UseCase Layer > 담당자 티켓 반려")
     class completeTicket {
 
         @Test
@@ -83,7 +82,7 @@ class TicketCompleteUseCaseTest {
             given(ticketGetService.getTicketByTicketId(ticket.getTicketId())).willReturn(ticket);
 
             // when - then
-            assertThatThrownBy(() -> ticketCompleteUseCase.completeTicket(manager.getMemberId(), ticket.getTicketId()))
+            assertThatThrownBy(() -> ticketRejectUseCase.rejectTicket(manager.getMemberId(), ticket.getTicketId()))
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage(TicketErrorCode.TICKET_MANAGER_NOT_MATCH.getMessage());
 
@@ -92,17 +91,17 @@ class TicketCompleteUseCaseTest {
         }
 
         @Test
-        @DisplayName("진행 중인 티켓이 아니라면 TICKET_NOT_COMPLETABLE 예외가 발생한다.")
-        void throwExceptionByTicketNotCompletable() {
+        @DisplayName("진행 중인 티켓이 아니라면 TICKET_NOT_REJECTABLE 예외가 발생한다.")
+        void throwExceptionByTicketNotRejectable() {
             // given
-            Ticket ticket = TICKET_REQUEST_01.toRequestTicket();
-            Member manager = MANAGER_C.toMember();
+            Ticket ticket = TICKET_COMPLETE_01.toInProgressTicket();
+            Member manager = MANAGER_A.toMember();
             given(ticketGetService.getTicketByTicketId(ticket.getTicketId())).willReturn(ticket);
 
             // when - then
-            assertThatThrownBy(() -> ticketCompleteUseCase.completeTicket(manager.getMemberId(), ticket.getTicketId()))
+            assertThatThrownBy(() -> ticketRejectUseCase.rejectTicket(manager.getMemberId(), ticket.getTicketId()))
                 .isInstanceOf(ApplicationException.class)
-                .hasMessage(TicketErrorCode.TICKET_NOT_COMPLETABLE.getMessage());
+                .hasMessage(TicketErrorCode.TICKET_NOT_REJECTABLE.getMessage());
 
             verify(ticketGetService, times(1)).getTicketByTicketId(ticket.getTicketId());
 
@@ -110,25 +109,25 @@ class TicketCompleteUseCaseTest {
         }
 
         @Test
-        @DisplayName("담당자는 진행 중인 티켓 완료 처리에 성공한다.")
-        void successCompleteTicket() {
+        @DisplayName("담당자는 진행 중인 티켓 반려 처리에 성공한다.")
+        void successRejectTicket() {
             // given
             Ticket ticket = TICKET_IN_PROGRESS_01.toInProgressTicket();
             Member manager = MANAGER_A.toMember();
 
             given(ticketGetService.getTicketByTicketId(ticket.getTicketId())).willReturn(ticket);
-            given(ticketUpdateService.updateStatus(ticket, TicketStatus.COMPLETE)).willReturn(ticket);
+            given(ticketUpdateService.updateStatus(ticket, TicketStatus.REJECT)).willReturn(ticket);
             willDoNothing().given(applicationEventPublisher).publishEvent(ArgumentMatchers.any(TicketStatusChangeEvent.class));
 
             // when
-            TicketPkResponse response = ticketCompleteUseCase.completeTicket(manager.getMemberId(), ticket.getTicketId());
+            TicketPkResponse response = ticketRejectUseCase.rejectTicket(manager.getMemberId(), ticket.getTicketId());
 
             // then
             assertThat(response).isNotNull();
             assertThat(ticket.getManager().getMemberId()).isEqualTo(manager.getMemberId());
 
             verify(ticketGetService, times(1)).getTicketByTicketId(ticket.getTicketId());
-            verify(ticketUpdateService, times(1)).updateStatus(ticket, COMPLETE);
+            verify(ticketUpdateService, times(1)).updateStatus(ticket, REJECT);
             verify(ticketHistorySaveService).save(ArgumentMatchers.any(TicketHistory.class));
             verify(applicationEventPublisher, times(1)).publishEvent(ArgumentMatchers.any(TicketStatusChangeEvent.class));
 
