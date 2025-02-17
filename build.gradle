@@ -17,7 +17,7 @@ plugins {
 }
 
 group = 'com.wrkr'
-version = '0.4.0-SNAPSHOT'
+version = '0.4.1-SNAPSHOT'
 
 java {
     toolchain {
@@ -172,12 +172,12 @@ tasks.withType(GenerateSwaggerUI) {
     doFirst {
         def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
-        def securitySchemesContent = "  securitySchemes:\n" +           \
-                                               "    APIKey:\n" +           \
-                                               "      type: apiKey\n" +           \
-                                               "      name: Authorization\n" +           \
-                                               "      in: header\n" +          \
-                                               "security:\n" +
+        def securitySchemesContent = "  securitySchemes:\n" +            \
+                                                "    APIKey:\n" +            \
+                                                "      type: apiKey\n" +            \
+                                                "      name: Authorization\n" +            \
+                                                "      in: header\n" +           \
+                                                "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent
