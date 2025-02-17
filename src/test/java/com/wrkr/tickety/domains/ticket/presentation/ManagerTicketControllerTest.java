@@ -706,7 +706,7 @@ class ManagerTicketControllerTest {
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.isSuccess").value(true))
                    .andExpect(jsonPath("$.result.elements").isArray())
-                   .andDo(document("ManagerTicketApi/GetManagerTickets",
+                   .andDo(document("ManagerTicketApi/GetManagerTickets/success",
                                    preprocessRequest(prettyPrint()),
                                    preprocessResponse(prettyPrint()),
                                    queryParameters(
@@ -755,7 +755,7 @@ class ManagerTicketControllerTest {
                                 .with(csrf()))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.isSuccess").value(false))
-                   .andDo(document("ManagerTicketApi/GetManagerTickets",
+                   .andDo(document("ManagerTicketApi/GetManagerTickets/failure/case1",
                                    preprocessRequest(prettyPrint()),
                                    preprocessResponse(prettyPrint()),
                                    queryParameters(
@@ -790,7 +790,7 @@ class ManagerTicketControllerTest {
                                 .with(csrf()))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.isSuccess").value(false))
-                   .andDo(document("ManagerTicketApi/GetManagerTickets",
+                   .andDo(document("ManagerTicketApi/GetManagerTickets/failure/case2",
                                    preprocessRequest(prettyPrint()),
                                    preprocessResponse(prettyPrint()),
                                    queryParameters(
