@@ -51,7 +51,7 @@ public class MemberFieldValidator {
     }
 
     public void validateEmailFormat(String email) {
-        if (email == null || email.isBlank()
+        if (email == null || email.isBlank() || email.length() > 50
             || !EMAIL_PATTERN.matcher(email).matches()) {
             throw ApplicationException.from(INVALID_EMAIL);
         }
@@ -64,13 +64,13 @@ public class MemberFieldValidator {
     }
 
     public void validateName(String name) {
-        if (name == null || name.isBlank()) {
+        if (name == null || name.isBlank() || name.length() > 50) {
             throw ApplicationException.from(INVALID_NAME);
         }
     }
 
     public void validateNicknameFormat(String nickname) {
-        if (nickname == null || nickname.isBlank()
+        if (nickname == null || nickname.isBlank() || nickname.length() > 50
             || !NICKNAME_PATTERN.matcher(nickname).matches()) {
             throw ApplicationException.from(INVALID_NICKNAME);
         }
@@ -83,19 +83,19 @@ public class MemberFieldValidator {
     }
 
     public void validateDepartment(String department) {
-        if (department == null || department.isBlank()) {
+        if (department == null || department.isBlank() || department.length() > 50) {
             throw ApplicationException.from(INVALID_DEPARTMENT);
         }
     }
 
     public void validatePosition(String position) {
-        if (position == null || position.isBlank()) {
+        if (position == null || position.isBlank() || position.length() > 50) {
             throw ApplicationException.from(INVALID_POSITION);
         }
     }
 
     public void validatePhoneFormat(String phone) {
-        if (phone == null || phone.isBlank()
+        if (phone == null || phone.isBlank() || phone.length() > 50
             || !PHONE_NUMBER_PATTERN.matcher(phone).matches()) {
             throw ApplicationException.from(INVALID_PHONE);
         }
