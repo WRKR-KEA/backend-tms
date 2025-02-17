@@ -7,7 +7,7 @@ on:
 
 jobs:
   close-jira-issue:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Login to Jira
         uses: atlassian/gajira-login@v3
