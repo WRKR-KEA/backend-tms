@@ -61,6 +61,12 @@ public class SecurityConfig {
             .cors(corsConfigurer -> corsConfigurer
                 .configurationSource(corsConfigurationSource())
             )
+//            .headers(headers -> headers
+//                .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+//                .contentSecurityPolicy(csp -> csp.policyDirectives("script-src 'self'"))
+//                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN))
+//                .frameOptions(FrameOptionsConfig::disable)
+//            )
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
@@ -81,6 +87,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .accessDeniedHandler(customAccessDeniedHandler)
             )
+//            .addFilterBefore(new XssFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

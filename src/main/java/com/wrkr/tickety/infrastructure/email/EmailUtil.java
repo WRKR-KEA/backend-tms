@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
@@ -17,13 +16,10 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @Component
 @RequiredArgsConstructor
 @Transactional
-@EnableAsync
 public class EmailUtil {
 
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
-
-    // TODO: 스레드 풀 설정 필요
 
     /**
      * @param emailCreateRequest

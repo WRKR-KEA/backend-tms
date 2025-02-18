@@ -34,7 +34,6 @@ import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCa
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.global.annotation.file.FileExtension;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
@@ -104,7 +103,6 @@ public class AdminMemberController {
         return ApplicationResponse.onSuccess(memberPkResponse);
     }
 
-    // TODO: csv 파일도 업로드할 수 있도록 개선 가능
     @CustomErrorCodes(
         memberErrorCodes = {
             INVALID_EMAIL, ALREADY_EXIST_EMAIL,
@@ -167,7 +165,7 @@ public class AdminMemberController {
         @AuthenticationPrincipal Member member,
         @PathVariable String memberId,
         @RequestPart(value = "request") @Valid MemberInfoUpdateRequest memberInfoUpdateRequest,
-        @RequestPart(required = false) @FileExtension(acceptedExtensions = {"jpg", "png", "jpeg"}) MultipartFile profileImage
+        @RequestPart(required = false) MultipartFile profileImage
     ) {
         MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberInfoUpdateRequest, profileImage);
         return ApplicationResponse.onSuccess(memberPkResponse);

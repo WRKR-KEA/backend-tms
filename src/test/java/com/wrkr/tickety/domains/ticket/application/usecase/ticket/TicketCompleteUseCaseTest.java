@@ -110,7 +110,7 @@ class TicketCompleteUseCaseTest {
         }
 
         @Test
-        @DisplayName("담당자는 진행 중이던 티켓 완료 처리에 성공한다.")
+        @DisplayName("담당자는 진행 중인 티켓 완료 처리에 성공한다.")
         void successCompleteTicket() {
             // given
             Ticket ticket = TICKET_IN_PROGRESS_01.toInProgressTicket();

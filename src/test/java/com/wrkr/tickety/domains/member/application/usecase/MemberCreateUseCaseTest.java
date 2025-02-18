@@ -22,6 +22,7 @@ import com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
@@ -34,7 +35,6 @@ import com.wrkr.tickety.infrastructure.email.EmailUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,6 +48,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@DisplayName("회원 등록 UseCase Layer Test")
 class MemberCreateUseCaseTest {
 
     @InjectMocks
@@ -94,175 +95,175 @@ class MemberCreateUseCaseTest {
         emailMapperMockedStatic.close();
     }
 
-    @Nested
-    @DisplayName("CreateMember UseCase Layer > 회원 등록")
-    class CreateMember {
 
-        @DisplayName("새로운 회원이 생성되면, 임시 비밀번호가 이메일로 전송된다.")
-        @Test
-        void createMemberSuccessTest() {
-            //given
-            Member member = USER_J.toMember();
-            String encryptedMemberId = pkCrypto.encryptValue(member.getMemberId());
-            String tempPassword = "Abcd1234567!";
-            String encodedPassword = member.getPassword();
+    @DisplayName("새로운 회원이 생성되면, 임시 비밀번호가 이메일로 전송된다.")
+    @Test
+    void createMemberSuccessTest() {
+        //given
+        Member member = USER_J.toMember();
+        String encryptedMemberId = pkCrypto.encryptValue(member.getMemberId());
+        String tempPassword = "Abcd1234567!";
+        String encodedPassword = member.getPassword();
 
-            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-                .email(member.getEmail())
-                .name(member.getName())
-                .nickname(member.getNickname())
-                .department(member.getDepartment())
-                .position(member.getPosition())
-                .phone(member.getPhone())
-                .role(member.getRole())
-                .agitUrl(member.getAgitUrl())
-                .build();
+        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+            .email(member.getEmail())
+            .name(member.getName())
+            .nickname(member.getNickname())
+            .department(member.getDepartment())
+            .position(member.getPosition())
+            .phone(member.getPhone())
+            .role(member.getRole())
+            .agitUrl(member.getAgitUrl())
+            .build();
 
-            MockMultipartFile profileImage = new MockMultipartFile(
-                "profileImage",
-                "profile.png",
-                MediaType.IMAGE_PNG_VALUE,
-                "profile".getBytes()
-            );
+        MockMultipartFile profileImage = new MockMultipartFile(
+            "profileImage",
+            "profile.png",
+            MediaType.IMAGE_PNG_VALUE,
+            "profile".getBytes()
+        );
 
-            given(memberSaveService.save(any(Member.class))).willReturn(member);
+        given(memberSaveService.save(any(Member.class))).willReturn(member);
 
-            EmailCreateRequest emailCreateRequest = EmailCreateRequest.builder()
-                .to(member.getEmail())
-                .subject(TEMP_PASSWORD_SUBJECT)
-                .message(null)
-                .build();
+        EmailCreateRequest emailCreateRequest = EmailCreateRequest.builder()
+            .to(member.getEmail())
+            .subject(TEMP_PASSWORD_SUBJECT)
+            .message(null)
+            .build();
 
-            randomCodeGeneratorMockedStatic.when(() -> RandomCodeGenerator.generateUUID().substring(0, 12))
-                .thenReturn(tempPassword);
+        randomCodeGeneratorMockedStatic.when(() -> RandomCodeGenerator.generateUUID().substring(0, 12))
+            .thenReturn(tempPassword);
 
-            passwordEncoderUtilMockedStatic.when(() -> PasswordEncoderUtil.encodePassword(any(String.class)))
-                .thenReturn(encodedPassword);
+        passwordEncoderUtilMockedStatic.when(() -> PasswordEncoderUtil.encodePassword(any(String.class)))
+            .thenReturn(encodedPassword);
 
-            given(memberGetService.existsByEmailAndIsDeleted(member.getEmail(), false)).willReturn(false);
-            given(memberGetService.existsByNickname(member.getNickname())).willReturn(false);
+        given(memberGetService.existsByEmailAndIsDeleted(member.getEmail(), false)).willReturn(false);
+        given(memberGetService.existsByNickname(member.getNickname())).willReturn(false);
 
-            // 정상적인 검증 로직 mocking
-            doNothing().when(memberFieldValidator).validateEmailDuplicate(member.getEmail());
-            doNothing().when(memberFieldValidator).validateNicknameDuplicate(member.getNickname());
+        // 정상적인 검증 로직 mocking
+        doNothing().when(memberFieldValidator).validateEmailDuplicate(member.getEmail());
+        doNothing().when(memberFieldValidator).validateNicknameDuplicate(member.getNickname());
 
-            given(s3ApiService.uploadMemberProfileImage(profileImage)).willReturn(member.getProfileImage());
+        given(s3ApiService.uploadMemberProfileImage(profileImage)).willReturn(member.getProfileImage());
 
-            given(memberSaveService.save(any(Member.class))).willReturn(member);
+        given(memberSaveService.save(any(Member.class))).willReturn(member);
 
-            emailMapperMockedStatic.when(() -> EmailMapper.toEmailCreateRequest(
-                    eq(member.getEmail()),
-                    eq(TEMP_PASSWORD_SUBJECT),
-                    any()
-                ))
-                .thenReturn(emailCreateRequest);
+        emailMapperMockedStatic.when(() -> EmailMapper.toEmailCreateRequest(
+                eq(member.getEmail()),
+                eq(TEMP_PASSWORD_SUBJECT),
+                any()
+            ))
+            .thenReturn(emailCreateRequest);
 
-            //when
-            MemberPkResponse response = memberCreateUseCase.createMember(memberCreateRequest, profileImage);
+        //when
+        MemberPkResponse response = memberCreateUseCase.createMember(memberCreateRequest, profileImage);
 
-            //then
-            assertThat(response.memberId()).isEqualTo(encryptedMemberId);
-            verify(emailUtil, times(1)).sendMail(eq(emailCreateRequest), eq(tempPassword), any(String.class));
-        }
+        //then
+        assertThat(response.memberId()).isEqualTo(encryptedMemberId);
+        verify(emailUtil, times(1)).sendMail(eq(emailCreateRequest), eq(tempPassword), any(String.class));
+    }
 
 
-        @DisplayName("등록하려는 회원의 이메일이 이미 사용중일 경우 예외를 발생시킨다.")
-        @Test
-        void MemberCreateUseCaseTestWithDuplicateEmailException() {
-            //given
-            Member member = USER_J.toMember();
+    @DisplayName("등록하려는 회원의 이메일이 이미 사용중일 경우 예외를 발생시킨다.")
+    @Test
+    void MemberCreateUseCaseTestWithDuplicateEmailException() {
+        //given
+        Member member = USER_J.toMember();
 
-            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-                .email(member.getEmail())
-                .nickname(member.getNickname())
-                .build();
+        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+            .email(member.getEmail())
+            .nickname(member.getNickname())
+            .role(Role.USER)
+            .build();
 
-            randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
-                .thenReturn("UniqueUUID12");
+        randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
+            .thenReturn("UniqueUUID12");
 
-            given(memberGetService.existsByEmailAndIsDeleted(member.getEmail(), false)).willReturn(true);
-            given(memberGetService.existsByNickname(member.getNickname())).willReturn(false);
-            doThrow(ApplicationException.from(ALREADY_EXIST_EMAIL))
-                .when(memberFieldValidator).validateEmailDuplicate(member.getEmail());
+        given(memberGetService.existsByEmailAndIsDeleted(member.getEmail(), false)).willReturn(true);
+        given(memberGetService.existsByNickname(member.getNickname())).willReturn(false);
+        doThrow(ApplicationException.from(ALREADY_EXIST_EMAIL))
+            .when(memberFieldValidator).validateEmailDuplicate(member.getEmail());
 
-            //when & then
-            assertThatThrownBy(() -> {
-                memberCreateUseCase.createMember(memberCreateRequest, null);
-            }).isInstanceOf(ApplicationException.class)
-                .hasMessageContaining(ALREADY_EXIST_EMAIL.getMessage());
-        }
+        //when & then
+        assertThatThrownBy(() -> {
+            memberCreateUseCase.createMember(memberCreateRequest, null);
+        }).isInstanceOf(ApplicationException.class)
+            .hasMessageContaining(ALREADY_EXIST_EMAIL.getMessage());
+    }
 
-        @DisplayName("등록하려는 회원의 아이디(닉네임)가 이미 사용중일 경우 예외를 발생시킨다.")
-        @Test
-        void MemberCreateUseCaseTestWithDuplicateNicknameException() {
-            //given
-            Member member = USER_J.toMember();
+    @DisplayName("등록하려는 회원의 아이디(닉네임)가 이미 사용중일 경우 예외를 발생시킨다.")
+    @Test
+    void MemberCreateUseCaseTestWithDuplicateNicknameException() {
+        //given
+        Member member = USER_J.toMember();
 
-            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-                .email(member.getEmail())
-                .nickname(member.getNickname())
-                .build();
+        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+            .email(member.getEmail())
+            .nickname(member.getNickname())
+            .role(Role.USER)
+            .build();
 
-            randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
-                .thenReturn("UniqueUUID12");
+        randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
+            .thenReturn("UniqueUUID12");
 
-            given(memberGetService.existsByEmailAndIsDeleted(member.getEmail(), false)).willReturn(false);
-            given(memberGetService.existsByNickname(member.getNickname())).willReturn(true);
-            doThrow(ApplicationException.from(ALREADY_EXIST_NICKNAME))
-                .when(memberFieldValidator).validateNicknameDuplicate(member.getNickname());
+        given(memberGetService.existsByEmailAndIsDeleted(member.getEmail(), false)).willReturn(false);
+        given(memberGetService.existsByNickname(member.getNickname())).willReturn(true);
+        doThrow(ApplicationException.from(ALREADY_EXIST_NICKNAME))
+            .when(memberFieldValidator).validateNicknameDuplicate(member.getNickname());
 
-            //when & then
-            assertThatThrownBy(() -> {
-                memberCreateUseCase.createMember(memberCreateRequest, null);
-            }).isInstanceOf(ApplicationException.class)
-                .hasMessageContaining(ALREADY_EXIST_NICKNAME.getMessage());
-        }
+        //when & then
+        assertThatThrownBy(() -> {
+            memberCreateUseCase.createMember(memberCreateRequest, null);
+        }).isInstanceOf(ApplicationException.class)
+            .hasMessageContaining(ALREADY_EXIST_NICKNAME.getMessage());
+    }
 
-        @DisplayName("잘못된 파일 확장자의 경우 예외를 발생시킨다.")
-        @Test
-        void createMemberWithInvalidImageExtension() {
-            // given
-            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-                .email("test@example.com")
-                .nickname("testNickname")
-                .build();
+    @DisplayName("잘못된 파일 확장자의 경우 예외를 발생시킨다.")
+    @Test
+    void createMemberWithInvalidImageExtension() {
+        // given
+        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+            .email("test@example.com")
+            .nickname("testNickname")
+            .role(Role.USER)
+            .build();
 
-            MockMultipartFile invalidImage = new MockMultipartFile(
-                "profileImage",
-                "profile.txt", // 잘못된 확장자
-                MediaType.TEXT_PLAIN_VALUE,
-                "profile".getBytes()
-            );
+        MockMultipartFile invalidImage = new MockMultipartFile(
+            "profileImage",
+            "profile.txt", // 잘못된 확장자
+            MediaType.TEXT_PLAIN_VALUE,
+            "profile".getBytes()
+        );
 
-            // when & then
-            assertThatThrownBy(() -> {
-                memberCreateUseCase.createMember(memberCreateRequest, invalidImage);
-            }).isInstanceOf(ApplicationException.class)
-                .hasMessageContaining(INVALID_IMAGE_EXTENSION.getMessage());
-        }
+        // when & then
+        assertThatThrownBy(() -> {
+            memberCreateUseCase.createMember(memberCreateRequest, invalidImage);
+        }).isInstanceOf(ApplicationException.class)
+            .hasMessageContaining(INVALID_IMAGE_EXTENSION.getMessage());
+    }
 
-        @DisplayName("파일 크기가 최대 파일 사이즈를 초과한 경우 예외를 발생시킨다.")
-        @Test
-        void createMemberWithExceedingFileSize() {
-            // given
-            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-                .email("test@example.com")
-                .nickname("testNickname")
-                .build();
+    @DisplayName("파일 크기가 최대 파일 사이즈를 초과한 경우 예외를 발생시킨다.")
+    @Test
+    void createMemberWithExceedingFileSize() {
+        // given
+        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+            .email("test@example.com")
+            .nickname("testNickname")
+            .role(Role.USER)
+            .build();
 
-            MockMultipartFile largeImage = new MockMultipartFile(
-                "profileImage",
-                "profile.png",
-                MediaType.IMAGE_PNG_VALUE,
-                new byte[(int) (11 * 1024 * 1024)]
-            );
+        MockMultipartFile largeImage = new MockMultipartFile(
+            "profileImage",
+            "profile.png",
+            MediaType.IMAGE_PNG_VALUE,
+            new byte[(int) (11 * 1024 * 1024)]
+        );
 
-            // when & then
-            assertThatThrownBy(() -> {
-                memberCreateUseCase.createMember(memberCreateRequest, largeImage);
-            }).isInstanceOf(ApplicationException.class)
-                .hasMessageContaining(EXCEED_MAX_FILE_SIZE.getMessage());
-        }
+        // when & then
+        assertThatThrownBy(() -> {
+            memberCreateUseCase.createMember(memberCreateRequest, largeImage);
+        }).isInstanceOf(ApplicationException.class)
+            .hasMessageContaining(EXCEED_MAX_FILE_SIZE.getMessage());
     }
 
 }

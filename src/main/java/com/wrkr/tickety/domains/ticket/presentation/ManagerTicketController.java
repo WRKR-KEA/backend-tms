@@ -20,6 +20,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.Departmen
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
@@ -144,7 +145,7 @@ public class ManagerTicketController {
         @AuthenticationPrincipal Member member,
         @PathVariable(value = "ticketId") String ticketId
     ) {
-        TicketPkResponse response = ticketRejectUseCase.rejectTicket(member.getMemberId(), ticketId);
+        TicketPkResponse response = ticketRejectUseCase.rejectTicket(member.getMemberId(), PkCrypto.decrypt(ticketId));
         return ApplicationResponse.onSuccess(response);
     }
 
@@ -169,11 +170,13 @@ public class ManagerTicketController {
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
         @Parameter(description = "검색어")
-        @RequestParam(required = false) String query
+        @RequestParam(required = false) String query,
+        @Parameter(description = "필터링할 카테고리 id", example = "W1NMMfAHGTnNGLdRL3lvcw")
+        @RequestParam(required = false) String categoryId
     ) {
         ApplicationPageResponse<ManagerTicketAllGetResponse> response = managerTicketAllGetUseCase.getManagerTicketList(
-            member.getMemberId(), pageRequest, status, query
-        );
+            member.getMemberId(), pageRequest, status, query,
+            categoryId == null || categoryId.isBlank() ? null : PkCrypto.decrypt(categoryId));
 
         return ApplicationResponse.onSuccess(response);
     }
@@ -205,6 +208,18 @@ public class ManagerTicketController {
     @GetMapping("/main")
     public ApplicationResponse<ManagerTicketMainPageResponse> getMainPage(@AuthenticationPrincipal Member member) {
         return ApplicationResponse.onSuccess(managerGetMainUseCase.getMain(member.getMemberId()));
+    }
+
+    @Operation(summary = "담당자 메인 페이지 고정 티켓 조회", description = "담당자의 메인 페이지에서 고정된 티켓을 조회합니다.")
+    @GetMapping("/main/pins")
+    public ApplicationResponse<List<ManagerTicketMainPageResponse.PinTickets>> getMainPagePinTicket(@AuthenticationPrincipal Member member) {
+        return ApplicationResponse.onSuccess(managerGetMainUseCase.getPinTickets(member.getMemberId()));
+    }
+
+    @Operation(summary = "담당자 사용자 요청 티켓 조회", description = "담당자의 메인 페이지에서 사용자의 요청된 티켓을 조회합니다.")
+    @GetMapping("/main/requests")
+    public ApplicationResponse<List<RequestTickets>> getMainPageRecentTicket() {
+        return ApplicationResponse.onSuccess(managerGetMainUseCase.getRecentRequestTickets());
     }
 
 }
