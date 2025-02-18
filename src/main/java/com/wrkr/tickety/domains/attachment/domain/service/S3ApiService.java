@@ -1,10 +1,15 @@
 package com.wrkr.tickety.domains.attachment.domain.service;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.geometry.Positions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -22,11 +27,11 @@ public class S3ApiService {
     private static final String BUCKET_PREFIX = "v1/1693f30f6d0848e895e9bb87002e8f62/";
 
     private final S3Client s3Client;
-
+    private final Environment env;
+    private final int WIDTH = 128;
+    private final int HEIGHT = 128;
     @Value("${s3.bucket-name}")
     private String bucketName;
-
-    private final Environment env;
 
     /**
      * 단일 파일 업로드 후 URL 반환
@@ -42,11 +47,11 @@ public class S3ApiService {
                     .contentType(file.getContentType())
                     .build(),
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize())
-            );
+                              );
 
             String encodedUrl = s3Client.utilities().getUrl(builder ->
-                builder.bucket(bucketName).key(objectKey).build()
-            ).toString();
+                    builder.bucket(bucketName).key(objectKey).build()
+                                                           ).toString();
 
             encodedUrl = addUrlPrefix(encodedUrl);
 
@@ -67,11 +72,11 @@ public class S3ApiService {
                     .contentType(file.getContentType())
                     .build(),
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize())
-            );
+                              );
 
             String encodedUrl = s3Client.utilities().getUrl(builder ->
-                builder.bucket(bucketName).key(objectKey).build()
-            ).toString();
+                    builder.bucket(bucketName).key(objectKey).build()
+                                                           ).toString();
 
             encodedUrl = addUrlPrefix(encodedUrl);
 
@@ -82,21 +87,28 @@ public class S3ApiService {
     }
 
     public String uploadMemberProfileImage(MultipartFile file) {
-        String objectKey = "attachments/member/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
-
         try {
+            byte[] resizedImageBytes = resizeImage(file);
+
+            String originalFileName = file.getOriginalFilename();
+            String newFileName = null;
+            if (originalFileName != null) {
+                newFileName = originalFileName.replaceAll("\\.[^.]+$", ".png");
+            }
+            String objectKey = "attachments/member/" + UUID.randomUUID() + "-" + newFileName;
+
             s3Client.putObject(
                 PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(objectKey)
-                    .contentType(file.getContentType())
+                    .contentType("image/png")
                     .build(),
-                RequestBody.fromInputStream(file.getInputStream(), file.getSize())
-            );
+                RequestBody.fromBytes(resizedImageBytes)
+                              );
 
             String encodedUrl = s3Client.utilities().getUrl(builder ->
-                builder.bucket(bucketName).key(objectKey).build()
-            ).toString();
+                    builder.bucket(bucketName).key(objectKey).build()
+                                                           ).toString();
 
             encodedUrl = addUrlPrefix(encodedUrl);
 
@@ -105,6 +117,7 @@ public class S3ApiService {
             throw new RuntimeException("파일 업로드 실패", e);
         }
     }
+
 
     /**
      * S3에서 파일 삭제
@@ -146,5 +159,23 @@ public class S3ApiService {
             }
         }
         return encodedUrl;
+    }
+
+    private byte[] resizeImage(MultipartFile multipartFile) throws IOException {
+        BufferedImage originalImage = ImageIO.read(multipartFile.getInputStream());
+
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+        int squareSize = Math.min(originalWidth, originalHeight);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Thumbnails.of(originalImage)
+            .sourceRegion(Positions.CENTER, squareSize, squareSize)
+            .size(WIDTH, HEIGHT)
+            .outputFormat("png")
+            .outputQuality(1.0)
+            .toOutputStream(baos);
+
+        return baos.toByteArray();
     }
 }
