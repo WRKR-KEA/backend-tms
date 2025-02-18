@@ -17,7 +17,7 @@ plugins {
 }
 
 group = 'com.wrkr'
-version = '0.0.1-SNAPSHOT'
+version = '0.4.2-SNAPSHOT'
 
 java {
     toolchain {
@@ -160,7 +160,7 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
     implementation 'ch.qos.logback:logback-classic:1.4.12'
 
-    //Thumbnailator
+    // Thumbnailator
     implementation 'net.coobird:thumbnailator:0.4.14'
     
     // Jsoup
@@ -179,12 +179,12 @@ tasks.withType(GenerateSwaggerUI) {
     doFirst {
         def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
-        def securitySchemesContent = "  securitySchemes:\n" +                \
-                                                    "    APIKey:\n" +                \
-                                                    "      type: apiKey\n" +                \
-                                                    "      name: Authorization\n" +                \
-                                                    "      in: header\n" +               \
-                                                    "security:\n" +
+        def securitySchemesContent = "  securitySchemes:\n" +            \
+                                                "    APIKey:\n" +            \
+                                                "      type: apiKey\n" +            \
+                                                "      name: Authorization\n" +            \
+                                                "      in: header\n" +           \
+                                                "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent
