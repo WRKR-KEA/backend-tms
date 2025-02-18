@@ -23,14 +23,14 @@ public class ManagerGetMainUseCase {
     public List<ManagerTicketMainPageResponse.PinTickets> getPinTickets(Long memberId) {
         List<Ticket> pinTickets = ticketGetService.getPinTickets(memberId);
         return pinTickets.stream()
-            .map(TicketMapper::toTestPin)
+            .map(TicketMapper::toPinTickets)
             .toList();
     }
 
     public List<ManagerTicketMainPageResponse.requestTickets> getRecentTickets() {
         List<Ticket> recentTickets = ticketGetService.getRequestTickets();
         return recentTickets.stream()
-            .map(TicketMapper::toTestRequest)
+            .map(TicketMapper::toRequests)
             .toList();
     }
 }
