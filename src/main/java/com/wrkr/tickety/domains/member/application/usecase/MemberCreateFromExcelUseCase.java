@@ -63,10 +63,6 @@ public class MemberCreateFromExcelUseCase {
             );
             emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.FILENAME_PASSWORD);
 
-            // TODO: 릴리즈 하기 전에 삭제
-            log.info("**** 회원 등록 됨 ****");
-            log.info("이메일 : {}, 임시 비밀번호 : {}", createdMember.getEmail(), tempPassword);
-
             MemberPkResponse memberPkResponse = MemberMapper.toMemberPkResponse(PkCrypto.encrypt(createdMember.getMemberId()));
 
             memberPkResponses.add(memberPkResponse);
