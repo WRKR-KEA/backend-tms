@@ -4,11 +4,13 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.EXCEED_MAX_F
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_IMAGE_EXTENSION;
 
 import com.wrkr.tickety.domains.attachment.domain.service.S3ApiService;
+import com.wrkr.tickety.domains.auth.exception.AuthErrorCode;
 import com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
 import com.wrkr.tickety.domains.member.presentation.util.validator.MemberFieldValidator;
@@ -40,6 +42,8 @@ public class MemberCreateUseCase {
     private final MemberFieldValidator memberFieldValidator;
 
     public MemberPkResponse createMember(MemberCreateRequest memberCreateRequest, MultipartFile profileImage) {
+        validateAuthorization(memberCreateRequest.role());
+
         if (isFileUpload(profileImage)) {
             validateFileSize(profileImage);
             validateImageFileExtension(profileImage);
@@ -70,6 +74,12 @@ public class MemberCreateUseCase {
         log.info("이메일 : {}, 임시 비밀번호 : {}", createdMember.getEmail(), tempPassword);
 
         return MemberMapper.toMemberPkResponse(PkCrypto.encrypt(createdMember.getMemberId()));
+    }
+
+    private void validateAuthorization(Role role) {
+        if (role.equals(Role.ADMIN)) {
+            throw ApplicationException.from(AuthErrorCode.PERMISSION_DENIED);
+        }
     }
 
     public void validateImageFileExtension(MultipartFile file) {

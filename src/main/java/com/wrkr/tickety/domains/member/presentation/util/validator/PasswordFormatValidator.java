@@ -18,7 +18,7 @@ public class PasswordFormatValidator implements ConstraintValidator<PasswordForm
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
-        boolean isValid = PASSWORD_PATTERN.matcher(password).matches();
+        boolean isValid = password != null && !password.isBlank() && PASSWORD_PATTERN.matcher(password).matches();
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

@@ -1,8 +1,12 @@
 package com.wrkr.tickety.domains.log.application.mapper;
 
+import com.wrkr.tickety.domains.log.application.dto.response.AccessLogExcelResponse;
 import com.wrkr.tickety.domains.log.application.dto.response.AccessLogSearchResponse;
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
 import com.wrkr.tickety.domains.log.domain.model.AccessLog;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 public class LogMapper {
 
@@ -27,6 +31,19 @@ public class LogMapper {
             .action(accessLog.getAction())
             .accessAt(accessLog.getAccessAt())
             .isSuccess(accessLog.getIsSuccess())
+            .build();
+    }
+
+    public static AccessLogExcelResponse mapToAccessLogExcelResponse(AccessLog accessLog) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.KOREA);
+
+        return AccessLogExcelResponse.builder()
+            .accessLogId(String.valueOf(accessLog.getAccessLogId()))
+            .nickname(accessLog.getNickname())
+            .ip(accessLog.getIp())
+            .accessAt(accessLog.getAccessAt().format(formatter))
+            .action(accessLog.getAction())
+            .isSuccess(accessLog.getIsSuccess() ? "성공" : "실패")
             .build();
     }
 }

@@ -35,7 +35,8 @@ public class PasswordReissueUseCase {
     private final EmailUtil emailUtil;
 
     public MemberPkResponse reissuePassword(String encryptedMemberId, String verificationCodeReq) {
-        validateVerificationCode(verificationCodeReq, redisService.getValues(VERIFICATION_CODE_PREFIX + encryptedMemberId));
+        Optional<String> findVerificationCode = redisService.getValues(VERIFICATION_CODE_PREFIX + encryptedMemberId);
+        validateVerificationCode(verificationCodeReq, findVerificationCode);
 
         Long decryptedMemberId = PkCrypto.decrypt(encryptedMemberId);
         Member findMember = memberGetService.byMemberId(decryptedMemberId);
@@ -54,10 +55,6 @@ public class PasswordReissueUseCase {
         emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.FILENAME_PASSWORD);
 
         redisService.deleteValues(VERIFICATION_CODE_PREFIX + decryptedMemberId);
-
-        // TODO: 릴리즈 하기 전에 삭제
-        log.info("**** 재발급된 비밀번호 ****");
-        log.info("아이디: {}, 비밀번호 : {}", findMember.getNickname(), tempPassword);
 
         return MemberMapper.toMemberPkResponse(PkCrypto.encrypt(modifiedMember.getMemberId()));
     }

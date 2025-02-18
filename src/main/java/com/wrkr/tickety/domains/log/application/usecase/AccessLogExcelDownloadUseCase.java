@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.log.application.usecase;
 
-import com.wrkr.tickety.domains.log.application.dto.response.AccessLogSearchResponse;
+import com.wrkr.tickety.domains.log.application.dto.response.AccessLogExcelResponse;
 import com.wrkr.tickety.domains.log.application.mapper.LogMapper;
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
 import com.wrkr.tickety.domains.log.domain.model.AccessLog;
@@ -21,7 +21,7 @@ public class AccessLogExcelDownloadUseCase {
 
     private final AccessLogGetService accessLogGetService;
 
-    public List<AccessLogSearchResponse> getAllAccessLogs(String query, ActionType action, String startDateReq,
+    public List<AccessLogExcelResponse> getAllAccessLogs(String query, ActionType action, String startDateReq,
         String endDateReq) {
         LocalDate startDate = parseLocalDateOrNull(startDateReq);
         LocalDate endDate = parseLocalDateOrNull(endDateReq);
@@ -31,7 +31,7 @@ public class AccessLogExcelDownloadUseCase {
         List<AccessLog> accessLogs = accessLogGetService.getAllAccessLogs(query, action, startDate, endDate);
 
         return accessLogs.stream()
-            .map(LogMapper::toAccessLogSearchResponse)
+            .map(LogMapper::mapToAccessLogExcelResponse)
             .toList();
     }
 

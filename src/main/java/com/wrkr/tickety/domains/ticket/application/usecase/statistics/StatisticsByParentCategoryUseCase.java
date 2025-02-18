@@ -34,7 +34,7 @@ public class StatisticsByParentCategoryUseCase {
         List<TicketCount> ticketCountList = TicketCount.from(ticketCountByCategoryList, parentCategoryList);
 
         StatisticData statisticData = StatisticData.builder()
-            .firstCategoryTicketCount(ticketCountList)
+            .categoryTicketCount(ticketCountList)
             .build();
 
         return StatisticsByCategoryResponse.builder()
