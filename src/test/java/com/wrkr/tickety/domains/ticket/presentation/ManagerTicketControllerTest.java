@@ -31,7 +31,9 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
@@ -64,8 +66,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -129,7 +129,7 @@ class ManagerTicketControllerTest {
     private final static Long TICKET_ID = 1L;
 
     @Nested
-    @DisplayName("담당자 변경 API 테스트")
+    @DisplayName("담당자 변경 API [PATCH /api/manager/tickets/{ticketId}/delegate]")
     class DelegateTicketTest {
 
         @Test
@@ -137,15 +137,11 @@ class ManagerTicketControllerTest {
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
         void delegateTicket_Success() throws Exception {
             // Given
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Member member = (Member) authentication.getPrincipal();
-            log.info("customUserDetails : {}", member.getNickname());
-
             String ticketId = PkCrypto.encrypt(1L);
             TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
             TicketPkResponse response = new TicketPkResponse(ticketId);
 
-            when(managerTicketDelegateUseCase.delegateTicket(1L, 2L, request))
+            when(managerTicketDelegateUseCase.delegateTicket(anyLong(), anyLong(), any(TicketDelegateRequest.class)))
                 .thenReturn(response);
 
             // When & Then
@@ -153,7 +149,21 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("ManagerTicketApi/Delegate/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("반환 결과"),
+                        fieldWithPath("result.ticketId").description("위임된 티켓 ID (PK)")
+                    )
+                ));
         }
 
         @Test
@@ -173,7 +183,19 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(document("ManagerTicketApi/Delegate/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
         }
 
         @Test
@@ -184,7 +206,7 @@ class ManagerTicketControllerTest {
             String ticketId = PkCrypto.encrypt(1L);
             TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
 
-            doThrow(new com.wrkr.tickety.global.exception.ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
                 .when(managerTicketDelegateUseCase)
                 .delegateTicket(anyLong(), anyLong(), any(TicketDelegateRequest.class));
 
@@ -193,7 +215,19 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andDo(document("ManagerTicketApi/Delegate/Failure/Case2",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
         }
 
         @Test
@@ -204,7 +238,7 @@ class ManagerTicketControllerTest {
             String ticketId = PkCrypto.encrypt(1L);
             TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
 
-            doThrow(new com.wrkr.tickety.global.exception.ApplicationException(TicketErrorCode.TICKET_NOT_DELEGATABLE))
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_NOT_DELEGATABLE))
                 .when(managerTicketDelegateUseCase)
                 .delegateTicket(anyLong(), anyLong(), any(TicketDelegateRequest.class));
 
@@ -213,7 +247,19 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andDo(document("ManagerTicketApi/Delegate/Failure/Case3",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
         }
     }
 
