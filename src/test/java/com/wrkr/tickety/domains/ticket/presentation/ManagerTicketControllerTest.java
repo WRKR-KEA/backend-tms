@@ -37,6 +37,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAll
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
+import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
@@ -695,7 +696,7 @@ class ManagerTicketControllerTest {
             Page<Ticket> page = new PageImpl<>(ticketList, pageRequest, ticketList.size());
             ApplicationPageResponse<ManagerTicketAllGetResponse> dummyPageResponse = ApplicationPageResponse.of(page, converter);
 
-            given(managerTicketAllGetUseCase.getManagerTicketList(member.getMemberId(), applicationPageRequest, TicketStatus.IN_PROGRESS, "query"))
+            given(managerTicketAllGetUseCase.getManagerTicketList(member.getMemberId(), applicationPageRequest, TicketStatus.IN_PROGRESS, "query",null))
                 .willReturn(dummyPageResponse);
 
             //when & then
@@ -1372,162 +1373,6 @@ class ManagerTicketControllerTest {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint())
                                ));
-        }
-    }
-
-
-    @Nested
-    class managerTicketAllGetTest {
-
-        static List<Ticket> ticketList;
-
-        @BeforeAll
-        static void setUp() {
-            Category parent = Category.builder().categoryId(1L).name("parent").build();
-            Category category = Category.builder().categoryId(1L).name("category").parent(parent).build();
-            Member user = Member.builder().memberId(1L).nickname("user.hjw").build();
-
-            ticketList = new ArrayList<>();
-            ticketList.add(Ticket.builder().ticketId(1L).category(category).serialNumber("1").title("title").content("content").status(TicketStatus.IN_PROGRESS)
-                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
-            ticketList.add(Ticket.builder().ticketId(2L).category(category).serialNumber("2").title("title").content("content").status(TicketStatus.IN_PROGRESS)
-                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
-            ticketList.add(Ticket.builder().ticketId(3L).category(category).serialNumber("3").title("title").content("content").status(TicketStatus.IN_PROGRESS)
-                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
-            ticketList.add(Ticket.builder().ticketId(4L).category(category).serialNumber("4").title("title").content("content").status(TicketStatus.IN_PROGRESS)
-                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
-        }
-
-        @Test
-        @DisplayName("담당자가 담당하고 있는 티켓 목록을 조회한다.")
-        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "thama.kakao", memberId = 11L)
-        void testGetManagerTickets() throws Exception {
-            //given
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Member member = (Member) authentication.getPrincipal();
-            Function<Ticket, ManagerTicketAllGetResponse> converter = TicketMapper::toManagerTicketAllGetResponse;
-            PageRequest pageRequest = PageRequest.of(0, 20);
-            ApplicationPageRequest applicationPageRequest = new ApplicationPageRequest(1, 20, SortType.NEWEST);
-            Page<Ticket> page = new PageImpl<>(ticketList, pageRequest, ticketList.size());
-            ApplicationPageResponse<ManagerTicketAllGetResponse> dummyPageResponse = ApplicationPageResponse.of(page, converter);
-
-            given(managerTicketAllGetUseCase.getManagerTicketList(member.getMemberId(), applicationPageRequest, TicketStatus.IN_PROGRESS, "query"))
-                .willReturn(dummyPageResponse);
-
-            //when & then
-            mockMvc.perform(get("/api/manager/tickets")
-                    .queryParam("status", TicketStatus.IN_PROGRESS.name())
-                    .queryParam("query", "query")
-                    .queryParam("page", "1")
-                    .queryParam("size", "20")
-                    .queryParam("sortType", SortType.NEWEST.name())
-                    .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.result.elements").isArray())
-                .andDo(document("ManagerTicketApi/GetManagerTickets/success",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                            parameterWithName("status").description("티켓 상태"),
-                            parameterWithName("query").description("검색어"),
-                            parameterWithName("page").description("페이지 번호"),
-                            parameterWithName("size").description("페이지 크기"),
-                            parameterWithName("sortType").description("정렬 타입 (NEWEST | OLDEST | UPDATED)")
-                                       ),
-                        responseFields(
-                            fieldWithPath("isSuccess").description("성공 여부"),
-                            fieldWithPath("code").description("응답 코드"),
-                            fieldWithPath("message").description("응답 메시지"),
-                            fieldWithPath("result").description("응답 결과"),
-                            fieldWithPath("result.elements").description("티켓 목록"),
-                            fieldWithPath("result.elements[].id").description("티켓 ID"),
-                            fieldWithPath("result.elements[].serialNumber").description("티켓 일련번호"),
-                            fieldWithPath("result.elements[].title").description("티켓 제목"),
-                            fieldWithPath("result.elements[].firstCategory").description("1차 카테고리"),
-                            fieldWithPath("result.elements[].secondCategory").description("2차 카테고리"),
-                            fieldWithPath("result.elements[].status").description("티켓 상태"),
-                            fieldWithPath("result.elements[].requesterNickname").description("요청자 닉네임"),
-                            fieldWithPath("result.elements[].createdAt").description("생성일"),
-                            fieldWithPath("result.elements[].updatedAt").description("수정일"),
-                            fieldWithPath("result.elements[].isPinned").description("고정 여부"),
-                            fieldWithPath("result.currentPage").description("현재 페이지 번호"),
-                            fieldWithPath("result.totalPages").description("전체 페이지 수"),
-                            fieldWithPath("result.totalElements").description("전체 티켓 수"),
-                            fieldWithPath("result.size").description("페이지 크기")
-                                      )
-                               )
-                      );
-        }
-
-        @Test
-        @DisplayName("페이지에 문자값이 입력되었을 때 예외를 반환한다.")
-        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "thama.kakao", memberId = 11L)
-        void testGetManagerTicketsWhenInvalidPage() throws Exception {
-            //when & then
-            mockMvc.perform(get("/api/manager/tickets")
-                    .queryParam("status", TicketStatus.IN_PROGRESS.name())
-                    .queryParam("query", "query")
-                    .queryParam("page", "dfaesf")
-                    .queryParam("size", "20")
-                    .queryParam("sortType", SortType.NEWEST.name())
-                    .with(csrf()))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andDo(document("ManagerTicketApi/GetManagerTickets/failure/case1",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                            parameterWithName("status").description("티켓 상태"),
-                            parameterWithName("query").description("검색어"),
-                            parameterWithName("page").description("페이지 번호"),
-                            parameterWithName("size").description("페이지 크기"),
-                            parameterWithName("sortType").description("정렬 타입 (NEWEST | OLDEST | UPDATED)")
-                                       ),
-                        responseFields(
-                            fieldWithPath("isSuccess").description("성공 여부"),
-                            fieldWithPath("code").description("응답 코드"),
-                            fieldWithPath("message").description("응답 메시지(잘못된 요청입니다.)"),
-                            fieldWithPath("result").description("응답 결과"),
-                            fieldWithPath("result.page").description("오류 메세지(Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer')")
-                                      )
-                               )
-                      );
-        }
-
-        @Test
-        @DisplayName("목록 크기로 문자값이 입력되었을 때 예외를 반환한다.")
-        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "thama.kakao", memberId = 11L)
-        void testGetManagerTicketsWhenInvalidSize() throws Exception {
-            //when & then
-            mockMvc.perform(get("/api/manager/tickets")
-                    .queryParam("status", TicketStatus.IN_PROGRESS.name())
-                    .queryParam("query", "query")
-                    .queryParam("page", "1")
-                    .queryParam("size", "dfaesf")
-                    .queryParam("sortType", SortType.NEWEST.name())
-                    .with(csrf()))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andDo(document("ManagerTicketApi/GetManagerTickets/failure/case2",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                            parameterWithName("status").description("티켓 상태"),
-                            parameterWithName("query").description("검색어"),
-                            parameterWithName("page").description("페이지 번호"),
-                            parameterWithName("size").description("페이지 크기"),
-                            parameterWithName("sortType").description("정렬 타입 (NEWEST | OLDEST | UPDATED)")
-                                       ),
-                        responseFields(
-                            fieldWithPath("isSuccess").description("성공 여부"),
-                            fieldWithPath("code").description("응답 코드"),
-                            fieldWithPath("message").description("응답 메시지(잘못된 요청입니다.)"),
-                            fieldWithPath("result").description("응답 결과"),
-                            fieldWithPath("result.size").description("오류 메세지(Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer')")
-                                      )
-                               )
-                      );
         }
     }
 }
