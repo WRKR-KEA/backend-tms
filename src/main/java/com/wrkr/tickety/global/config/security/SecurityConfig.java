@@ -5,6 +5,7 @@ import com.wrkr.tickety.global.config.security.filter.JwtAuthenticationFilter;
 import com.wrkr.tickety.global.config.security.handler.CustomAccessDeniedHandler;
 import com.wrkr.tickety.global.config.security.handler.CustomAuthenticationEntryPoint;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
+import com.wrkr.tickety.global.config.xss.XssFilter;
 import jakarta.servlet.DispatcherType;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +16,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -61,6 +65,12 @@ public class SecurityConfig {
             .cors(corsConfigurer -> corsConfigurer
                 .configurationSource(corsConfigurationSource())
             )
+            .headers(headers -> headers
+                .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+                .contentSecurityPolicy(csp -> csp.policyDirectives("script-src 'self'"))
+                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN))
+                .frameOptions(FrameOptionsConfig::disable)
+            )
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
@@ -81,6 +91,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .accessDeniedHandler(customAccessDeniedHandler)
             )
+            .addFilterBefore(new XssFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
