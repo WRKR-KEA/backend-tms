@@ -32,8 +32,7 @@ class ManagerGetMainUseCaseTest {
 
     private List<Ticket> pinTickets;
     private List<Ticket> requestTickets;
-    private Long MANAGER_ID = 1L;
-    private Long USER_ID = 2L;
+    private final Long MANAGER_ID = 1L;
 
     @BeforeEach
     void setUp() {
