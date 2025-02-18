@@ -19,7 +19,6 @@ import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("비밀번호 재설정 UseCase Layer Test")
 class PasswordUpdateUseCaseTest {
 
     @Mock
@@ -47,73 +47,68 @@ class PasswordUpdateUseCaseTest {
         pkCrypto.init();
     }
 
-    @Nested
-    @DisplayName("PasswordUpdate UseCase Layer Test")
-    class UpdatePasswordTest {
+    @Test
+    @DisplayName("비밀번호 변경이 성공적으로 수행되면 isTempPassword가 false로 변경된다.")
+    void updatePasswordSuccess() {
+        // given
+        Long memberId = 1L;
+        String newPassword = "newPassword123!";
+        String encryptedMemberId = PkCrypto.encrypt(memberId);
 
-        @Test
-        @DisplayName("비밀번호 변경이 성공적으로 수행되면 isTempPassword가 false로 변경된다.")
-        void updatePasswordSuccess() {
-            // given
-            Long memberId = 1L;
-            String newPassword = "newPassword123!";
-            String encryptedMemberId = PkCrypto.encrypt(memberId);
+        Member member = Member.builder()
+            .memberId(memberId)
+            .password("oldPassword!")
+            .isTempPassword(true)
+            .build();
 
-            Member member = Member.builder()
-                .memberId(memberId)
-                .password("oldPassword!")
-                .isTempPassword(true)
-                .build();
+        when(memberGetService.byMemberId(memberId)).thenReturn(member);
+        when(memberSaveService.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            when(memberGetService.byMemberId(memberId)).thenReturn(member);
-            when(memberSaveService.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // when
+        MemberPkResponse response = passwordUpdateUseCase.updatePassword(memberId, newPassword, newPassword);
 
-            // when
-            MemberPkResponse response = passwordUpdateUseCase.updatePassword(memberId, newPassword, newPassword);
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.memberId()).isEqualTo(encryptedMemberId);
+        assertThat(PasswordEncoderUtil.verifyPassword(newPassword, member.getPassword())).isTrue();
+        assertThat(member.getIsTempPassword()).isFalse();
 
-            // then
-            assertThat(response).isNotNull();
-            assertThat(response.memberId()).isEqualTo(encryptedMemberId);
-            assertThat(PasswordEncoderUtil.verifyPassword(newPassword, member.getPassword())).isTrue();
-            assertThat(member.getIsTempPassword()).isFalse();
+        verify(memberGetService, times(1)).byMemberId(memberId);
+        verify(memberSaveService, times(1)).save(any(Member.class));
+    }
 
-            verify(memberGetService, times(1)).byMemberId(memberId);
-            verify(memberSaveService, times(1)).save(any(Member.class));
-        }
+    @Test
+    @DisplayName("비밀번호가 일치하지 않을 경우 UNMATCHED_PASSWORD 예외가 발생한다.")
+    void updatePasswordUnmatchedException() {
+        // given
+        Long memberId = 1L;
+        String password = "newPassword123!";
+        String confirmPassword = "differentPassword123!";
 
-        @Test
-        @DisplayName("비밀번호가 일치하지 않을 경우 UNMATCHED_PASSWORD 예외가 발생한다.")
-        void updatePasswordUnmatchedException() {
-            // given
-            Long memberId = 1L;
-            String password = "newPassword123!";
-            String confirmPassword = "differentPassword123!";
+        // when & then
+        assertThatThrownBy(() -> passwordUpdateUseCase.updatePassword(memberId, password, confirmPassword))
+            .isInstanceOf(ApplicationException.class)
+            .hasMessage(MemberErrorCode.UNMATCHED_PASSWORD.getMessage());
 
-            // when & then
-            assertThatThrownBy(() -> passwordUpdateUseCase.updatePassword(memberId, password, confirmPassword))
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage(MemberErrorCode.UNMATCHED_PASSWORD.getMessage());
+        verify(memberGetService, never()).byMemberId(anyLong());
+        verify(memberSaveService, never()).save(any(Member.class));
+    }
 
-            verify(memberGetService, never()).byMemberId(anyLong());
-            verify(memberSaveService, never()).save(any(Member.class));
-        }
+    @Test
+    @DisplayName("존재하지 않는 회원 ID로 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.")
+    void updatePasswordMemberNotFoundException() {
+        // given
+        Long memberId = 999L;
+        String newPassword = "newPassword123!";
 
-        @Test
-        @DisplayName("존재하지 않는 회원 ID로 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.")
-        void updatePasswordMemberNotFoundException() {
-            // given
-            Long memberId = 999L;
-            String newPassword = "newPassword123!";
+        when(memberGetService.byMemberId(memberId)).thenThrow(ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
 
-            when(memberGetService.byMemberId(memberId)).thenThrow(ApplicationException.from(MemberErrorCode.MEMBER_NOT_FOUND));
+        // when & then
+        assertThatThrownBy(() -> passwordUpdateUseCase.updatePassword(memberId, newPassword, newPassword))
+            .isInstanceOf(ApplicationException.class)
+            .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
 
-            // when & then
-            assertThatThrownBy(() -> passwordUpdateUseCase.updatePassword(memberId, newPassword, newPassword))
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
-
-            verify(memberGetService, times(1)).byMemberId(memberId);
-            verify(memberSaveService, never()).save(any(Member.class));
-        }
+        verify(memberGetService, times(1)).byMemberId(memberId);
+        verify(memberSaveService, never()).save(any(Member.class));
     }
 }

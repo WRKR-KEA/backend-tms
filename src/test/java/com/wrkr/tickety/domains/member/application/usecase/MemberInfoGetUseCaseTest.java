@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
-import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.global.exception.ApplicationException;
@@ -18,10 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("회원 정보 상세 조회 UseCase Layer Test")
 public class MemberInfoGetUseCaseTest {
 
@@ -34,9 +35,9 @@ public class MemberInfoGetUseCaseTest {
     @Mock
     private PkCrypto pkCrypto;
 
+
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         pkCrypto = new PkCrypto("AES", "1234567890123456");
         pkCrypto.init();
     }
@@ -50,8 +51,6 @@ public class MemberInfoGetUseCaseTest {
         String encryptedMemberId = PkCrypto.encrypt(member.getMemberId());
         Long decryptedMemberId = PkCrypto.decrypt(encryptedMemberId);
 
-        MemberInfoResponse expectedResponse = MemberMapper.mapToMemberInfoResponse(member);
-
         given(memberGetService.byMemberId(decryptedMemberId)).willReturn(member);
 
         // when
@@ -59,14 +58,14 @@ public class MemberInfoGetUseCaseTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.email()).isEqualTo(expectedResponse.email());
-        assertThat(response.name()).isEqualTo(expectedResponse.name());
-        assertThat(response.nickname()).isEqualTo(expectedResponse.nickname());
-        assertThat(response.department()).isEqualTo(expectedResponse.department());
-        assertThat(response.position()).isEqualTo(expectedResponse.position());
-        assertThat(response.phone()).isEqualTo(expectedResponse.phone());
-        assertThat(response.role()).isEqualTo(expectedResponse.role());
-        assertThat(response.agitUrl()).isEqualTo(expectedResponse.agitUrl());
+        assertThat(response.email()).isEqualTo(member.getEmail());
+        assertThat(response.name()).isEqualTo(member.getName());
+        assertThat(response.nickname()).isEqualTo(member.getNickname());
+        assertThat(response.department()).isEqualTo(member.getDepartment());
+        assertThat(response.position()).isEqualTo(member.getPosition());
+        assertThat(response.phone()).isEqualTo(member.getPhone());
+        assertThat(response.role()).isEqualTo(member.getRole().toString());
+        assertThat(response.agitUrl()).isEqualTo(member.getAgitUrl());
     }
 
     @Test
@@ -78,7 +77,7 @@ public class MemberInfoGetUseCaseTest {
         Long decryptedMemberId = PkCrypto.decrypt(encryptedMemberId);
 
         // Mocking
-        given(memberGetService.byMemberId(decryptedMemberId)).willThrow(new ApplicationException(MEMBER_NOT_FOUND));
+        given(memberGetService.byMemberId(decryptedMemberId)).willThrow(ApplicationException.from(MEMBER_NOT_FOUND));
 
         // when & then
         assertThatThrownBy(() -> {

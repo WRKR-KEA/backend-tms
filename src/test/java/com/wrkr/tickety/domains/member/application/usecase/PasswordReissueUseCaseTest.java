@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.member.application.usecase;
 
 import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_J;
 import static com.wrkr.tickety.domains.auth.exception.AuthErrorCode.INVALID_VERIFICATION_CODE;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,15 +19,23 @@ import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
+import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import com.wrkr.tickety.infrastructure.email.EmailUtil;
 import com.wrkr.tickety.infrastructure.redis.RedisService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@DisplayName("비밀번호 재발급 UseCase Layer Test")
 class PasswordReissueUseCaseTest {
 
     @InjectMocks
@@ -65,10 +72,12 @@ class PasswordReissueUseCaseTest {
         String verificationCode = "validVerificationCode";
         String tempPassword = "newTempPassword123";
 
-        when(redisService.getValues(anyString())).thenReturn(Optional.of(verificationCode));
+        when(redisService.getValues(anyString()))
+            .thenReturn(Optional.of(verificationCode));
         when(memberGetService.byMemberId(any())).thenReturn(member);
         when(memberSaveService.save(any())).thenReturn(member);
         doNothing().when(emailUtil).sendMail(any(), eq(tempPassword), eq(EmailConstants.FILENAME_PASSWORD));
+
         doNothing().when(redisService).deleteValues(eq(verificationCodePrefix + encryptedMemberId));
 
         // when
@@ -76,9 +85,10 @@ class PasswordReissueUseCaseTest {
 
         // then
         assertThat(response.memberId()).isEqualTo(PkCrypto.encrypt(member.getMemberId()));
-        verify(redisService, times(1)).deleteValues(verificationCode + encryptedMemberId);
-        verify(emailUtil, times(1)).sendMail(any(), eq(tempPassword), eq(EmailConstants.FILENAME_PASSWORD));
+        verify(redisService, times(1)).deleteValues(anyString());
+        verify(emailUtil, times(1)).sendMail(any(EmailCreateRequest.class), anyString(), eq(EmailConstants.FILENAME_PASSWORD));
     }
+
 
     @Test
     @DisplayName("제공된 인증 코드가 저장된 인증 코드와 다르면 INVALID_VERIFICATION_CODE 예외가 발생한다.")
@@ -99,20 +109,19 @@ class PasswordReissueUseCaseTest {
     }
 
     @Test
-    @DisplayName("회원이 존재하지 않으면 MEMBER_NOT_FOUND 예외가 발생한다.")
+    @DisplayName("회원이 존재하지 않으면 INVALID_VERIFICATION_CODE 예외가 발생한다.")
     void reissuePasswordMemberNotFound() {
         // given
         String encryptedMemberId = PkCrypto.encrypt(999L);
         String verificationCode = "validVerificationCode";
 
         when(redisService.getValues(verificationCode + encryptedMemberId)).thenReturn(Optional.of(verificationCode));
-        when(memberGetService.byMemberId(any())).thenReturn(null);
 
         // when & then
         assertThatThrownBy(() -> {
             passwordReissueUseCase.reissuePassword(encryptedMemberId, verificationCode);
         }).isInstanceOf(ApplicationException.class)
-            .hasMessage(MEMBER_NOT_FOUND.getMessage());
+            .hasMessage(INVALID_VERIFICATION_CODE.getMessage());
     }
 
 

@@ -47,7 +47,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@DisplayName("CreateMember UseCase Layer > 회원 등록")
+@DisplayName("회원 등록 UseCase Layer Test")
 class MemberCreateUseCaseTest {
 
     @InjectMocks

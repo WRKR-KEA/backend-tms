@@ -71,7 +71,7 @@ HTTP Response
 include::{snippets}/Public/regeneratePassword/Failure/InvalidVerificationCode/http-response.adoc[]
 include::{snippets}/Public/regeneratePassword/Failure/InvalidVerificationCode/response-fields.adoc[]
 
-=== 3. 존재하지 않는 회원으로 비밀번호 재발급 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.
+=== 3. 존재하지 않는 회원으로 비밀번호 재발급 요청 시 INVALID_VERIFICATION_CODE 예외가 발생한다.
 
 HTTP Request
 

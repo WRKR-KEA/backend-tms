@@ -3,7 +3,6 @@ package com.wrkr.tickety.domains.member.presentation;
 import static com.wrkr.tickety.domains.auth.exception.AuthErrorCode.INVALID_VERIFICATION_CODE;
 import static com.wrkr.tickety.domains.member.domain.constant.Role.MANAGER;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_NICKNAME;
-import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.wrkr.tickety.global.response.code.SuccessCode.SUCCESS;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -285,13 +284,13 @@ public class PublicControllerTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 회원으로 비밀번호 재발급 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.")
+        @DisplayName("존재하지 않는 회원으로 비밀번호 재발급 요청 시 INVALID_VERIFICATION_CODE 예외가 발생한다.")
         @WithMockCustomUser(username = "manager", role = MANAGER, nickname = "manager.thama", memberId = 2L)
         void regeneratePasswordMemberNotFound() throws Exception {
             // given
             String encryptedMemberId = "nonExistentEncryptedMemberId";
             String verificationCode = "validVerificationCode";
-            doThrow(ApplicationException.from(MEMBER_NOT_FOUND)).when(passwordReissueUseCase)
+            doThrow(ApplicationException.from(INVALID_VERIFICATION_CODE)).when(passwordReissueUseCase)
                 .reissuePassword(encryptedMemberId, verificationCode);
 
             String requestBody = objectMapper.writeValueAsString(new PasswordReissueRequest(encryptedMemberId, verificationCode));
@@ -305,13 +304,13 @@ public class PublicControllerTest {
             // then
             requestBuilder.andDo(print())
                 .andExpectAll(
-                    status().isNotFound(),
+                    status().isUnauthorized(),
                     jsonPath("$.isSuccess").value(false),
-                    jsonPath("$.code").value(MEMBER_NOT_FOUND.getCustomCode()),
-                    jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
+                    jsonPath("$.code").value(INVALID_VERIFICATION_CODE.getCustomCode()),
+                    jsonPath("$.message").value(INVALID_VERIFICATION_CODE.getMessage())
                 )
                 .andDo(document(
-                    "Public/regeneratePassword/Failure/MemberNotFound",
+                    "Public/regeneratePassword/Failure/NotExistMember",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
