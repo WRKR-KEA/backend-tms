@@ -54,7 +54,7 @@ public class SseEmitterService {
         sseEmitters.forEach(
             (key, emitter) -> {
                 emitterRepository.saveEventCache(key, notification);
-                sendToClient(emitter, key, content);
+                sendToClient(emitter, key, notificationType.name().toLowerCase(), content);
             }
         );
     }
