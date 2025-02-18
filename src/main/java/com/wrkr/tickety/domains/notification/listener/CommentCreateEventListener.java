@@ -54,6 +54,6 @@ public class CommentCreateEventListener {
 
         kakaoworkNotificationService.sendCommentCreateKakaoworkAlarm(receiver, ticket);
 
-        notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
+        notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.COMMENT, message));
     }
 }
