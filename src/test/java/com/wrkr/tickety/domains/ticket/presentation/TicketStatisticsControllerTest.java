@@ -329,7 +329,7 @@ class TicketStatisticsControllerTest {
                 .forEach(i -> CategoryTicketCount.add(TicketCount.builder().categoryId("categoryId" + i).count(i).categoryName("categoryName" + i).build()));
 
             StatisticsByCategoryResponse expectedResponse = StatisticsByCategoryResponse.builder().parentCategoryId("LvI-mc4SwqpS3CixT1m_GQ")
-                .statisticData(StatisticData.builder().firstCategoryTicketCount(CategoryTicketCount).build()).date(requestDate.toString()).build();
+                .statisticData(StatisticData.builder().categoryTicketCount(CategoryTicketCount).build()).date(requestDate.toString()).build();
             //when
             when(statisticsByChildCategoryUseCase.getStatisticsByCategory(StatisticsType.MONTHLY, requestDate, PkCrypto.decrypt(parentCategoryId))).thenReturn(expectedResponse);
             //when & then
@@ -357,9 +357,9 @@ class TicketStatisticsControllerTest {
                                     fieldWithPath("message").description("응답 메시지"),
                                     fieldWithPath("result.parentCategoryId").description("부모 카테고리 ID"),
                                     fieldWithPath("result.date").description("응답 날짜"),
-                                    fieldWithPath("result.statisticData.firstCategoryTicketCount[].categoryId").description("카테고리 ID"),
-                                    fieldWithPath("result.statisticData.firstCategoryTicketCount[].count").description("티켓 수"),
-                                    fieldWithPath("result.statisticData.firstCategoryTicketCount[].categoryName").description("카테고리 이름")
+                                    fieldWithPath("result.statisticData.categoryTicketCount[].categoryId").description("카테고리 ID"),
+                                    fieldWithPath("result.statisticData.categoryTicketCount[].count").description("티켓 수"),
+                                    fieldWithPath("result.statisticData.categoryTicketCount[].categoryName").description("카테고리 이름")
                                 )
                 ));
         }

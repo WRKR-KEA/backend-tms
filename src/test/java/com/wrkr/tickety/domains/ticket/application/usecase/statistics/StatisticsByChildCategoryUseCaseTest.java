@@ -73,7 +73,7 @@ class StatisticsByChildCategoryUseCaseTest {
         TimePeriod timePeriod = DateUtil.extractTimePeriod(date, statisticsType);
         Long parentCategoryId = 10L;
 
-        StatisticData statisticData = StatisticData.builder().firstCategoryTicketCount(TicketCount.from(ticketCountByCategoryList, childCategories)).build();
+        StatisticData statisticData = StatisticData.builder().categoryTicketCount(TicketCount.from(ticketCountByCategoryList, childCategories)).build();
 
         StatisticsByCategoryResponse expect = StatisticsByCategoryResponse.builder().parentCategoryId(PkCrypto.encrypt(parentCategoryId))
             .date(date.format(DateTimeFormatter.ISO_DATE)).statisticData(statisticData).build();
@@ -89,9 +89,9 @@ class StatisticsByChildCategoryUseCaseTest {
         assertNotNull(statisticsByCategoryResponse.parentCategoryId(), "2차 카테고리별 일간 통계 조회 결과의 부모 카테고리 id는 null이 아니어야 합니다.");
         assertEquals(statisticsByCategoryResponse.parentCategoryId(), expect.parentCategoryId(), "2차 카테고리별 일간 통계 조회 결과의 부모 카테고리 id는 암호화 되어야 합니다.");
         assertEquals(statisticsByCategoryResponse.date(), expect.date(), "2차 카테고리별 일간 통계 조회 결과의 날짜는 yyyy-MM-dd 형식이어야 합니다.");
-        for (int i = 0; i < expect.statisticData().firstCategoryTicketCount().size(); i++) {
-            TicketCount actual = statisticsByCategoryResponse.statisticData().firstCategoryTicketCount().get(i);
-            TicketCount expected = expect.statisticData().firstCategoryTicketCount().get(i);
+        for (int i = 0; i < expect.statisticData().categoryTicketCount().size(); i++) {
+            TicketCount actual = statisticsByCategoryResponse.statisticData().categoryTicketCount().get(i);
+            TicketCount expected = expect.statisticData().categoryTicketCount().get(i);
             assertEquals(actual.categoryId(), expected.categoryId());
 
         }
@@ -107,7 +107,7 @@ class StatisticsByChildCategoryUseCaseTest {
         TimePeriod timePeriod = DateUtil.extractTimePeriod(date, statisticsType);
         Long parentCategoryId = 10L;
 
-        StatisticData statisticData = StatisticData.builder().firstCategoryTicketCount(TicketCount.from(ticketCountByCategoryList, childCategories)).build();
+        StatisticData statisticData = StatisticData.builder().categoryTicketCount(TicketCount.from(ticketCountByCategoryList, childCategories)).build();
 
         StatisticsByCategoryResponse expect = StatisticsByCategoryResponse.builder().parentCategoryId(PkCrypto.encrypt(parentCategoryId))
             .date(date.format(DateTimeFormatter.ISO_DATE)).statisticData(statisticData).build();
@@ -123,9 +123,9 @@ class StatisticsByChildCategoryUseCaseTest {
         assertNotNull(statisticsByCategoryResponse.parentCategoryId(), "2차 카테고리별 일간 통계 조회 결과의 부모 카테고리 id는 null이 아니어야 합니다.");
         assertEquals(statisticsByCategoryResponse.parentCategoryId(), expect.parentCategoryId(), "2차 카테고리별 일간 통계 조회 결과의 부모 카테고리 id는 암호화 되어야 합니다.");
         assertEquals(statisticsByCategoryResponse.date(), expect.date(), "2차 카테고리별 일간 통계 조회 결과의 날짜는 yyyy-MM-dd 형식이어야 합니다.");
-        for (int i = 0; i < expect.statisticData().firstCategoryTicketCount().size(); i++) {
-            TicketCount actual = statisticsByCategoryResponse.statisticData().firstCategoryTicketCount().get(i);
-            TicketCount expected = expect.statisticData().firstCategoryTicketCount().get(i);
+        for (int i = 0; i < expect.statisticData().categoryTicketCount().size(); i++) {
+            TicketCount actual = statisticsByCategoryResponse.statisticData().categoryTicketCount().get(i);
+            TicketCount expected = expect.statisticData().categoryTicketCount().get(i);
             assertEquals(actual.categoryId(), expected.categoryId());
 
         }
