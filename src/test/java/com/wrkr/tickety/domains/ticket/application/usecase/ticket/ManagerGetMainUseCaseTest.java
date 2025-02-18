@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.PinTickets;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
 import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -70,7 +71,7 @@ class ManagerGetMainUseCaseTest {
                 .toList()
             )
             .requestTickets(requestTickets.stream()
-                .map(ticket -> ManagerTicketMainPageResponse.requestTickets.builder()
+                .map(ticket -> RequestTickets.builder()
                     .status(ticket.getStatus())
                     .build())
                 .toList()
@@ -101,7 +102,7 @@ class ManagerGetMainUseCaseTest {
 
         try (MockedStatic<TicketMapper> ticketMapper = mockStatic(TicketMapper.class)) {
             for (Ticket ticket : pinTickets) {
-                ticketMapper.when(() -> TicketMapper.toPinTickets(ticket))
+                ticketMapper.when(() -> TicketMapper.toPinTicketsResponse(ticket))
                     .thenReturn(ManagerTicketMainPageResponse.PinTickets.builder()
                         .build());
             }
@@ -115,24 +116,24 @@ class ManagerGetMainUseCaseTest {
 
     @Test
     @DisplayName("담당자 메인페이지 조회 시, 최근 요청 티켓 목록을 반환한다.")
-    void getRecentTickets() {
+    void getRecentRequestTickets() {
         //given
         given(ticketGetService.getRequestTickets()).willReturn(requestTickets);
-        List<ManagerTicketMainPageResponse.requestTickets> requestTicketsResponse = requestTickets.stream()
-            .map(ticket -> ManagerTicketMainPageResponse.requestTickets.builder()
+        List<RequestTickets> requestTicketsResponse = requestTickets.stream()
+            .map(ticket -> RequestTickets.builder()
                 .status(ticket.getStatus())
                 .build())
             .toList();
 
         try (MockedStatic<TicketMapper> ticketMapper = mockStatic(TicketMapper.class)) {
             for (Ticket ticket : requestTickets) {
-                ticketMapper.when(() -> TicketMapper.toRequests(ticket))
-                    .thenReturn(ManagerTicketMainPageResponse.requestTickets.builder()
+                ticketMapper.when(() -> TicketMapper.toRequestTicketsResponse(ticket))
+                    .thenReturn(RequestTickets.builder()
                         .status(ticket.getStatus())
                         .build());
             }
             //when
-            List<ManagerTicketMainPageResponse.requestTickets> response = managerGetMainUseCase.getRecentTickets();
+            List<RequestTickets> response = managerGetMainUseCase.getRecentRequestTickets();
 
             //then
             assertThat(response).isEqualTo(requestTicketsResponse);

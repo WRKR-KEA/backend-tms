@@ -13,7 +13,7 @@ public record ManagerTicketMainPageResponse(
     List<PinTickets> pinTickets,
 
     @Schema(description = "요청된 티켓 목록")
-    List<requestTickets> requestTickets
+    List<RequestTickets> requestTickets
 
 ) {
 
@@ -53,7 +53,7 @@ public record ManagerTicketMainPageResponse(
     }
 
     @Builder
-    public record requestTickets(
+    public record RequestTickets(
         @Schema(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw")
         String ticketId,
 
