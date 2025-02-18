@@ -31,7 +31,11 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
@@ -65,8 +69,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -130,7 +132,7 @@ class ManagerTicketControllerTest {
     private final static Long TICKET_ID = 1L;
 
     @Nested
-    @DisplayName("담당자 변경 API 테스트")
+    @DisplayName("담당자 변경 API [PATCH /api/manager/tickets/{ticketId}/delegate]")
     class DelegateTicketTest {
 
         @Test
@@ -138,15 +140,11 @@ class ManagerTicketControllerTest {
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
         void delegateTicket_Success() throws Exception {
             // Given
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Member member = (Member) authentication.getPrincipal();
-            log.info("customUserDetails : {}", member.getNickname());
-
             String ticketId = PkCrypto.encrypt(1L);
             TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
             TicketPkResponse response = new TicketPkResponse(ticketId);
 
-            when(managerTicketDelegateUseCase.delegateTicket(1L, 2L, request))
+            when(managerTicketDelegateUseCase.delegateTicket(anyLong(), anyLong(), any(TicketDelegateRequest.class)))
                 .thenReturn(response);
 
             // When & Then
@@ -154,7 +152,21 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("ManagerTicketApi/Delegate/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("반환 결과"),
+                        fieldWithPath("result.ticketId").description("위임된 티켓 ID (PK)")
+                    )
+                ));
         }
 
         @Test
@@ -174,7 +186,19 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(document("ManagerTicketApi/Delegate/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
         }
 
         @Test
@@ -185,7 +209,7 @@ class ManagerTicketControllerTest {
             String ticketId = PkCrypto.encrypt(1L);
             TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
 
-            doThrow(new com.wrkr.tickety.global.exception.ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
                 .when(managerTicketDelegateUseCase)
                 .delegateTicket(anyLong(), anyLong(), any(TicketDelegateRequest.class));
 
@@ -194,7 +218,19 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andDo(document("ManagerTicketApi/Delegate/Failure/Case2",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
         }
 
         @Test
@@ -205,7 +241,7 @@ class ManagerTicketControllerTest {
             String ticketId = PkCrypto.encrypt(1L);
             TicketDelegateRequest request = new TicketDelegateRequest(PkCrypto.encrypt(2L));
 
-            doThrow(new com.wrkr.tickety.global.exception.ApplicationException(TicketErrorCode.TICKET_NOT_DELEGATABLE))
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_NOT_DELEGATABLE))
                 .when(managerTicketDelegateUseCase)
                 .delegateTicket(anyLong(), anyLong(), any(TicketDelegateRequest.class));
 
@@ -214,7 +250,19 @@ class ManagerTicketControllerTest {
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andDo(document("ManagerTicketApi/Delegate/Failure/Case3",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("ticketId").description("위임할 티켓 ID (PK)")
+                    ),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
         }
     }
 
@@ -1070,6 +1118,318 @@ class ManagerTicketControllerTest {
                     )
                 );
         }
-
     }
+
+    @Nested
+    @DisplayName("담당자 메인페이지 API [GET /api/manager/main]")
+    class MainPage {
+
+        @Test
+        @DisplayName("성공: 담당자의 메인 페이지 정보를 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPage_Success() throws Exception {
+            // given
+            ManagerTicketMainPageResponse response = ManagerTicketMainPageResponse.builder()
+                .pinTickets(List.of())
+                .requestTickets(List.of())
+                .build();
+
+            doReturn(response).when(managerGetMainUseCase).getMain(anyLong());
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMain/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("메인 페이지 티켓 목록"),
+                        fieldWithPath("result.pinTickets").description("고정된 티켓 목록"),
+                        fieldWithPath("result.requestTickets").description("요청된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPage_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMain/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 티켓 고정 API [PATCH /api/manager/tickets/pin]")
+    class PinTicket {
+
+        @Test
+        @DisplayName("티켓 고정 처리에 성공한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketSuccess() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+            ManagerPinTicketResponse response = new ManagerPinTicketResponse(encryptedTicketId, true);
+
+            doReturn(response).when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.ticketId").value(encryptedTicketId))
+                .andExpect(jsonPath("$.result.isPinned").value(true))
+                .andDo(document("ManagerTicketApi/Pin/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("반환 결과"),
+                        fieldWithPath("result.ticketId").description("고정된 티켓 ID(PK)"),
+                        fieldWithPath("result.isPinned").description("고정 여부")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 최대 10개의 티켓만 고정 가능하다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_PinLimitExceeded() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_PIN_COUNT_OVER))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 티켓 담당자가 아닐 경우 고정할 수 없다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_ManagerNotMatch() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isForbidden())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case2",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 티켓을 찾을 수 없음")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_TicketNotFound() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_NOT_FOUND))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case3",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실퍠: 티켓이 요청 상태가 아닌 경우 예외 발생")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_TicketNotRequest() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_FOUND))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case4",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 고정 티켓 조회 API [GET /api/manager/main/pins]")
+    class MainPagePinTickets {
+
+        @Test
+        @DisplayName("성공: 담당자의 고정된 티켓 목록을 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPagePinTicket_Success() throws Exception {
+            // given
+            doReturn(List.of()).when(managerGetMainUseCase).getPinTickets(anyLong());
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/pins")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMainPins/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("고정된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPagePinTicket_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/pins")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMainPins/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 요청된 티켓 조회 API [GET /api/manager/main/requests]")
+    class MainPageRequestTickets {
+
+        @Test
+        @DisplayName("성공: 담당자의 요청된 티켓 목록을 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPageRequestTicket_Success() throws Exception {
+            // given
+            List<RequestTickets> requestTickets = List.of();
+
+            doReturn(requestTickets).when(managerGetMainUseCase).getRecentRequestTickets();
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/requests")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMainRequests/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("요청된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPageRequestTicket_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/requests")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMainRequests/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
 }

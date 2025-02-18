@@ -30,7 +30,7 @@ public class NotificationMapper {
             .content(notification.getContent())
             .type(notification.getType())
             .isRead(notification.getIsRead())
-            .timeAgo(formatRelativeTime(notification.getCreatedAt()))
+            .timeAgo(notification.getCreatedAt() == null ? null : formatRelativeTime(notification.getCreatedAt()))
             .createdAt(notification.getCreatedAt())
             .build();
     }

@@ -227,3 +227,37 @@ HTTP Response
 include::{snippets}/AdminMember/searchMemberInfo/Failure/AdminRoleNotAllowed/http-response.adoc[]
 include::{snippets}/AdminMember/searchMemberInfo/Failure/AdminRoleNotAllowed/response-fields.adoc[]
 
+include::{snippets}/AdminMember/getMemberInfo/Request/Failure/MemberNotFound/http-response.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Request/Failure/MemberNotFound/response-fields.adoc[]
+
+== 관리자 - 회원 등록 엑셀 양식 다운로드 API
+
+=== 1. 엑셀 양식 다운로드를 성공적으로 수행한다.
+
+HTTP Request
+
+include::{snippets}/AdminMemberApi/DownloadExcelTemplate/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/AdminMemberApi/DownloadExcelTemplate/Success/http-response.adoc[]
+
+=== 2. 엑셀 양식 다운로드 중 내부 서버 오류 발생 시 실패한다.
+
+HTTP Request
+
+include::{snippets}/AdminMemberApi/DownloadExcelTemplate/Failure/InternalServerError/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/AdminMemberApi/DownloadExcelTemplate/Failure/InternalServerError/http-response.adoc[]
+
+=== 3. 인증 정보가 없을 경우 엑셀 양식 다운로드가 실패한다.
+
+HTTP Request
+
+include::{snippets}/AdminMemberApi/DownloadExcelTemplate/Failure/Unauthorized/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/AdminMemberApi/DownloadExcelTemplate/Failure/Unauthorized/http-response.adoc[]

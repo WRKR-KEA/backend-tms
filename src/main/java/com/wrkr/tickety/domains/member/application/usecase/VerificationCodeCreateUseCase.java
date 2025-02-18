@@ -52,10 +52,6 @@ public class VerificationCodeCreateUseCase {
 
         emailUtil.sendMail(emailCreateRequest, randomCode, EmailConstants.FILENAME_VERIFICATION_CODE);
 
-        // TODO: 릴리즈 하기 전에 삭제
-        log.info("**** 인증 번호 생성 ****");
-        log.info("아이디: {}, 인증 번호 : {}", findMember.get().getNickname(), randomCode);
-
         return MemberMapper.toMemberPkResponse(encryptedMemberId);
     }
 

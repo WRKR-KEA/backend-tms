@@ -22,6 +22,7 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUM
 import static com.wrkr.tickety.global.response.code.SuccessCode.SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
+import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequestForExcel;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberDeleteRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPreviewResponse;
@@ -67,6 +69,7 @@ import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.excel.ExcelUtil;
 import java.nio.charset.StandardCharsets;
@@ -1233,8 +1236,8 @@ class AdminMemberControllerTest {
                         fieldWithPath("result.elements[].email").description("회원 이메일")
                     )
                 ));
-        }
 
+        
         @Test
         @DisplayName("필터링 기준을 ADMIN으로 요청 시 METHOD_ARGUMENT_NOT_VALID 예외를 발생시킨다.")
         @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
@@ -1271,6 +1274,74 @@ class AdminMemberControllerTest {
                         fieldWithPath("code").description("응답 코드"),
                         fieldWithPath("message").description("응답 메시지")
                     )
+                ));
+        }
+
+
+    }
+
+    @DisplayName("관리자 - 회원 등록 엑셀 양식 다운로드 API 테스트")
+    class DownloadMemberExcelTemplateTest {
+
+        @Test
+        @DisplayName("엑셀 양식 다운로드를 성공적으로 수행한다.")
+        @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
+        void downloadMemberExcelTemplate_Success() throws Exception {
+            // Given
+            List<MemberCreateRequestForExcel> dummyData = List.of(
+                new MemberCreateRequestForExcel(
+                    "wrkr.kea@gachon.ac.kr", "김가천", "gachon.kim",
+                    "인프라 지원팀", "네트워크 엔지니어", "010-1234-5678",
+                    Role.MANAGER, "https://i.ibb.co/7Fd4Hhx/tickety-default-image.jpg",
+                    "https://example.com/agit"
+                )
+            );
+
+            doReturn(dummyData).when(excelExampleCreateUseCase).createMemberInfoExample();
+
+            // When & Then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/admin/members/excel/example")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andDo(document(
+                    "AdminMemberApi/DownloadExcelTemplate/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+
+        @DisplayName("엑셀 양식 다운로드 중 내부 서버 오류 발생 시 실패한다.")
+        @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
+        void downloadMemberExcelTemplate_Fail_InternalServerError() throws Exception {
+            // Given
+            doThrow(ApplicationException.from(CommonErrorCode.INTERNAL_SERVER_ERROR))
+                .when(excelExampleCreateUseCase).createMemberInfoExample();
+
+            // When & Then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/admin/members/excel/example")
+                    .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andDo(document(
+                    "AdminMemberApi/DownloadExcelTemplate/Failure/InternalServerError",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+
+        @Test
+        @DisplayName("인증 정보가 없을 경우 엑셀 양식 다운로드가 실패한다.")
+        void downloadMemberExcelTemplate_Fail_Unauthorized() throws Exception {
+            // When & Then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/admin/members/excel/example")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "AdminMemberApi/DownloadExcelTemplate/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
                 ));
         }
     }

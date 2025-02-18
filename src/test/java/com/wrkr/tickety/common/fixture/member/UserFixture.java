@@ -1,5 +1,7 @@
 package com.wrkr.tickety.common.fixture.member;
 
+import static com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil.encodePassword;
+
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import lombok.Getter;
@@ -89,7 +91,7 @@ public enum UserFixture {
         return Member.builder()
             .memberId(memberId)
             .email(email)
-            .password(password)
+            .password(encodePassword(password))
             .name(name)
             .nickname(nickname)
             .department(department)
@@ -97,6 +99,11 @@ public enum UserFixture {
             .phone(phone)
             .role(role)
             .profileImage(profileImage)
+            .isTempPassword(false)
             .build();
+    }
+
+    public String getRawPassword() {
+        return this.password;
     }
 }
