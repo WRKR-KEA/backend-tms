@@ -22,6 +22,7 @@ import com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
@@ -169,10 +170,11 @@ class MemberCreateUseCaseTest {
         //given
         Member member = USER_J.toMember();
 
-        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-            .email(member.getEmail())
-            .nickname(member.getNickname())
-            .build();
+            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .role(Role.USER)
+                .build();
 
         randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
             .thenReturn("UniqueUUID12");
@@ -195,10 +197,11 @@ class MemberCreateUseCaseTest {
         //given
         Member member = USER_J.toMember();
 
-        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-            .email(member.getEmail())
-            .nickname(member.getNickname())
-            .build();
+            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .role(Role.USER)
+                .build();
 
         randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
             .thenReturn("UniqueUUID12");
@@ -215,14 +218,15 @@ class MemberCreateUseCaseTest {
             .hasMessageContaining(ALREADY_EXIST_NICKNAME.getMessage());
     }
 
-    @DisplayName("잘못된 파일 확장자의 경우 예외를 발생시킨다.")
-    @Test
-    void createMemberWithInvalidImageExtension() {
-        // given
-        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-            .email("test@example.com")
-            .nickname("testNickname")
-            .build();
+        @DisplayName("잘못된 파일 확장자의 경우 예외를 발생시킨다.")
+        @Test
+        void createMemberWithInvalidImageExtension() {
+            // given
+            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+                .email("test@example.com")
+                .nickname("testNickname")
+                .role(Role.USER)
+                .build();
 
         MockMultipartFile invalidImage = new MockMultipartFile(
             "profileImage",
@@ -238,14 +242,15 @@ class MemberCreateUseCaseTest {
             .hasMessageContaining(INVALID_IMAGE_EXTENSION.getMessage());
     }
 
-    @DisplayName("파일 크기가 최대 파일 사이즈를 초과한 경우 예외를 발생시킨다.")
-    @Test
-    void createMemberWithExceedingFileSize() {
-        // given
-        MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
-            .email("test@example.com")
-            .nickname("testNickname")
-            .build();
+        @DisplayName("파일 크기가 최대 파일 사이즈를 초과한 경우 예외를 발생시킨다.")
+        @Test
+        void createMemberWithExceedingFileSize() {
+            // given
+            MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
+                .email("test@example.com")
+                .nickname("testNickname")
+                .role(Role.USER)
+                .build();
 
         MockMultipartFile largeImage = new MockMultipartFile(
             "profileImage",

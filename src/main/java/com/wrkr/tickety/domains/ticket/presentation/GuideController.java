@@ -44,7 +44,7 @@ public class GuideController {
 
     @Operation(summary = "도움말 조회")
     @Parameter(name = "cryptoCategoryId", description = "암호화된 카테고리 키", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true, in = ParameterIn.PATH)
-    @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
+    @CustomErrorCodes(guideErrorCodes = {GuideErrorCode.GUIDE_NOT_EXIST})
     @GetMapping("/api/user/guide/{cryptoCategoryId}")
     public ApplicationResponse<GuideResponse> getGuideContent(@AuthenticationPrincipal Member member, @PathVariable String cryptoCategoryId) {
         GuideResponse guideResponse = guideGetUseCase.getGuide(PkCrypto.decrypt(cryptoCategoryId));
@@ -76,7 +76,7 @@ public class GuideController {
 
     @Operation(summary = "도움말 수정")
     @Parameter(name = "cryptoCategoryId", description = "암호화된 도움말 키", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true, in = ParameterIn.PATH)
-    @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
+    @CustomErrorCodes(guideErrorCodes = {GuideErrorCode.GUIDE_NOT_EXIST})
     @Parameter(
         name = "guideCreateRequest",
         description = "도움말 수정 요청 데이터",
@@ -86,6 +86,7 @@ public class GuideController {
             schema = @Schema(implementation = GuideCreateRequest.class)
         )
     )
+
     @Parameter(name = "newAttachments", description = "새로 추가할 첨부파일 목록")
     @PatchMapping(value = "/api/admin/guide/{cryptoGuideId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApplicationResponse<PkResponse> updateGuide(
@@ -100,7 +101,7 @@ public class GuideController {
 
     @Operation(summary = "도움말 삭제")
     @Parameter(name = "cryptoCategoryId", description = "암호화된 도움말 키", example = "Gbdsnz3dU0kwFxKpavlkog==", required = true, in = ParameterIn.PATH)
-    @CustomErrorCodes({GuideErrorCode.GUIDE_NOT_EXIST})
+    @CustomErrorCodes(guideErrorCodes = {GuideErrorCode.GUIDE_NOT_EXIST})
     @DeleteMapping("/api/admin/guide/{cryptoGuideId}")
     public ApplicationResponse<PkResponse> deleteGuide(@AuthenticationPrincipal Member member, @PathVariable String cryptoGuideId) {
         return ApplicationResponse.onSuccess(guideDeleteUseCase.deleteGuide(PkCrypto.decrypt(cryptoGuideId)));

@@ -1,12 +1,11 @@
 name: Create Jira Bug
+
 on:
-  issues:
-    types:
-      - opened
+  workflow_dispatch:
 jobs:
   create-issue:
     name: Create Jira Bug
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check if issue uses bug template
         id: check_template
