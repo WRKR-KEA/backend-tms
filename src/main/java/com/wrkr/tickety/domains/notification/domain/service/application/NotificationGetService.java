@@ -15,4 +15,8 @@ public class NotificationGetService {
     public List<Notification> getAllNotifications(Long memberId) {
         return notificationPersistenceAdapter.getAllNotificationsByMemberId(memberId);
     }
+
+    public long countByMemberIdAndIsReadFalse(Long memberId) {
+        return notificationPersistenceAdapter.countDistinctByMemberIdAndIsRead(memberId, false);
+    }
 }

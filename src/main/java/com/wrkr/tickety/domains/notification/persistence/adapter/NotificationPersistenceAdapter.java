@@ -31,4 +31,8 @@ public class NotificationPersistenceAdapter {
     public void updateAllIsReadTrueByMemberId(final Long memberId) {
         notificationRepository.updateAllIsReadTrueByMemberId(memberId);
     }
+
+    public long countDistinctByMemberIdAndIsRead(final Long memberId, final Boolean isRead) {
+        return this.notificationRepository.countDistinctByMemberIdAndIsRead(memberId, isRead);
+    }
 }
