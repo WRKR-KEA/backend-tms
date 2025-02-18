@@ -74,7 +74,7 @@ class TemplateUpdateUseCaseTest {
     void updateTemplate_Success() {
         //given
         String requestedCategoryId = PkCrypto.encrypt(CATEGORY_ID);
-        
+
         given(templateGetService.getTemplateByCategoryId(PkCrypto.decrypt(requestedCategoryId)))
             .willReturn(template);
 
@@ -104,12 +104,12 @@ class TemplateUpdateUseCaseTest {
         //given
         String requestedCategoryId = PkCrypto.encrypt(WRONG_CATEGORY_ID);
         given(templateGetService.getTemplateByCategoryId(PkCrypto.decrypt(requestedCategoryId)))
-            .willThrow(ApplicationException.from(TemplateErrorCode.TEMPLATE_ALREADY_EXISTS));
+            .willThrow(ApplicationException.from(TemplateErrorCode.TEMPLATE_NOT_EXISTS));
 
         //when & then
         assertThatThrownBy(() -> templateUpdateUseCase.updateTemplate(PkCrypto.decrypt(requestedCategoryId), validRequest))
             .isInstanceOf(ApplicationException.class)
-            .hasMessageContaining(TemplateErrorCode.TEMPLATE_ALREADY_EXISTS.getMessage());
+            .hasMessageContaining(TemplateErrorCode.TEMPLATE_NOT_EXISTS.getMessage());
     }
 
 }
