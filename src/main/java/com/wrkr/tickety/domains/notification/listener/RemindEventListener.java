@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.notification.listener;
 
 import static com.wrkr.tickety.domains.notification.application.mapper.NotificationMapper.toNotification;
 
-import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.application.Remind;
@@ -10,27 +9,24 @@ import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotification
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.RemindEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
-import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
-@EnableAsync
 public class RemindEventListener {
 
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
-    private final KakaoworkMessageService kakaoworkMessageService;
+    private final KakaoworkNotificationService kakaoworkNotificationService;
     private final NotificationSaveService notificationSaveService;
 
     @Async
@@ -42,13 +38,11 @@ public class RemindEventListener {
 
         sendAgitNotificationService.sendRemindAgitAlarm(member, ticket);
 
-        EmailCreateRequest createRequest = EmailMapper.toEmailCreateRequest(
-            ticket.getUser().getEmail(), EmailConstants.REMIND_SUBJECT, null
-        );
-        sendEmailNotificationService.sendRemindCreateEmail(createRequest, ticket, EmailConstants.REMIND_TYPE);
+        sendEmailNotificationService.sendRemindCreateEmail(member, ticket, EmailConstants.REMIND_TYPE);
 
         sendApplicationNotificationService.sendRemindApplicationNotification(member, ticket);
-        kakaoworkMessageService.sendRemindKakaoworkAlarm(member, ticket);
+
+        kakaoworkNotificationService.sendRemindKakaoworkAlarm(member, ticket);
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }

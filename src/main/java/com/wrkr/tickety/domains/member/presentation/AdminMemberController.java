@@ -34,7 +34,6 @@ import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCa
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.global.annotation.file.FileExtension;
 import com.wrkr.tickety.global.annotation.swagger.CustomErrorCodes;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
@@ -167,7 +166,7 @@ public class AdminMemberController {
         @AuthenticationPrincipal Member member,
         @PathVariable String memberId,
         @RequestPart(value = "request") @Valid MemberInfoUpdateRequest memberInfoUpdateRequest,
-        @RequestPart(required = false) @FileExtension(acceptedExtensions = {"jpg", "png", "jpeg"}) MultipartFile profileImage
+        @RequestPart(required = false) MultipartFile profileImage
     ) {
         MemberPkResponse memberPkResponse = memberInfoUpdateUseCase.modifyMemberInfo(memberId, memberInfoUpdateRequest, profileImage);
         return ApplicationResponse.onSuccess(memberPkResponse);
