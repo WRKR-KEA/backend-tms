@@ -17,7 +17,7 @@ plugins {
 }
 
 group = 'com.wrkr'
-version = '0.4.2-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 java {
     toolchain {
