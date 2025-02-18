@@ -158,6 +158,9 @@ dependencies {
     implementation platform('software.amazon.awssdk:bom:2.23.7')
     implementation 'software.amazon.awssdk:s3'
     implementation 'ch.qos.logback:logback-classic:1.4.12'
+
+    // Jsoup
+    implementation("org.jsoup:jsoup:1.18.2")
 }
 
 tasks.named('test') {
@@ -172,12 +175,12 @@ tasks.withType(GenerateSwaggerUI) {
     doFirst {
         def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
-        def securitySchemesContent = "  securitySchemes:\n" +               \
-                                                   "    APIKey:\n" +               \
-                                                   "      type: apiKey\n" +               \
-                                                   "      name: Authorization\n" +               \
-                                                   "      in: header\n" +              \
-                                                   "security:\n" +
+        def securitySchemesContent = "  securitySchemes:\n" +                \
+                                                    "    APIKey:\n" +                \
+                                                    "      type: apiKey\n" +                \
+                                                    "      name: Authorization\n" +                \
+                                                    "      in: header\n" +               \
+                                                    "security:\n" +
                 "  - APIKey: []  # Apply the security scheme here"
 
         swaggerUIFile.append securitySchemesContent
