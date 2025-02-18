@@ -1,0 +1,58 @@
+= Application Notification API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 알림 전체 조회
+
+=== 1. 성공: 사용자의 모든 알림을 정상적으로 조회
+
+HTTP Request
+
+include::{snippets}/ApplicationNotificationApi/GetAllNotifications/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/ApplicationNotificationApi/GetAllNotifications/Success/http-response.adoc[]
+
+==== 응답 필드 설명
+
+include::{snippets}/ApplicationNotificationApi/GetAllNotifications/Success/response-fields.adoc[]
+
+=== 2. 실패: 인증되지 않은 사용자 접근 시 401 Unauthorized 발생
+
+HTTP Request
+
+include::{snippets}/ApplicationNotificationApi/GetAllNotifications/Failure/Unauthorized/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/ApplicationNotificationApi/GetAllNotifications/Failure/Unauthorized/http-response.adoc[]
+
+== 읽지 않은 알림 개수 조회
+
+=== 1. 성공: 읽지 않은 알림 개수를 정상적으로 조회
+
+HTTP Request
+
+include::{snippets}/ApplicationNotificationApi/CountMemberNotifications/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/ApplicationNotificationApi/CountMemberNotifications/Success/http-response.adoc[]
+
+==== 응답 필드 설명
+
+include::{snippets}/ApplicationNotificationApi/CountMemberNotifications/Success/response-fields.adoc[]
+
+=== 2. 실패: 인증되지 않은 사용자 접근 시 401 Unauthorized 발생
+
+HTTP Request
+
+include::{snippets}/ApplicationNotificationApi/CountMemberNotifications/Failure/Unauthorized/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/ApplicationNotificationApi/CountMemberNotifications/Failure/Unauthorized/http-response.adoc[]
