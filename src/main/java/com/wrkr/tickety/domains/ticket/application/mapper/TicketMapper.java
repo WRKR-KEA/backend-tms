@@ -14,6 +14,7 @@ import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPi
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketDetailResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.PinTickets;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.UserTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
@@ -120,7 +121,7 @@ public class TicketMapper {
                     .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
                     .updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build()).toList())
             .requestTickets(requestTickets.stream()
-                .map(ticket -> ManagerTicketMainPageResponse.requestTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+                .map(ticket -> RequestTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
                     .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle())
                     .firstCategory(ticket.getCategory().getParent().getName())
                     .secondCategory(ticket.getCategory().getName())
@@ -182,5 +183,26 @@ public class TicketMapper {
 
     public static ManagerPinTicketResponse toManagerPinTicketResponse(Ticket pinnedTicket) {
         return ManagerPinTicketResponse.builder().ticketId(PkCrypto.encrypt(pinnedTicket.getTicketId())).isPinned(pinnedTicket.getIsPinned()).build();
+    }
+
+    public static ManagerTicketMainPageResponse.PinTickets toPinTicketsResponse(Ticket ticket) {
+        return ManagerTicketMainPageResponse.PinTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+            .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
+            .userNickname(ticket.getUser().getNickname())
+            .managerNickname(ticket.getManager() == null ? null : ticket.getManager().getNickname())
+            .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build();
+    }
+
+    public static RequestTickets toRequestTicketsResponse(Ticket ticket) {
+        return RequestTickets.builder().ticketId(PkCrypto.encrypt(ticket.getTicketId()))
+            .ticketSerialNumber(ticket.getSerialNumber()).status(ticket.getStatus()).title(ticket.getTitle())
+            .firstCategory(ticket.getCategory().getParent().getName())
+            .secondCategory(ticket.getCategory().getName())
+            .userNickname(ticket.getUser().getNickname())
+            .requestedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getCreatedAt()))
+            .updatedDate(DateTimeFormatter.yyyyMMddHHmm(ticket.getUpdatedAt())).build();
     }
 }

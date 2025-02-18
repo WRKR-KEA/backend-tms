@@ -1,5 +1,6 @@
 package com.wrkr.tickety.domains.log.presentation;
 
+import com.wrkr.tickety.domains.log.application.dto.response.AccessLogExcelResponse;
 import com.wrkr.tickety.domains.log.application.dto.response.AccessLogSearchResponse;
 import com.wrkr.tickety.domains.log.application.usecase.AccessLogExcelDownloadUseCase;
 import com.wrkr.tickety.domains.log.application.usecase.AccessLogSearchUseCase;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -70,7 +72,7 @@ public class LogController {
         @RequestParam(required = false) String endDate
     ) {
 
-        List<AccessLogSearchResponse> allAccessLogs = accessLogExcelDownloadUseCase.getAllAccessLogs(query, action, startDate, endDate);
-        excelUtil.renderObjectToExcel(response, allAccessLogs, AccessLogSearchResponse.class, "access-logs");
+        List<AccessLogExcelResponse> allAccessLogs = accessLogExcelDownloadUseCase.getAllAccessLogs(query, action, startDate, endDate);
+        excelUtil.renderObjectToExcel(response, allAccessLogs, AccessLogExcelResponse.class, "access_logs_" + LocalDate.now());
     }
 }

@@ -29,6 +29,13 @@ CREATE TABLE `notification` (
 ALTER TABLE ticket
     MODIFY COLUMN title VARCHAR(50) NOT NULL;
 
+-- changeset Wonee:add_ticket_version_column
+ALTER TABLE ticket
+    ADD COLUMN version INT NOT NULL DEFAULT 0;
+
+-- changeset Wonee:update_existing_ticket_version
+UPDATE ticket SET version = 0 WHERE version IS NULL;
+
 -- changeset Tomcat:add_index_ticket_user_status
 ALTER TABLE ticket
     ADD INDEX idx_ticket_user_status (user_id, status);

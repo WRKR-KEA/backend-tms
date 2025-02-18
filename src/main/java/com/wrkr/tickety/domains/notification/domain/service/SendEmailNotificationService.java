@@ -1,9 +1,11 @@
 package com.wrkr.tickety.domains.notification.domain.service;
 
+import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
+import com.wrkr.tickety.infrastructure.email.EmailConstants;
 import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -15,38 +17,51 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-@Async
 public class SendEmailNotificationService {
 
     private final JavaMailSender javaMailSender;
     private final MapEmailTemplateService mapEmailTemplateService;
 
     @Async
-    public void sendTicketStatusChangeEmail(EmailCreateRequest emailCreateRequest, Ticket ticket, String type) {
+    public void sendTicketStatusChangeEmail(Member receiver, Ticket ticket, String type) {
+        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(receiver.getEmail(), EmailConstants.TICKET_STATUS_CHANGE_SUBJECT, null);
         String text = mapEmailTemplateService.setTicketStatusChangeContext(ticket.getStatus().getDescription(), ticket.getSerialNumber(), type);
         sendEmail(emailCreateRequest, text);
     }
 
-    public void sendDelegateTicketManagerEmailToUser(EmailCreateRequest emailCreateRequest, Ticket ticket, Member newManager, String type) {
+    @Async
+    public void sendDelegateTicketManagerEmailToUser(Member receiver, Ticket ticket, Member newManager, String type) {
+        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(
+            receiver.getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
+        );
         String text = mapEmailTemplateService.setDelegateContext(ticket.getSerialNumber(), newManager.getNickname(), type);
         sendEmail(emailCreateRequest, text);
     }
 
-    public void sendDelegateTicketManagerEmailToNewManager(EmailCreateRequest emailCreateRequest,
-        Ticket ticket,
-        Member prevManager,
-        String type
-    ) {
+    @Async
+    public void sendDelegateTicketManagerEmailToNewManager(Member receiver, Ticket ticket, Member prevManager, String type) {
+        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(
+            receiver.getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
+        );
         String text = mapEmailTemplateService.setDelegateContext(ticket.getSerialNumber(), prevManager.getNickname(), type);
         sendEmail(emailCreateRequest, text);
     }
 
-    public void sendCommentCreateEmail(EmailCreateRequest emailCreateRequest, Ticket ticket, String type) {
+    @Async
+    public void sendCommentCreateEmail(Member receiver, Ticket ticket, String type) {
+        EmailCreateRequest emailCreateRequest = EmailCreateRequest.builder()
+            .to(receiver.getEmail())
+            .subject(EmailConstants.TICKET_COMMENT_SUBJECT)
+            .build();
         String text = mapEmailTemplateService.setCommentCreateContext(ticket.getSerialNumber(), type);
         sendEmail(emailCreateRequest, text);
     }
 
-    public void sendRemindCreateEmail(EmailCreateRequest emailCreateRequest, Ticket ticket, String type) {
+    @Async
+    public void sendRemindCreateEmail(Member receiver, Ticket ticket, String type) {
+        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(
+            receiver.getEmail(), EmailConstants.REMIND_SUBJECT, null
+        );
         String text = mapEmailTemplateService.setRemindContext(ticket.getSerialNumber(), type);
         sendEmail(emailCreateRequest, text);
     }

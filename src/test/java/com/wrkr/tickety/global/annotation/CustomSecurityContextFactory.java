@@ -16,7 +16,7 @@ public class CustomSecurityContextFactory implements WithSecurityContextFactory<
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
         Member member = Member.builder()
-            .memberId(annotation.memberId())
+            .memberId(annotation.memberId() != 0L ? annotation.memberId() : 1L)
             .nickname(annotation.nickname() != null ? annotation.nickname() : "defaultNickname")
             .role(annotation.role() != null ? annotation.role() : Role.USER)
             .name(annotation.username() != null ? annotation.username() : "defaultUser")

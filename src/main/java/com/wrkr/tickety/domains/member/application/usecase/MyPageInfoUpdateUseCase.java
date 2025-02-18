@@ -33,7 +33,7 @@ public class MyPageInfoUpdateUseCase {
             throw ApplicationException.from(MemberErrorCode.DELETED_MEMBER);
         }
 
-        if (!member.getEmail().equals(request.email()) && memberGetService.existsByEmail(request.email())) {
+        if (!member.getEmail().equals(request.email()) && memberGetService.existsByEmailAndIsDeleted(request.email(), false)) {
             throw ApplicationException.from(MemberErrorCode.ALREADY_EXIST_EMAIL);
         }
 
