@@ -43,7 +43,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 createdAtGoe(startDate),
                 createdAtLoe(endDate),
                 isManagerAccessible()
-            )
+                  )
             .orderBy(orderSpecifiers)
             .offset((long) pageRequest.size() * pageRequest.page())
             .limit(pageRequest.size())
@@ -58,13 +58,13 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 createdAtGoe(startDate),
                 createdAtLoe(endDate),
                 isManagerAccessible()
-            );
+                  );
 
         return PageableExecutionUtils.getPage(
             ticketEntityList,
             pageRequest.toPageable(),
             countQuery::fetchOne
-        );
+                                             );
     }
 
     @Override
@@ -84,7 +84,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                     t.createdAt,
                     t.updatedAt
                 )
-            )
+                   )
             .from(t)
             .where(
                 titleOrManagerNicknameOrSerialNumberContainsIgnoreCase(query),
@@ -92,7 +92,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 createdAtGoe(startDate),
                 createdAtLoe(endDate),
                 isManagerAccessible()
-            )
+                  )
             .orderBy(t.ticketId.desc())
             .fetch();
     }
@@ -102,8 +102,9 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
         Long managerId,
         TicketStatus status,
         ApplicationPageRequest pageRequest,
-        String query
-    ) {
+        String query,
+        List<Long> categoryIdList
+                                                  ) {
         var orderSpecifiers = getOrderSpecifier(pageRequest.sortType());
 
         List<TicketEntity> ticketEntityList = jpaQueryFactory.selectFrom(ticketEntity)
@@ -111,8 +112,9 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 ticketEntity.manager.memberId.eq(managerId),
                 statusEq(status),
                 searchEq(query),
+                searchByCategory(categoryIdList),
                 isManagerAccessible()
-            )
+                  )
             .orderBy(orderSpecifiers)
             .offset((long) pageRequest.size() * pageRequest.page())
             .limit(pageRequest.size())
@@ -125,13 +127,13 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                 statusEq(status),
                 searchEq(query),
                 isManagerAccessible()
-            );
+                  );
 
         return PageableExecutionUtils.getPage(
             ticketEntityList,
             pageRequest.toPageable(),
             total::fetchOne
-        );
+                                             );
     }
 
     private BooleanExpression titleOrManagerNicknameOrSerialNumberContainsIgnoreCase(String query) {
@@ -162,7 +164,7 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
                     case OLDEST -> ticketEntity.createdAt.asc();
                     case UPDATED -> ticketEntity.updatedAt.desc();
                 }
-            );
+                               );
         }
         return orderSpecifiers.toArray(new OrderSpecifier[0]);
     }
@@ -170,6 +172,13 @@ public class TicketQueryDslRepositoryImpl implements TicketQueryDslRepository {
     private BooleanExpression searchEq(String search) {
         return search == null ? null : ticketEntity.serialNumber.contains(search)
             .or(ticketEntity.content.contains(search));
+    }
+
+    private BooleanExpression searchByCategory(List<Long> categoryIdList) {
+        if (categoryIdList == null || categoryIdList.isEmpty()) {
+            return null;
+        }
+        return ticketEntity.category.categoryId.in(categoryIdList);
     }
 
     private BooleanExpression isManagerAccessible() {

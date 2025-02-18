@@ -1,6 +1,7 @@
 package com.wrkr.tickety.domains.ticket.persistence.repository;
 
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.persistence.entity.CategoryEntity;
 import com.wrkr.tickety.domains.ticket.persistence.entity.TicketEntity;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,4 +46,6 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long>, Tic
         @Param("childCategory") String childCategory,
         @Param("parentCategory") String parentCategory
     );
+
+    List<TicketEntity> category(CategoryEntity category);
 }
