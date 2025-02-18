@@ -41,7 +41,7 @@ public class LogFilter extends OncePerRequestFilter {
 
         String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
 
-        if (uri.startsWith("/api/tickety-tms")) {
+        if (uri.startsWith("/api/tickety-tms") || uri.endsWith("/sse/subscribe")) {
             filterChain.doFilter(request, response);
             return;
         }

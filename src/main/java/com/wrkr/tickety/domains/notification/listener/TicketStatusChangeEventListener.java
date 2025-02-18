@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.notification.listener;
 
 import static com.wrkr.tickety.domains.notification.application.mapper.NotificationMapper.toNotification;
 
-import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
@@ -11,29 +10,26 @@ import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotification
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
-import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
-@EnableAsync
 public class TicketStatusChangeEventListener {
 
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
-    private final KakaoworkMessageService kakaoworkMessageService;
+    private final KakaoworkNotificationService kakaoworkNotificationService;
     private final CommentSaveService commentSaveService;
     private final NotificationSaveService notificationSaveService;
 
@@ -51,10 +47,13 @@ public class TicketStatusChangeEventListener {
         };
 
         sendAgitNotificationService.sendTicketStatusChangeAgitAlarm(member, ticket, agitTicketNotificationMessageType);
-        EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(member.getEmail(), EmailConstants.TICKET_STATUS_CHANGE_SUBJECT, null);
-        sendEmailNotificationService.sendTicketStatusChangeEmail(emailCreateRequest, ticket, EmailConstants.TICKET_STATUS_CHANGE);
+
+        sendEmailNotificationService.sendTicketStatusChangeEmail(member, ticket, EmailConstants.TICKET_STATUS_CHANGE);
+
         sendApplicationNotificationService.sendTicketStatusApplicationNotification(member, ticket, agitTicketNotificationMessageType);
-        kakaoworkMessageService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType);
+
+        kakaoworkNotificationService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType);
+
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }
 
