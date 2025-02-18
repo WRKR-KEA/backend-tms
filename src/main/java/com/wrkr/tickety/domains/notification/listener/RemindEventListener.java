@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.notification.listener;
 
 import static com.wrkr.tickety.domains.notification.application.mapper.NotificationMapper.toNotification;
 
-import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.application.Remind;
@@ -15,7 +14,6 @@ import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkN
 import com.wrkr.tickety.domains.ticket.domain.event.RemindEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
-import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -42,12 +40,7 @@ public class RemindEventListener {
 
         notificationRunner.run(member, () -> sendAgitNotificationService.sendRemindAgitAlarm(member, ticket));
 
-        notificationRunner.run(member, () -> {
-            EmailCreateRequest createRequest = EmailMapper.toEmailCreateRequest(
-                ticket.getUser().getEmail(), EmailConstants.REMIND_SUBJECT, null
-            );
-            sendEmailNotificationService.sendRemindCreateEmail(createRequest, ticket, EmailConstants.REMIND_TYPE);
-        });
+        notificationRunner.run(member, () -> sendEmailNotificationService.sendRemindCreateEmail(member, ticket, EmailConstants.REMIND_TYPE));
 
         notificationRunner.run(member, () -> sendApplicationNotificationService.sendRemindApplicationNotification(member, ticket));
 

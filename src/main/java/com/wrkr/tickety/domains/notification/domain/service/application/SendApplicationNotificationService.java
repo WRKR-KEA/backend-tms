@@ -33,19 +33,19 @@ public class SendApplicationNotificationService {
     }
 
     @Async
-    public void sendTicketDelegateApplicationNotificationToUser(Member newManager, Ticket ticket) {
+    public void sendTicketDelegateApplicationNotificationToUser(Member receiver, Member newManager, Ticket ticket) {
         String userMessage = ApplicationNotificationMessageType.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
         );
-        sseEmitterService.send(ticket.getUser(), NotificationType.COMMENT, userMessage);
+        sseEmitterService.send(receiver, NotificationType.COMMENT, userMessage);
     }
 
     @Async
-    public void sendTicketDelegateApplicationNotificationToManager(Member prevManager, Member newManager, Ticket ticket) {
+    public void sendTicketDelegateApplicationNotificationToManager(Member receiver, Member prevManager, Ticket ticket) {
         String managerMessage = ApplicationNotificationMessageType.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(
             ticket.getSerialNumber(), prevManager.getNickname()
         );
-        sseEmitterService.send(newManager, NotificationType.COMMENT, managerMessage);
+        sseEmitterService.send(receiver, NotificationType.COMMENT, managerMessage);
     }
 
     @Async

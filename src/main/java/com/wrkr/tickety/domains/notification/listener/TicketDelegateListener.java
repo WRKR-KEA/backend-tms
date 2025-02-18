@@ -1,6 +1,5 @@
 package com.wrkr.tickety.domains.notification.listener;
 
-import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.application.SystemComment;
 import com.wrkr.tickety.domains.notification.domain.service.NotificationRunner;
@@ -13,7 +12,6 @@ import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
-import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -39,32 +37,21 @@ public class TicketDelegateListener {
         Ticket ticket = ticketDelegateEvent.ticket();
         Member user = ticket.getUser();
 
-        notificationRunner.run(user, () -> sendAgitNotificationService.sendTicketDelegateAgitAlarmToUser(newManager, ticket));
-        notificationRunner.run(newManager, () -> sendAgitNotificationService.sendTicketDelegateAgitAlarmToManager(prevManager, newManager, ticket));
+        notificationRunner.run(user, () -> sendAgitNotificationService.sendTicketDelegateAgitAlarmToUser(user, newManager, ticket));
+        notificationRunner.run(newManager, () -> sendAgitNotificationService.sendTicketDelegateAgitAlarmToManager(newManager, prevManager, ticket));
 
-        notificationRunner.run(user, () -> {
-            EmailCreateRequest emailCreateRequestToUser = EmailMapper.toEmailCreateRequest(
-                user.getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
-            );
-            sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(
-                emailCreateRequestToUser, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER
-            );
-        });
-        notificationRunner.run(newManager, () -> {
-            EmailCreateRequest emailCreateRequestToNewManager = EmailMapper.toEmailCreateRequest(
-                newManager.getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT, null
-            );
-            sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(
-                emailCreateRequestToNewManager, ticket, prevManager, EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER
-            );
-        });
-
-        notificationRunner.run(user, () -> sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToUser(newManager, ticket));
+        notificationRunner.run(user,
+            () -> sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(user, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER));
         notificationRunner.run(newManager,
-            () -> sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToManager(prevManager, newManager, ticket));
+            () -> sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(newManager, ticket, prevManager,
+                EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER));
 
-        notificationRunner.run(user, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToUser(newManager, ticket));
-        notificationRunner.run(newManager, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToManager(prevManager, newManager, ticket));
+        notificationRunner.run(user, () -> sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToUser(user, newManager, ticket));
+        notificationRunner.run(newManager,
+            () -> sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToManager(newManager, prevManager, ticket));
+
+        notificationRunner.run(user, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToUser(user, newManager, ticket));
+        notificationRunner.run(newManager, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToManager(newManager, prevManager, ticket));
 
         Comment systemComment = Comment.builder()
             .ticket(ticket)

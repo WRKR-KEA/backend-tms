@@ -41,19 +41,19 @@ public class SendAgitNotificationService {
     }
 
     @Async
-    public void sendTicketDelegateAgitAlarmToUser(Member newManager, Ticket ticket) {
+    public void sendTicketDelegateAgitAlarmToUser(Member receiver, Member newManager, Ticket ticket) {
         String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
         );
-        requestAgitApi(ticket.getUser().getAgitUrl(), MessageToUser);
+        requestAgitApi(receiver.getAgitUrl(), MessageToUser);
     }
 
     @Async
-    public void sendTicketDelegateAgitAlarmToManager(Member prevManager, Member newManager, Ticket ticket) {
+    public void sendTicketDelegateAgitAlarmToManager(Member receiver, Member prevManager, Ticket ticket) {
         String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(
             prevManager.getNickname(), ticket.getSerialNumber()
         );
-        requestAgitApi(newManager.getAgitUrl(), MessageToManager);
+        requestAgitApi(receiver.getAgitUrl(), MessageToManager);
     }
 
     @Async

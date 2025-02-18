@@ -16,7 +16,6 @@ import com.wrkr.tickety.domains.ticket.domain.event.CommentCreateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
-import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -51,13 +50,7 @@ public class CommentCreateEventListener {
 
         notificationRunner.run(receiver, () -> sendAgitNotificationService.sendCommentCreateAgitAlarm(receiver, ticket));
 
-        notificationRunner.run(receiver, () -> {
-            EmailCreateRequest emailCreateRequest = EmailCreateRequest.builder()
-                .to(receiver.getEmail())
-                .subject(EmailConstants.TICKET_COMMENT_SUBJECT)
-                .build();
-            sendEmailNotificationService.sendCommentCreateEmail(emailCreateRequest, ticket, EmailConstants.TICKET_COMMENT);
-        });
+        notificationRunner.run(receiver, () -> sendEmailNotificationService.sendCommentCreateEmail(receiver, ticket, EmailConstants.TICKET_COMMENT));
 
         notificationRunner.run(receiver, () -> sendApplicationNotificationService.sendCommentApplicationNotification(receiver, ticket));
 

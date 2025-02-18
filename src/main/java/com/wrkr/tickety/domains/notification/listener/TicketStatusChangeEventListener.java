@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.notification.listener;
 
 import static com.wrkr.tickety.domains.notification.application.mapper.NotificationMapper.toNotification;
 
-import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
@@ -18,7 +17,6 @@ import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
-import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -52,10 +50,7 @@ public class TicketStatusChangeEventListener {
 
         notificationRunner.run(member, () -> sendAgitNotificationService.sendTicketStatusChangeAgitAlarm(member, ticket, agitTicketNotificationMessageType));
 
-        notificationRunner.run(member, () -> {
-            EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(member.getEmail(), EmailConstants.TICKET_STATUS_CHANGE_SUBJECT, null);
-            sendEmailNotificationService.sendTicketStatusChangeEmail(emailCreateRequest, ticket, EmailConstants.TICKET_STATUS_CHANGE);
-        });
+        notificationRunner.run(member, () -> sendEmailNotificationService.sendTicketStatusChangeEmail(member, ticket, EmailConstants.TICKET_STATUS_CHANGE));
 
         notificationRunner.run(member,
             () -> sendApplicationNotificationService.sendTicketStatusApplicationNotification(member, ticket, agitTicketNotificationMessageType));
