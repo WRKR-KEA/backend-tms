@@ -346,7 +346,7 @@ class TicketStatisticsControllerTest {
                     jsonPath("$.result.countList[*].count").exists()
                 )
                 .andDo(document(
-                    "Statistics/GetMonthlyTicketStatistics/Success/Monthly",
+                    "Statistics/GetTicketStatistics/Success/Monthly",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     responseFields(
@@ -397,7 +397,7 @@ class TicketStatisticsControllerTest {
                     jsonPath("$.result.countList[*].count").exists()
                 )
                 .andDo(document(
-                    "Statistics/GetDailyTicketStatistics/Success/Daily",
+                    "Statistics/GetTicketStatistics/Success/Daily",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     responseFields(
