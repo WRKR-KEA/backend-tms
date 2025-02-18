@@ -46,6 +46,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@DisplayName("회원 정보 수정 UseCase Layer Test")
 class MemberInfoUpdateUseCaseTest {
 
     @InjectMocks
@@ -79,7 +80,7 @@ class MemberInfoUpdateUseCaseTest {
     }
 
     @Nested
-    @DisplayName("ModifyMemberInfo UseCase Layer > 회원 등록")
+    @DisplayName("회원 정보 수정 UseCase Layer Test")
     class ModifyMemberInfo {
 
         @DisplayName("회원 정보를 성공적으로 수정하면 암호화된 회원의 PK가 반환된다.")
@@ -300,7 +301,7 @@ class MemberInfoUpdateUseCaseTest {
     }
 
     @Nested
-    @DisplayName("ModifyMemberInfo UseCase Layer > 회원 등록")
+    @DisplayName("선택한 회원 삭제 UseCase Layer Test")
     class SoftDeleteMember {
 
         @DisplayName("회원 삭제가 실행되면 캐시 및 프로필 이미지를 삭제하고, isDeleted가 true로 변경된다.")

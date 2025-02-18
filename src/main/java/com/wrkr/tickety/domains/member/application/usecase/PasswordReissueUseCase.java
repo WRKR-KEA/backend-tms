@@ -35,7 +35,8 @@ public class PasswordReissueUseCase {
     private final EmailUtil emailUtil;
 
     public MemberPkResponse reissuePassword(String encryptedMemberId, String verificationCodeReq) {
-        validateVerificationCode(verificationCodeReq, redisService.getValues(VERIFICATION_CODE_PREFIX + encryptedMemberId));
+        Optional<String> findVerificationCode = redisService.getValues(VERIFICATION_CODE_PREFIX + encryptedMemberId);
+        validateVerificationCode(verificationCodeReq, findVerificationCode);
 
         Long decryptedMemberId = PkCrypto.decrypt(encryptedMemberId);
         Member findMember = memberGetService.byMemberId(decryptedMemberId);

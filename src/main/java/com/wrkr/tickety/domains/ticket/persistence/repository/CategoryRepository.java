@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
+public interface CategoryRepository extends JpaRepository<CategoryEntity, Long>, CategoryQueryDslRepository {
 
     List<CategoryEntity> findByIsDeletedFalseAndParentIsNullAndSeqIsGreaterThan(Integer sequence);
 
@@ -30,4 +30,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     Boolean existsByAbbreviationAndIsDeletedFalseAndCategoryIdNot(String abbreviation, Long categoryId);
 
     Boolean existsBySeqAndIsDeletedFalse(Integer seq);
+
+    boolean existsByCategoryIdAndIsDeletedFalseAndParentIsNull(Long categoryId);
 }
