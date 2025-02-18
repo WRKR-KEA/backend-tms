@@ -6,7 +6,6 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
 import com.wrkr.tickety.domains.notification.domain.constant.application.SystemComment;
-import com.wrkr.tickety.domains.notification.domain.service.NotificationRunner;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
@@ -33,7 +32,6 @@ public class TicketStatusChangeEventListener {
     private final KakaoworkNotificationService kakaoworkNotificationService;
     private final CommentSaveService commentSaveService;
     private final NotificationSaveService notificationSaveService;
-    private final NotificationRunner notificationRunner;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
@@ -48,15 +46,13 @@ public class TicketStatusChangeEventListener {
             case TICKET_FINISHED -> AgitTicketNotificationMessageType.TICKET_FINISHED.format(ticket.getSerialNumber());
         };
 
-        notificationRunner.run(member, () -> sendAgitNotificationService.sendTicketStatusChangeAgitAlarm(member, ticket, agitTicketNotificationMessageType));
+        sendAgitNotificationService.sendTicketStatusChangeAgitAlarm(member, ticket, agitTicketNotificationMessageType);
 
-        notificationRunner.run(member, () -> sendEmailNotificationService.sendTicketStatusChangeEmail(member, ticket, EmailConstants.TICKET_STATUS_CHANGE));
+        sendEmailNotificationService.sendTicketStatusChangeEmail(member, ticket, EmailConstants.TICKET_STATUS_CHANGE);
 
-        notificationRunner.run(member,
-            () -> sendApplicationNotificationService.sendTicketStatusApplicationNotification(member, ticket, agitTicketNotificationMessageType));
+        sendApplicationNotificationService.sendTicketStatusApplicationNotification(member, ticket, agitTicketNotificationMessageType);
 
-        notificationRunner.run(member,
-            () -> kakaoworkNotificationService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType));
+        kakaoworkNotificationService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType);
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }

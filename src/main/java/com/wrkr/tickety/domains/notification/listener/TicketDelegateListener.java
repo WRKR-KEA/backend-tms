@@ -2,7 +2,6 @@ package com.wrkr.tickety.domains.notification.listener;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.application.SystemComment;
-import com.wrkr.tickety.domains.notification.domain.service.NotificationRunner;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
@@ -27,7 +26,6 @@ public class TicketDelegateListener {
     private final SendApplicationNotificationService sendApplicationNotificationService;
     private final KakaoworkNotificationService kakaoworkNotificationService;
     private final CommentSaveService commentSaveService;
-    private final NotificationRunner notificationRunner;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -37,21 +35,17 @@ public class TicketDelegateListener {
         Ticket ticket = ticketDelegateEvent.ticket();
         Member user = ticket.getUser();
 
-        notificationRunner.run(user, () -> sendAgitNotificationService.sendTicketDelegateAgitAlarmToUser(user, newManager, ticket));
-        notificationRunner.run(newManager, () -> sendAgitNotificationService.sendTicketDelegateAgitAlarmToManager(newManager, prevManager, ticket));
+        sendAgitNotificationService.sendTicketDelegateAgitAlarmToUser(user, newManager, ticket);
+        sendAgitNotificationService.sendTicketDelegateAgitAlarmToManager(newManager, prevManager, ticket);
 
-        notificationRunner.run(user,
-            () -> sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(user, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER));
-        notificationRunner.run(newManager,
-            () -> sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(newManager, ticket, prevManager,
-                EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER));
+        sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(user, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER);
+        sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(newManager, ticket, prevManager, EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER);
 
-        notificationRunner.run(user, () -> sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToUser(user, newManager, ticket));
-        notificationRunner.run(newManager,
-            () -> sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToManager(newManager, prevManager, ticket));
+        sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToUser(user, newManager, ticket);
+        sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToManager(newManager, prevManager, ticket);
 
-        notificationRunner.run(user, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToUser(user, newManager, ticket));
-        notificationRunner.run(newManager, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToManager(newManager, prevManager, ticket));
+        kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToUser(user, newManager, ticket);
+        kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToManager(newManager, prevManager, ticket);
 
         Comment systemComment = Comment.builder()
             .ticket(ticket)

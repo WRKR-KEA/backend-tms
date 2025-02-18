@@ -6,7 +6,6 @@ import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitCommentNotificationMessage;
-import com.wrkr.tickety.domains.notification.domain.service.NotificationRunner;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
@@ -31,7 +30,6 @@ public class CommentCreateEventListener {
     private final SendApplicationNotificationService sendApplicationNotificationService;
     private final KakaoworkNotificationService kakaoworkNotificationService;
     private final NotificationSaveService notificationSaveService;
-    private final NotificationRunner notificationRunner;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -48,13 +46,13 @@ public class CommentCreateEventListener {
             receiver = ticket.getUser();
         }
 
-        notificationRunner.run(receiver, () -> sendAgitNotificationService.sendCommentCreateAgitAlarm(receiver, ticket));
+        sendAgitNotificationService.sendCommentCreateAgitAlarm(receiver, ticket);
 
-        notificationRunner.run(receiver, () -> sendEmailNotificationService.sendCommentCreateEmail(receiver, ticket, EmailConstants.TICKET_COMMENT));
+        sendEmailNotificationService.sendCommentCreateEmail(receiver, ticket, EmailConstants.TICKET_COMMENT);
 
-        notificationRunner.run(receiver, () -> sendApplicationNotificationService.sendCommentApplicationNotification(receiver, ticket));
+        sendApplicationNotificationService.sendCommentApplicationNotification(receiver, ticket);
 
-        notificationRunner.run(receiver, () -> kakaoworkNotificationService.sendCommentCreateKakaoworkAlarm(receiver, ticket));
+        kakaoworkNotificationService.sendCommentCreateKakaoworkAlarm(receiver, ticket);
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }

@@ -5,7 +5,6 @@ import static com.wrkr.tickety.domains.notification.application.mapper.Notificat
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.constant.NotificationType;
 import com.wrkr.tickety.domains.notification.domain.constant.application.Remind;
-import com.wrkr.tickety.domains.notification.domain.service.NotificationRunner;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
@@ -29,7 +28,6 @@ public class RemindEventListener {
     private final SendApplicationNotificationService sendApplicationNotificationService;
     private final KakaoworkNotificationService kakaoworkNotificationService;
     private final NotificationSaveService notificationSaveService;
-    private final NotificationRunner notificationRunner;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -38,13 +36,13 @@ public class RemindEventListener {
         Ticket ticket = remindEvent.ticket();
         String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
 
-        notificationRunner.run(member, () -> sendAgitNotificationService.sendRemindAgitAlarm(member, ticket));
+        sendAgitNotificationService.sendRemindAgitAlarm(member, ticket);
 
-        notificationRunner.run(member, () -> sendEmailNotificationService.sendRemindCreateEmail(member, ticket, EmailConstants.REMIND_TYPE));
+        sendEmailNotificationService.sendRemindCreateEmail(member, ticket, EmailConstants.REMIND_TYPE);
 
-        notificationRunner.run(member, () -> sendApplicationNotificationService.sendRemindApplicationNotification(member, ticket));
+        sendApplicationNotificationService.sendRemindApplicationNotification(member, ticket);
 
-        notificationRunner.run(member, () -> kakaoworkNotificationService.sendRemindKakaoworkAlarm(member, ticket));
+        kakaoworkNotificationService.sendRemindKakaoworkAlarm(member, ticket);
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }
