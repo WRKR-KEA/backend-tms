@@ -1236,8 +1236,8 @@ class AdminMemberControllerTest {
                         fieldWithPath("result.elements[].email").description("회원 이메일")
                     )
                 ));
+        }
 
-        
         @Test
         @DisplayName("필터링 기준을 ADMIN으로 요청 시 METHOD_ARGUMENT_NOT_VALID 예외를 발생시킨다.")
         @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
@@ -1277,9 +1277,9 @@ class AdminMemberControllerTest {
                 ));
         }
 
-
     }
 
+    @Nested
     @DisplayName("관리자 - 회원 등록 엑셀 양식 다운로드 API 테스트")
     class DownloadMemberExcelTemplateTest {
 
@@ -1346,5 +1346,6 @@ class AdminMemberControllerTest {
         }
     }
 
-
 }
+
+
