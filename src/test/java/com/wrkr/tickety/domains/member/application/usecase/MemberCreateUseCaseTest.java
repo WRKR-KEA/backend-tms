@@ -22,6 +22,7 @@ import com.wrkr.tickety.domains.auth.utils.PasswordEncoderUtil;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequest;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
+import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
@@ -175,6 +176,7 @@ class MemberCreateUseCaseTest {
             MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
                 .email(member.getEmail())
                 .nickname(member.getNickname())
+                .role(Role.USER)
                 .build();
 
             randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
@@ -201,6 +203,7 @@ class MemberCreateUseCaseTest {
             MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
                 .email(member.getEmail())
                 .nickname(member.getNickname())
+                .role(Role.USER)
                 .build();
 
             randomCodeGeneratorMockedStatic.when(RandomCodeGenerator::generateUUID)
@@ -225,6 +228,7 @@ class MemberCreateUseCaseTest {
             MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
                 .email("test@example.com")
                 .nickname("testNickname")
+                .role(Role.USER)
                 .build();
 
             MockMultipartFile invalidImage = new MockMultipartFile(
@@ -248,6 +252,7 @@ class MemberCreateUseCaseTest {
             MemberCreateRequest memberCreateRequest = MemberCreateRequest.builder()
                 .email("test@example.com")
                 .nickname("testNickname")
+                .role(Role.USER)
                 .build();
 
             MockMultipartFile largeImage = new MockMultipartFile(

@@ -13,6 +13,7 @@ import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_POSITION;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_ROLE;
 
+import com.wrkr.tickety.domains.auth.exception.AuthErrorCode;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.global.exception.ApplicationException;
@@ -104,6 +105,10 @@ public class MemberFieldValidator {
     public void validateRole(Role role) {
         if (role == null) {
             throw ApplicationException.from(INVALID_ROLE);
+        }
+
+        if (role.equals(Role.ADMIN)) {
+            throw ApplicationException.from(AuthErrorCode.PERMISSION_DENIED);
         }
     }
 }

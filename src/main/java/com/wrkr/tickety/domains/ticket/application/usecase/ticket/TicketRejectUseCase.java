@@ -32,8 +32,8 @@ public class TicketRejectUseCase {
     private final TicketUpdateService ticketUpdateService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public TicketPkResponse rejectTicket(Long memberId, String ticketId) {
-        Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
+    public TicketPkResponse rejectTicket(Long memberId, Long ticketId) {
+        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
         validateTicketManager(ticket, memberId);
         validateRejectableStatus(ticket);
         Ticket rejectedTicket = ticketUpdateService.updateStatus(ticket, REJECT);

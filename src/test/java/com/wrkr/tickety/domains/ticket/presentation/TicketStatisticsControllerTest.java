@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -151,7 +152,7 @@ class TicketStatisticsControllerTest {
 
 
         @Test
-        @DisplayName("부모 카테고리별 통계 조회")
+        @DisplayName("부모 카테고리별 일별 통계 조회")
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "managr.hjw")
         void getParentCategoryStatisticsInDaily() throws Exception {
             //given
@@ -166,7 +167,7 @@ class TicketStatisticsControllerTest {
 
             StatisticsByCategoryResponse expectedResponse = StatisticsByCategoryResponse.builder().parentCategoryId(null)
                                                                                         .statisticData(StatisticData.builder()
-                                                                                                                    .firstCategoryTicketCount(CategoryTicketCount)
+                                                                                                                    .categoryTicketCount(CategoryTicketCount)
                                                                                                                     .build()).date(requestDate.toString())
                                                                                         .build();
             //when
@@ -176,11 +177,33 @@ class TicketStatisticsControllerTest {
             mockMvc.perform(
                        post("/api/manager/statistics/{statisticsType}", StatisticsType.DAILY.toString()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
                                                                                                         .content(objectMapper.writeValueAsString(request)))
-                   .andExpect(status().isOk()).andReturn();
+                   .andExpect(status().isOk())
+                   .andDo(document("Statistics/Request/Success/Case1",
+                                   preprocessRequest(prettyPrint()),
+                                   preprocessResponse(prettyPrint()),
+                                   pathParameters(
+                                       parameterWithName("statisticsType").description("통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)")
+                                                 ),
+                                   requestFields(
+                                       fieldWithPath("date").description("통계를 확인하고자 하는 날짜")
+                                                ),
+                                   responseFields(
+                                       fieldWithPath("isSuccess").description("성공 여부"),
+                                       fieldWithPath("code").description("응답 코드 (성공:SUCCESS, 실패:FAILURE)"),
+                                       fieldWithPath("message").description("응답 메시지 (성공:성공, 실패:실패)"),
+                                       fieldWithPath("result.date").description("통계를 확인한 날짜"),
+                                       fieldWithPath("result.parentCategoryId").description("부모 카테고리 id (null)"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount").description("1차 카테고리 티켓 수 배열"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount[].categoryId").description("1차 카테고리 id"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount[].categoryName").description("1차 카테고리 이름"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount[].count").description("1차 카테고리 티켓 수")
+                                                 )
+                                  )
+                         );
         }
 
         @Test
-        @DisplayName("부모카테고리별 일별 통계 조회")
+        @DisplayName("부모카테고리별 월별 통계 조회")
         @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "managr.hjw")
         void getParentCategoryStatisticsInMonthly() throws Exception {
             //given
@@ -195,7 +218,7 @@ class TicketStatisticsControllerTest {
 
             StatisticsByCategoryResponse expectedResponse = StatisticsByCategoryResponse.builder().parentCategoryId(null)
                                                                                         .statisticData(StatisticData.builder()
-                                                                                                                    .firstCategoryTicketCount(CategoryTicketCount)
+                                                                                                                    .categoryTicketCount(CategoryTicketCount)
                                                                                                                     .build()).date(requestDate.toString())
                                                                                         .build();
             //when
@@ -205,7 +228,29 @@ class TicketStatisticsControllerTest {
             mockMvc.perform(
                        post("/api/manager/statistics/{statisticsType}", StatisticsType.MONTHLY.toString()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
                                                                                                           .content(objectMapper.writeValueAsString(request)))
-                   .andExpect(status().isOk()).andReturn();
+                   .andExpect(status().isOk())
+                   .andDo(document("Statistics/Request/Success/Case2",
+                                   preprocessRequest(prettyPrint()),
+                                   preprocessResponse(prettyPrint()),
+                                   pathParameters(
+                                       parameterWithName("statisticsType").description("통계 타입 (DAILY | MONTHLY | YEARLY | TOTAL)")
+                                                 ),
+                                   requestFields(
+                                       fieldWithPath("date").description("통계를 확인하고자 하는 날짜")
+                                                ),
+                                   responseFields(
+                                       fieldWithPath("isSuccess").description("성공 여부"),
+                                       fieldWithPath("code").description("응답 코드 (성공:SUCCESS, 실패:FAILURE)"),
+                                       fieldWithPath("message").description("응답 메시지 (성공:성공, 실패:실패)"),
+                                       fieldWithPath("result.date").description("통계를 확인한 날짜"),
+                                       fieldWithPath("result.parentCategoryId").description("부모 카테고리 id (null)"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount").description("1차 카테고리 티켓 수 배열"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount[].categoryId").description("1차 카테고리 id"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount[].categoryName").description("1차 카테고리 이름"),
+                                       fieldWithPath("result.statisticData.categoryTicketCount[].count").description("1차 카테고리 티켓 수")
+                                                 )
+                                  )
+                         );
         }
 
         @Test
