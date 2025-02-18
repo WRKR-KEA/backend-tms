@@ -2,10 +2,10 @@ package com.wrkr.tickety.global.config.security;
 
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.config.security.filter.JwtAuthenticationFilter;
+import com.wrkr.tickety.global.config.security.filter.XssFilter;
 import com.wrkr.tickety.global.config.security.handler.CustomAccessDeniedHandler;
 import com.wrkr.tickety.global.config.security.handler.CustomAuthenticationEntryPoint;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
-import com.wrkr.tickety.global.config.xss.XssFilter;
 import jakarta.servlet.DispatcherType;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;

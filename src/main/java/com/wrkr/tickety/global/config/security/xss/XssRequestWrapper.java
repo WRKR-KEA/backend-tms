@@ -1,4 +1,4 @@
-package com.wrkr.tickety.global.config.xss;
+package com.wrkr.tickety.global.config.security.xss;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;

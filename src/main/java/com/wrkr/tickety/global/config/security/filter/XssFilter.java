@@ -1,5 +1,6 @@
-package com.wrkr.tickety.global.config.xss;
+package com.wrkr.tickety.global.config.security.filter;
 
+import com.wrkr.tickety.global.config.security.xss.XssRequestWrapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
