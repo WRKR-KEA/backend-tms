@@ -1023,8 +1023,8 @@ class ManagerTicketControllerTest {
             // given
             final String query = "query";
             final String status = "REQUEST";
-            final String startDate = "";
-            final String endDate = "";
+            final String startDate = null;
+            final String endDate = null;
 
             doThrow(ApplicationException.from(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID))
                 .when(ticketAllGetToExcelUseCase).getAllTicketsNoPaging(query, status, startDate, endDate);
@@ -1034,8 +1034,8 @@ class ManagerTicketControllerTest {
                 .get("/api/manager/tickets/department/excel")
                 .queryParam("query", query)
                 .queryParam("status", status)
-                .queryParam("startDate", startDate)
-                .queryParam("endDate", endDate)
+                .queryParam("startDate", (String) null)
+                .queryParam("endDate", (String) null)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON);
 

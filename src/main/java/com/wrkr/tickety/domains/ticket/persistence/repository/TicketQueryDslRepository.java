@@ -14,5 +14,5 @@ public interface TicketQueryDslRepository {
 
     List<DepartmentTicketExcelPreResponse> getAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate);
 
-    Page<TicketEntity> findByManagerFilters(Long managerId, TicketStatus status, ApplicationPageRequest pageable, String query);
+    Page<TicketEntity> findByManagerFilters(Long managerId, TicketStatus status, ApplicationPageRequest pageable, String query, List<Long> categoryIdList);
 }

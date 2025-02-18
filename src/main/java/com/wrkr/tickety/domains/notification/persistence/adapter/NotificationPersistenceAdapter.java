@@ -22,7 +22,7 @@ public class NotificationPersistenceAdapter {
     }
 
     public List<Notification> getAllNotificationsByMemberId(final Long memberId) {
-        List<NotificationEntity> notificationEntities = this.notificationRepository.findAllByMemberId(memberId);
+        List<NotificationEntity> notificationEntities = this.notificationRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
         return notificationEntities.stream()
             .map(this.notificationPersistenceMapper::toDomain)
             .toList();
