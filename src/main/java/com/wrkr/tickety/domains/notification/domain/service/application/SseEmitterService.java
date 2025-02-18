@@ -22,16 +22,17 @@ public class SseEmitterService {
     private final EmitterRepository emitterRepository;
     private final NotificationPersistenceAdapter notificationPersistenceAdapter;
 
-    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
+    private static final Long DEFAULT_TIMEOUT = 60L * 1000;
 
     public SseEmitter subscribe(Long memberId, String lastEventId) {
         String emitterId = memberId + "_" + System.currentTimeMillis();
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
 
         emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
-        emitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
+        emitter.onTimeout(() -> emitter.complete());
+        emitter.onError((error) -> emitter.complete());
 
-        sendToClient(emitter, emitterId, "Subscribe EventStream: [memberId = " + memberId + "]");
+        sendToClient(emitter, emitterId, "connect", "Subscribe EventStream: [memberId = " + memberId + "]");
 
         if (!lastEventId.isEmpty()) {
             Map<String, Object> events = emitterRepository.findAllEventCacheStartWithByMemberId(String.valueOf(memberId));
@@ -53,7 +54,7 @@ public class SseEmitterService {
         sseEmitters.forEach(
             (key, emitter) -> {
                 emitterRepository.saveEventCache(key, notification);
-                sendToClient(emitter, key, content);
+                sendToClient(emitter, key, notificationType.name().toLowerCase(), content);
             }
         );
     }
@@ -64,8 +65,20 @@ public class SseEmitterService {
                 .id(emitterId)
                 .data(data));
         } catch (IOException exception) {
-            emitterRepository.deleteById(emitterId);
-            log.info("Failed to send emitter: " + emitterId + ": " + exception.getMessage());
+            emitter.complete();
+            log.warn("[SSE] Failed to send event: {}: {}", emitterId, exception.getMessage());
+        }
+    }
+
+    private void sendToClient(SseEmitter emitter, String emitterId, String type, Object data) {
+        try {
+            emitter.send(SseEmitter.event()
+                .id(emitterId)
+                .name(type)
+                .data(data));
+        } catch (IOException exception) {
+            emitter.complete();
+            log.warn("[SSE] Failed to send event: {}: {}", emitterId, exception.getMessage());
         }
     }
 }

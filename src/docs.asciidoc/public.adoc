@@ -1,0 +1,84 @@
+= Public Member API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+= 사용자, 담당자 공통 기능(인증 필요 X)
+
+== 인증 코드 발급
+
+=== 1. 유효한 닉네임으로 요청 시 인증 코드가 정상 발급된다.
+
+HTTP Request
+
+include::{snippets}/Public/createVerificationCode/Success/http-request.adoc[]
+include::{snippets}/Public/createVerificationCode/Success/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/Public/createVerificationCode/Success/http-response.adoc[]
+include::{snippets}/Public/createVerificationCode/Success/response-fields.adoc[]
+
+=== 2. 존재하지 않는 회원 닉네임으로 요청 시 INVALID_NICKNAME 예외가 발생한다.
+
+HTTP Request
+
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNickname/http-request.adoc[]
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNickname/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNickname/http-response.adoc[]
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNickname/response-fields.adoc[]
+
+=== 3. 닉네임(아이디) 형식이 올바르지 않은 경우 INVALID_NICKNAME 예외를 발생시킨다.
+
+HTTP Request
+
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNicknameFormat/http-request.adoc[]
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNicknameFormat/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNicknameFormat/http-response.adoc[]
+include::{snippets}/Public/createVerificationCode/Failure/InvalidNicknameFormat/response-fields.adoc[]
+
+== 비밀번호 재발급 API
+
+=== 1. 유효한 닉네임으로 요청 시 인증 코드가 정상 발급된다.
+
+HTTP Request
+
+include::{snippets}/Public/regeneratePassword/Success/http-request.adoc[]
+include::{snippets}/Public/regeneratePassword/Success/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/Public/regeneratePassword/Success/http-response.adoc[]
+include::{snippets}/Public/regeneratePassword/Success/response-fields.adoc[]
+
+=== 2. 잘못된 인증 코드로 비밀번호 재발급 요청 시 INVALID_VERIFICATION_CODE 예외가 발생한다.
+
+HTTP Request
+
+include::{snippets}/Public/regeneratePassword/Failure/InvalidVerificationCode/http-request.adoc[]
+include::{snippets}/Public/regeneratePassword/Failure/InvalidVerificationCode/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/Public/regeneratePassword/Failure/InvalidVerificationCode/http-response.adoc[]
+include::{snippets}/Public/regeneratePassword/Failure/InvalidVerificationCode/response-fields.adoc[]
+
+=== 3. 존재하지 않는 회원으로 비밀번호 재발급 요청 시 INVALID_VERIFICATION_CODE 예외가 발생한다.
+
+HTTP Request
+
+include::{snippets}/Public/regeneratePassword/Failure/MemberNotFound/http-request.adoc[]
+include::{snippets}/Public/regeneratePassword/Failure/MemberNotFound/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/Public/regeneratePassword/Failure/MemberNotFound/http-response.adoc[]
+include::{snippets}/Public/regeneratePassword/Failure/MemberNotFound/response-fields.adoc[]

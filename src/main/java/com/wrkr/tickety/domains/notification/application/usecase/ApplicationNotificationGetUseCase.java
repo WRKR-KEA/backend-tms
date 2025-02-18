@@ -27,4 +27,8 @@ public class ApplicationNotificationGetUseCase {
             .map(NotificationMapper::toApplicationNotificationResponse)
             .collect(Collectors.toList());
     }
+
+    public long countMemberNotifications(Long memberId) {
+        return notificationGetService.countByMemberIdAndIsReadFalse(memberId);
+    }
 }
