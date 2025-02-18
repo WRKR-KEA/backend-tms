@@ -7,6 +7,8 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -100,7 +102,27 @@ class ManagerMemberControllerTest {
                     document(
                         "ManagerMemberApi/GetAllManagers/Success",
                         preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint())
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("응답 성공 여부"),
+                            fieldWithPath("code").description("응답 코드"),
+                            fieldWithPath("message").description("응답 메시지"),
+                            fieldWithPath("result.principal.memberId").description("담당자 본인 ID"),
+                            fieldWithPath("result.principal.profileUrl").description("담당자 본인 프로필 사진"),
+                            fieldWithPath("result.principal.nickname").description("담당자 본인 아이디(닉네임)"),
+                            fieldWithPath("result.principal.position").description("담당자 본인 직책"),
+                            fieldWithPath("result.principal.email").description("담당자 본인 이메일"),
+                            fieldWithPath("result.principal.phoneNumber").description("담당자 본인 전화번호"),
+                            fieldWithPath("result.principal.ticketAmount").description("본인 담당 티켓 수"),
+                            fieldWithPath("result.managers").description("담당자 목록"),
+                            fieldWithPath("result.managers[].memberId").description("담당자 ID"),
+                            fieldWithPath("result.managers[].profileUrl").description("담당자 프로필 사진"),
+                            fieldWithPath("result.managers[].nickname").description("담당자 아이디(닉네임)"),
+                            fieldWithPath("result.managers[].position").description("담당자 직책"),
+                            fieldWithPath("result.managers[].email").description("담당자 이메일"),
+                            fieldWithPath("result.managers[].phoneNumber").description("담당자 전화번호"),
+                            fieldWithPath("result.managers[].ticketAmount").description("담당 티켓 수")
+                        )
                     )
                 );
         }
@@ -115,7 +137,7 @@ class ManagerMemberControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andDo(
                     document(
-                        "ManagerMemberApi/GetAllManagers/Failure/Unauthorized",
+                        "ManagerMemberApi/GetAllManagers/Failure/Case1",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                     )
@@ -140,7 +162,7 @@ class ManagerMemberControllerTest {
                 .andExpect(jsonPath("$.message").value(CommonErrorCode.INTERNAL_SERVER_ERROR.getMessage()))
                 .andDo(
                     document(
-                        "ManagerMemberApi/GetAllManagers/Failure/InternalError",
+                        "ManagerMemberApi/GetAllManagers/Failure/Case2",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                     )
