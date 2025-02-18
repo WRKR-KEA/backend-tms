@@ -9,7 +9,7 @@ import com.wrkr.tickety.domains.member.domain.service.MemberSaveService;
 import com.wrkr.tickety.domains.member.domain.service.MemberUpdateService;
 import com.wrkr.tickety.domains.member.persistence.mapper.MemberPersistenceMapper;
 import com.wrkr.tickety.domains.member.persistence.repository.MemberRepository;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryCreateService;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryDeleteService;
 import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
@@ -137,5 +137,5 @@ public abstract class UnitTest {
      */
     // ApplicationEventPublisher
     protected final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
-    protected final KakaoworkMessageService kakaoworkMessageService = mock(KakaoworkMessageService.class);
+    protected final KakaoworkNotificationService kakaoworkNotificationService = mock(KakaoworkNotificationService.class);
 }

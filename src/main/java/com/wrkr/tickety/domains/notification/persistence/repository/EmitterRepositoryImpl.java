@@ -19,20 +19,8 @@ public class EmitterRepositoryImpl implements EmitterRepository {
     }
 
     @Override
-    public void saveEventCache(String emitterId, Object event) {
-        eventCache.put(emitterId, event);
-    }
-
-    @Override
     public Map<String, SseEmitter> findAllEmitterStartWithByMemberId(String memberId) {
         return emitters.entrySet().stream()
-            .filter(entry -> entry.getKey().startsWith(memberId))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    @Override
-    public Map<String, Object> findAllEventCacheStartWithByMemberId(String memberId) {
-        return eventCache.entrySet().stream()
             .filter(entry -> entry.getKey().startsWith(memberId))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }

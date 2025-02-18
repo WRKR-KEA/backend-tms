@@ -32,6 +32,8 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
@@ -47,6 +49,7 @@ import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.WithMockCustomUser;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
 import com.wrkr.tickety.global.exception.ApplicationException;
+import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.excel.ExcelUtil;
 import java.util.List;
@@ -873,4 +876,349 @@ class ManagerTicketControllerTest {
                 );
         }
     }
+
+    @Nested
+    @DisplayName("부서 티켓 목록 엑셀 다운로드(상태별) API [GET /api/manager/tickets/excel]")
+    class downloadExcel {
+
+        @Test
+        @DisplayName("부서 티켓 목록 엑셀 다운로드에 성공한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void downloadExcelSuccess() throws Exception {
+            // given
+            final String query = "query";
+            final String status = "REQUEST";
+            final String startDate = "2025-01-01";
+            final String endDate = "2025-01-31";
+
+            doReturn(List.of()).when(ticketAllGetToExcelUseCase).getAllTicketsNoPaging(query, status, startDate, endDate);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .get("/api/manager/tickets/department/excel")
+                .queryParam("query", query)
+                .queryParam("status", status)
+                .queryParam("startDate", startDate)
+                .queryParam("endDate", endDate)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Excel/Success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                            parameterWithName("query").description("검색어"),
+                            parameterWithName("status").description("상태"),
+                            parameterWithName("startDate").description("시작 날짜"),
+                            parameterWithName("endDate").description("종료 날짜")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 부서 티켓 목록 엑셀 다운로드에 실패한다.")
+//        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void withoutAccessToken() throws Exception {
+            // given
+            final String query = "query";
+            final String status = "REQUEST";
+            final String startDate = "2025-01-01";
+            final String endDate = "2025-01-31";
+
+            doReturn(List.of()).when(ticketAllGetToExcelUseCase).getAllTicketsNoPaging(query, status, startDate, endDate);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .get("/api/manager/tickets/department/excel")
+                .queryParam("query", query)
+                .queryParam("status", status)
+                .queryParam("startDate", startDate)
+                .queryParam("endDate", endDate)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.AUTHENTICATION_FAILED;
+            mockMvc.perform(requestBuilder)
+                .andExpect(
+                    status().isUnauthorized()
+                )
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Excel/Failure/Case1",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                            parameterWithName("query").description("검색어"),
+                            parameterWithName("status").description("상태"),
+                            parameterWithName("startDate").description("시작 날짜"),
+                            parameterWithName("endDate").description("종료 날짜")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        @DisplayName("시작 날짜가 종료 날짜보다 늦으면 부서 티켓 목록 엑셀 다운로드에 실패한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void throwExceptionByStartDateAfterEndDate() throws Exception {
+            // given
+            final String query = "query";
+            final String status = "REQUEST";
+            final String startDate = "2025-01-31";
+            final String endDate = "2025-01-01";
+
+            doThrow(ApplicationException.from(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID))
+                .when(ticketAllGetToExcelUseCase).getAllTicketsNoPaging(query, status, startDate, endDate);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .get("/api/manager/tickets/department/excel")
+                .queryParam("query", query)
+                .queryParam("status", status)
+                .queryParam("startDate", startDate)
+                .queryParam("endDate", endDate)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            // then
+            final CommonErrorCode expectedError = CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
+            mockMvc.perform(requestBuilder)
+                .andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.isSuccess").exists(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").exists(),
+                    jsonPath("$.code").value(expectedError.getCustomCode()),
+                    jsonPath("$.message").exists(),
+                    jsonPath("$.message").value(expectedError.getMessage())
+                )
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Excel/Failure/Case2",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                            parameterWithName("query").description("검색어"),
+                            parameterWithName("status").description("상태"),
+                            parameterWithName("startDate").description("시작 날짜"),
+                            parameterWithName("endDate").description("종료 날짜")
+                        ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("커스텀 예외 코드"),
+                            fieldWithPath("message").description("예외 메시지")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        @DisplayName("날짜가 null 또는 빈 문자열이면 부서 티켓 목록 엑셀 다운로드에 실패한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.kjw", memberId = 2L)
+        void throwExceptionByDateNullOrEmpty() throws Exception {
+            // given
+            final String query = "query";
+            final String status = "REQUEST";
+            final String startDate = null;
+            final String endDate = null;
+
+            doThrow(ApplicationException.from(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID))
+                .when(ticketAllGetToExcelUseCase).getAllTicketsNoPaging(query, status, startDate, endDate);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                .get("/api/manager/tickets/department/excel")
+                .queryParam("query", query)
+                .queryParam("status", status)
+                .queryParam("startDate", (String) null)
+                .queryParam("endDate", (String) null)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON);
+
+            // then
+            final CommonErrorCode expectedError = CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
+            mockMvc.perform(requestBuilder)
+                .andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.isSuccess").exists(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").exists(),
+                    jsonPath("$.code").value(expectedError.getCustomCode()),
+                    jsonPath("$.message").exists(),
+                    jsonPath("$.message").value(expectedError.getMessage())
+                )
+                .andDo(
+                    document(
+                        "ManagerTicketApi/Excel/Failure/Case3",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                            parameterWithName("query").description("검색어"),
+                            parameterWithName("status").description("상태"),
+                            parameterWithName("startDate").description("시작 날짜"),
+                            parameterWithName("endDate").description("종료 날짜")
+                        ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("커스텀 예외 코드"),
+                            fieldWithPath("message").description("예외 메시지")
+                        )
+                    )
+                );
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 메인페이지 API [GET /api/manager/main]")
+    class MainPage {
+
+        @Test
+        @DisplayName("성공: 담당자의 메인 페이지 정보를 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPage_Success() throws Exception {
+            // given
+            ManagerTicketMainPageResponse response = ManagerTicketMainPageResponse.builder()
+                .pinTickets(List.of())
+                .requestTickets(List.of())
+                .build();
+
+            doReturn(response).when(managerGetMainUseCase).getMain(anyLong());
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMain/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("메인 페이지 티켓 목록"),
+                        fieldWithPath("result.pinTickets").description("고정된 티켓 목록"),
+                        fieldWithPath("result.requestTickets").description("요청된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPage_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMain/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 고정 티켓 조회 API [GET /api/manager/main/pins]")
+    class MainPagePinTickets {
+
+        @Test
+        @DisplayName("성공: 담당자의 고정된 티켓 목록을 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPagePinTicket_Success() throws Exception {
+            // given
+            doReturn(List.of()).when(managerGetMainUseCase).getPinTickets(anyLong());
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/pins")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMainPins/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("고정된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPagePinTicket_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/pins")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMainPins/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 요청된 티켓 조회 API [GET /api/manager/main/requests]")
+    class MainPageRequestTickets {
+
+        @Test
+        @DisplayName("성공: 담당자의 요청된 티켓 목록을 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPageRequestTicket_Success() throws Exception {
+            // given
+            List<RequestTickets> requestTickets = List.of();
+
+            doReturn(requestTickets).when(managerGetMainUseCase).getRecentRequestTickets();
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/requests")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMainRequests/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("요청된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPageRequestTicket_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/requests")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMainRequests/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
 }

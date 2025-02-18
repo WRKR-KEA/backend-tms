@@ -67,10 +67,10 @@ public class TicketGetServiceTest {
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), tickets.size());
 
         // When
-        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query)).thenReturn(ticketPage);
+        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query,null)).thenReturn(ticketPage);
 
         // Then
-        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query);
+        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query,null);
         assertThat(result.getContent()).isEqualTo(ticketPage.getContent());
         assertThat(result.getTotalElements()).isEqualTo(ticketPage.getTotalElements());
         assertThat(result.getTotalPages()).isEqualTo(ticketPage.getTotalPages());
@@ -89,10 +89,10 @@ public class TicketGetServiceTest {
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), 0);
 
         // When
-        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query)).thenReturn(ticketPage);
+        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query,null)).thenReturn(ticketPage);
 
         // Then
-        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query);
+        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query,null);
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isEqualTo(0);
     }
@@ -109,10 +109,10 @@ public class TicketGetServiceTest {
         Page<Ticket> ticketPage = new PageImpl<>(tickets, pageRequest.toPageable(), tickets.size());
 
         // When
-        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query)).thenReturn(ticketPage);
+        when(ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageRequest, null, query,null)).thenReturn(ticketPage);
 
         // Then
-        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query);
+        Page<Ticket> result = ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, query,null);
         assertThat(result.getContent()).isEqualTo(ticketPage.getContent());
         assertThat(result.getTotalElements()).isEqualTo(ticketPage.getTotalElements());
         assertThat(result.getTotalPages()).isEqualTo(ticketPage.getTotalPages());

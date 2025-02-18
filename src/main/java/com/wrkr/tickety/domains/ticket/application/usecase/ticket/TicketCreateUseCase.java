@@ -19,10 +19,15 @@ import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetServic
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
+import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
+import com.wrkr.tickety.global.exception.ApplicationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -35,23 +40,40 @@ public class TicketCreateUseCase {
     private final MemberGetService UserGetService;
     private final TicketHistorySaveService ticketHistorySaveService;
     private final TicketGetService ticketGetService;
+    private final RedissonClient redissonClient;
 
     public TicketPkResponse createTicket(TicketCreateRequest request, Long userId) {
         Category childCategory = categoryGetService.getChildrenCategory(decrypt(request.categoryId()));
         Member member = UserGetService.byMemberId(userId);
 
-        String serialNumber = generateSerialNumber(childCategory);
-        TicketStatus status = TicketStatus.REQUEST;
+        String lockKey = "LOCK:ticket:" + childCategory.getCategoryId();
+        RLock lock = redissonClient.getLock(lockKey);
 
-        Ticket ticket = mapToTicket(request, childCategory, serialNumber, status, member);
-        Ticket savedTicket = ticketSaveService.save(ticket);
+        try {
+            if (lock.tryLock(5, 10, TimeUnit.SECONDS)) {
+                try {
+                    String serialNumber = generateSerialNumber(childCategory);
+                    TicketStatus status = TicketStatus.REQUEST;
 
-        ModifiedType modifiedType = ModifiedType.STATUS;
-        TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket,
-            modifiedType);
-        ticketHistorySaveService.save(ticketHistory);
+                    Ticket ticket = mapToTicket(request, childCategory, serialNumber, status, member);
+                    Ticket savedTicket = ticketSaveService.save(ticket);
 
-        return toTicketPkResponse(encrypt(savedTicket.getTicketId()));
+                    ModifiedType modifiedType = ModifiedType.STATUS;
+                    TicketHistory ticketHistory = TicketHistoryMapper.mapToTicketHistory(savedTicket,
+                        modifiedType);
+                    ticketHistorySaveService.save(ticketHistory);
+
+                    return toTicketPkResponse(encrypt(savedTicket.getTicketId()));
+
+                } finally {
+                    lock.unlock();
+                }
+            } else {
+                throw ApplicationException.from(TicketErrorCode.TICKET_CREATE_LOCK_TIMEOUT);
+            }
+        } catch (InterruptedException e) {
+            throw ApplicationException.from(TicketErrorCode.TICKET_CANNOT_CREATED);
+        }
     }
 
     private String generateSerialNumber(Category childCategory) {

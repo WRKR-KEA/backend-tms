@@ -1,0 +1,79 @@
+= User Member API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+= 사용자, 담당자 공통 기능
+
+== 비밀번호 재설정
+
+=== 1. 비밀번호 형식 (**특수 문자, 대문자 및 숫자를 포함한 8-12자의 비밀번호**)이 올바른 경우 비밀번호를 재설정하는 데 성공한다.
+
+==== 요청 예시
+
+|===
+| 비밀번호 (password) | 비밀번호 확인 (confirmPassword)
+
+| `Abc123!@` | `Abc123!@`
+| `Abcdef123!@#` | `Abcdef123!@#`
+|===
+
+HTTP Request
+
+include::{snippets}/UserMember/updatePassword/Success/http-request.adoc[]
+include::{snippets}/UserMember/updatePassword/Success/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserMember/updatePassword/Success/http-response.adoc[]
+include::{snippets}/UserMember/updatePassword/Success/response-fields.adoc[]
+
+=== 2. 비밀번호가 일치하지 않을 경우 UNMATCHED_PASSWORD 예외가 발생한다.
+
+HTTP Request
+
+include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/http-request.adoc[]
+include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/http-response.adoc[]
+include::{snippets}/UserMember/updatePassword/Failure/UnmatchedPassword/response-fields.adoc[]
+
+=== 3. 존재하지 않는 회원 ID로 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.
+
+HTTP Request
+
+include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/http-request.adoc[]
+include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/http-response.adoc[]
+include::{snippets}/UserMember/updatePassword/Failure/MemberNotFound/response-fields.adoc[]
+
+=== 4. 비밀번호 형식이 올바르지 않으면 BAD_REQUEST 예외가 발생한다.
+
+==== 요청 예시
+
+|===
+| 비밀번호 (password) | 비밀번호 확인 (confirmPassword) | 원인
+
+| `Abc12!` | `Abc12!`  | 8자 미만
+| `Abcdef1234!@#` | `Abcdef1234!@#` | 13자 초과
+| `Abcdefg!` | `Abcdefg!` | 숫자 미포함
+| `abcdef123!` | `abcdef123!` | 대문자 미포함
+| `Abcdef123` | `Abcdef123` | 특수문자 미포함
+|===
+
+HTTP Request
+
+include::{snippets}/UserMember/updatePassword/Failure/InvalidPasswordFormat/http-request.adoc[]
+include::{snippets}/UserMember/updatePassword/Failure/InvalidPasswordFormat/request-fields.adoc[]
+
+HTTP Response
+
+include::{snippets}/UserMember/updatePassword/Failure/InvalidPasswordFormat/http-response.adoc[]
+include::{snippets}/UserMember/updatePassword/Failure/InvalidPasswordFormat/response-fields.adoc[]

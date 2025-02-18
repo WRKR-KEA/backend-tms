@@ -1,7 +1,6 @@
 package com.wrkr.tickety.domains.log.application.dto.response;
 
 import com.wrkr.tickety.domains.log.domain.constant.ActionType;
-import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.global.utils.excel.ExcelColumn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -18,10 +17,6 @@ public record AccessLogSearchResponse(
     @Schema(description = "닉네임", example = "gachon.kim")
     @ExcelColumn(headerName = "닉네임")
     String nickname,
-
-    @Schema(description = "접속 회원 권한 (USER | MANAGER | ADMIN)", example = "USER")
-    @ExcelColumn(headerName = "권한")
-    Role role,
 
     @Schema(description = "접속 ip", example = "000.222.444")
     @ExcelColumn(headerName = "접속 IP")

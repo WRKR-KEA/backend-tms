@@ -11,7 +11,7 @@ import java.util.regex.PatternSyntaxException;
 public class EmailFormatValidator implements ConstraintValidator<EmailFormat, String> {
 
     private String[] acceptedDomains;
-    private static final String EMAIL_REGEX_TEMPLATE = "^[a-zA-Z0-9._%%+-]+@(%s)$";  // %를 두 번 사용하여 이스케이프
+    private static final String EMAIL_REGEX_TEMPLATE = "^[a-zA-Z0-9._%%+-]+@(%s)$";
     private Pattern emailPattern;
 
     @Override
