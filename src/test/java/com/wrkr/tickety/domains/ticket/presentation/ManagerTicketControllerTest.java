@@ -873,4 +873,169 @@ class ManagerTicketControllerTest {
                 );
         }
     }
+
+    @Nested
+    @DisplayName("담당자 티켓 고정 API [PATCH /api/manager/tickets/pin]")
+    class PinTicket {
+
+        @Test
+        @DisplayName("티켓 고정 처리에 성공한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketSuccess() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+            ManagerPinTicketResponse response = new ManagerPinTicketResponse(encryptedTicketId, true);
+
+            doReturn(response).when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.ticketId").value(encryptedTicketId))
+                .andExpect(jsonPath("$.result.isPinned").value(true))
+                .andDo(document("ManagerTicketApi/Pin/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("반환 결과"),
+                        fieldWithPath("result.ticketId").description("고정된 티켓 ID(PK)"),
+                        fieldWithPath("result.isPinned").description("고정 여부")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 최대 10개의 티켓만 고정 가능하다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_PinLimitExceeded() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_PIN_COUNT_OVER))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case1",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 티켓 담당자가 아닐 경우 고정할 수 없다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_ManagerNotMatch() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_MATCH))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isForbidden())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case2",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 티켓을 찾을 수 없음")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_TicketNotFound() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_NOT_FOUND))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case3",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실퍠: 티켓이 요청 상태가 아닌 경우 예외 발생")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "manager.hjw", memberId = 2L)
+        void pinTicketFail_TicketNotRequest() throws Exception {
+            // given
+            String encryptedTicketId = PkCrypto.encrypt(TICKET_ID);
+            TicketPinRequest request = new TicketPinRequest(encryptedTicketId);
+
+            doThrow(new ApplicationException(TicketErrorCode.TICKET_MANAGER_NOT_FOUND))
+                .when(managerTicketPinUseCase).pinTicket(any(Member.class), any(TicketPinRequest.class));
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = patch("/api/manager/tickets/pin")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andDo(document("ManagerTicketApi/Pin/Failure/Case4",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("성공 여부"),
+                        fieldWithPath("code").description("커스텀 예외 코드"),
+                        fieldWithPath("message").description("예외 메시지")
+                    )
+                ));
+        }
+    }
 }
