@@ -21,7 +21,6 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
-import com.wrkr.tickety.global.config.RedisMockConfig;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.concurrent.TimeUnit;
@@ -35,10 +34,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.context.annotation.Import;
 
 @ExtendWith(MockitoExtension.class)
-@Import(RedisMockConfig.class)
 class TicketCreateUseCaseTest {
 
     @BeforeAll
@@ -46,6 +43,12 @@ class TicketCreateUseCaseTest {
         PkCrypto pkCrypto = new PkCrypto("AES", "1234567890123456");
         pkCrypto.init();
     }
+
+    @Mock
+    private RedissonClient redissonClient;
+
+    @Mock
+    private RLock rLock;
 
     private static final Long USER_ID = 1L;
     private static final Long CATEGORY_ID = 2L;
@@ -70,12 +73,6 @@ class TicketCreateUseCaseTest {
 
     @Mock
     private TicketGetService ticketGetService;
-
-    @Mock
-    private RedissonClient redissonClient;
-
-    @Mock
-    private RLock rLock;
 
     @InjectMocks
     private TicketCreateUseCase ticketCreateUseCase;
@@ -108,6 +105,8 @@ class TicketCreateUseCaseTest {
             .content("티켓 내용입니다.")
             .categoryId(encryptedCategoryId)
             .build();
+
+
     }
 
     @Test
