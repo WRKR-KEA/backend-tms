@@ -21,12 +21,21 @@ public class ApplicationNotificationController {
 
     private final ApplicationNotificationGetUseCase applicationNotificationGetUseCase;
 
-    @Operation(summary = "알림 전체 조회", description = "관리자가 카테고리를 전체 조회합니다.")
+    @Operation(summary = "알림 전체 조회", description = "사용자가 알림 리스트를 조회합니다.")
     @GetMapping
     public ApplicationResponse<List<ApplicationNotificationResponse>> getAllNotifications(
         @AuthenticationPrincipal Member member
     ) {
-        List<ApplicationNotificationResponse> notifications = applicationNotificationGetUseCase.getAllNotifications(member.getMemberId());
-        return ApplicationResponse.onSuccess(notifications);
+        List<ApplicationNotificationResponse> response = applicationNotificationGetUseCase.getAllNotifications(member.getMemberId());
+        return ApplicationResponse.onSuccess(response);
+    }
+
+    @Operation(summary = "읽지 않은 알림 개수 조회", description = "사용자의 전체 알림 중 읽지 않은 알림 개수를 조회합니다.")
+    @GetMapping("/count")
+    public ApplicationResponse<Long> countMemberNotifications(
+        @AuthenticationPrincipal Member member
+    ) {
+        Long response = applicationNotificationGetUseCase.countMemberNotifications(member.getMemberId());
+        return ApplicationResponse.onSuccess(response);
     }
 }

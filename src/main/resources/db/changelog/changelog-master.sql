@@ -35,3 +35,23 @@ ALTER TABLE ticket
 
 -- changeset Wonee:update_existing_ticket_version
 UPDATE ticket SET version = 0 WHERE version IS NULL;
+
+-- changeset Tomcat:add_index_ticket_user_status
+ALTER TABLE ticket
+    ADD INDEX idx_ticket_user_status (user_id, status);
+
+-- changeset Tomcat:add_index_ticket_manager_status
+ALTER TABLE ticket
+    ADD INDEX idx_ticket_manager_status (manager_id, status);
+
+-- changeset Tomcat:add_index_ticket_history_status
+ALTER TABLE ticket_history
+    ADD INDEX idx_ticket_history_status (status);
+
+-- changeset Tomcat:add_index_ticket_history_created_at
+ALTER TABLE ticket_history
+    ADD INDEX idx_ticket_history_created_at (created_at);
+
+-- changeset Tomcat:add_index_ticket_history_status_created_at
+ALTER TABLE ticket_history
+    ADD INDEX idx_ticket_history_status_created_at (status, created_at);

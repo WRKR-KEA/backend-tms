@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrkr.tickety.docs.RestDocsSupport;
+import com.wrkr.tickety.domains.log.application.dto.response.AccessLogExcelResponse;
 import com.wrkr.tickety.domains.log.application.dto.response.AccessLogSearchResponse;
 import com.wrkr.tickety.domains.log.application.usecase.AccessLogExcelDownloadUseCase;
 import com.wrkr.tickety.domains.log.application.usecase.AccessLogSearchUseCase;
@@ -70,6 +71,7 @@ class LogControllerTest extends RestDocsSupport {
     private JwtUtils jwtUtils;
 
     private List<AccessLogSearchResponse> accessLogResponses;
+    private List<AccessLogExcelResponse> accessLogExcelDownloadResponse;
 
     @BeforeAll
     static void init() {
@@ -84,7 +86,6 @@ class LogControllerTest extends RestDocsSupport {
                 .accessLogId(PkCrypto.encrypt(1L))
                 .nickname("user.psw")
                 .ip("111.222.333.444")
-                .role(Role.USER)
                 .action(ActionType.LOGIN)
                 .accessAt(LocalDateTime.now())
                 .isSuccess(true)
@@ -94,9 +95,27 @@ class LogControllerTest extends RestDocsSupport {
                 .nickname("admin.psw")
                 .ip("111.222.333.555")
                 .action(ActionType.LOGOUT)
-                .role(Role.USER)
                 .accessAt(LocalDateTime.now())
                 .isSuccess(false)
+                .build()
+        );
+
+        accessLogExcelDownloadResponse = List.of(
+            AccessLogExcelResponse.builder()
+                .accessLogId(PkCrypto.encrypt(1L))
+                .nickname("user.psw")
+                .ip("111.222.333.444")
+                .accessAt(LocalDateTime.now().toString())
+                .action(ActionType.LOGIN)
+                .isSuccess("성공")
+                .build(),
+            AccessLogExcelResponse.builder()
+                .accessLogId(PkCrypto.encrypt(2L))
+                .nickname("admin.psw")
+                .ip("111.222.333.555")
+                .accessAt(LocalDateTime.now().toString())
+                .action(ActionType.LOGOUT)
+                .isSuccess("실패")
                 .build()
         );
     }
@@ -248,7 +267,7 @@ class LogControllerTest extends RestDocsSupport {
         @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.psw")
         void downloadAccessLogsExcel_Success_NoFilters() throws Exception {
             given(accessLogExcelDownloadUseCase.getAllAccessLogs(any(), any(), any(), any()))
-                .willReturn(accessLogResponses);
+                .willReturn(accessLogExcelDownloadResponse);
 
             mockMvc.perform(RestDocumentationRequestBuilders.get("/api/admin/access-logs/excel")
                     .contentType(MediaType.APPLICATION_JSON))
@@ -268,7 +287,7 @@ class LogControllerTest extends RestDocsSupport {
         @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.psw")
         void downloadAccessLogsExcel_Success_ActionFilter() throws Exception {
             given(accessLogExcelDownloadUseCase.getAllAccessLogs(any(), any(), any(), any()))
-                .willReturn(accessLogResponses);
+                .willReturn(accessLogExcelDownloadResponse);
 
             mockMvc.perform(RestDocumentationRequestBuilders.get("/api/admin/access-logs/excel")
                     .param("action", "LOGIN")
@@ -289,7 +308,7 @@ class LogControllerTest extends RestDocsSupport {
         @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.psw")
         void downloadAccessLogsExcel_Success_DateRange() throws Exception {
             given(accessLogExcelDownloadUseCase.getAllAccessLogs(any(), any(), any(), any()))
-                .willReturn(accessLogResponses);
+                .willReturn(accessLogExcelDownloadResponse);
 
             mockMvc.perform(RestDocumentationRequestBuilders.get("/api/admin/access-logs/excel")
                     .param("startDate", "2025-01-01")
