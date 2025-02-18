@@ -197,7 +197,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.memberId").value(encryptedMemberId)
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Success",
+                    "AdminMember/createMember/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -279,7 +279,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.nickname").value(INVALID_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Failure/BadRequest",
+                    "AdminMember/createMember/Failure/BadRequest",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -365,7 +365,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_EMAIL.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Failure/DuplicateEmail",
+                    "AdminMember/createMember/Failure/DuplicateEmail",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -445,7 +445,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Failure/DuplicateNickname",
+                    "AdminMember/createMember/Failure/DuplicateNickname",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -535,7 +535,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.memberId").value(encryptedMemberId)
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Success",
+                    "AdminMember/modifyMemberInfo/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -616,7 +616,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.nickname").value(INVALID_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/BadRequest",
+                    "AdminMember/modifyMemberInfo/Failure/BadRequest",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -692,7 +692,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/MemberNotFound",
+                    "AdminMember/modifyMemberInfo/Failure/MemberNotFound",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -761,7 +761,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_EMAIL.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/EmailDuplicate",
+                    "AdminMember/modifyMemberInfo/Failure/EmailDuplicate",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -830,7 +830,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/DuplicateNickname",
+                    "AdminMember/modifyMemberInfo/Failure/DuplicateNickname",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -901,7 +901,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(PERMISSION_DENIED.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/PermissionDenied",
+                    "AdminMember/modifyMemberInfo/Failure/PermissionDenied",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -958,7 +958,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(SUCCESS.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/softDeleteMember/Request/Success",
+                    "AdminMember/softDeleteMember/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -998,7 +998,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/softDeleteMember/Request/Failure/MemberNotFound",
+                    "AdminMember/softDeleteMember/Failure/MemberNotFound",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -1044,7 +1044,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(PERMISSION_DENIED.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/softDeleteMember/Request/Failure/PermissionDenied",
+                    "AdminMember/softDeleteMember/Failure/PermissionDenied",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -1098,7 +1098,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.agitUrl").value(memberInfoResponse.agitUrl())
                 )
                 .andDo(document(
-                    "AdminMember/getMemberInfo/Request/Success",
+                    "AdminMember/getMemberInfo/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     responseFields(
@@ -1139,7 +1139,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/getMemberInfo/Request/Failure/MemberNotFound",
+                    "AdminMember/getMemberInfo/Failure/MemberNotFound",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     responseFields(
@@ -1160,6 +1160,7 @@ class AdminMemberControllerTest {
         @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
         void searchMemberInfoSuccess() throws Exception {
             // given
+            ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 20, SortType.NEWEST);
             Role role = Role.USER;
             String query = "test";
 
@@ -1184,6 +1185,8 @@ class AdminMemberControllerTest {
             ResultActions requestBuilder = mockMvc.perform(MockMvcRequestBuilders.get("/api/admin/members")
                 .param("role", role.name())
                 .param("query", query)
+                .param("page", String.valueOf(pageRequest.page()))
+                .param("size", String.valueOf(pageRequest.size()))
                 .accept(APPLICATION_JSON));
 
             // then
@@ -1237,7 +1240,7 @@ class AdminMemberControllerTest {
         @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
         void searchMemberInfoWithAdminRoleThrowsException() throws Exception {
             // given
-            ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
+            ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 20, SortType.NEWEST);
             Role role = Role.ADMIN;
             String query = "test";
 
@@ -1248,6 +1251,8 @@ class AdminMemberControllerTest {
             ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/api/admin/members")
                 .param("role", role.name())
                 .param("query", query)
+                .param("page", String.valueOf(pageRequest.page()))
+                .param("size", String.valueOf(pageRequest.size()))
                 .accept(APPLICATION_JSON));
 
             // then
