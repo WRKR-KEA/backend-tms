@@ -21,6 +21,7 @@ import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketSaveService;
 import com.wrkr.tickety.domains.ticket.domain.service.tickethistory.TicketHistorySaveService;
 import com.wrkr.tickety.domains.ticket.exception.CategoryErrorCode;
+import com.wrkr.tickety.global.config.RedisMockConfig;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +35,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.context.annotation.Import;
 
 @ExtendWith(MockitoExtension.class)
+@Import(RedisMockConfig.class)
 class TicketCreateUseCaseTest {
 
     @BeforeAll
