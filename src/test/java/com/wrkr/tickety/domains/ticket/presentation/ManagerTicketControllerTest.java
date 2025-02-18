@@ -32,6 +32,8 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
@@ -1023,8 +1025,8 @@ class ManagerTicketControllerTest {
             // given
             final String query = "query";
             final String status = "REQUEST";
-            final String startDate = "";
-            final String endDate = "";
+            final String startDate = null;
+            final String endDate = null;
 
             doThrow(ApplicationException.from(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID))
                 .when(ticketAllGetToExcelUseCase).getAllTicketsNoPaging(query, status, startDate, endDate);
@@ -1034,8 +1036,8 @@ class ManagerTicketControllerTest {
                 .get("/api/manager/tickets/department/excel")
                 .queryParam("query", query)
                 .queryParam("status", status)
-                .queryParam("startDate", startDate)
-                .queryParam("endDate", endDate)
+                .queryParam("startDate", (String) null)
+                .queryParam("endDate", (String) null)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -1070,6 +1072,153 @@ class ManagerTicketControllerTest {
                     )
                 );
         }
-
     }
+
+    @Nested
+    @DisplayName("담당자 메인페이지 API [GET /api/manager/main]")
+    class MainPage {
+
+        @Test
+        @DisplayName("성공: 담당자의 메인 페이지 정보를 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPage_Success() throws Exception {
+            // given
+            ManagerTicketMainPageResponse response = ManagerTicketMainPageResponse.builder()
+                .pinTickets(List.of())
+                .requestTickets(List.of())
+                .build();
+
+            doReturn(response).when(managerGetMainUseCase).getMain(anyLong());
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMain/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("메인 페이지 티켓 목록"),
+                        fieldWithPath("result.pinTickets").description("고정된 티켓 목록"),
+                        fieldWithPath("result.requestTickets").description("요청된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPage_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMain/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 고정 티켓 조회 API [GET /api/manager/main/pins]")
+    class MainPagePinTickets {
+
+        @Test
+        @DisplayName("성공: 담당자의 고정된 티켓 목록을 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPagePinTicket_Success() throws Exception {
+            // given
+            doReturn(List.of()).when(managerGetMainUseCase).getPinTickets(anyLong());
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/pins")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMainPins/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("고정된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPagePinTicket_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/pins")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMainPins/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
+    @Nested
+    @DisplayName("담당자 요청된 티켓 조회 API [GET /api/manager/main/requests]")
+    class MainPageRequestTickets {
+
+        @Test
+        @DisplayName("성공: 담당자의 요청된 티켓 목록을 정상적으로 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "test.manager", memberId = 1L)
+        void getMainPageRequestTicket_Success() throws Exception {
+            // given
+            List<RequestTickets> requestTickets = List.of();
+
+            doReturn(requestTickets).when(managerGetMainUseCase).getRecentRequestTickets();
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/requests")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(document(
+                    "ManagerTicketApi/GetMainRequests/Success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result").description("요청된 티켓 목록")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("실패: 인증되지 않은 사용자 접근 시 401 Unauthorized를 반환한다.")
+        void getMainPageRequestTicket_Unauthorized() throws Exception {
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/api/manager/tickets/main/requests")
+                    .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(document(
+                    "ManagerTicketApi/GetMainRequests/Failure/Unauthorized",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())
+                ));
+        }
+    }
+
 }

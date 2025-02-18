@@ -170,11 +170,13 @@ public class ManagerTicketController {
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
         @Parameter(description = "검색어")
-        @RequestParam(required = false) String query
+        @RequestParam(required = false) String query,
+        @Parameter(description = "필터링할 카테고리 id", example = "W1NMMfAHGTnNGLdRL3lvcw")
+        @RequestParam(required = false) String categoryId
     ) {
         ApplicationPageResponse<ManagerTicketAllGetResponse> response = managerTicketAllGetUseCase.getManagerTicketList(
-            member.getMemberId(), pageRequest, status, query
-        );
+            member.getMemberId(), pageRequest, status, query,
+            categoryId == null || categoryId.isBlank() ? null : PkCrypto.decrypt(categoryId));
 
         return ApplicationResponse.onSuccess(response);
     }

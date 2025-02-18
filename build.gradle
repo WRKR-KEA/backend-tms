@@ -153,6 +153,7 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.18.0'
 
     // S3 client
     implementation platform('software.amazon.awssdk:bom:2.23.7')
@@ -161,6 +162,9 @@ dependencies {
 
     //Thumbnailator
     implementation 'net.coobird:thumbnailator:0.4.14'
+    
+    // Jsoup
+    implementation("org.jsoup:jsoup:1.18.2")
 }
 
 tasks.named('test') {
