@@ -29,8 +29,8 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 
-    public Page<Ticket> getTicketsByManagerFilter(Long managerId, ApplicationPageRequest pageable, TicketStatus status, String query) {
-        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query);
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, ApplicationPageRequest pageable, TicketStatus status, String query, List<Long> categoryIdList) {
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query, categoryIdList);
     }
 
     public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageable) {
