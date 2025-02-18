@@ -1,0 +1,11 @@
+[
+  {
+    "color": "3BB287",
+    "default": false,
+    "description": "Release patch version",
+    "id": 8123465644,
+    "name": "patch",
+    "node_id": "LA_kwDONqtF4c8AAAAB5DI_rA",
+    "url": "https://api.github.com/repos/WRKR-KEA/backend-tms/labels/patch"
+  }
+]

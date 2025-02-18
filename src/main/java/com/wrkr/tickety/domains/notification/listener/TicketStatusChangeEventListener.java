@@ -54,7 +54,7 @@ public class TicketStatusChangeEventListener {
 
         kakaoworkNotificationService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType);
 
-        notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
+        notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.TICKET, message));
     }
 
     @Async

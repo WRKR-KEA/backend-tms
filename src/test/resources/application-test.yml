@@ -7,9 +7,13 @@ spring:
       - s3.yml
       - kakaowork.yml
       - jwt.yml
+      - redis.yml
       - optional:classpath:env.properties
 
   liquibase:
+    enabled: false
+
+  redis:
     enabled: false
 
   datasource:

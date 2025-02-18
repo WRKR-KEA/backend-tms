@@ -23,8 +23,8 @@ public class MemberCreateRequestForExcel {
     @Schema(description = "이름", example = "김가천")
     String name;
 
-    @ExcelColumn(headerName = "닉네임")
-    @Schema(description = "닉네임", example = "gachon.km")
+    @ExcelColumn(headerName = "아이디")
+    @Schema(description = "아이디(닉네임)", example = "gachon.km")
     String nickname;
 
     @ExcelColumn(headerName = "부서")
