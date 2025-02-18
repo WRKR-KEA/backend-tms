@@ -34,6 +34,8 @@ public class MemberCreateFromExcelUseCase {
 
     public List<MemberPkResponse> createMember(List<MemberCreateRequestForExcel> memberCreateRequestForExcels) {
         List<MemberPkResponse> memberPkResponses = new ArrayList<>();
+        List<EmailCreateRequest> emailRequests = new ArrayList<>();
+        List<String> tempPasswords = new ArrayList<>();
 
         for (MemberCreateRequestForExcel memberCreateRequestForExcel : memberCreateRequestForExcels) {
             memberFieldValidator.validateField(
@@ -61,13 +63,23 @@ public class MemberCreateFromExcelUseCase {
                 EmailConstants.TEMP_PASSWORD_SUBJECT,
                 null
             );
-            emailUtil.sendMail(emailCreateRequest, tempPassword, EmailConstants.FILENAME_PASSWORD);
+
+            emailRequests.add(emailCreateRequest);
+            tempPasswords.add(tempPassword);
 
             MemberPkResponse memberPkResponse = MemberMapper.toMemberPkResponse(PkCrypto.encrypt(createdMember.getMemberId()));
 
             memberPkResponses.add(memberPkResponse);
         }
 
+        sendEmails(emailRequests, tempPasswords);
+
         return memberPkResponses;
+    }
+
+    private void sendEmails(List<EmailCreateRequest> emailRequests, List<String> tempPasswords) {
+        for (int i = 0; i < emailRequests.size(); i++) {
+            emailUtil.sendMail(emailRequests.get(i), tempPasswords.get(i), EmailConstants.FILENAME_PASSWORD);
+        }
     }
 }
