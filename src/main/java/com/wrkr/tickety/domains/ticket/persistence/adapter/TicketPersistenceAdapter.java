@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.persistence.adapter;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -44,14 +44,15 @@ public class TicketPersistenceAdapter {
     }
 
     public Page<Ticket> findAll(final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate,
-        final ApplicationPageRequest pageRequest) {
+        final ApplicationPageRequest pageRequest
+                               ) {
         Page<TicketEntity> ticketEntityPage = ticketRepository.getAll(query, status, startDate, endDate, pageRequest);
         return ticketEntityPage.map(ticketPersistenceMapper::toDomain);
     }
 
-    public List<DepartmentTicketPreResponse> findAllTicketsNoPaging(
+    public List<DepartmentTicketExcelPreResponse> findAllTicketsNoPaging(
         final String query, final TicketStatus status, final LocalDate startDate, final LocalDate endDate
-    ) {
+                                                                        ) {
         return ticketRepository.getAllTicketsNoPaging(query, status, startDate, endDate);
     }
 
@@ -59,8 +60,8 @@ public class TicketPersistenceAdapter {
         return ticketRepository.findTicketCountByCategoryAndDateRange(categoryId, start, end);
     }
 
-    public Page<Ticket> findAllByManagerFilter(final Long managerId, final ApplicationPageRequest pageRequest, final TicketStatus status, final String query) {
-        return ticketRepository.findByManagerFilters(managerId, status, pageRequest, query).map(this.ticketPersistenceMapper::toDomain);
+    public Page<Ticket> findAllByManagerFilter(final Long managerId, final ApplicationPageRequest pageRequest, final TicketStatus status, final String query, final List<Long> categoryIdList) {
+        return ticketRepository.findByManagerFilters(managerId, status, pageRequest, query, categoryIdList).map(this.ticketPersistenceMapper::toDomain);
     }
 
     public List<Ticket> findAllByManagerAndIsPinned(Long managerId) {

@@ -5,18 +5,20 @@ import com.wrkr.tickety.domains.notification.application.dto.response.KakaoworkM
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitCommentNotificationMessage;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketDelegateNotificationMessage;
 import com.wrkr.tickety.domains.notification.domain.constant.agit.AgitTicketNotificationMessageType;
+import com.wrkr.tickety.domains.notification.domain.constant.application.Remind;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-public class KakaoworkMessageService {
+public class KakaoworkNotificationService {
 
     private final WebClient webClient;
 
@@ -26,8 +28,7 @@ public class KakaoworkMessageService {
     @Value("${kakaowork.api.app-key}")
     private String appKey;
 
-
-    public KakaoworkMessageService(WebClient.Builder webClientBuilder) {
+    public KakaoworkNotificationService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
@@ -47,7 +48,7 @@ public class KakaoworkMessageService {
             .doOnError(e -> log.error("Error sending message by email: {}", e.getMessage()));
     }
 
-
+    @Async
     public void sendTicketStatusChangeKakaoworkAlarm(Member member, Ticket ticket, AgitTicketNotificationMessageType agitTicketNotificationMessageType) {
         String ticketSerialNumber = ticket.getSerialNumber();
         String message = switch (agitTicketNotificationMessageType) {
@@ -58,20 +59,31 @@ public class KakaoworkMessageService {
         sendMessageByEmail(member.getEmail(), message).block();
     }
 
+    @Async
     public void sendCommentCreateKakaoworkAlarm(Member receiver, Ticket ticket) {
         String message = AgitCommentNotificationMessage.COMMENT_UPDATE.format(ticket.getSerialNumber());
         sendMessageByEmail(receiver.getEmail(), message).block();
     }
 
-    public void sendTicketDelegateKakaoworkAlarm(Member prevManager, Member newManager, Ticket ticket) {
+    @Async
+    public void sendTicketDelegateKakaoworkAlarmToUser(Member receiver, Member newManager, Ticket ticket) {
         String MessageToUser = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_USER.format(
             ticket.getSerialNumber(), newManager.getNickname()
         );
-        sendMessageByEmail(ticket.getUser().getEmail(), MessageToUser).block();
+        sendMessageByEmail(receiver.getEmail(), MessageToUser).block();
+    }
 
+    @Async
+    public void sendTicketDelegateKakaoworkAlarmToManager(Member receiver, Member prevManager, Ticket ticket) {
         String MessageToManager = AgitTicketDelegateNotificationMessage.TICKET_DELEGATE_MESSAGE_TO_NEW_MANAGER.format(
             prevManager.getNickname(), ticket.getSerialNumber()
         );
-        sendMessageByEmail(newManager.getEmail(), MessageToManager).block();
+        sendMessageByEmail(receiver.getEmail(), MessageToManager).block();
+    }
+
+    @Async
+    public void sendRemindKakaoworkAlarm(Member receiver, Ticket ticket) {
+        String message = Remind.REMIND_TICKET.format(ticket.getSerialNumber());
+        sendMessageByEmail(receiver.getEmail(), message).block();
     }
 }

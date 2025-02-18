@@ -72,6 +72,7 @@ public class CategoryMapper {
         return Category.builder()
             .name(request.name())
             .seq(request.seq())
+            .abbreviation(request.abbreviation())
             .build();
     }
 

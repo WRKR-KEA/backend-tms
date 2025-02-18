@@ -11,7 +11,9 @@ import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
+import com.wrkr.tickety.domains.ticket.domain.service.category.CategoryGetService;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
 import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
@@ -45,6 +47,9 @@ public class ManagerTicketAllGetUseCaseTest {
     private TicketGetService ticketGetService;
 
     @Mock
+    private CategoryGetService categoryGetService;
+
+    @Mock
     private PkCrypto pkCrypto;
 
     @BeforeEach
@@ -64,24 +69,35 @@ public class ManagerTicketAllGetUseCaseTest {
         String search = "search";
         ApplicationPageRequest pageable = new ApplicationPageRequest(page, size, SortType.NEWEST);
         String cryptoManagerId = "W1NMMfAHGTnNGLdRL3lvcw";
+        List<Long> categoryIdList = List.of(2L);
+        Category category = Category.builder()
+            .categoryId(2L)
+            .name("생성")
+            .parent(
+                Category.builder()
+                    .categoryId(1L)
+                    .name("VM").build()
+                   ).build();
         List<Ticket> tickets = List.of(
-            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).createdAt(LocalDateTime.now())
+            Ticket.builder().ticketId(1L).isPinned(true).status(TicketStatus.CANCEL).user(requestMember).createdAt(LocalDateTime.now()).category(category)
                 .updatedAt(LocalDateTime.now()).build(),
-            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).createdAt(LocalDateTime.now())
+            Ticket.builder().ticketId(2L).isPinned(true).status(TicketStatus.COMPLETE).user(requestMember).createdAt(LocalDateTime.now()).category(category)
                 .updatedAt(LocalDateTime.now()).build(),
-            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).createdAt(LocalDateTime.now())
+            Ticket.builder().ticketId(3L).isPinned(false).status(TicketStatus.IN_PROGRESS).user(requestMember).createdAt(LocalDateTime.now()).category(category)
                 .updatedAt(LocalDateTime.now()).build()
-        );
+                                      );
         ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 10, SortType.NEWEST);
         Page<Ticket> ticketsPage = new PageImpl<>(tickets, pageRequest.toPageable(), 3);
         when(memberGetService.byMemberId(managerId)).thenReturn(member);
         when(pkCrypto.decryptValue(cryptoManagerId)).thenReturn(managerId);
-        given(ticketGetService.getTicketsByManagerFilter(managerId, pageable, null, search)).willReturn(ticketsPage);
+        given(ticketGetService.getTicketsByManagerFilter(managerId, pageRequest, null, search, categoryIdList)).willReturn(ticketsPage);
+        given(categoryGetService.isParentCategory(2L)).willReturn(true);
+        given(categoryGetService.getChildrenIds(2L)).willReturn(categoryIdList);
 
         // When
         ApplicationPageResponse<ManagerTicketAllGetResponse> ticketAllGetPagingResponse = managerTicketAllGetUseCase.getManagerTicketList(
-            managerId, pageable, null, search
-        );
+            managerId, pageRequest, null, search, 2L
+                                                                                                                                         );
 
         // Then
         assertEquals(3, ticketAllGetPagingResponse.elements().size());
@@ -99,7 +115,7 @@ public class ManagerTicketAllGetUseCaseTest {
         // Then
         ApplicationException exception = assertThrows(ApplicationException.class,
                                                       () -> memberGetService.byMemberId(managerId)
-        );
+                                                     );
 
         assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getCode());
     }

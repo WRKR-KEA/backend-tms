@@ -52,7 +52,9 @@ public class MemberCreateFromExcelUseCase {
             String profileImageUrl =
                 memberCreateRequestForExcel.getProfileImage() == null ? DEFAULT_PROFILE_IMAGE_URL : memberCreateRequestForExcel.getProfileImage();
 
-            Member createdMember = memberSaveService.save(MemberMapper.mapToMemberFromExcel(memberCreateRequestForExcel, encryptedPassword, profileImageUrl));
+            String agitUrl = memberCreateRequestForExcel.getAgitUrl();
+            Member createdMember = memberSaveService.save(
+                MemberMapper.mapToMemberFromExcel(memberCreateRequestForExcel, encryptedPassword, profileImageUrl, agitUrl));
 
             EmailCreateRequest emailCreateRequest = EmailMapper.toEmailCreateRequest(
                 createdMember.getEmail(),

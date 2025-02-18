@@ -1,0 +1,42 @@
+= Manager - Get ManagerList API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 담당자 목록 조회
+
+=== 1. Authorization Header에 AccessToken이 없으면 조회에 실패한다.
+
+==== HTTP Request
+
+include::{snippets}/ManagerMemberApi/GetAllManagers/Failure/Case1/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/ManagerMemberApi/GetAllManagers/Failure/Case1/http-response.adoc[]
+
+=== 2. 내부 서버 오류로 인해 조회에 실패한다.
+
+==== HTTP Request
+
+include::{snippets}/ManagerMemberApi/GetAllManagers/Failure/Case2/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/ManagerMemberApi/GetAllManagers/Failure/Case2/http-response.adoc[]
+
+=== 3. 모든 담당자 목록을 조회하는데 성공한다.
+
+==== HTTP Request
+
+include::{snippets}/ManagerMemberApi/GetAllManagers/Success/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/ManagerMemberApi/GetAllManagers/Success/http-response.adoc[]
+
+==== 응답 필드 설명
+
+include::{snippets}/ManagerMemberApi/GetAllManagers/Success/response-fields.adoc[]

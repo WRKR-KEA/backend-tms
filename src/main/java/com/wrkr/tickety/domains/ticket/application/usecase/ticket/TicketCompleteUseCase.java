@@ -32,10 +32,10 @@ public class TicketCompleteUseCase {
     private final TicketUpdateService ticketUpdateService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public TicketPkResponse completeTicket(Long memberId, String ticketId) {
-        Ticket ticket = ticketGetService.getTicketByTicketId(PkCrypto.decrypt(ticketId));
-        validateTicketManager(ticket, memberId);
+    public TicketPkResponse completeTicket(Long memberId, Long ticketId) {
+        Ticket ticket = ticketGetService.getTicketByTicketId(ticketId);
         validateCompletableStatus(ticket);
+        validateTicketManager(ticket, memberId);
         Ticket completedTicket = ticketUpdateService.updateStatus(ticket, COMPLETE);
 
         updateTicketHistory(completedTicket);

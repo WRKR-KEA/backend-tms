@@ -31,6 +31,11 @@ public class MemberPersistenceAdapter {
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
     }
 
+    public Optional<Member> findByIdAndIsDeleted(final Long memberId, final boolean isDeleted) {
+        final Optional<MemberEntity> memberEntity = this.memberRepository.findByMemberIdAndIsDeleted(memberId, isDeleted);
+        return memberEntity.map(this.memberPersistenceMapper::toDomain);
+    }
+
     public Optional<Member> findByNicknameAndIsDeleted(final String nickname) {
         final Optional<MemberEntity> memberEntity = this.memberRepository.findByNicknameAndIsDeleted(nickname, false);
         return memberEntity.map(this.memberPersistenceMapper::toDomain);
@@ -52,8 +57,8 @@ public class MemberPersistenceAdapter {
         return memberEntityPage.map(this.memberPersistenceMapper::toDomain);
     }
 
-    public Boolean existsByEmail(final String email) {
-        return this.memberRepository.existsByEmail(email);
+    public Boolean existsByEmailAndIsDeleted(final String email, final Boolean isDeleted) {
+        return this.memberRepository.existsByEmailAndIsDeleted(email, isDeleted);
     }
 
     public Boolean existsByNickname(final String nickname) {
@@ -65,11 +70,5 @@ public class MemberPersistenceAdapter {
         return managers.stream()
             .map(this.memberPersistenceMapper::toDomain)
             .toList();
-    }
-
-    public Page<Member> getAllManagersPage(final ApplicationPageRequest pageRequest) {
-        Pageable pageable = pageRequest.toPageableNoSort();
-        Page<MemberEntity> managerPage = this.memberRepository.findByRoleAndIsDeletedFalse(Role.MANAGER, pageable);
-        return managerPage.map(this.memberPersistenceMapper::toDomain);
     }
 }

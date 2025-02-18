@@ -1,34 +1,30 @@
 package com.wrkr.tickety.domains.notification.listener;
 
-import com.wrkr.tickety.domains.member.application.mapper.EmailMapper;
 import com.wrkr.tickety.domains.member.domain.model.Member;
-import com.wrkr.tickety.domains.notification.domain.constant.systemComment.SystemComment;
+import com.wrkr.tickety.domains.notification.domain.constant.application.SystemComment;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketDelegateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.comment.CommentSaveService;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
-import com.wrkr.tickety.infrastructure.email.EmailCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
-@EnableAsync
 public class TicketDelegateListener {
 
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
-    private final KakaoworkMessageService kakaoworkMessageService;
+    private final KakaoworkNotificationService kakaoworkNotificationService;
     private final CommentSaveService commentSaveService;
 
     @Async
@@ -37,22 +33,19 @@ public class TicketDelegateListener {
         Member prevManager = ticketDelegateEvent.prevManager();
         Member newManager = ticketDelegateEvent.newManager();
         Ticket ticket = ticketDelegateEvent.ticket();
+        Member user = ticket.getUser();
 
-        sendAgitNotificationService.sendTicketDelegateAgitAlarm(prevManager, newManager, ticket);
+        sendAgitNotificationService.sendTicketDelegateAgitAlarmToUser(user, newManager, ticket);
+        sendAgitNotificationService.sendTicketDelegateAgitAlarmToManager(newManager, prevManager, ticket);
 
-        EmailCreateRequest emailCreateRequestToUser = EmailMapper.toEmailCreateRequest(ticket.getUser().getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT,
-                                                                                       null);
+        sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(user, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER);
+        sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(newManager, ticket, prevManager, EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER);
 
-        sendEmailNotificationService.sendDelegateTicketManagerEmailToUser(emailCreateRequestToUser, ticket, newManager, EmailConstants.TICKET_DELEGATE_TO_USER);
+        sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToUser(user, newManager, ticket);
+        sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToManager(newManager, prevManager, ticket);
 
-        EmailCreateRequest emailCreateRequestToNewManager = EmailMapper.toEmailCreateRequest(newManager.getEmail(), EmailConstants.TICKET_DELEGATE_SUBJECT,
-                                                                                             null);
-
-        sendEmailNotificationService.sendDelegateTicketManagerEmailToNewManager(emailCreateRequestToNewManager, ticket, prevManager,
-                                                                                EmailConstants.TICKET_DELEGATE_TO_NEW_MANAGER);
-
-        sendApplicationNotificationService.sendTicketDelegateApplicationNotification(prevManager, newManager, ticket);
-        kakaoworkMessageService.sendTicketDelegateKakaoworkAlarm(prevManager, newManager, ticket);
+        kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToUser(user, newManager, ticket);
+        kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToManager(newManager, prevManager, ticket);
 
         Comment systemComment = Comment.builder()
             .ticket(ticket)

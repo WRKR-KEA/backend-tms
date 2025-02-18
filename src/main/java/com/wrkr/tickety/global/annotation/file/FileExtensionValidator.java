@@ -1,6 +1,7 @@
 package com.wrkr.tickety.global.annotation.file;
 
-import com.wrkr.tickety.global.response.code.CommonErrorCode;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_FILE_EXTENSION;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,15 +17,13 @@ public class FileExtensionValidator implements ConstraintValidator<FileExtension
 
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
-        String filename = file.getOriginalFilename();
-
-        if (filename == null) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(CommonErrorCode.BAD_REQUEST.getMessage()).addConstraintViolation();
-            return false;
+        if (file == null || file.isEmpty()) {
+            return true;
         }
 
+        String filename = file.getOriginalFilename();
         String fileExtension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+
         boolean isValid = false;
 
         for (String ext : acceptedExtensions) {
@@ -36,8 +35,13 @@ public class FileExtensionValidator implements ConstraintValidator<FileExtension
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(CommonErrorCode.INVALID_FILE_EXTENSION.getMessage() +
-                    " 허용된 확장자: " + String.join(", ", acceptedExtensions))
+
+            String allowedFileExtensions = String.join(",", acceptedExtensions);
+            String errorMessage = String.format("%s (허용된 형식: %s)",
+                INVALID_FILE_EXTENSION.getMessage(),
+                allowedFileExtensions);
+
+            context.buildConstraintViolationWithTemplate(errorMessage)
                 .addConstraintViolation();
         }
 

@@ -13,7 +13,7 @@ public record ManagerTicketMainPageResponse(
     List<PinTickets> pinTickets,
 
     @Schema(description = "요청된 티켓 목록")
-    List<requestTickets> requestTickets
+    List<RequestTickets> requestTickets
 
 ) {
 
@@ -31,6 +31,12 @@ public record ManagerTicketMainPageResponse(
         @Schema(description = "티켓 제목", example = "VM 생성 요청")
         String title,
 
+        @Schema(description = "티켓 1차 카테고리", example = "VM")
+        String firstCategory,
+
+        @Schema(description = "티켓 2차 카테고리", example = "생성")
+        String secondCategory,
+
         @Schema(description = "사용자 닉네임", example = "request.er")
         String userNickname,
 
@@ -47,7 +53,7 @@ public record ManagerTicketMainPageResponse(
     }
 
     @Builder
-    public record requestTickets(
+    public record RequestTickets(
         @Schema(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw")
         String ticketId,
 
@@ -59,6 +65,12 @@ public record ManagerTicketMainPageResponse(
 
         @Schema(description = "티켓 제목", example = "VM 생성 요청")
         String title,
+
+        @Schema(description = "티켓 1차 카테고리", example = "VM")
+        String firstCategory,
+
+        @Schema(description = "티켓 2차 카테고리", example = "생성")
+        String secondCategory,
 
         @Schema(description = "사용자 닉네임", example = "request.er")
         String userNickname,

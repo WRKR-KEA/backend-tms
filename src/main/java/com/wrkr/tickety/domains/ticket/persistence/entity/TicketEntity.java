@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,7 +50,7 @@ public class TicketEntity extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String serialNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -63,6 +64,9 @@ public class TicketEntity extends BaseTimeEntity {
     @ColumnDefault("0")
     private Boolean isPinned;
 
+    @Version
+    private Integer version;
+
     @Builder
     public TicketEntity(
         Long ticketId,
@@ -73,7 +77,8 @@ public class TicketEntity extends BaseTimeEntity {
         String title,
         String content,
         TicketStatus status,
-        Boolean isPinned
+        Boolean isPinned,
+        Integer version
     ) {
         this.ticketId = ticketId;
         this.user = user;
@@ -84,7 +89,7 @@ public class TicketEntity extends BaseTimeEntity {
         this.content = content;
         this.status = status;
         this.isPinned = isPinned;
+        this.version = version;
     }
-
 }
 

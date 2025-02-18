@@ -5,14 +5,16 @@ on:
     branches:
       - develop
       - release
-    types: [ opened, synchronize, reopened ]
+    types: [ opened, synchronize, reopened, labeled ]
 
 permissions: write-all
 
 jobs:
   test_and_report:
     name: Test and Generate Jacoco Test Coverage Report
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+
+    if: contains(github.event.pull_request.labels.*.name, '✅ test')
 
     steps:
       - name: Checkout

@@ -34,6 +34,10 @@ public class CategoryGetService {
         return categoryPersistenceAdapter.findChildren(categoryId);
     }
 
+    public List<Long> getChildrenIds(Long categoryId) {
+        return categoryPersistenceAdapter.findChildrenIds(categoryId);
+    }
+
     public List<Category> getChildrenByCategoryIds(List<Long> categoryIds) {
         return categoryPersistenceAdapter.getChildrenByCategoryIds(categoryIds);
     }
@@ -64,5 +68,9 @@ public class CategoryGetService {
 
     public boolean isCategorySequenceExists(Integer seq) {
         return categoryPersistenceAdapter.isCategorySequenceExists(seq);
+    }
+
+    public boolean isParentCategory(Long categoryId) {
+        return categoryPersistenceAdapter.isParentCategory(categoryId);
     }
 }

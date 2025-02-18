@@ -1,6 +1,6 @@
 package com.wrkr.tickety.domains.ticket.domain.service.ticket;
 
-import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketPreResponse;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelPreResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
 import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -29,15 +29,15 @@ public class TicketGetService {
         return ticketPersistenceAdapter.findById(ticketId);
     }
 
-    public Page<Ticket> getTicketsByManagerFilter(Long managerId, ApplicationPageRequest pageable, TicketStatus status, String query) {
-        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query);
+    public Page<Ticket> getTicketsByManagerFilter(Long managerId, ApplicationPageRequest pageable, TicketStatus status, String query, List<Long> categoryIdList) {
+        return ticketPersistenceAdapter.findAllByManagerFilter(managerId, pageable, status, query, categoryIdList);
     }
 
     public Page<Ticket> getDepartmentTickets(String query, TicketStatus status, LocalDate startDate, LocalDate endDate, ApplicationPageRequest pageable) {
         return ticketPersistenceAdapter.findAll(query, status, startDate, endDate, pageable);
     }
 
-    public List<DepartmentTicketPreResponse> getDepartmentAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
+    public List<DepartmentTicketExcelPreResponse> getDepartmentAllTicketsNoPaging(String query, TicketStatus status, LocalDate startDate, LocalDate endDate) {
         return ticketPersistenceAdapter.findAllTicketsNoPaging(query, status, startDate, endDate);
     }
 

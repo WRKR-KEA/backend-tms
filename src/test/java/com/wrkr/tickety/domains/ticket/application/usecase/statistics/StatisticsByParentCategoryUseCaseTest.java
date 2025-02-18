@@ -81,7 +81,7 @@ class StatisticsByParentCategoryUseCaseTest {
         assertEquals(expectedDate, response.date(), "날짜는 ISO_DATE 형식이어야 합니다.");
         assertNull(response.parentCategoryId(), "부모 카테고리 ID는 null이어야 합니다.");
 
-        List<TicketCount> ticketCounts = response.statisticData().firstCategoryTicketCount();
+        List<TicketCount> ticketCounts = response.statisticData().categoryTicketCount();
         assertNotNull(ticketCounts, "티켓 수 리스트는 null이 아니어야 합니다.");
         assertEquals(parentCategoryList.size(), ticketCounts.size(), "부모 카테고리 개수와 티켓 수 리스트의 크기는 같아야 합니다.");
 
@@ -116,7 +116,7 @@ class StatisticsByParentCategoryUseCaseTest {
         assertEquals(expectedDate, response.date(), "날짜는 ISO_DATE 형식이어야 합니다.");
         assertNull(response.parentCategoryId(), "부모 카테고리 ID는 null이어야 합니다.");
 
-        List<TicketCount> ticketCounts = response.statisticData().firstCategoryTicketCount();
+        List<TicketCount> ticketCounts = response.statisticData().categoryTicketCount();
         assertNotNull(ticketCounts, "티켓 수 리스트는 null이 아니어야 합니다.");
         assertEquals(parentCategoryList.size(), ticketCounts.size(), "부모 카테고리 개수와 티켓 수 리스트의 크기는 같아야 합니다.");
 
