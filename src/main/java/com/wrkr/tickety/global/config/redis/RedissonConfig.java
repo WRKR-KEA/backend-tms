@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(name = "spring.redis.enabled", havingValue = "true", matchIfMissing = true)
 public class RedissonConfig {
 
-
     @Value("${spring.data.redis.host}")
     private String host;
 
