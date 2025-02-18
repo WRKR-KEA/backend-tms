@@ -7,13 +7,10 @@ import com.wrkr.tickety.domains.member.domain.service.MemberGetService;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.domain.service.ticket.TicketGetService;
 import com.wrkr.tickety.global.annotation.architecture.UseCase;
-import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
-import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -30,24 +27,7 @@ public class ManagerGetAllManagersUseCase {
 
         List<Ticket> inProgressTickets = ticketGetService.getManagersInProgressTickets(managerIds);
         Map<Long, Long> inProgressTicketCount = getTicketInProgressCount(inProgressTickets);
-        return MemberMapper.toManagerGetAllManagerResponse(member, memberGetService.getAllManagers(), inProgressTicketCount);
-    }
-
-    public ApplicationPageResponse<ManagerGetAllManagerResponse.Managers> getAllPageManagers(ApplicationPageRequest pageRequest) {
-        Page<Member> managerPage = memberGetService.getAllManagersPage(pageRequest);
-        List<Member> managers = managerPage.getContent();
-
-        List<Long> managerIds = managers.stream()
-            .map(Member::getMemberId)
-            .toList();
-
-        List<Ticket> inProgressTickets = ticketGetService.getManagersInProgressTickets(managerIds);
-        Map<Long, Long> inProgressTicketCount = getTicketInProgressCount(inProgressTickets);
-
-        return ApplicationPageResponse.of(
-            managerPage,
-            member -> MemberMapper.toManagerResponse(member, inProgressTicketCount)
-        );
+        return MemberMapper.toManagerGetAllManagerResponse(member, managers, inProgressTicketCount);
     }
 
     private Map<Long, Long> getTicketInProgressCount(List<Ticket> inProgressTickets) {
