@@ -2,7 +2,7 @@ package com.wrkr.tickety.domains.notification.domain.service;
 
 import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class NotificationRunner {
         SendAgitNotificationService.class, NotificationSource.AGIT,
         SendEmailNotificationService.class, NotificationSource.EMAIL,
         SendApplicationNotificationService.class, NotificationSource.SERVICE,
-        KakaoworkMessageService.class, NotificationSource.KAKAOWORK
+        KakaoworkNotificationService.class, NotificationSource.KAKAOWORK
     );
 
     @Async

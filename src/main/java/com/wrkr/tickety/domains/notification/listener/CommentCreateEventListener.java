@@ -11,7 +11,7 @@ import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotification
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.CommentCreateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -30,7 +30,7 @@ public class CommentCreateEventListener {
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
-    private final KakaoworkMessageService kakaoworkMessageService;
+    private final KakaoworkNotificationService kakaoworkNotificationService;
     private final NotificationSaveService notificationSaveService;
     private final NotificationRunner notificationRunner;
 
@@ -61,7 +61,7 @@ public class CommentCreateEventListener {
 
         notificationRunner.run(receiver, () -> sendApplicationNotificationService.sendCommentApplicationNotification(receiver, ticket));
 
-        notificationRunner.run(receiver, () -> kakaoworkMessageService.sendCommentCreateKakaoworkAlarm(receiver, ticket));
+        notificationRunner.run(receiver, () -> kakaoworkNotificationService.sendCommentCreateKakaoworkAlarm(receiver, ticket));
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }

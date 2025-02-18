@@ -12,7 +12,7 @@ import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotification
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketStatusChangeEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -32,7 +32,7 @@ public class TicketStatusChangeEventListener {
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
-    private final KakaoworkMessageService kakaoworkMessageService;
+    private final KakaoworkNotificationService kakaoworkNotificationService;
     private final CommentSaveService commentSaveService;
     private final NotificationSaveService notificationSaveService;
     private final NotificationRunner notificationRunner;
@@ -60,7 +60,8 @@ public class TicketStatusChangeEventListener {
         notificationRunner.run(member,
             () -> sendApplicationNotificationService.sendTicketStatusApplicationNotification(member, ticket, agitTicketNotificationMessageType));
 
-        notificationRunner.run(member, () -> kakaoworkMessageService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType));
+        notificationRunner.run(member,
+            () -> kakaoworkNotificationService.sendTicketStatusChangeKakaoworkAlarm(member, ticket, agitTicketNotificationMessageType));
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }

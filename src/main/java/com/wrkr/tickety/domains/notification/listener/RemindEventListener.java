@@ -11,7 +11,7 @@ import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotification
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.NotificationSaveService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.RemindEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.infrastructure.email.EmailConstants;
@@ -29,7 +29,7 @@ public class RemindEventListener {
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
-    private final KakaoworkMessageService kakaoworkMessageService;
+    private final KakaoworkNotificationService kakaoworkNotificationService;
     private final NotificationSaveService notificationSaveService;
     private final NotificationRunner notificationRunner;
 
@@ -51,7 +51,7 @@ public class RemindEventListener {
 
         notificationRunner.run(member, () -> sendApplicationNotificationService.sendRemindApplicationNotification(member, ticket));
 
-        notificationRunner.run(member, () -> kakaoworkMessageService.sendRemindKakaoworkAlarm(member, ticket));
+        notificationRunner.run(member, () -> kakaoworkNotificationService.sendRemindKakaoworkAlarm(member, ticket));
 
         notificationSaveService.save(toNotification(member.getMemberId(), member.getProfileImage(), NotificationType.REMIND, message));
     }

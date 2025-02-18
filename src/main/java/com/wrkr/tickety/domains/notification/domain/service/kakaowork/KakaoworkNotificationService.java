@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-public class KakaoworkMessageService {
+public class KakaoworkNotificationService {
 
     private final WebClient webClient;
 
@@ -28,7 +28,7 @@ public class KakaoworkMessageService {
     @Value("${kakaowork.api.app-key}")
     private String appKey;
 
-    public KakaoworkMessageService(WebClient.Builder webClientBuilder) {
+    public KakaoworkNotificationService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 

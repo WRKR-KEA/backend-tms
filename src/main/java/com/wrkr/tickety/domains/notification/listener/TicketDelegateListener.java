@@ -7,7 +7,7 @@ import com.wrkr.tickety.domains.notification.domain.service.NotificationRunner;
 import com.wrkr.tickety.domains.notification.domain.service.SendAgitNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.SendEmailNotificationService;
 import com.wrkr.tickety.domains.notification.domain.service.application.SendApplicationNotificationService;
-import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkMessageService;
+import com.wrkr.tickety.domains.notification.domain.service.kakaowork.KakaoworkNotificationService;
 import com.wrkr.tickety.domains.ticket.domain.event.TicketDelegateEvent;
 import com.wrkr.tickety.domains.ticket.domain.model.Comment;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
@@ -27,7 +27,7 @@ public class TicketDelegateListener {
     private final SendAgitNotificationService sendAgitNotificationService;
     private final SendEmailNotificationService sendEmailNotificationService;
     private final SendApplicationNotificationService sendApplicationNotificationService;
-    private final KakaoworkMessageService kakaoworkMessageService;
+    private final KakaoworkNotificationService kakaoworkNotificationService;
     private final CommentSaveService commentSaveService;
     private final NotificationRunner notificationRunner;
 
@@ -63,8 +63,8 @@ public class TicketDelegateListener {
         notificationRunner.run(newManager,
             () -> sendApplicationNotificationService.sendTicketDelegateApplicationNotificationToManager(prevManager, newManager, ticket));
 
-        notificationRunner.run(user, () -> kakaoworkMessageService.sendTicketDelegateKakaoworkAlarmToUser(newManager, ticket));
-        notificationRunner.run(newManager, () -> kakaoworkMessageService.sendTicketDelegateKakaoworkAlarmToManager(prevManager, newManager, ticket));
+        notificationRunner.run(user, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToUser(newManager, ticket));
+        notificationRunner.run(newManager, () -> kakaoworkNotificationService.sendTicketDelegateKakaoworkAlarmToManager(prevManager, newManager, ticket));
 
         Comment systemComment = Comment.builder()
             .ticket(ticket)
