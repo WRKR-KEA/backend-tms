@@ -80,7 +80,7 @@ public class ManagerTicketController {
     public ApplicationResponse<ManagerTicketDetailResponse> getManagerTicketDetail(
         @AuthenticationPrincipal Member member,
         @Parameter(description = "티켓 ID", example = "W1NMMfAHGTnNGLdRL3lvcw") @PathVariable String ticketId
-    ) {
+                                                                                  ) {
         return ApplicationResponse.onSuccess(managerTicketDetailUseCase.getManagerTicketDetail(PkCrypto.decrypt(ticketId)));
     }
 
@@ -99,7 +99,7 @@ public class ManagerTicketController {
         @RequestParam(required = false) String endDate,
         @Parameter(description = "페이징", example = "{\"page\":1,\"size\":20,\"sortType\":\"UPDATED\"}")
         ApplicationPageRequest pageRequest
-    ) {
+                                                                                                     ) {
         return ApplicationResponse.onSuccess(departmentTicketAllGetUseCase.getDepartmentTicketList(query, status, startDate, endDate, pageRequest));
     }
 
@@ -115,7 +115,7 @@ public class ManagerTicketController {
         @RequestParam(required = false) String startDate,
         @Parameter(description = "필터링 - 요청일 끝", example = "2025-01-27")
         @RequestParam(required = false) String endDate
-    ) {
+                                                    ) {
         List<DepartmentTicketExcelResponse> allTicketsNoPaging = ticketAllGetToExcelUseCase.getAllTicketsNoPaging(query, status, startDate, endDate);
 
         // TODO: 파일 이름 생성 정책 정하기
@@ -132,7 +132,7 @@ public class ManagerTicketController {
     public ApplicationResponse<List<TicketPkResponse>> approveTicket(
         @AuthenticationPrincipal Member member,
         @RequestParam(value = "ticketId") List<String> ticketId
-    ) {
+                                                                    ) {
         List<TicketPkResponse> response = ticketApproveUseCase.approveTicket(member.getMemberId(), ticketId);
         return ApplicationResponse.onSuccess(response);
     }
@@ -144,7 +144,7 @@ public class ManagerTicketController {
     public ApplicationResponse<TicketPkResponse> rejectTicket(
         @AuthenticationPrincipal Member member,
         @PathVariable(value = "ticketId") String ticketId
-    ) {
+                                                             ) {
         TicketPkResponse response = ticketRejectUseCase.rejectTicket(member.getMemberId(), PkCrypto.decrypt(ticketId));
         return ApplicationResponse.onSuccess(response);
     }
@@ -156,7 +156,7 @@ public class ManagerTicketController {
     public ApplicationResponse<TicketPkResponse> completeTicket(
         @AuthenticationPrincipal Member member,
         @PathVariable(value = "ticketId") String ticketId
-    ) {
+                                                               ) {
         TicketPkResponse response = ticketCompleteUseCase.completeTicket(member.getMemberId(), PkCrypto.decrypt(ticketId));
         return ApplicationResponse.onSuccess(response);
     }
@@ -170,11 +170,13 @@ public class ManagerTicketController {
         @Parameter(description = "티켓 상태 (REQUEST | IN_PROGRESS | COMPLETE | CANCEL | REJECT)", example = "IN_PROGRESS")
         @RequestParam(required = false) TicketStatus status,
         @Parameter(description = "검색어")
-        @RequestParam(required = false) String query
-    ) {
+        @RequestParam(required = false) String query,
+        @Parameter(description = "필터링할 카테고리 id", example = "W1NMMfAHGTnNGLdRL3lvcw")
+        @RequestParam(required = false) String categoryId
+                                                                                                      ) {
         ApplicationPageResponse<ManagerTicketAllGetResponse> response = managerTicketAllGetUseCase.getManagerTicketList(
-            member.getMemberId(), pageRequest, status, query
-        );
+            member.getMemberId(), pageRequest, status, query,
+            categoryId == null ? null : PkCrypto.decrypt(categoryId));
 
         return ApplicationResponse.onSuccess(response);
     }
@@ -188,7 +190,7 @@ public class ManagerTicketController {
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)
         @Valid @RequestBody TicketDelegateRequest request
-    ) {
+                                                               ) {
         return ApplicationResponse.onSuccess(managerTicketDelegateUseCase.delegateTicket(PkCrypto.decrypt(ticketId), member.getMemberId(), request));
     }
 
@@ -198,7 +200,7 @@ public class ManagerTicketController {
     public ApplicationResponse<ManagerPinTicketResponse> pinTicket(
         @AuthenticationPrincipal Member member,
         @RequestBody TicketPinRequest request
-    ) {
+                                                                  ) {
         return ApplicationResponse.onSuccess(managerTicketPinUseCase.pinTicket(member, request));
     }
 

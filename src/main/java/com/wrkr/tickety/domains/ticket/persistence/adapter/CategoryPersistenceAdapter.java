@@ -34,6 +34,10 @@ public class CategoryPersistenceAdapter {
             .toList();
     }
 
+    public List<Long> findChildrenIds(Long categoryId) {
+        return categoryRepository.findChildIdsByParentCategoryIdAndIsDeletedFalse(categoryId);
+    }
+
     public Category save(final Category category) {
         final CategoryEntity categoryEntity = this.categoryPersistenceMapper.toEntity(category);
         final CategoryEntity savedCategoryEntity = this.categoryRepository.save(categoryEntity);
@@ -97,5 +101,9 @@ public class CategoryPersistenceAdapter {
 
     public boolean isCategorySequenceExists(Integer seq) {
         return this.categoryRepository.existsBySeqAndIsDeletedFalse(seq);
+    }
+
+    public boolean isParentCategory(Long categoryId) {
+        return this.categoryRepository.existsByCategoryIdAndIsDeletedFalseAndParentIsNull(categoryId);
     }
 }
