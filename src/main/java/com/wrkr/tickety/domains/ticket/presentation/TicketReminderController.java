@@ -34,7 +34,7 @@ public class TicketReminderController {
         @RequestBody RemindReceiverRequest remindReceiverRequest
     ) {
         boolean response = ticketReminderUseCase.sendReminder(
-            member.getMemberId(), PkCrypto.decrypt(remindReceiverRequest.memberId()), PkCrypto.decrypt(ticketId)
+            member, PkCrypto.decrypt(remindReceiverRequest.memberId()), PkCrypto.decrypt(ticketId)
         );
         return ApplicationResponse.onSuccess(response);
     }
