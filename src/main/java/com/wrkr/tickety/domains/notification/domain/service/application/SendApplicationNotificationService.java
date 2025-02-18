@@ -19,7 +19,7 @@ public class SendApplicationNotificationService {
     public void sendTicketStatusApplicationNotification(Member member, Ticket ticket, AgitTicketNotificationMessageType agitTicketNotificationMessageType) {
         String ticketSerialNumber = ticket.getSerialNumber();
         String message = switch (agitTicketNotificationMessageType) {
-            case TICKET_APPROVED -> ApplicationNotificationMessageType.TICKET_APPROVED.format(ticketSerialNumber, ticket.getManager());
+            case TICKET_APPROVED -> ApplicationNotificationMessageType.TICKET_APPROVED.format(ticketSerialNumber, ticket.getManager().getNickname());
             case TICKET_REJECT -> ApplicationNotificationMessageType.TICKET_REJECT.format(ticketSerialNumber);
             case TICKET_FINISHED -> ApplicationNotificationMessageType.TICKET_FINISHED.format(ticketSerialNumber);
         };
