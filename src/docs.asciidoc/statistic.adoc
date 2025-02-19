@@ -1,31 +1,87 @@
-= Statistic 조회
-:doctype: book
-:icons: font
-:source-highlighter: highlightjs
-:toc: left
-:toclevels: 2
+= 담당자 - 티켓 통계 API
 
-== 대댓글 등록
+== 기간별 & 상태별 티켓 개수 조회
 
-=== 1. Authorization Header에 AccessToken이 없으면 조회에 실패한다.
-
-=== 어쩌구저쩌구
+=== 1. 월간 티켓 상태별 통계 조회에 성공한다.
 
 HTTP Request
 
-include::{snippets}/Statistics/Request/Failure/Case1/http-request.adoc[]
+include::{snippets}/Statistics/GetTicketStatistics/Success/Monthly/http-request.adoc[]
 
 HTTP Response
 
-include::{snippets}/Statistics/Request/Failure/Case1/http-response.adoc[]
-include::{snippets}/Statistics/Request/Failure/Case1/response-fields.adoc[]
+include::{snippets}/Statistics/GetTicketStatistics/Success/Monthly/http-response.adoc[]
+include::{snippets}/Statistics/GetTicketStatistics/Success/Monthly/response-fields.adoc[]
 
-==== 2. 조회에 성공한다. 어쩌구저쩌구
+=== 2. 일간 티켓 상태별 통계 조회에 성공한다.
 
 HTTP Request
 
-include::{snippets}/Statistics/Request/Failure/Case1/http-request.adoc[]
+include::{snippets}/Statistics/GetTicketStatistics/Success/Daily/http-request.adoc[]
 
 HTTP Response
 
-include::{snippets}/Statistics/Request/Failure/Case1/http-response.adoc[]
+include::{snippets}/Statistics/GetTicketStatistics/Success/Daily/http-response.adoc[]
+include::{snippets}/Statistics/GetTicketStatistics/Success/Daily/response-fields.adoc[]
+
+=== 3. 올바르지 않은 StatisticsType이 들어올 경우 예외가 발생한다.
+
+HTTP Request
+
+include::{snippets}/Statistics/GetTicketStatistics/Failure/InvalidStatisticsType/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/Statistics/GetTicketStatistics/Failure/InvalidStatisticsType/http-response.adoc[]
+include::{snippets}/Statistics/GetTicketStatistics/Failure/InvalidStatisticsType/response-fields.adoc[]
+
+== 상세 내용
+
+=== 월간 티켓 상태별 통계 조회 성공
+
+- **API URL**: `/api/manager/statistics/count`
+- **Method**: GET
+- **Parameters**:
+- `date`: 조회 기준 날짜 (예: `2025-01`)
+- `type`: 통계 유형 (`MONTHLY`)
+- `status`: 티켓 상태 (`REQUEST`)
+- **Response**:
+- `isSuccess`: 응답 성공 여부
+- `code`: 응답 코드
+- `message`: 응답 메시지
+- `result.baseDate`: 조회 기준 날짜
+- `result.countList`: 티켓 개수 리스트
+- `targetDate`: 시간 (0~23)
+- `count`: 해당 시간의 티켓 개수
+
+=== 일간 티켓 상태별 통계 조회 성공
+
+- **API URL**: `/api/manager/statistics/count`
+- **Method**: GET
+- **Parameters**:
+- `date`: 조회 기준 날짜 (예: `2025-01-01`)
+- `type`: 통계 유형 (`DAILY`)
+- `status`: 티켓 상태 (`REQUEST`)
+- **Response**:
+- `isSuccess`: 응답 성공 여부
+- `code`: 응답 코드
+- `message`: 응답 메시지
+- `result.baseDate`: 조회 기준 날짜
+- `result.countList`: 티켓 개수 리스트
+- `targetDate`: 시간 (0~23)
+- `count`: 해당 시간의 티켓 개수
+
+=== 올바르지 않은 StatisticsType이 들어올 경우 예외 처리
+
+- **API URL**: `/api/manager/statistics/count`
+- **Method**: GET
+- **Parameters**:
+- `date`: 조회 기준 날짜 (예: `2025-01`)
+- `type`: 통계 유형 (올바르지 않은 값: `INVALID_TYPE`)
+- `status`: 티켓 상태 (`REQUEST`)
+- **Response**:
+- `type`: 실패 타입
+- `title`: 오류 제목
+- `status`: 응답 코드
+- `detail`: 응답 메시지 상세
+- `instance`: API 경로

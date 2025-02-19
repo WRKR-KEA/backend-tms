@@ -13,53 +13,53 @@
 
 HTTP Request
 
-include::{snippets}/AdminMember/createMember/Request/Success/http-request.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Success/request-parts.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Success/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Success/http-request.adoc[]
+include::{snippets}/AdminMember/createMember/Success/request-parts.adoc[]
+include::{snippets}/AdminMember/createMember/Success/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/createMember/Request/Success/http-response.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Success/response-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Success/http-response.adoc[]
+include::{snippets}/AdminMember/createMember/Success/response-fields.adoc[]
 
 === 2. 이미 사용 중인 이메일로 등록을 시도할 경우, ALREADY_EXIST_EMAIL 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateEmail/http-request.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateEmail/request-parts.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateEmail/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateEmail/http-request.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateEmail/request-parts.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateEmail/request-part-request-fields.adoc[]
 
 HTTP Response
 
 include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateEmail/http-response.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateEmail/response-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateEmail/response-fields.adoc[]
 
 === 3. 이미 사용 중인 아이디(닉네임)로 등록을 시도할 경우, ALREADY_EXIST_NICKNAME 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateNickname/http-request.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateNickname/request-parts.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateNickname/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateNickname/http-request.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateNickname/request-parts.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateNickname/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateNickname/http-response.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/DuplicateNickname/response-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateNickname/http-response.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/DuplicateNickname/response-fields.adoc[]
 
 === 4. 잘못된 입력 값으로 인해 BAD_REQUEST 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/createMember/Request/Failure/BadRequest/http-request.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/BadRequest/request-parts.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/BadRequest/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/BadRequest/http-request.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/BadRequest/request-parts.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/BadRequest/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/createMember/Request/Failure/BadRequest/http-response.adoc[]
-include::{snippets}/AdminMember/createMember/Request/Failure/BadRequest/response-fields.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/BadRequest/http-response.adoc[]
+include::{snippets}/AdminMember/createMember/Failure/BadRequest/response-fields.adoc[]
 
 == 관리자 - 회원 정보 수정 API
 
@@ -67,79 +67,79 @@ include::{snippets}/AdminMember/createMember/Request/Failure/BadRequest/response
 
 HTTP Request
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Success/http-request.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Success/request-parts.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Success/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Success/http-request.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Success/request-parts.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Success/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Success/http-response.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Success/response-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Success/http-response.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Success/response-fields.adoc[]
 
 === 2. 회원 정보 수정 시 잘못된 입력 값으로 인해 BAD_REQUEST 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/BadRequest/http-request.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/BadRequest/request-parts.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/BadRequest/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/BadRequest/http-request.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/BadRequest/request-parts.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/BadRequest/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/BadRequest/http-response.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/BadRequest/response-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/BadRequest/http-response.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/BadRequest/response-fields.adoc[]
 
 === 3. 존재하지 않는 회원 ID로 수정 요청 시 MEMBER_NOT_FOUND 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/MemberNotFound/http-request.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/MemberNotFound/request-parts.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/MemberNotFound/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/MemberNotFound/http-request.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/MemberNotFound/request-parts.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/MemberNotFound/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/MemberNotFound/http-response.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/MemberNotFound/response-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/MemberNotFound/http-response.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/MemberNotFound/response-fields.adoc[]
 
 === 4. 이메일이 이미 사용 중일 경우 ALREADY_EXIST_EMAIL 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/EmailDuplicate/http-request.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/EmailDuplicate/request-parts.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/EmailDuplicate/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/EmailDuplicate/http-request.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/EmailDuplicate/request-parts.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/EmailDuplicate/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/EmailDuplicate/http-response.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/EmailDuplicate/response-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/EmailDuplicate/http-response.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/EmailDuplicate/response-fields.adoc[]
 
 === 5. 닉네임이 이미 사용 중일 경우 ALREADY_EXIST_NICKNAME 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/DuplicateNickname/http-request.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/DuplicateNickname/request-parts.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/DuplicateNickname/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/DuplicateNickname/http-request.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/DuplicateNickname/request-parts.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/DuplicateNickname/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/DuplicateNickname/http-response.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/DuplicateNickname/response-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/DuplicateNickname/http-response.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/DuplicateNickname/response-fields.adoc[]
 
 === 6. 권한이 ADMIN인 회원의 정보를 수정하려고 할 때 PERMISSION_DENIED 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/PermissionDenied/http-request.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/PermissionDenied/request-parts.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/PermissionDenied/request-part-request-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/PermissionDenied/http-request.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/PermissionDenied/request-parts.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/PermissionDenied/request-part-request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/PermissionDenied/http-response.adoc[]
-include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/PermissionDenied/response-fields.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/PermissionDenied/http-response.adoc[]
+include::{snippets}/AdminMember/modifyMemberInfo/Failure/PermissionDenied/response-fields.adoc[]
 
 == 관리자 - 회원 삭제 API
 
@@ -147,37 +147,37 @@ include::{snippets}/AdminMember/modifyMemberInfo/Request/Failure/PermissionDenie
 
 HTTP Request
 
-include::{snippets}/AdminMember/softDeleteMember/Request/Success/http-request.adoc[]
-include::{snippets}/AdminMember/softDeleteMember/Request/Success/request-fields.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Success/http-request.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Success/request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/softDeleteMember/Request/Success/http-response.adoc[]
-include::{snippets}/AdminMember/softDeleteMember/Request/Success/response-fields.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Success/http-response.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Success/response-fields.adoc[]
 
 === 2. 존재하지 않는 회원을 삭제하려고 할 경우 MEMBER_NOT_FOUND 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/MemberNotFound/http-request.adoc[]
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/MemberNotFound/request-fields.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/MemberNotFound/http-request.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/MemberNotFound/request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/MemberNotFound/http-response.adoc[]
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/MemberNotFound/response-fields.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/MemberNotFound/http-response.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/MemberNotFound/response-fields.adoc[]
 
 === 3. 삭제하려는 회원이 ADMIN인 경우 PERMISSION_DENIED 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/PermissionDenied/http-request.adoc[]
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/PermissionDenied/request-fields.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/PermissionDenied/http-request.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/PermissionDenied/request-fields.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/PermissionDenied/http-response.adoc[]
-include::{snippets}/AdminMember/softDeleteMember/Request/Failure/PermissionDenied/response-fields.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/PermissionDenied/http-response.adoc[]
+include::{snippets}/AdminMember/softDeleteMember/Failure/PermissionDenied/response-fields.adoc[]
 
 == 회원 정보 조회
 
@@ -185,20 +185,47 @@ include::{snippets}/AdminMember/softDeleteMember/Request/Failure/PermissionDenie
 
 HTTP Request
 
-include::{snippets}/AdminMember/getMemberInfo/Request/Success/http-request.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Success/http-request.adoc[]
 
 HTTP Response
 
-include::{snippets}/AdminMember/getMemberInfo/Request/Success/http-response.adoc[]
-include::{snippets}/AdminMember/getMemberInfo/Request/Success/response-fields.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Success/http-response.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Success/response-fields.adoc[]
 
 === 2. 존재하지 않는 회원 ID로 요청할 경우 MEMBER_NOT_FOUND 예외가 발생한다.
 
 HTTP Request
 
-include::{snippets}/AdminMember/getMemberInfo/Request/Failure/MemberNotFound/http-request.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Failure/MemberNotFound/http-request.adoc[]
 
 HTTP Response
+
+include::{snippets}/AdminMember/getMemberInfo/Failure/MemberNotFound/http-response.adoc[]
+include::{snippets}/AdminMember/getMemberInfo/Failure/MemberNotFound/response-fields.adoc[]
+
+== 회원 전체 조회 및 검색
+
+=== 1. 유효한 요청으로 회원 정보를 성공적으로 조회한다.
+
+HTTP Request
+
+include::{snippets}/AdminMember/searchMemberInfo/Success/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/AdminMember/searchMemberInfo/Success/http-response.adoc[]
+include::{snippets}/AdminMember/searchMemberInfo/Success/response-fields.adoc[]
+
+=== 2. 필터링 기준을 ADMIN으로 요청 시 METHOD_ARGUMENT_NOT_VALID 예외를 발생시킨다.
+
+HTTP Request
+
+include::{snippets}/AdminMember/searchMemberInfo/Failure/AdminRoleNotAllowed/http-request.adoc[]
+
+HTTP Response
+
+include::{snippets}/AdminMember/searchMemberInfo/Failure/AdminRoleNotAllowed/http-response.adoc[]
+include::{snippets}/AdminMember/searchMemberInfo/Failure/AdminRoleNotAllowed/response-fields.adoc[]
 
 include::{snippets}/AdminMember/getMemberInfo/Request/Failure/MemberNotFound/http-response.adoc[]
 include::{snippets}/AdminMember/getMemberInfo/Request/Failure/MemberNotFound/response-fields.adoc[]
