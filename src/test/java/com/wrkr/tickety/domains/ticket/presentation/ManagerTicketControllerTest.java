@@ -6,6 +6,7 @@ import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_IN_PRO
 import static com.wrkr.tickety.common.fixture.ticket.TicketFixture.TICKET_REQUEST_01;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -21,6 +22,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,10 +34,12 @@ import com.wrkr.tickety.domains.member.domain.model.Member;
 import com.wrkr.tickety.domains.member.exception.MemberErrorCode;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketDelegateRequest;
 import com.wrkr.tickety.domains.ticket.application.dto.request.ticket.TicketPinRequest;
+import com.wrkr.tickety.domains.ticket.application.dto.response.ManagerTicketAllGetResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.TicketPkResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerPinTicketResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse;
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.ManagerTicketMainPageResponse.RequestTickets;
+import com.wrkr.tickety.domains.ticket.application.mapper.TicketMapper;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.DepartmentTicketAllGetUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerGetMainUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.ManagerTicketAllGetUseCase;
@@ -46,15 +50,23 @@ import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketAllGetTo
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketApproveUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketCompleteUseCase;
 import com.wrkr.tickety.domains.ticket.application.usecase.ticket.TicketRejectUseCase;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
+import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
+import com.wrkr.tickety.domains.ticket.domain.model.Category;
 import com.wrkr.tickety.domains.ticket.domain.model.Ticket;
 import com.wrkr.tickety.domains.ticket.exception.TicketErrorCode;
 import com.wrkr.tickety.global.annotation.WithMockCustomUser;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
 import com.wrkr.tickety.global.utils.PkCrypto;
 import com.wrkr.tickety.global.utils.excel.ExcelUtil;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -66,9 +78,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -80,46 +97,33 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 class ManagerTicketControllerTest {
 
     private static final Logger log = LoggerFactory.getLogger(ManagerTicketControllerTest.class);
-
+    private final static Long TICKET_ID = 1L;
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockitoBean
     private ManagerTicketDelegateUseCase managerTicketDelegateUseCase;
-
     @MockitoBean
     private ManagerTicketDetailUseCase managerTicketDetailUseCase;
-
     @MockitoBean
     private TicketApproveUseCase ticketApproveUseCase;
-
     @MockitoBean
     private TicketRejectUseCase ticketRejectUseCase;
-
     @MockitoBean
     private TicketCompleteUseCase ticketCompleteUseCase;
-
     @MockitoBean
     private DepartmentTicketAllGetUseCase departmentTicketAllGetUseCase;
-
     @MockitoBean
     private ManagerTicketAllGetUseCase managerTicketAllGetUseCase;
-
     @MockitoBean
     private ManagerTicketPinUseCase managerTicketPinUseCase;
-
     @MockitoBean
     private TicketAllGetToExcelUseCase ticketAllGetToExcelUseCase;
-
     @MockitoBean
     private ExcelUtil excelUtil;
-
     @MockitoBean
     private ManagerGetMainUseCase managerGetMainUseCase;
-
     @MockitoBean
     private JwtUtils jwtUtils;
 
@@ -128,8 +132,6 @@ class ManagerTicketControllerTest {
         PkCrypto pkCrypto = new PkCrypto("AES", "1234567890123456");
         pkCrypto.init();
     }
-
-    private final static Long TICKET_ID = 1L;
 
     @Nested
     @DisplayName("담당자 변경 API [PATCH /api/manager/tickets/{ticketId}/delegate]")
@@ -297,16 +299,16 @@ class ManagerTicketControllerTest {
 //                        ),
                         pathParameters(
                             parameterWithName("ticketId").description("완료할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지"),
-                            fieldWithPath("result").description("반환 결과"),
+                            fieldWithPath("result").description("완료한 티켓 정보"),
                             fieldWithPath("result.ticketId").description("완료한 티켓 ID(PK)")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -328,7 +330,7 @@ class ManagerTicketControllerTest {
             mockMvc.perform(requestBuilder)
                 .andExpect(
                     status().isUnauthorized()
-                )
+                          )
                 .andDo(
                     document(
                         "ManagerTicketApi/Complete/Failure/Case1",
@@ -336,14 +338,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("완료할 티켓 ID(PK)")
-                        )
+                                      )
 //                        responseFields(
 //                            fieldWithPath("isSuccess").description("성공 여부"),
 //                            fieldWithPath("code").description("커스텀 예외 코드"),
 //                            fieldWithPath("message").description("예외 메시지")
 //                        )
-                    )
-                );
+                            )
+                      );
         }
 
         @Test
@@ -374,7 +376,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Complete/Failure/Case2",
@@ -382,14 +384,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("완료할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -418,7 +420,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Complete/Failure/Case3",
@@ -426,14 +428,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("완료할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -463,7 +465,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Complete/Failure/Case4",
@@ -471,14 +473,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("완료할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
     }
 
@@ -514,16 +516,16 @@ class ManagerTicketControllerTest {
 //                        ),
                         queryParameters(
                             parameterWithName("ticketId").description("승인할 티켓 ID(PK) 리스트")
-                        ),
+                                       ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지"),
                             fieldWithPath("result").description("반환 결과"),
                             fieldWithPath("result[].ticketId").description("승인된 티켓의 ID(PK) 리스트")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -546,7 +548,7 @@ class ManagerTicketControllerTest {
             mockMvc.perform(requestBuilder)
                 .andExpect(
                     status().isUnauthorized()
-                )
+                          )
                 .andDo(
                     document(
                         "ManagerTicketApi/Approve/Failure/Case1",
@@ -554,14 +556,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                             parameterWithName("ticketId").description("승인할 티켓 ID(PK) 리스트")
-                        )
+                                       )
 //                        responseFields(
 //                            fieldWithPath("isSuccess").description("성공 여부"),
 //                            fieldWithPath("code").description("커스텀 예외 코드"),
 //                            fieldWithPath("message").description("예외 메시지")
 //                        )
-                    )
-                );
+                            )
+                      );
         }
 
         @Test
@@ -594,7 +596,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Approve/Failure/Case2",
@@ -602,14 +604,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                             parameterWithName("ticketId").description("승인할 티켓 ID(PK) 리스트")
-                        ),
+                                       ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -640,7 +642,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Approve/Failure/Case3",
@@ -648,14 +650,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                             parameterWithName("ticketId").description("승인할 티켓 ID(PK) 리스트")
-                        ),
+                                       ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -688,7 +690,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Approve/Failure/Case4",
@@ -696,14 +698,169 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                             parameterWithName("ticketId").description("승인할 티켓 ID(PK) 리스트")
-                        ),
+                                       ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
+        }
+    }
+
+    @Nested
+    class managerTicketAllGetTest {
+
+        static List<Ticket> ticketList;
+
+        @BeforeAll
+        static void setUp() {
+            Category parent = Category.builder().categoryId(1L).name("parent").build();
+            Category category = Category.builder().categoryId(1L).name("category").parent(parent).build();
+            Member user = Member.builder().memberId(1L).nickname("user.hjw").build();
+
+            ticketList = new ArrayList<>();
+            ticketList.add(Ticket.builder().ticketId(1L).category(category).serialNumber("1").title("title").content("content").status(TicketStatus.IN_PROGRESS)
+                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
+            ticketList.add(Ticket.builder().ticketId(2L).category(category).serialNumber("2").title("title").content("content").status(TicketStatus.IN_PROGRESS)
+                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
+            ticketList.add(Ticket.builder().ticketId(3L).category(category).serialNumber("3").title("title").content("content").status(TicketStatus.IN_PROGRESS)
+                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
+            ticketList.add(Ticket.builder().ticketId(4L).category(category).serialNumber("4").title("title").content("content").status(TicketStatus.IN_PROGRESS)
+                .isPinned(true).user(user).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
+        }
+
+        @Test
+        @DisplayName("담당자가 담당하고 있는 티켓 목록을 조회한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "thama.kakao", memberId = 11L)
+        void testGetManagerTickets() throws Exception {
+            //given
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Member member = (Member) authentication.getPrincipal();
+            Function<Ticket, ManagerTicketAllGetResponse> converter = TicketMapper::toManagerTicketAllGetResponse;
+            PageRequest pageRequest = PageRequest.of(0, 20);
+            ApplicationPageRequest applicationPageRequest = new ApplicationPageRequest(1, 20, SortType.NEWEST);
+            Page<Ticket> page = new PageImpl<>(ticketList, pageRequest, ticketList.size());
+            ApplicationPageResponse<ManagerTicketAllGetResponse> dummyPageResponse = ApplicationPageResponse.of(page, converter);
+
+            given(managerTicketAllGetUseCase.getManagerTicketList(member.getMemberId(), applicationPageRequest, TicketStatus.IN_PROGRESS, "query",null))
+                .willReturn(dummyPageResponse);
+
+            //when & then
+            mockMvc.perform(get("/api/manager/tickets")
+                    .queryParam("status", TicketStatus.IN_PROGRESS.name())
+                    .queryParam("query", "query")
+                    .queryParam("page", "1")
+                    .queryParam("size", "20")
+                    .queryParam("sortType", SortType.NEWEST.name())
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andExpect(jsonPath("$.result.elements").isArray())
+                .andDo(document("ManagerTicketApi/GetManagerTickets/success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                            parameterWithName("status").description("티켓 상태"),
+                            parameterWithName("query").description("검색어"),
+                            parameterWithName("page").description("페이지 번호"),
+                            parameterWithName("size").description("페이지 크기"),
+                            parameterWithName("sortType").description("정렬 타입 (NEWEST | OLDEST | UPDATED)")
+                                       ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("응답 코드"),
+                            fieldWithPath("message").description("응답 메시지"),
+                            fieldWithPath("result").description("응답 결과"),
+                            fieldWithPath("result.elements").description("티켓 목록"),
+                            fieldWithPath("result.elements[].id").description("티켓 ID"),
+                            fieldWithPath("result.elements[].serialNumber").description("티켓 일련번호"),
+                            fieldWithPath("result.elements[].title").description("티켓 제목"),
+                            fieldWithPath("result.elements[].firstCategory").description("1차 카테고리"),
+                            fieldWithPath("result.elements[].secondCategory").description("2차 카테고리"),
+                            fieldWithPath("result.elements[].status").description("티켓 상태"),
+                            fieldWithPath("result.elements[].requesterNickname").description("요청자 닉네임"),
+                            fieldWithPath("result.elements[].createdAt").description("생성일"),
+                            fieldWithPath("result.elements[].updatedAt").description("수정일"),
+                            fieldWithPath("result.elements[].isPinned").description("고정 여부"),
+                            fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                            fieldWithPath("result.totalPages").description("전체 페이지 수"),
+                            fieldWithPath("result.totalElements").description("전체 티켓 수"),
+                            fieldWithPath("result.size").description("페이지 크기")
+                                      )
+                               )
+                      );
+        }
+
+        @Test
+        @DisplayName("페이지에 문자값이 입력되었을 때 예외를 반환한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "thama.kakao", memberId = 11L)
+        void testGetManagerTicketsWhenInvalidPage() throws Exception {
+            //when & then
+            mockMvc.perform(get("/api/manager/tickets")
+                    .queryParam("status", TicketStatus.IN_PROGRESS.name())
+                    .queryParam("query", "query")
+                    .queryParam("page", "dfaesf")
+                    .queryParam("size", "20")
+                    .queryParam("sortType", SortType.NEWEST.name())
+                    .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.isSuccess").value(false))
+                .andDo(document("ManagerTicketApi/GetManagerTickets/failure/case1",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                            parameterWithName("status").description("티켓 상태"),
+                            parameterWithName("query").description("검색어"),
+                            parameterWithName("page").description("페이지 번호"),
+                            parameterWithName("size").description("페이지 크기"),
+                            parameterWithName("sortType").description("정렬 타입 (NEWEST | OLDEST | UPDATED)")
+                                       ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("응답 코드"),
+                            fieldWithPath("message").description("응답 메시지(잘못된 요청입니다.)"),
+                            fieldWithPath("result").description("응답 결과"),
+                            fieldWithPath("result.page").description("오류 메세지(Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer')")
+                                      )
+                               )
+                      );
+        }
+
+        @Test
+        @DisplayName("목록 크기로 문자값이 입력되었을 때 예외를 반환한다.")
+        @WithMockCustomUser(username = "manager", role = Role.MANAGER, nickname = "thama.kakao", memberId = 11L)
+        void testGetManagerTicketsWhenInvalidSize() throws Exception {
+            //when & then
+            mockMvc.perform(get("/api/manager/tickets")
+                    .queryParam("status", TicketStatus.IN_PROGRESS.name())
+                    .queryParam("query", "query")
+                    .queryParam("page", "1")
+                    .queryParam("size", "dfaesf")
+                    .queryParam("sortType", SortType.NEWEST.name())
+                    .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.isSuccess").value(false))
+                .andDo(document("ManagerTicketApi/GetManagerTickets/failure/case2",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                            parameterWithName("status").description("티켓 상태"),
+                            parameterWithName("query").description("검색어"),
+                            parameterWithName("page").description("페이지 번호"),
+                            parameterWithName("size").description("페이지 크기"),
+                            parameterWithName("sortType").description("정렬 타입 (NEWEST | OLDEST | UPDATED)")
+                                       ),
+                        responseFields(
+                            fieldWithPath("isSuccess").description("성공 여부"),
+                            fieldWithPath("code").description("응답 코드"),
+                            fieldWithPath("message").description("응답 메시지(잘못된 요청입니다.)"),
+                            fieldWithPath("result").description("응답 결과"),
+                            fieldWithPath("result.size").description("오류 메세지(Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer')")
+                                      )
+                               )
+                      );
         }
     }
 
@@ -738,16 +895,16 @@ class ManagerTicketControllerTest {
 //                        ),
                         pathParameters(
                             parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지"),
                             fieldWithPath("result").description("반환 결과"),
                             fieldWithPath("result.ticketId").description("반려한 티켓 ID(PK)")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -769,7 +926,7 @@ class ManagerTicketControllerTest {
             mockMvc.perform(requestBuilder)
                 .andExpect(
                     status().isUnauthorized()
-                )
+                          )
                 .andDo(
                     document(
                         "ManagerTicketApi/Reject/Failure/Case1",
@@ -777,14 +934,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
-                        )
+                                      )
 //                        responseFields(
 //                            fieldWithPath("isSuccess").description("성공 여부"),
 //                            fieldWithPath("code").description("커스텀 예외 코드"),
 //                            fieldWithPath("message").description("예외 메시지")
 //                        )
-                    )
-                );
+                            )
+                      );
         }
 
         @Test
@@ -815,7 +972,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Reject/Failure/Case2",
@@ -823,14 +980,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -859,7 +1016,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Reject/Failure/Case3",
@@ -867,14 +1024,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("반려할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -904,7 +1061,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Reject/Failure/Case4",
@@ -912,14 +1069,14 @@ class ManagerTicketControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                             parameterWithName("ticketId").description("완료할 티켓 ID(PK)")
-                        ),
+                                      ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
     }
 
@@ -961,9 +1118,9 @@ class ManagerTicketControllerTest {
                             parameterWithName("status").description("상태"),
                             parameterWithName("startDate").description("시작 날짜"),
                             parameterWithName("endDate").description("종료 날짜")
-                        )
-                    )
-                );
+                                       )
+                            )
+                      );
         }
 
         @Test
@@ -993,7 +1150,7 @@ class ManagerTicketControllerTest {
             mockMvc.perform(requestBuilder)
                 .andExpect(
                     status().isUnauthorized()
-                )
+                          )
                 .andDo(
                     document(
                         "ManagerTicketApi/Excel/Failure/Case1",
@@ -1004,9 +1161,9 @@ class ManagerTicketControllerTest {
                             parameterWithName("status").description("상태"),
                             parameterWithName("startDate").description("시작 날짜"),
                             parameterWithName("endDate").description("종료 날짜")
-                        )
-                    )
-                );
+                                       )
+                            )
+                      );
         }
 
         @Test
@@ -1043,7 +1200,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Excel/Failure/Case2",
@@ -1054,14 +1211,14 @@ class ManagerTicketControllerTest {
                             parameterWithName("status").description("상태"),
                             parameterWithName("startDate").description("시작 날짜"),
                             parameterWithName("endDate").description("종료 날짜")
-                        ),
+                                       ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
 
         @Test
@@ -1098,7 +1255,7 @@ class ManagerTicketControllerTest {
                     jsonPath("$.code").value(expectedError.getCustomCode()),
                     jsonPath("$.message").exists(),
                     jsonPath("$.message").value(expectedError.getMessage())
-                )
+                             )
                 .andDo(
                     document(
                         "ManagerTicketApi/Excel/Failure/Case3",
@@ -1109,14 +1266,14 @@ class ManagerTicketControllerTest {
                             parameterWithName("status").description("상태"),
                             parameterWithName("startDate").description("시작 날짜"),
                             parameterWithName("endDate").description("종료 날짜")
-                        ),
+                                       ),
                         responseFields(
                             fieldWithPath("isSuccess").description("성공 여부"),
                             fieldWithPath("code").description("커스텀 예외 코드"),
                             fieldWithPath("message").description("예외 메시지")
-                        )
-                    )
-                );
+                                      )
+                            )
+                      );
         }
     }
 
@@ -1153,8 +1310,8 @@ class ManagerTicketControllerTest {
                         fieldWithPath("result").description("메인 페이지 티켓 목록"),
                         fieldWithPath("result.pinTickets").description("고정된 티켓 목록"),
                         fieldWithPath("result.requestTickets").description("요청된 티켓 목록")
-                    )
-                ));
+                                  )
+                               ));
         }
 
         @Test
@@ -1169,7 +1326,7 @@ class ManagerTicketControllerTest {
                     "ManagerTicketApi/GetMain/Failure/Unauthorized",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint())
-                ));
+                               ));
         }
     }
 
@@ -1364,8 +1521,8 @@ class ManagerTicketControllerTest {
                         fieldWithPath("code").description("응답 코드"),
                         fieldWithPath("message").description("응답 메시지"),
                         fieldWithPath("result").description("고정된 티켓 목록")
-                    )
-                ));
+                                  )
+                               ));
         }
 
         @Test
@@ -1380,7 +1537,7 @@ class ManagerTicketControllerTest {
                     "ManagerTicketApi/GetMainPins/Failure/Unauthorized",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint())
-                ));
+                               ));
         }
     }
 
@@ -1412,8 +1569,8 @@ class ManagerTicketControllerTest {
                         fieldWithPath("code").description("응답 코드"),
                         fieldWithPath("message").description("응답 메시지"),
                         fieldWithPath("result").description("요청된 티켓 목록")
-                    )
-                ));
+                                  )
+                               ));
         }
 
         @Test
@@ -1428,8 +1585,7 @@ class ManagerTicketControllerTest {
                     "ManagerTicketApi/GetMainRequests/Failure/Unauthorized",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint())
-                ));
+                               ));
         }
     }
-
 }

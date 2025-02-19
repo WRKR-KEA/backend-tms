@@ -190,7 +190,6 @@ public class AdminMemberController {
         return ApplicationResponse.onSuccess(memberInfoDTO);
     }
 
-    // TODO: ConstraintViolationException 제대로 처리되지 않는 문제 해결 필요
     @CustomErrorCodes(commonErrorCodes = {METHOD_ARGUMENT_NOT_VALID})
     @Operation(summary = "관리자 - 회원 정보 목록 조회 및 검색(페이징)", description = "회원 정보 목록을 페이징으로 조회합니다.")
     @Parameters({

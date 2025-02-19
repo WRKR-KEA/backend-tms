@@ -4,6 +4,7 @@ import static com.wrkr.tickety.global.response.code.CommonErrorCode.EXCEED_MAX_F
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.FILE_NOT_UPLOAD;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INTERNAL_SERVER_ERROR;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_EXCEL_EXTENSION;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.INVALID_EXCEL_FORMAT;
 
 import com.wrkr.tickety.domains.ticket.application.dto.response.ticket.DepartmentTicketExcelResponse;
 import com.wrkr.tickety.domains.ticket.domain.constant.TicketStatus;
@@ -91,8 +92,8 @@ public class ExcelUtil {
                 }
             });
 
-        if (!excelHeaders.keySet().containsAll(classHeaders)) {
-            throw new ApplicationException(INTERNAL_SERVER_ERROR);
+        if (!excelHeaders.keySet().equals(classHeaders)) {
+            throw ApplicationException.from(INVALID_EXCEL_FORMAT);
         }
 
         return excelHeaders;

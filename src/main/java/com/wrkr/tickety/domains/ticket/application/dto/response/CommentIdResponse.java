@@ -3,7 +3,6 @@ package com.wrkr.tickety.domains.ticket.application.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-// TODO: PkResponse로 변경
 @Builder
 public record CommentIdResponse(
 

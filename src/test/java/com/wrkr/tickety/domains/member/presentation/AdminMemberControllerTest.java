@@ -1,6 +1,9 @@
 package com.wrkr.tickety.domains.member.presentation;
 
 import static com.wrkr.tickety.common.fixture.member.UserFixture.ADMIN_A;
+import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_A;
+import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_B;
+import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_C;
 import static com.wrkr.tickety.common.fixture.member.UserFixture.USER_J;
 import static com.wrkr.tickety.domains.auth.exception.AuthErrorCode.PERMISSION_DENIED;
 import static com.wrkr.tickety.domains.member.domain.constant.Role.ADMIN;
@@ -15,8 +18,10 @@ import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.INVALID_ROLE;
 import static com.wrkr.tickety.domains.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.wrkr.tickety.global.response.code.CommonErrorCode.BAD_REQUEST;
+import static com.wrkr.tickety.global.response.code.CommonErrorCode.METHOD_ARGUMENT_NOT_VALID;
 import static com.wrkr.tickety.global.response.code.SuccessCode.SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -46,6 +51,7 @@ import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateReque
 import com.wrkr.tickety.domains.member.application.dto.request.MemberCreateRequestForExcel;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberDeleteRequest;
 import com.wrkr.tickety.domains.member.application.dto.request.MemberInfoUpdateRequest;
+import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoPreviewResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberInfoResponse;
 import com.wrkr.tickety.domains.member.application.dto.response.MemberPkResponse;
 import com.wrkr.tickety.domains.member.application.mapper.MemberMapper;
@@ -57,7 +63,10 @@ import com.wrkr.tickety.domains.member.application.usecase.MemberInfoSearchUseCa
 import com.wrkr.tickety.domains.member.application.usecase.MemberInfoUpdateUseCase;
 import com.wrkr.tickety.domains.member.domain.constant.Role;
 import com.wrkr.tickety.domains.member.domain.model.Member;
+import com.wrkr.tickety.domains.ticket.domain.constant.SortType;
 import com.wrkr.tickety.global.annotation.WithMockCustomUser;
+import com.wrkr.tickety.global.common.dto.ApplicationPageRequest;
+import com.wrkr.tickety.global.common.dto.ApplicationPageResponse;
 import com.wrkr.tickety.global.config.security.jwt.JwtUtils;
 import com.wrkr.tickety.global.exception.ApplicationException;
 import com.wrkr.tickety.global.response.code.CommonErrorCode;
@@ -191,7 +200,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.memberId").value(encryptedMemberId)
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Success",
+                    "AdminMember/createMember/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -273,7 +282,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.nickname").value(INVALID_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Failure/BadRequest",
+                    "AdminMember/createMember/Failure/BadRequest",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -359,7 +368,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_EMAIL.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Failure/DuplicateEmail",
+                    "AdminMember/createMember/Failure/DuplicateEmail",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -439,7 +448,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/createMember/Request/Failure/DuplicateNickname",
+                    "AdminMember/createMember/Failure/DuplicateNickname",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -529,7 +538,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.memberId").value(encryptedMemberId)
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Success",
+                    "AdminMember/modifyMemberInfo/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -610,7 +619,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.nickname").value(INVALID_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/BadRequest",
+                    "AdminMember/modifyMemberInfo/Failure/BadRequest",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -686,7 +695,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/MemberNotFound",
+                    "AdminMember/modifyMemberInfo/Failure/MemberNotFound",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -755,7 +764,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_EMAIL.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/EmailDuplicate",
+                    "AdminMember/modifyMemberInfo/Failure/EmailDuplicate",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -824,7 +833,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(ALREADY_EXIST_NICKNAME.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/DuplicateNickname",
+                    "AdminMember/modifyMemberInfo/Failure/DuplicateNickname",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -895,7 +904,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(PERMISSION_DENIED.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/modifyMemberInfo/Request/Failure/PermissionDenied",
+                    "AdminMember/modifyMemberInfo/Failure/PermissionDenied",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestParts(
@@ -952,7 +961,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(SUCCESS.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/softDeleteMember/Request/Success",
+                    "AdminMember/softDeleteMember/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -992,7 +1001,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/softDeleteMember/Request/Failure/MemberNotFound",
+                    "AdminMember/softDeleteMember/Failure/MemberNotFound",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -1038,7 +1047,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(PERMISSION_DENIED.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/softDeleteMember/Request/Failure/PermissionDenied",
+                    "AdminMember/softDeleteMember/Failure/PermissionDenied",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -1092,7 +1101,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.result.agitUrl").value(memberInfoResponse.agitUrl())
                 )
                 .andDo(document(
-                    "AdminMember/getMemberInfo/Request/Success",
+                    "AdminMember/getMemberInfo/Success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     responseFields(
@@ -1133,7 +1142,7 @@ class AdminMemberControllerTest {
                     jsonPath("$.message").value(MEMBER_NOT_FOUND.getMessage())
                 )
                 .andDo(document(
-                    "AdminMember/getMemberInfo/Request/Failure/MemberNotFound",
+                    "AdminMember/getMemberInfo/Failure/MemberNotFound",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     responseFields(
@@ -1143,6 +1152,131 @@ class AdminMemberControllerTest {
                     )
                 ));
         }
+    }
+
+    @Nested
+    @DisplayName("관리자 - 회원 전체 조회 및 검색 API 테스트")
+    class SearchMemberInfoTest {
+
+        @Test
+        @DisplayName("유효한 요청으로 회원 정보를 성공적으로 조회한다.")
+        @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
+        void searchMemberInfoSuccess() throws Exception {
+            // given
+            ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 20, SortType.NEWEST);
+            Role role = Role.USER;
+            String query = "test";
+
+            List<Member> members = List.of(USER_A.toMember(), USER_B.toMember(), USER_C.toMember());
+
+            List<MemberInfoPreviewResponse> memberInfoResponses = members.stream()
+                .map(member -> MemberInfoPreviewResponse.builder()
+                    .memberId(PkCrypto.encrypt(member.getMemberId()))
+                    .profileImage(member.getProfileImage())
+                    .nickname(member.getNickname())
+                    .name(member.getName())
+                    .build())
+                .toList();
+
+            ApplicationPageResponse<MemberInfoPreviewResponse> response = new ApplicationPageResponse<>(
+                memberInfoResponses, 1, 1, (long) members.size(), 20
+            );
+
+            given(memberInfoSearchUseCase.searchMemberInfo(any(ApplicationPageRequest.class), any(Role.class), any(String.class))).willReturn(response);
+
+            // when
+            ResultActions requestBuilder = mockMvc.perform(MockMvcRequestBuilders.get("/api/admin/members")
+                .param("role", role.name())
+                .param("query", query)
+                .param("page", String.valueOf(pageRequest.page()))
+                .param("size", String.valueOf(pageRequest.size()))
+                .accept(APPLICATION_JSON));
+
+            // then
+            requestBuilder
+                .andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.isSuccess").value(true),
+                    jsonPath("$.code").value(SUCCESS.getCustomCode()),
+                    jsonPath("$.message").value(SUCCESS.getMessage()),
+                    jsonPath("$.result.totalElements").value(response.totalElements()),
+                    jsonPath("$.result.currentPage").value(response.currentPage()),
+                    jsonPath("$.result.totalPages").value(response.totalPages()),
+                    jsonPath("$.result.size").value(response.size()),
+                    jsonPath("$.result.elements").isArray(),
+                    jsonPath("$.result.elements.length()").value(3),
+                    jsonPath("$.result.elements[*].memberId").exists(),
+                    jsonPath("$.result.elements[*].profileImage").exists(),
+                    jsonPath("$.result.elements[*].nickname").exists(),
+                    jsonPath("$.result.elements[*].name").exists(),
+                    jsonPath("$.result.elements[*].department").exists(),
+                    jsonPath("$.result.elements[*].position").exists(),
+                    jsonPath("$.result.elements[*].phone").exists(),
+                    jsonPath("$.result.elements[*].email").exists()
+                )
+                .andDo(document("AdminMember/searchMemberInfo/Success",
+                    preprocessRequest(),
+                    preprocessResponse(),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("result.totalElements").description("전체 회원 수"),
+                        fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                        fieldWithPath("result.totalPages").description("전체 페이지 수"),
+                        fieldWithPath("result.size").description("페이지당 회원 수"),
+                        fieldWithPath("result.elements").description("회원 정보 리스트"),
+                        fieldWithPath("result.elements[].memberId").description("회원 ID (암호화됨)"),
+                        fieldWithPath("result.elements[].profileImage").description("프로필 이미지 URL"),
+                        fieldWithPath("result.elements[].nickname").description("회원 닉네임"),
+                        fieldWithPath("result.elements[].name").description("회원 이름"),
+                        fieldWithPath("result.elements[].department").description("회원 소속 부서"),
+                        fieldWithPath("result.elements[].position").description("회원 직책"),
+                        fieldWithPath("result.elements[].phone").description("회원 연락처"),
+                        fieldWithPath("result.elements[].email").description("회원 이메일")
+                    )
+                ));
+        }
+
+        @Test
+        @DisplayName("필터링 기준을 ADMIN으로 요청 시 METHOD_ARGUMENT_NOT_VALID 예외를 발생시킨다.")
+        @WithMockCustomUser(username = "admin", role = ADMIN, nickname = "admin.ad", memberId = 1L)
+        void searchMemberInfoWithAdminRoleThrowsException() throws Exception {
+            // given
+            ApplicationPageRequest pageRequest = new ApplicationPageRequest(0, 20, SortType.NEWEST);
+            Role role = Role.ADMIN;
+            String query = "test";
+
+            given(memberInfoSearchUseCase.searchMemberInfo(any(ApplicationPageRequest.class), any(Role.class), any(String.class)))
+                .willThrow(ApplicationException.from(METHOD_ARGUMENT_NOT_VALID));
+
+            // when
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/api/admin/members")
+                .param("role", role.name())
+                .param("query", query)
+                .param("page", String.valueOf(pageRequest.page()))
+                .param("size", String.valueOf(pageRequest.size()))
+                .accept(APPLICATION_JSON));
+
+            // then
+            result
+                .andExpectAll(
+                    status().isBadRequest(),
+                    jsonPath("$.isSuccess").value(false),
+                    jsonPath("$.code").value(METHOD_ARGUMENT_NOT_VALID.getCustomCode()),
+                    jsonPath("$.message").value(METHOD_ARGUMENT_NOT_VALID.getMessage())
+                )
+                .andDo(document("AdminMember/searchMemberInfo/Failure/AdminRoleNotAllowed",
+                    preprocessRequest(),
+                    preprocessResponse(),
+                    responseFields(
+                        fieldWithPath("isSuccess").description("응답 성공 여부"),
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지")
+                    )
+                ));
+        }
+
     }
 
     @Nested
@@ -1177,7 +1311,6 @@ class AdminMemberControllerTest {
                 ));
         }
 
-        @Test
         @DisplayName("엑셀 양식 다운로드 중 내부 서버 오류 발생 시 실패한다.")
         @WithMockCustomUser(username = "admin", role = Role.ADMIN, nickname = "admin.ad", memberId = 1L)
         void downloadMemberExcelTemplate_Fail_InternalServerError() throws Exception {
@@ -1213,5 +1346,6 @@ class AdminMemberControllerTest {
         }
     }
 
-
 }
+
+
