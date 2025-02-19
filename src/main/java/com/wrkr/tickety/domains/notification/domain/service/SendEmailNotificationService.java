@@ -75,7 +75,7 @@ public class SendEmailNotificationService {
             mimeMessageHelper.setText(text, true); // 메일 본문 내용, HTML 여부
             javaMailSender.send(mimeMessage);
 
-        } catch (MessagingException e) { // TODO: 존재하지 않은 이메일인 경우도 고려해야함
+        } catch (MessagingException e) {
             throw new ApplicationException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

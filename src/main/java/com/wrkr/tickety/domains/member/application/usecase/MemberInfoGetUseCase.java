@@ -17,7 +17,6 @@ public class MemberInfoGetUseCase {
     private final MemberGetService memberGetService;
 
     public MemberInfoResponse getMemberInfo(String memberId) {
-        // TODO: 프로젝션 사용도 고려
         Member findMember = memberGetService.byMemberId(PkCrypto.decrypt(memberId));
 
         return MemberMapper.mapToMemberInfoResponse(findMember);

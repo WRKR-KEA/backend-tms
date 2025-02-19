@@ -73,7 +73,6 @@ public class Member extends BaseTime {
         this.isTempPassword = isTempPassword;
     }
 
-    // TODO: 필드 단위로 파라미터 받기
     public void modifyMemberInfo(
         MemberInfoUpdateRequest memberInfoUpdateRequest,
         String agitUrl

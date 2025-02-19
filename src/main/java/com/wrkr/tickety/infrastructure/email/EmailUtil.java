@@ -38,7 +38,7 @@ public class EmailUtil {
             mimeMessageHelper.setText(setContext(code, type), true); // 메일 본문 내용, HTML 여부
             javaMailSender.send(mimeMessage);
 
-        } catch (MessagingException e) { // TODO: 존재하지 않은 이메일인 경우도 고려할 수 있으면 고려
+        } catch (MessagingException e) {
             throw new ApplicationException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

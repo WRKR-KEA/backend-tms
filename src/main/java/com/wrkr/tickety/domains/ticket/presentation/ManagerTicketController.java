@@ -118,7 +118,6 @@ public class ManagerTicketController {
     ) {
         List<DepartmentTicketExcelResponse> allTicketsNoPaging = ticketAllGetToExcelUseCase.getAllTicketsNoPaging(query, status, startDate, endDate);
 
-        // TODO: 파일 이름 생성 정책 정하기
         excelUtil.parseTicketDataToExcelGroupByStatus(response, allTicketsNoPaging, "department-ticket-list");
     }
 
@@ -185,7 +184,6 @@ public class ManagerTicketController {
     @PatchMapping("/{ticketId}/delegate")
     @CustomErrorCodes(ticketErrorCodes = {TICKET_NOT_FOUND, TICKET_MANAGER_NOT_MATCH, TICKET_NOT_DELEGATABLE})
     public ApplicationResponse<TicketPkResponse> delegateTicket(
-        //todo
         @AuthenticationPrincipal Member member,
         @PathVariable String ticketId,
         @Parameter(description = "티켓 담당자 변경 요청 정보", required = true)

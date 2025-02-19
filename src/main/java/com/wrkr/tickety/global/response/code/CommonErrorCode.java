@@ -20,7 +20,8 @@ public enum CommonErrorCode implements BaseErrorCode {
     EXCEED_MAX_FILE_SIZE(HttpStatus.BAD_REQUEST, "COMMON_010", "파일이 최대 용량을 초과했습니다. (최대 용량 : 10MB)"),
     FILE_NOT_UPLOAD(HttpStatus.BAD_REQUEST, "COMMON_011", "업로드할 파일을 선택해주세요."),
     INVALID_EXCEL_EXTENSION(HttpStatus.BAD_REQUEST, "COMMON_012", "지원되지 않는 파일 형식입니다. (허용된 형식 : xls, xlsx)"),
-    INVALID_IMAGE_EXTENSION(HttpStatus.BAD_REQUEST, "COMMON_013", "지원되지 않는 파일 형식입니다. (허용된 형식 : jpg, jpeg, png)");
+    INVALID_IMAGE_EXTENSION(HttpStatus.BAD_REQUEST, "COMMON_013", "지원되지 않는 파일 형식입니다. (허용된 형식 : jpg, jpeg, png)"),
+    INVALID_EXCEL_FORMAT(HttpStatus.BAD_REQUEST, "COMMON_014", "파일 내용이 형식에 맞지 않습니다. 제공된 양식을 참고해주세요.");
 
     private final HttpStatus httpStatus;
     private final String customCode;
